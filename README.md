@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Antaqor Community
 
-## Getting Started
+A modern community platform built with **Next.js**, **MongoDB**, and **Tailwind CSS**.
 
-First, run the development server:
+**Server:** `68.183.184.111`
+
+## Features
+
+- User authentication (sign up / sign in)
+- Create, view, and delete posts
+- Like and comment on posts
+- User profiles with editable bio
+- Responsive mobile-first design
+- Dark mode support
+
+## Tech Stack
+
+- **Next.js 16** (App Router, TypeScript)
+- **MongoDB 7** + Mongoose
+- **NextAuth.js** (JWT-based credentials auth)
+- **Tailwind CSS v4**
+
+## Local Development
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to Digital Ocean
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See **[DEPLOY.md](./DEPLOY.md)** for the full step-by-step guide.
 
-## Learn More
+Quick summary:
+1. Push code to GitHub
+2. SSH into `68.183.184.111`
+3. Run `bash scripts/deploy.sh`
+4. Clone repo, install, build, start with PM2
+5. Configure Nginx
 
-To learn more about Next.js, take a look at the following resources:
+## API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/signup` | Register new user |
+| POST | `/api/auth/[...nextauth]` | NextAuth sign in |
+| GET | `/api/posts` | List posts (paginated) |
+| POST | `/api/posts` | Create post |
+| GET | `/api/posts/:id` | Get single post |
+| DELETE | `/api/posts/:id` | Delete post (owner only) |
+| POST | `/api/posts/:id/like` | Toggle like |
+| GET | `/api/posts/:id/comments` | List comments |
+| POST | `/api/posts/:id/comments` | Add comment |
+| GET | `/api/users/:id` | Get user profile |
+| PUT | `/api/users/:id` | Update profile (owner only) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
