@@ -30,8 +30,12 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const [likes, setLikes] = useState(post.likes.length);
   const [liked, setLiked] = useState(userId ? post.likes.includes(userId) : false);
   const [liking, setLiking] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const canDelete = userId === post.author._id || userIsAdmin;
+  const hasText = post.content && post.content.trim().length > 0;
+  const hasImage = !!post.image;
+  const isImageOnly = hasImage && !hasText;
 
   const handleLike = async () => {
     if (!session || liking) return;
@@ -64,8 +68,9 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     .slice(0, 2);
 
   return (
-    <article className="card p-5 md:p-6">
-      <div className="mb-4 flex items-center justify-between">
+    <article className="card overflow-hidden">
+      {/* Header — always shown */}
+      <div className="flex items-center justify-between px-5 pt-5 md:px-6 md:pt-6">
         <Link href={`/profile/${post.author._id}`} className="flex items-center gap-3">
           {post.author.avatar ? (
             <img
@@ -101,20 +106,39 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
         )}
       </div>
 
-      <Link href={`/posts/${post._id}`}>
-        <p className="mb-4 whitespace-pre-wrap text-[13px] leading-[1.9] text-[rgba(240,236,227,0.7)]">
-          {post.content}
-        </p>
-        {post.image && (
-          <img
-            src={post.image}
-            alt="Post image"
-            className="mb-4 w-full object-cover"
-          />
-        )}
-      </Link>
+      {/* Text content */}
+      {hasText && (
+        <Link href={`/posts/${post._id}`} className="block px-5 md:px-6">
+          <p className={`whitespace-pre-wrap text-[13px] leading-[1.9] text-[rgba(240,236,227,0.7)] ${hasImage ? "mt-3 mb-3" : "mt-4 mb-4"}`}>
+            {post.content}
+          </p>
+        </Link>
+      )}
 
-      <div className="flex items-center gap-6 border-t border-[rgba(240,236,227,0.06)] pt-4">
+      {/* Image — full width, dark border, max aspect ratio */}
+      {hasImage && (
+        <Link href={`/posts/${post._id}`} className="block">
+          <div className={`relative overflow-hidden border-y border-[#1c1c1c] bg-[#0a0a0a] ${isImageOnly ? "mt-4" : ""}`}>
+            {!imgLoaded && (
+              <div className="flex items-center justify-center py-24">
+                <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+              </div>
+            )}
+            <img
+              src={post.image}
+              alt="Post"
+              onLoad={() => setImgLoaded(true)}
+              className={`w-full object-contain transition-opacity duration-300 ${
+                imgLoaded ? "opacity-100" : "h-0 opacity-0"
+              }`}
+              style={{ maxHeight: "600px" }}
+            />
+          </div>
+        </Link>
+      )}
+
+      {/* Actions */}
+      <div className="flex items-center gap-6 border-t border-[rgba(240,236,227,0.06)] px-5 py-4 md:px-6">
         <button
           onClick={handleLike}
           disabled={!session}

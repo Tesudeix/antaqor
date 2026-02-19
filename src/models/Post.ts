@@ -20,7 +20,7 @@ const PostSchema = new Schema<IPost>(
     },
     content: {
       type: String,
-      required: [true, "Post content is required"],
+      default: "",
       trim: true,
       maxlength: 2000,
     },

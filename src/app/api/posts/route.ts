@@ -51,9 +51,12 @@ export async function POST(req: NextRequest) {
 
     const { content, image } = await req.json();
 
-    if (!content || content.trim().length === 0) {
+    const hasContent = content && content.trim().length > 0;
+    const hasImage = image && image.trim().length > 0;
+
+    if (!hasContent && !hasImage) {
       return NextResponse.json(
-        { error: "Post content is required" },
+        { error: "Post must have text or an image" },
         { status: 400 }
       );
     }
@@ -64,8 +67,8 @@ export async function POST(req: NextRequest) {
 
     const post = await Post.create({
       author: userId,
-      content: content.trim(),
-      image: image || "",
+      content: hasContent ? content.trim() : "",
+      image: hasImage ? image.trim() : "",
     });
 
     const populated = await post.populate("author", "name avatar");
