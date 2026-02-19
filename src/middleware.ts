@@ -23,7 +23,6 @@ function isRateLimited(key: string, maxRequests: number, windowMs: number): bool
   return false;
 }
 
-// Clean stale entries periodically
 if (typeof setInterval !== "undefined") {
   setInterval(() => {
     const now = Date.now();
@@ -36,23 +35,24 @@ if (typeof setInterval !== "undefined") {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Rate limit auth endpoints (10 requests per minute)
+  // Auth endpoints need high limits — OAuth makes many sub-requests per login
   if (pathname.startsWith("/api/auth")) {
     const key = `auth:${getRateLimitKey(req)}`;
-    if (isRateLimited(key, 10, 60000)) {
+    if (isRateLimited(key, 60, 60000)) {
       return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
+        { error: "Too many login attempts. Please wait a minute and try again." },
         { status: 429 }
       );
     }
+    return NextResponse.next();
   }
 
-  // Rate limit API endpoints (60 requests per minute)
-  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
+  // General API: 120 requests per minute before throttling
+  if (pathname.startsWith("/api/")) {
     const key = `api:${getRateLimitKey(req)}`;
-    if (isRateLimited(key, 60, 60000)) {
+    if (isRateLimited(key, 120, 60000)) {
       return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
+        { error: "Too many requests. Please slow down." },
         { status: 429 }
       );
     }
@@ -70,7 +70,6 @@ export function middleware(req: NextRequest) {
 
   const response = NextResponse.next();
 
-  // Security headers
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-XSS-Protection", "1; mode=block");
