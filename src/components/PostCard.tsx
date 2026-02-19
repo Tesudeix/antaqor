@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { formatDistanceToNow } from "@/lib/utils";
+import { isAdminEmail } from "@/lib/adminClient";
 
 interface PostCardProps {
   post: {
@@ -25,9 +26,12 @@ interface PostCardProps {
 export default function PostCard({ post, onDelete }: PostCardProps) {
   const { data: session } = useSession();
   const userId = session ? (session.user as { id: string }).id : null;
+  const userIsAdmin = isAdminEmail(session?.user?.email);
   const [likes, setLikes] = useState(post.likes.length);
   const [liked, setLiked] = useState(userId ? post.likes.includes(userId) : false);
   const [liking, setLiking] = useState(false);
+
+  const canDelete = userId === post.author._id || userIsAdmin;
 
   const handleLike = async () => {
     if (!session || liking) return;
@@ -84,7 +88,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
           </div>
         </Link>
 
-        {userId === post.author._id && (
+        {canDelete && (
           <button
             onClick={handleDelete}
             className="text-[#5a5550] transition hover:text-[#cc2200]"

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import Navbar from "@/components/Navbar";
+import BottomBar from "@/components/BottomBar";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +24,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Antaqor" }],
   creator: "Antaqor",
+  manifest: "/manifest.json",
   metadataBase: new URL("https://tesudeix.com"),
   alternates: {
     canonical: "/",
@@ -57,6 +60,11 @@ export const metadata: Metadata = {
     "fb:app_id": "",
     "article:author": "https://www.facebook.com/profile.php?id=61582691680480",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Antaqor",
+  },
 };
 
 export default function RootLayout({
@@ -73,15 +81,16 @@ export default function RootLayout({
         />
         <meta name="theme-color" content="#030303" />
         <meta name="msapplication-TileColor" content="#cc2200" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
         <div className="grid-bg" />
         <Providers>
           <Navbar />
-          <main className="relative z-[1] mx-auto max-w-5xl px-6 py-8 md:px-10">
+          <main className="relative z-[1] mx-auto max-w-5xl px-6 py-8 pb-24 md:px-10 md:pb-8">
             {children}
           </main>
-          <footer className="relative z-[1] border-t border-[rgba(240,236,227,0.08)] bg-[#030303] px-6 py-12 md:px-10">
+          <footer className="relative z-[1] mb-16 border-t border-[rgba(240,236,227,0.08)] bg-[#030303] px-6 py-12 md:mb-0 md:px-10">
             <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 md:flex-row md:justify-between">
               <div className="font-[Bebas_Neue] text-2xl tracking-[4px]">
                 ANTA<span className="text-[#cc2200]">QOR</span>
@@ -109,6 +118,8 @@ export default function RootLayout({
               </div>
             </div>
           </footer>
+          <BottomBar />
+          <InstallPrompt />
         </Providers>
       </body>
     </html>

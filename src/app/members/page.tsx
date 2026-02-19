@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { isAdminEmail } from "@/lib/adminClient";
 
 interface Member {
   _id: string;
   name: string;
+  email?: string;
   avatar?: string;
   bio?: string;
   clan: string;
@@ -26,7 +28,14 @@ export default function MembersPage() {
       const res = await fetch("/api/members");
       const data = await res.json();
       if (res.ok) {
-        setMembers(data.members);
+        const sorted = [...data.members].sort((a: Member, b: Member) => {
+          const aAdmin = isAdminEmail(a.email);
+          const bAdmin = isAdminEmail(b.email);
+          if (aAdmin && !bAdmin) return -1;
+          if (!aAdmin && bAdmin) return 1;
+          return 0;
+        });
+        setMembers(sorted);
         setTotalMembers(data.totalMembers);
       }
     } finally {
@@ -70,6 +79,7 @@ export default function MembersPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((member) => {
+            const memberIsAdmin = isAdminEmail(member.email);
             const initials = member.name
               .split(" ")
               .map((n) => n[0])
@@ -78,29 +88,57 @@ export default function MembersPage() {
               .slice(0, 2);
 
             return (
-              <Link key={member._id} href={`/profile/${member._id}`} className="card group p-5 transition">
+              <Link
+                key={member._id}
+                href={`/profile/${member._id}`}
+                className={`card group p-5 transition ${
+                  memberIsAdmin ? "!border-[#cc2200]/30" : ""
+                }`}
+              >
                 <div className="flex items-center gap-4">
                   {member.avatar ? (
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="h-12 w-12 rounded-full object-cover ring-1 ring-[#1c1c1c]"
-                    />
+                    <div className="relative">
+                      <img
+                        src={member.avatar}
+                        alt={member.name}
+                        className={`h-12 w-12 rounded-full object-cover ${
+                          memberIsAdmin ? "ring-2 ring-[#cc2200]" : "ring-1 ring-[#1c1c1c]"
+                        }`}
+                      />
+                      {memberIsAdmin && (
+                        <span className="absolute -bottom-1 -right-1 text-sm">👑</span>
+                      )}
+                    </div>
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center bg-[#1c1c1c] text-[12px] font-bold tracking-wider text-[#c8c8c0]">
+                    <div className={`relative flex h-12 w-12 items-center justify-center text-[12px] font-bold tracking-wider ${
+                      memberIsAdmin
+                        ? "bg-[#cc2200] text-[#ede8df]"
+                        : "bg-[#1c1c1c] text-[#c8c8c0]"
+                    }`}>
                       {initials}
+                      {memberIsAdmin && (
+                        <span className="absolute -bottom-1 -right-1 text-sm">👑</span>
+                      )}
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold text-[#ede8df] transition group-hover:text-[#cc2200]">
-                      {member.name}
-                    </p>
-                    {member.bio ? (
+                    <div className="flex items-center gap-2">
+                      <p className={`truncate text-[13px] font-bold transition group-hover:text-[#cc2200] ${
+                        memberIsAdmin ? "text-[#cc2200]" : "text-[#ede8df]"
+                      }`}>
+                        {member.name}
+                      </p>
+                    </div>
+                    {memberIsAdmin ? (
+                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[3px] text-[#cc2200]">
+                        Emperor
+                      </p>
+                    ) : member.bio ? (
                       <p className="mt-0.5 truncate text-[11px] text-[rgba(240,236,227,0.4)]">
                         {member.bio}
                       </p>
                     ) : (
-                      <p className="mt-0.5 text-[10px] uppercase tracking-[2px] text-[#cc2200]">
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[2px] text-[#5a5550]">
                         Clan Member
                       </p>
                     )}

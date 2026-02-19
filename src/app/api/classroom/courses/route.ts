@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Course from "@/models/Course";
+import { broadcastNotification } from "@/lib/notifications";
 
 export async function GET() {
   try {
@@ -34,6 +35,13 @@ export async function POST(req: NextRequest) {
       description: description?.trim() || "",
       order: order ?? 0,
     });
+
+    broadcastNotification({
+      type: "new_course",
+      title: "New Course",
+      message: `New course available: ${title.trim()}`,
+      link: "/classroom",
+    }).catch(() => {});
 
     return NextResponse.json({ course }, { status: 201 });
   } catch (error: unknown) {

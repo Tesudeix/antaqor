@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import { broadcastNotification } from "@/lib/notifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -68,6 +69,14 @@ export async function POST(req: NextRequest) {
     });
 
     const populated = await post.populate("author", "name avatar");
+
+    broadcastNotification({
+      type: "new_post",
+      title: "New Post",
+      message: `${session.user.name || "Someone"} shared a new post`,
+      link: `/posts/${post._id}`,
+      excludeUserId: userId,
+    }).catch(() => {});
 
     return NextResponse.json({ post: populated }, { status: 201 });
   } catch (error: unknown) {

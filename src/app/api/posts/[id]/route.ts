@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import Comment from "@/models/Comment";
@@ -41,13 +42,14 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
     const userId = (session.user as { id: string }).id;
+    const userIsAdmin = isAdmin(session.user.email);
 
     const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    if (post.author.toString() !== userId) {
+    if (post.author.toString() !== userId && !userIsAdmin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

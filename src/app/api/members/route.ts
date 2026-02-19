@@ -7,7 +7,7 @@ export async function GET() {
     await dbConnect();
 
     const members = await User.find({ clan: { $ne: "" } })
-      .select("name avatar bio clan clanJoinedAt createdAt")
+      .select("name avatar bio email clan clanJoinedAt createdAt")
       .sort({ clanJoinedAt: -1 })
       .lean();
 
