@@ -16,9 +16,15 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-5 md:flex">
           <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
             Feed
+          </Link>
+          <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+            Classroom
+          </Link>
+          <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+            Members
           </Link>
           <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
             Clan
@@ -75,6 +81,12 @@ export default function Navbar() {
           <div className="flex flex-col gap-4">
             <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Feed
+            </Link>
+            <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              Classroom
+            </Link>
+            <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              Members
             </Link>
             <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Clan
