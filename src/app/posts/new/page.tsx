@@ -47,7 +47,7 @@ export default function NewPost() {
   if (status === "loading") {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
       </div>
     );
   }
@@ -56,18 +56,21 @@ export default function NewPost() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+      <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">
         Create a Post
       </h1>
+      <p className="mb-8 text-[11px] tracking-[2px] text-[#5a5550]">
+        SHARE WITH THE DIGITAL NATION
+      </p>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+        <div className="mb-6 border-l-2 border-[#cc2200] bg-[rgba(204,34,0,0.08)] px-4 py-3 text-[12px] text-[#cc2200]">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div className="card p-5 md:p-6">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -75,16 +78,16 @@ export default function NewPost() {
             rows={6}
             maxLength={2000}
             required
-            className="w-full resize-none border-0 bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none dark:text-white"
+            className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#ede8df] placeholder-[#5a5550] focus:outline-none"
           />
-          <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
-            <span className="text-xs text-gray-400">
+          <div className="flex items-center justify-between border-t border-[rgba(240,236,227,0.06)] pt-4">
+            <span className="text-[10px] tracking-[2px] text-[#5a5550]">
               {content.length}/2000
             </span>
             <button
               type="submit"
               disabled={loading || !content.trim()}
-              className="rounded-lg bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+              className="btn-blood !py-2 !px-6 !text-[10px]"
             >
               {loading ? "Posting..." : "Post"}
             </button>

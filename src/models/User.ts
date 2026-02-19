@@ -4,9 +4,13 @@ export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   avatar: string;
   bio: string;
+  provider: string;
+  providerId: string;
+  clan?: string;
+  clanJoinedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,7 +33,6 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: 6,
     },
     avatar: {
@@ -40,6 +43,21 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: "",
       maxlength: 300,
+    },
+    provider: {
+      type: String,
+      default: "credentials",
+    },
+    providerId: {
+      type: String,
+      default: "",
+    },
+    clan: {
+      type: String,
+      default: "",
+    },
+    clanJoinedAt: {
+      type: Date,
     },
   },
   {

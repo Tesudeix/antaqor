@@ -9,48 +9,45 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Antaqor
+    <nav className="sticky top-0 z-50 border-b border-[rgba(240,236,227,0.08)] bg-[rgba(3,3,3,0.85)] backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4 md:px-10">
+        <Link href="/" className="font-[Bebas_Neue] text-2xl tracking-[4px] text-[#ede8df]">
+          ANTA<span className="text-[#cc2200]">QOR</span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden items-center gap-4 md:flex">
+        {/* Desktop nav */}
+        <div className="hidden items-center gap-6 md:flex">
+          <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+            Feed
+          </Link>
+          <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+            Clan
+          </Link>
           {session ? (
             <>
-              <Link
-                href="/posts/new"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-              >
+              <Link href="/posts/new" className="btn-blood !py-2 !px-5 !text-[10px]">
                 New Post
               </Link>
               <Link
                 href={`/profile/${(session.user as { id: string }).id}`}
-                className="text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                className="flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[11px] font-bold text-[#c8c8c0] transition hover:border-[#cc2200] hover:text-[#ede8df]"
               >
-                Profile
+                {session.user?.name?.charAt(0).toUpperCase() || "U"}
               </Link>
               <button
                 onClick={() => signOut()}
-                className="text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                className="text-[11px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#cc2200]"
               >
-                Sign Out
+                Exit
               </button>
             </>
           ) : (
             <>
-              <Link
-                href="/auth/signin"
-                className="text-sm font-medium text-gray-600 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              >
+              <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
                 Sign In
               </Link>
-              <Link
-                href="/auth/signup"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-              >
-                Sign Up
+              <Link href="/auth/signup" className="btn-blood !py-2 !px-5 !text-[10px]">
+                Join
               </Link>
             </>
           )}
@@ -62,11 +59,11 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
-          <svg className="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-6 w-6 text-[#c8c8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
             )}
           </svg>
         </button>
@@ -74,27 +71,33 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-gray-200 px-4 py-3 md:hidden dark:border-gray-800">
-          <div className="flex flex-col gap-3">
+        <div className="border-t border-[rgba(240,236,227,0.06)] bg-[#0f0f0f] px-6 py-5 md:hidden">
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              Feed
+            </Link>
+            <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              Clan
+            </Link>
             {session ? (
               <>
-                <Link href="/posts/new" className="text-sm font-medium text-gray-700 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+                <Link href="/posts/new" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
                   New Post
                 </Link>
-                <Link href={`/profile/${(session.user as { id: string }).id}`} className="text-sm font-medium text-gray-700 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+                <Link href={`/profile/${(session.user as { id: string }).id}`} className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
                   Profile
                 </Link>
-                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Sign Out
+                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-[11px] uppercase tracking-[3px] text-[#5a5550]">
+                  Exit
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/signin" className="text-sm font-medium text-gray-700 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+                <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
                   Sign In
                 </Link>
-                <Link href="/auth/signup" className="text-sm font-medium text-gray-700 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
-                  Sign Up
+                <Link href="/auth/signup" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
+                  Join the Clan
                 </Link>
               </>
             )}

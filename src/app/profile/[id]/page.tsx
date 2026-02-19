@@ -11,6 +11,7 @@ interface UserProfile {
   email: string;
   avatar?: string;
   bio?: string;
+  clan?: string;
   createdAt: string;
 }
 
@@ -91,7 +92,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
       </div>
     );
   }
@@ -99,7 +100,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (!user) {
     return (
       <div className="py-16 text-center">
-        <p className="text-lg text-gray-500">User not found</p>
+        <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+          User not found
+        </p>
       </div>
     );
   }
@@ -114,16 +117,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   return (
     <div className="mx-auto max-w-2xl">
       {/* Profile header */}
-      <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="flex items-start gap-4">
+      <div className="card mb-10 p-6 md:p-8">
+        <div className="flex flex-col items-start gap-5 sm:flex-row">
           {user.avatar ? (
             <img
               src={user.avatar}
               alt={user.name}
-              className="h-20 w-20 rounded-full object-cover"
+              className="h-20 w-20 rounded-full object-cover ring-2 ring-[#1c1c1c]"
             />
           ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-2xl font-bold text-white">
+            <div className="flex h-20 w-20 items-center justify-center bg-[#1c1c1c] font-[Bebas_Neue] text-2xl tracking-wider text-[#c8c8c0]">
               {initials}
             </div>
           )}
@@ -134,7 +137,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="input-dark"
                   placeholder="Name"
                 />
                 <textarea
@@ -142,20 +145,20 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full resize-none rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="input-dark resize-none"
                   placeholder="Write a short bio..."
                 />
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="btn-blood !py-2 !px-5 !text-[10px]"
                   >
                     {saving ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={() => setEditing(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300"
+                    className="btn-ghost !py-2 !px-5 !text-[10px]"
                   >
                     Cancel
                   </button>
@@ -163,26 +166,33 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between">
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {user.name}
-                  </h1>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df]">
+                      {user.name}
+                    </h1>
+                    {user.clan && (
+                      <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#cc2200]">
+                        Clan Member
+                      </span>
+                    )}
+                  </div>
                   {isOwner && (
                     <button
                       onClick={() => setEditing(true)}
-                      className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                      className="btn-ghost !py-2 !px-4 !text-[10px]"
                     >
-                      Edit Profile
+                      Edit
                     </button>
                   )}
                 </div>
                 {user.bio && (
-                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  <p className="mt-3 text-[13px] leading-[1.8] text-[rgba(240,236,227,0.6)]">
                     {user.bio}
                   </p>
                 )}
-                <p className="mt-2 text-xs text-gray-400">
-                  Joined {formatDistanceToNow(user.createdAt)}
+                <p className="mt-3 text-[10px] tracking-[2px] text-[#5a5550]">
+                  JOINED {formatDistanceToNow(user.createdAt).toUpperCase()}
                 </p>
               </>
             )}
@@ -190,15 +200,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* User's posts */}
-      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+      {/* Posts */}
+      <div className="section-label">
         Posts ({posts.length})
-      </h2>
+      </div>
 
       {posts.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-500">No posts yet.</p>
+        <p className="py-8 text-center text-[12px] text-[#5a5550]">No posts yet.</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {posts.map((post) => (
             <PostCard key={post._id} post={post} onDelete={handleDeletePost} />
           ))}

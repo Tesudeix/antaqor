@@ -59,52 +59,48 @@ export default function CommentSection({ postId }: { postId: string }) {
   };
 
   return (
-    <div className="mt-6">
-      <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-        Comments
-      </h3>
+    <div className="mt-8">
+      <div className="section-label !mb-6">Comments</div>
 
-      {/* Comment form */}
       {session ? (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-8">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write a comment..."
             rows={3}
             maxLength={500}
-            className="w-full resize-none rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            className="input-dark mb-3 resize-none"
           />
-          <div className="mt-2 flex justify-end">
+          <div className="flex justify-end">
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-50"
+              className="btn-blood !py-2 !px-5 !text-[10px]"
             >
               {submitting ? "Posting..." : "Post Comment"}
             </button>
           </div>
         </form>
       ) : (
-        <p className="mb-6 text-sm text-gray-500">
-          <Link href="/auth/signin" className="text-blue-600 hover:underline">
+        <p className="mb-8 text-[12px] text-[#5a5550]">
+          <Link href="/auth/signin" className="text-[#cc2200] hover:text-[#e8440f]">
             Sign in
           </Link>{" "}
           to leave a comment.
         </p>
       )}
 
-      {/* Comments list */}
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
         </div>
       ) : comments.length === 0 ? (
-        <p className="py-4 text-center text-sm text-gray-500">
-          No comments yet. Be the first!
+        <p className="py-6 text-center text-[12px] text-[#5a5550]">
+          No comments yet. Be the first.
         </p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {comments.map((comment) => {
             const initials = comment.author.name
               .split(" ")
@@ -116,26 +112,26 @@ export default function CommentSection({ postId }: { postId: string }) {
             return (
               <div
                 key={comment._id}
-                className="rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50"
+                className="border-l-2 border-[#1c1c1c] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#cc2200]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <Link href={`/profile/${comment.author._id}`} className="flex items-center gap-2">
                     {comment.author.avatar ? (
-                      <img src={comment.author.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
+                      <img src={comment.author.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
                     ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-xs font-bold text-white">
+                      <div className="flex h-6 w-6 items-center justify-center bg-[#1c1c1c] text-[9px] font-bold text-[#c8c8c0]">
                         {initials}
                       </div>
                     )}
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-[12px] font-bold text-[#ede8df]">
                       {comment.author.name}
                     </span>
                   </Link>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-[10px] tracking-[2px] text-[#5a5550]">
                     {formatDistanceToNow(comment.createdAt)}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="text-[12px] leading-[1.8] text-[rgba(240,236,227,0.6)]">
                   {comment.content}
                 </p>
               </div>

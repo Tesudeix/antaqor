@@ -1,11 +1,16 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -22,6 +27,10 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: credentials.email });
         if (!user) {
           throw new Error("No account found with that email");
+        }
+
+        if (!user.password) {
+          throw new Error("This account uses Google sign-in");
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
@@ -42,9 +51,32 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.email) {
+        await dbConnect();
+        const existingUser = await User.findOne({ email: user.email });
+        if (!existingUser) {
+          await User.create({
+            name: user.name || "User",
+            email: user.email,
+            avatar: user.image || "",
+            provider: "google",
+            providerId: account.providerAccountId,
+          });
+        } else if (!existingUser.avatar && user.image) {
+          existingUser.avatar = user.image;
+          await existingUser.save();
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+      if (user?.email) {
+        await dbConnect();
+        const dbUser = await User.findOne({ email: user.email });
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+        }
       }
       return token;
     },

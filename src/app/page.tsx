@@ -59,57 +59,71 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero / Welcome */}
-      <div className="mb-8 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
-        <h1 className="mb-2 text-3xl font-bold">Welcome to Antaqor</h1>
-        <p className="mb-4 text-blue-100">
-          Share your thoughts, connect with the community, and discover new ideas.
+      {/* Hero Section */}
+      <section className="relative mb-16 overflow-hidden py-16 md:py-24">
+        <div className="absolute right-[-200px] top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(204,34,0,0.10)_0%,transparent_70%)] pointer-events-none" />
+
+        <div className="animate-fade-up-delay-1 mb-3 text-[11px] uppercase tracking-[4px] text-[#c8c8c0]">
+          Community · Digital Nation
+        </div>
+        <h1 className="animate-fade-up-delay-2 font-[Bebas_Neue] text-[clamp(56px,10vw,140px)] leading-[0.9] tracking-[-2px]">
+          ANTA<span className="text-[#cc2200]">QOR</span>
+        </h1>
+        <div className="animate-fade-up-delay-2 mt-3 font-[Bebas_Neue] text-[clamp(20px,3vw,36px)] tracking-[6px] text-[rgba(240,236,227,0.25)]">
+          <strong className="text-[#ede8df]">Be Wild.</strong> Conquer the Future.
+        </div>
+        <p className="animate-fade-up-delay-3 mt-6 max-w-lg text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
+          A nation of builders who own AI, shape their tools, and define their future. Join the community — share ideas, connect, and build together.
         </p>
-        {session ? (
-          <Link
-            href="/posts/new"
-            className="inline-block rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
-          >
-            Create a Post
-          </Link>
-        ) : (
-          <Link
-            href="/auth/signup"
-            className="inline-block rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
-          >
-            Join the Community
-          </Link>
-        )}
-      </div>
-
-      {/* Feed */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="py-16 text-center">
-          <p className="text-lg text-gray-500">No posts yet.</p>
-          <p className="mt-1 text-sm text-gray-400">Be the first to share something!</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <PostCard key={post._id} post={post} onDelete={handleDelete} />
-          ))}
-
-          {hasMore && (
-            <div className="flex justify-center pt-4">
-              <button
-                onClick={loadMore}
-                className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-              >
-                Load More
-              </button>
-            </div>
+        <div className="animate-fade-up-delay-3 mt-8 flex flex-wrap gap-4">
+          {session ? (
+            <Link href="/posts/new" className="btn-blood">
+              Create a Post
+            </Link>
+          ) : (
+            <Link href="/auth/signup" className="btn-blood">
+              Join the Clan
+            </Link>
           )}
+          <Link href="/clan" className="btn-ghost">
+            Explore Clan
+          </Link>
         </div>
-      )}
+      </section>
+
+      {/* Feed Section */}
+      <section>
+        <div className="section-label">Community Feed</div>
+
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+              No posts yet
+            </p>
+            <p className="mt-2 text-[12px] text-[#5a5550]">
+              Be the first to share something with the community.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {posts.map((post) => (
+              <PostCard key={post._id} post={post} onDelete={handleDelete} />
+            ))}
+
+            {hasMore && (
+              <div className="flex justify-center pt-6">
+                <button onClick={loadMore} className="btn-ghost">
+                  Load More
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
