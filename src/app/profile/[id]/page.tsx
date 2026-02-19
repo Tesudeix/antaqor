@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useRef } from "react";
 import { useSession } from "next-auth/react";
 import PostCard from "@/components/PostCard";
 import { formatDistanceToNow } from "@/lib/utils";
@@ -39,6 +39,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isOwner = session && (session.user as { id: string }).id === id;
 
@@ -85,6 +87,46 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be under 5MB");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        alert(uploadData.error || "Upload failed");
+        return;
+      }
+
+      const updateRes = await fetch(`/api/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatar: uploadData.url }),
+      });
+      const updateData = await updateRes.json();
+      if (updateRes.ok) {
+        setUser(updateData.user);
+      }
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const handleDeletePost = (postId: string) => {
     setPosts((prev) => prev.filter((p) => p._id !== postId));
   };
@@ -119,17 +161,45 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       {/* Profile header */}
       <div className="card mb-10 p-6 md:p-8">
         <div className="flex flex-col items-start gap-5 sm:flex-row">
-          {user.avatar ? (
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="h-20 w-20 rounded-full object-cover ring-2 ring-[#1c1c1c]"
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center bg-[#1c1c1c] font-[Bebas_Neue] text-2xl tracking-wider text-[#c8c8c0]">
-              {initials}
-            </div>
-          )}
+          {/* Avatar with upload */}
+          <div className="relative group">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="h-20 w-20 rounded-full object-cover ring-2 ring-[#1c1c1c]"
+              />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center bg-[#1c1c1c] font-[Bebas_Neue] text-2xl tracking-wider text-[#c8c8c0]">
+                {initials}
+              </div>
+            )}
+            {isOwner && (
+              <>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute inset-0 flex items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
+                >
+                  {uploading ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#cc2200] border-t-transparent" />
+                  ) : (
+                    <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </>
+            )}
+          </div>
 
           <div className="flex-1">
             {editing ? (
