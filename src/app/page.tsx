@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
+import ConquestCounter from "@/components/ConquestCounter";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
@@ -96,6 +97,9 @@ export default function Home() {
               Sign In
             </Link>
           </div>
+
+          {/* Mission counter — live */}
+          <ConquestCounter />
         </section>
 
         {/* Values Preview */}
@@ -133,9 +137,20 @@ export default function Home() {
     );
   }
 
-  // Logged in — show feed directly
+  // Logged in — show feed with counter at top
   return (
     <div>
+      {/* Mission banner — logged in view */}
+      <div className="mb-6 border border-[#1c1c1c] bg-[#0a0a0a] px-5 py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-[10px] uppercase tracking-[4px] text-[#5a5550]">
+            Mission · Creating 10,000 AI Conquerors
+          </div>
+          <ConquestCounter inline />
+        </div>
+        <ConquestCounterBar />
+      </div>
+
       {/* Quick post bar */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -182,6 +197,50 @@ export default function Home() {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// Slim progress bar used inside the logged-in banner
+function ConquestCounterBar() {
+  const [pct, setPct] = useState(0);
+  const [count, setCount] = useState(0);
+  const goal = 10000;
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        if (res.ok) {
+          setCount(data.totalUsers);
+          setPct(Math.min((data.totalUsers / goal) * 100, 100));
+        }
+      } catch {
+        // silent
+      }
+    };
+    load();
+    const i = setInterval(load, 30000);
+    return () => clearInterval(i);
+  }, []);
+
+  return (
+    <div className="mt-3">
+      <div className="relative h-[2px] w-full overflow-hidden bg-[#1c1c1c]">
+        <div
+          className="h-full bg-[#cc2200] transition-all duration-1000 ease-out"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="mt-1.5 flex justify-between">
+        <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">
+          {count.toLocaleString()} joined
+        </span>
+        <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">
+          {goal.toLocaleString()} goal
+        </span>
+      </div>
     </div>
   );
 }

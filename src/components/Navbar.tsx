@@ -2,8 +2,76 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationBell from "./NotificationBell";
+
+function NavTicker() {
+  const [count, setCount] = useState<number | null>(null);
+  const [display, setDisplay] = useState(0);
+  const goal = 10000;
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        if (res.ok) setCount(data.totalUsers);
+      } catch {
+        // silent
+      }
+    };
+    load();
+    const i = setInterval(load, 60000);
+    return () => clearInterval(i);
+  }, []);
+
+  // animate number
+  useEffect(() => {
+    if (count === null) return;
+    let start = display;
+    const end = count;
+    if (start === end) return;
+    const step = Math.ceil(Math.abs(end - start) / 30);
+    const t = setInterval(() => {
+      start = start < end ? Math.min(start + step, end) : Math.max(start - step, end);
+      setDisplay(start);
+      if (start === end) clearInterval(t);
+    }, 30);
+    return () => clearInterval(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
+
+  if (count === null) return null;
+  const pct = Math.min((count / goal) * 100, 100);
+
+  return (
+    <div className="hidden items-center gap-2.5 md:flex">
+      <div className="h-3 w-[1px] bg-[#1c1c1c]" />
+      <div className="flex items-center gap-1.5">
+        <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
+          Mission
+        </span>
+        <span className="font-[Bebas_Neue] text-[13px] leading-none tracking-[1px] text-[#cc2200]">
+          {display.toLocaleString()}
+        </span>
+        <span className="text-[9px] text-[#3a3835]">/</span>
+        <span className="font-[Bebas_Neue] text-[13px] leading-none tracking-[1px] text-[#3a3835]">
+          10K
+        </span>
+        <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
+          AI Conquerors
+        </span>
+      </div>
+      {/* tiny progress bar */}
+      <div className="h-[2px] w-12 overflow-hidden bg-[#1c1c1c]">
+        <div
+          className="h-full bg-[#cc2200] transition-all duration-700"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -12,9 +80,12 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-[rgba(240,236,227,0.08)] bg-[rgba(3,3,3,0.85)] backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4 md:px-10">
-        <Link href="/" className="font-[Bebas_Neue] text-2xl tracking-[4px] text-[#ede8df]">
-          ANTA<span className="text-[#cc2200]">QOR</span>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="font-[Bebas_Neue] text-2xl tracking-[4px] text-[#ede8df]">
+            ANTA<span className="text-[#cc2200]">QOR</span>
+          </Link>
+          <NavTicker />
+        </div>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-5 md:flex">
@@ -79,6 +150,11 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile mission ticker */}
+      <div className="flex items-center justify-center gap-2 border-t border-[rgba(240,236,227,0.04)] py-1.5 md:hidden">
+        <MobileTicker />
+      </div>
+
       {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t border-[rgba(240,236,227,0.06)] bg-[#0f0f0f] px-6 py-5 md:hidden">
@@ -121,5 +197,39 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+  );
+}
+
+function MobileTicker() {
+  const [count, setCount] = useState<number | null>(null);
+  const goal = 10000;
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        if (res.ok) setCount(data.totalUsers);
+      } catch {
+        // silent
+      }
+    };
+    load();
+  }, []);
+
+  if (count === null) return null;
+  const pct = Math.min((count / goal) * 100, 100);
+
+  return (
+    <div className="flex w-full items-center gap-2 px-6">
+      <span className="text-[8px] uppercase tracking-[2px] text-[#3a3835] shrink-0">Mission</span>
+      <div className="relative flex-1 h-[2px] overflow-hidden bg-[#1c1c1c]">
+        <div className="h-full bg-[#cc2200] transition-all duration-700" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="font-[Bebas_Neue] text-[11px] tracking-[1px] text-[#cc2200] shrink-0">
+        {count.toLocaleString()}
+      </span>
+      <span className="text-[8px] text-[#3a3835] shrink-0">/10K AI Conquerors</span>
+    </div>
   );
 }
