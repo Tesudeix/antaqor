@@ -4,8 +4,59 @@ import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Antaqor — Be Wild. Conquer the Future.",
-  description: "The Digital Nation community. Mongolian roots. Global force.",
+  title: {
+    default: "Antaqor — Be Wild. Conquer the Future.",
+    template: "%s | Antaqor",
+  },
+  description:
+    "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future. Mongolian roots. Global force.",
+  keywords: [
+    "Antaqor",
+    "Digital Nation",
+    "AI",
+    "Mongolian builders",
+    "community",
+    "futurism",
+    "tech",
+    "education",
+  ],
+  authors: [{ name: "Antaqor" }],
+  creator: "Antaqor",
+  metadataBase: new URL("https://tesudeix.com"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://tesudeix.com",
+    siteName: "Antaqor",
+    title: "Antaqor — Be Wild. Conquer the Future.",
+    description:
+      "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Antaqor — Be Wild. Conquer the Future.",
+    description:
+      "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future.",
+    creator: "@antaqor",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  other: {
+    "fb:app_id": "",
+    "article:author": "https://www.facebook.com/profile.php?id=61582691680480",
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +71,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#030303" />
+        <meta name="msapplication-TileColor" content="#cc2200" />
       </head>
       <body>
         <div className="grid-bg" />

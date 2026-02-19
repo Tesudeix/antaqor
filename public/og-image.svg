@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#030303"/>
+  <rect x="0" y="0" width="1200" height="4" fill="#cc2200"/>
+  <text x="100" y="280" font-family="Arial Black, sans-serif" font-weight="900" font-size="140" fill="#ede8df">ANTA<tspan fill="#cc2200">QOR</tspan></text>
+  <text x="100" y="360" font-family="Arial, sans-serif" font-weight="700" font-size="48" fill="#5a5550">Be Wild. Conquer the Future.</text>
+  <text x="100" y="430" font-family="monospace" font-size="22" fill="#3a3835">The Digital Nation — Community of Builders</text>
+  <rect x="0" y="626" width="1200" height="4" fill="#cc2200"/>
+</svg>
