@@ -5,15 +5,15 @@ import dbConnect from "./mongodb";
 import ThreadsToken from "@/models/ThreadsToken";
 import { ThreadsAPI } from "./threads";
 
-const ADMIN_USERNAME = (
-  process.env.ADMIN_USERNAME || "antaqor"
+const ADMIN_EMAIL = (
+  process.env.ADMIN_EMAIL || "antaqor@gmail.com"
 ).toLowerCase();
 
 export async function getAdminSession() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return null;
-  const name = session.user.name?.toLowerCase();
-  if (name !== ADMIN_USERNAME) return null;
+  const email = session.user.email?.toLowerCase();
+  if (email !== ADMIN_EMAIL) return null;
   return session;
 }
 
