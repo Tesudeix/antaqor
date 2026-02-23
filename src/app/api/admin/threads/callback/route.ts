@@ -4,10 +4,12 @@ import { ThreadsAPI } from "@/lib/threads";
 import dbConnect from "@/lib/mongodb";
 import ThreadsToken from "@/models/ThreadsToken";
 
+const BASE = process.env.NEXTAUTH_URL || "https://tesudeix.com";
+
 export async function GET(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) {
-    return NextResponse.redirect(new URL("/auth/signin", req.url));
+    return NextResponse.redirect(`${BASE}/auth/signin`);
   }
 
   const code = req.nextUrl.searchParams.get("code");
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
     const errorDesc =
       req.nextUrl.searchParams.get("error_description") || "Authorization failed";
     return NextResponse.redirect(
-      new URL(`/admin?error=${encodeURIComponent(errorDesc)}`, req.url)
+      `${BASE}/admin?error=${encodeURIComponent(errorDesc)}`
     );
   }
 
@@ -64,13 +66,11 @@ export async function GET(req: NextRequest) {
       { upsert: true, new: true }
     );
 
-    return NextResponse.redirect(
-      new URL("/admin?connected=true", req.url)
-    );
+    return NextResponse.redirect(`${BASE}/admin?connected=true`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "OAuth failed";
     return NextResponse.redirect(
-      new URL(`/admin?error=${encodeURIComponent(msg)}`, req.url)
+      `${BASE}/admin?error=${encodeURIComponent(msg)}`
     );
   }
 }
