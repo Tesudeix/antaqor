@@ -6,6 +6,7 @@ import Link from "next/link";
 interface Stats {
   totalUsers: number;
   paidMembers: number;
+  aiConquerors?: number;
   goal: number;
   progress: number;
 }
@@ -68,8 +69,9 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
 
   if (!stats) return null;
 
-  const pct = Math.min((stats.totalUsers / stats.goal) * 100, 100);
-  const remaining = stats.goal - stats.totalUsers;
+  const conquerors = stats.aiConquerors ?? stats.paidMembers ?? 0;
+  const pct = Math.min((conquerors / stats.goal) * 100, 100);
+  const remaining = stats.goal - conquerors;
 
   // Compact inline version for navbar ticker
   if (inline) {
@@ -77,7 +79,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
       <div className="hidden items-center gap-2 md:flex">
         <span className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">Mission</span>
         <span className="font-[Bebas_Neue] text-sm tracking-[2px] text-[#cc2200]">
-          <AnimatedNumber value={stats.totalUsers} />
+          <AnimatedNumber value={conquerors} />
           <span className="text-[#5a5550]">/{stats.goal.toLocaleString()}</span>
         </span>
         <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">AI Conquerors</span>
@@ -108,7 +110,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
         </div>
         <div className="text-right">
           <div className="font-[Bebas_Neue] text-[clamp(32px,5vw,52px)] leading-none tracking-[-1px] text-[#cc2200]">
-            <AnimatedNumber value={stats.totalUsers} />
+            <AnimatedNumber value={conquerors} />
           </div>
           <div className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">
             joined

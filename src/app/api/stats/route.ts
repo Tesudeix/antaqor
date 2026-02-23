@@ -8,17 +8,26 @@ export async function GET() {
   try {
     await dbConnect();
 
+    const now = new Date();
+
     const [totalUsers, paidMembers] = await Promise.all([
       User.countDocuments({}),
-      User.countDocuments({ clan: { $ne: "" } }),
+      User.countDocuments({
+        clan: { $ne: "" },
+        $or: [
+          { subscriptionExpiresAt: { $gte: now } },
+          { subscriptionExpiresAt: { $exists: false } },
+        ],
+      }),
     ]);
 
     return NextResponse.json(
       {
         totalUsers,
         paidMembers,
+        aiConquerors: paidMembers,
         goal: GOAL,
-        progress: Math.min((totalUsers / GOAL) * 100, 100),
+        progress: Math.min((paidMembers / GOAL) * 100, 100),
       },
       {
         headers: {
@@ -27,7 +36,8 @@ export async function GET() {
       }
     );
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to fetch stats";
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch stats";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

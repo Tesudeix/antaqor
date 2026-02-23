@@ -36,9 +36,13 @@ export async function POST(req: NextRequest) {
       payment.paidAt = new Date();
       await payment.save();
 
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
+
       await User.findByIdAndUpdate(payment.user, {
         clan: "antaqor",
         clanJoinedAt: new Date(),
+        subscriptionExpiresAt: expiresAt,
       });
 
       return NextResponse.json({ status: "paid" });

@@ -11,6 +11,7 @@ export interface IUser extends Document {
   providerId: string;
   clan?: string;
   clanJoinedAt?: Date;
+  subscriptionExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,6 +58,9 @@ const UserSchema = new Schema<IUser>(
       default: "",
     },
     clanJoinedAt: {
+      type: Date,
+    },
+    subscriptionExpiresAt: {
       type: Date,
     },
   },

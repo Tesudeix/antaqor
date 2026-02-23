@@ -18,19 +18,21 @@ interface PostCardProps {
       _id: string;
       name: string;
       avatar?: string;
-    };
+    } | null;
   };
   onDelete?: (id: string) => void;
 }
 
 export default function PostCard({ post, onDelete }: PostCardProps) {
   const { data: session } = useSession();
-  const userId = session ? (session.user as { id: string }).id : null;
+  const userId = session?.user ? (session.user as { id?: string }).id ?? null : null;
   const userIsAdmin = isAdminEmail(session?.user?.email);
-  const [likes, setLikes] = useState(post.likes.length);
-  const [liked, setLiked] = useState(userId ? post.likes.includes(userId) : false);
+  const [likes, setLikes] = useState(post.likes?.length ?? 0);
+  const [liked, setLiked] = useState(userId ? (post.likes || []).includes(userId) : false);
   const [liking, setLiking] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+
+  if (!post.author) return null;
 
   const canDelete = userId === post.author._id || userIsAdmin;
   const hasText = post.content && post.content.trim().length > 0;

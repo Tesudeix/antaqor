@@ -2,10 +2,19 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import PaywallGate from "@/components/PaywallGate";
 
 export default function NewPost() {
-  const { data: session, status } = useSession();
+  return (
+    <PaywallGate>
+      <NewPostContent />
+    </PaywallGate>
+  );
+}
+
+function NewPostContent() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -15,12 +24,6 @@ export default function NewPost() {
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-    }
-  }, [status, router]);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -102,14 +105,6 @@ export default function NewPost() {
       setLoading(false);
     }
   };
-
-  if (status === "loading") {
-    return (
-      <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
-      </div>
-    );
-  }
 
   if (!session) return null;
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { isAdminEmail } from "@/lib/adminClient";
+import PaywallGate from "@/components/PaywallGate";
 
 interface Member {
   _id: string;
@@ -15,6 +16,14 @@ interface Member {
 }
 
 export default function MembersPage() {
+  return (
+    <PaywallGate>
+      <MembersContent />
+    </PaywallGate>
+  );
+}
+
+function MembersContent() {
   const [members, setMembers] = useState<Member[]>([]);
   const [totalMembers, setTotalMembers] = useState(0);
   const [loading, setLoading] = useState(true);

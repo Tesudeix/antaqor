@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { isAdminEmail } from "@/lib/adminClient";
+import { useMembership } from "@/lib/useMembership";
 
 interface Course {
   _id: string;
@@ -25,49 +25,31 @@ interface Lesson {
 }
 
 export default function ClassroomPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const { loading: memberLoading, isMember, isAdmin: admin } = useMembership();
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [lessonsLoading, setLessonsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isClanMember, setIsClanMember] = useState(false);
-  const [checkingClan, setCheckingClan] = useState(true);
 
-  // Admin check
-  const admin = isAdminEmail(session?.user?.email);
-
-  // New course form
   const [showNewCourse, setShowNewCourse] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseDesc, setNewCourseDesc] = useState("");
   const [creating, setCreating] = useState(false);
 
-  // New lesson form
   const [showNewLesson, setShowNewLesson] = useState(false);
   const [newLesson, setNewLesson] = useState({ title: "", description: "", videoUrl: "", videoType: "link" as "link" | "upload" });
   const [creatingLesson, setCreatingLesson] = useState(false);
 
   useEffect(() => {
-    if (session) {
-      checkClanStatus();
+    if (!memberLoading && isMember) {
       fetchCourses();
-    } else if (status !== "loading") {
+    } else if (!memberLoading) {
       setLoading(false);
-      setCheckingClan(false);
     }
-  }, [session, status]);
-
-  const checkClanStatus = async () => {
-    try {
-      const res = await fetch("/api/clan/status");
-      const data = await res.json();
-      setIsClanMember(data.isMember);
-    } finally {
-      setCheckingClan(false);
-    }
-  };
+  }, [memberLoading, isMember]);
 
   const fetchCourses = async () => {
     try {
@@ -170,7 +152,7 @@ export default function ClassroomPage() {
     if (res.ok) fetchLessons(selectedCourse);
   };
 
-  const userId = session ? (session.user as { id: string }).id : null;
+  const userId = session?.user ? (session.user as { id?: string }).id ?? null : null;
   const currentCourse = courses.find((c) => c._id === selectedCourse);
 
   const completedCount = userId
@@ -178,7 +160,7 @@ export default function ClassroomPage() {
     : 0;
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
 
-  if (status === "loading" || checkingClan) {
+  if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
@@ -196,7 +178,7 @@ export default function ClassroomPage() {
     );
   }
 
-  if (!isClanMember && !admin) {
+  if (!isMember) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
         <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Classroom</h1>

@@ -5,11 +5,6 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
-const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https://");
-const cookieDomain = process.env.NEXTAUTH_URL
-  ? new URL(process.env.NEXTAUTH_URL).hostname
-  : undefined;
-
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -54,69 +49,6 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-  },
-  cookies: {
-    sessionToken: {
-      name: useSecureCookies
-        ? "__Secure-next-auth.session-token"
-        : "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-        domain: cookieDomain,
-      },
-    },
-    callbackUrl: {
-      name: useSecureCookies
-        ? "__Secure-next-auth.callback-url"
-        : "next-auth.callback-url",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-        domain: cookieDomain,
-      },
-    },
-    csrfToken: {
-      name: useSecureCookies
-        ? "__Host-next-auth.csrf-token"
-        : "next-auth.csrf-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-      },
-    },
-    pkceCodeVerifier: {
-      name: useSecureCookies
-        ? "__Secure-next-auth.pkce.code_verifier"
-        : "next-auth.pkce.code_verifier",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-        maxAge: 60 * 15,
-        domain: cookieDomain,
-      },
-    },
-    state: {
-      name: useSecureCookies
-        ? "__Secure-next-auth.state"
-        : "next-auth.state",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-        maxAge: 60 * 15,
-        domain: cookieDomain,
-      },
-    },
   },
   callbacks: {
     async signIn({ user, account }) {
@@ -179,5 +111,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
     error: "/auth/signin",
   },
+  debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
 };

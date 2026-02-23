@@ -35,10 +35,20 @@ if (typeof setInterval !== "undefined") {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Auth endpoints need high limits — OAuth makes many sub-requests per login
+  // Auth read endpoints (session, providers, csrf, _log) — no rate limit
+  if (
+    pathname === "/api/auth/session" ||
+    pathname === "/api/auth/providers" ||
+    pathname === "/api/auth/csrf" ||
+    pathname === "/api/auth/_log"
+  ) {
+    return NextResponse.next();
+  }
+
+  // Auth write endpoints (login, signup, callbacks) — generous limit
   if (pathname.startsWith("/api/auth")) {
     const key = `auth:${getRateLimitKey(req)}`;
-    if (isRateLimited(key, 60, 60000)) {
+    if (isRateLimited(key, 120, 60000)) {
       return NextResponse.json(
         { error: "Too many login attempts. Please wait a minute and try again." },
         { status: 429 }

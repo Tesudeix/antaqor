@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import PostCard from "@/components/PostCard";
 import ConquestCounter from "@/components/ConquestCounter";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useMembership } from "@/lib/useMembership";
 
 interface Post {
   _id: string;
@@ -17,11 +18,12 @@ interface Post {
     _id: string;
     name: string;
     avatar?: string;
-  };
+  } | null;
 }
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { loading: memberLoading, isMember, isAdmin, isLoggedIn } = useMembership();
+  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -32,10 +34,13 @@ export default function Home() {
       const res = await fetch(`/api/posts?page=${pageNum}&limit=20`);
       const data = await res.json();
       if (res.ok) {
+        const safePosts = (data.posts || []).filter(
+          (p: Post) => p.author !== null
+        );
         if (pageNum === 1) {
-          setPosts(data.posts);
+          setPosts(safePosts);
         } else {
-          setPosts((prev) => [...prev, ...data.posts]);
+          setPosts((prev) => [...prev, ...safePosts]);
         }
         setHasMore(pageNum < data.pagination.pages);
       }
@@ -45,12 +50,19 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (session) {
+    if (memberLoading) return;
+    if (isMember) {
       fetchPosts(1);
     } else {
       setLoading(false);
     }
-  }, [session]);
+  }, [memberLoading, isMember]);
+
+  useEffect(() => {
+    if (!memberLoading && isLoggedIn && !isMember) {
+      router.replace("/clan");
+    }
+  }, [memberLoading, isLoggedIn, isMember, router]);
 
   const loadMore = () => {
     const next = page + 1;
@@ -62,7 +74,7 @@ export default function Home() {
     setPosts((prev) => prev.filter((p) => p._id !== id));
   };
 
-  if (status === "loading") {
+  if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
@@ -71,7 +83,7 @@ export default function Home() {
   }
 
   // Not logged in — show hero landing
-  if (!session) {
+  if (!isLoggedIn) {
     return (
       <div>
         <section className="relative overflow-hidden py-20 md:py-32">
@@ -98,11 +110,9 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Mission counter — live */}
           <ConquestCounter />
         </section>
 
-        {/* Values Preview */}
         <section className="mt-8 border-t border-[rgba(240,236,227,0.06)] pt-16">
           <div className="section-label">Why Join</div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -123,7 +133,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Manifesto */}
         <section className="mt-16 overflow-hidden bg-[#cc2200] p-8 md:p-16">
           <div className="font-[Bebas_Neue] text-[clamp(28px,4vw,56px)] leading-[1.3] tracking-[3px] text-[#030303]">
             <span className="text-[rgba(5,5,5,0.4)]">The future doesn&apos;t wait.</span><br />
@@ -137,10 +146,18 @@ export default function Home() {
     );
   }
 
-  // Logged in — show feed with counter at top
+  // Logged in but not a member — redirect happens in useEffect above
+  if (!isMember) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+      </div>
+    );
+  }
+
+  // Logged in member/admin — show feed
   return (
     <div>
-      {/* Mission banner — logged in view */}
       <div className="mb-6 border border-[#1c1c1c] bg-[#0a0a0a] px-5 py-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-[10px] uppercase tracking-[4px] text-[#5a5550]">
@@ -151,7 +168,6 @@ export default function Home() {
         <ConquestCounterBar />
       </div>
 
-      {/* Quick post bar */}
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df]">
@@ -201,7 +217,6 @@ export default function Home() {
   );
 }
 
-// Slim progress bar used inside the logged-in banner
 function ConquestCounterBar() {
   const [pct, setPct] = useState(0);
   const [count, setCount] = useState(0);
@@ -213,8 +228,9 @@ function ConquestCounterBar() {
         const res = await fetch("/api/stats");
         const data = await res.json();
         if (res.ok) {
-          setCount(data.totalUsers);
-          setPct(Math.min((data.totalUsers / goal) * 100, 100));
+          const c = data.aiConquerors ?? data.paidMembers ?? 0;
+          setCount(c);
+          setPct(Math.min((c / goal) * 100, 100));
         }
       } catch {
         // silent
@@ -235,7 +251,7 @@ function ConquestCounterBar() {
       </div>
       <div className="mt-1.5 flex justify-between">
         <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">
-          {count.toLocaleString()} joined
+          {count.toLocaleString()} conquerors
         </span>
         <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">
           {goal.toLocaleString()} goal

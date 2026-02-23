@@ -15,7 +15,7 @@ function NavTicker() {
       try {
         const res = await fetch("/api/stats");
         const data = await res.json();
-        if (res.ok) setCount(data.totalUsers);
+        if (res.ok) setCount(data.aiConquerors ?? data.paidMembers ?? 0);
       } catch {
         // silent
       }
@@ -108,7 +108,7 @@ export default function Navbar() {
               </Link>
               <NotificationBell />
               <Link
-                href={`/profile/${(session.user as { id: string }).id}`}
+                href={`/profile/${(session.user as { id?: string })?.id || ""}`}
                 className="flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[11px] font-bold text-[#c8c8c0] transition hover:border-[#cc2200] hover:text-[#ede8df]"
               >
                 {session.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -176,7 +176,7 @@ export default function Navbar() {
                 <Link href="/posts/new" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
                   New Post
                 </Link>
-                <Link href={`/profile/${(session.user as { id: string }).id}`} className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+                <Link href={`/profile/${(session.user as { id?: string })?.id || ""}`} className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
                   Profile
                 </Link>
                 <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-[11px] uppercase tracking-[3px] text-[#5a5550]">
@@ -209,7 +209,7 @@ function MobileTicker() {
       try {
         const res = await fetch("/api/stats");
         const data = await res.json();
-        if (res.ok) setCount(data.totalUsers);
+        if (res.ok) setCount(data.aiConquerors ?? data.paidMembers ?? 0);
       } catch {
         // silent
       }
