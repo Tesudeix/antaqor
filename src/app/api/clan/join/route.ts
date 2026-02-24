@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
-import { createInvoice } from "@/lib/qpay";
 import Payment from "@/models/Payment";
-import { randomUUID } from "crypto";
 
-const CLAN_PRICE = 29900;
-const CALLBACK_URL = process.env.QPAY_CALLBACK_URL || "https://tesudeix.com/clan";
+const CLAN_PRICE = 25000;
+
+function generateReferenceId(): string {
+  const prefix = "R";
+  const num = Math.floor(100000000 + Math.random() * 900000000);
+  return `${prefix}${num}`;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,31 +22,33 @@ export async function POST(req: NextRequest) {
     const userId = (session.user as { id: string }).id;
     await dbConnect();
 
-    const senderCode = `CLAN-${userId}-${Date.now()}`;
-
-    const invoice = await createInvoice({
-      invoiceDescription: "Antaqor Clan Membership",
-      senderCode,
+    const existing = await Payment.findOne({
+      user: userId,
+      status: "pending",
       amount: CLAN_PRICE,
-      callbackUrl: `${CALLBACK_URL}?sender=${senderCode}`,
     });
 
-    await Payment.create({
+    if (existing) {
+      return NextResponse.json({
+        referenceId: existing.senderCode,
+        paymentId: existing._id,
+      });
+    }
+
+    const referenceId = generateReferenceId();
+
+    const payment = await Payment.create({
       user: userId,
-      invoiceId: invoice.invoice_id,
-      senderCode,
+      invoiceId: referenceId,
+      senderCode: referenceId,
       amount: CLAN_PRICE,
       description: "Antaqor Clan Membership",
       status: "pending",
-      qrImage: invoice.qr_image,
-      qrText: invoice.qr_text,
     });
 
     return NextResponse.json({
-      invoiceId: invoice.invoice_id,
-      qrImage: invoice.qr_image,
-      qrText: invoice.qr_text,
-      urls: invoice.urls,
+      referenceId,
+      paymentId: payment._id,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Payment failed";

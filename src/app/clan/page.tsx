@@ -1,33 +1,26 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
-interface BankApp {
-  name: string;
-  description: string;
-  logo: string;
-  link: string;
-}
+const CLAN_PRICE = "25,000";
+const BANK_ACCOUNT = "5926153085";
+const BANK_RECIPIENT = "Баянбилэг Дамбадаржаа";
 
 export default function ClanPage() {
   const { data: session } = useSession();
   const [isMember, setIsMember] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [paying, setPaying] = useState(false);
-  const [qrImage, setQrImage] = useState("");
-  const [invoiceId, setInvoiceId] = useState("");
-  const [bankApps, setBankApps] = useState<BankApp[]>([]);
-  const [checking, setChecking] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [referenceId, setReferenceId] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [paymentSubmitted, setPaymentSubmitted] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     checkMembership();
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
   }, [session]);
 
   const checkMembership = async () => {
@@ -42,39 +35,48 @@ export default function ClanPage() {
 
   const handleJoin = async () => {
     if (!session) return;
-    setPaying(true);
+    setSubmitting(true);
 
     try {
       const res = await fetch("/api/clan/join", { method: "POST" });
       const data = await res.json();
 
       if (res.ok) {
-        setQrImage(data.qrImage);
-        setInvoiceId(data.invoiceId);
-        setBankApps(data.urls || []);
-        startPolling(data.invoiceId);
+        setReferenceId(data.referenceId);
+        setShowPayment(true);
       }
     } catch {
-      setPaying(false);
+      // ignore
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const startPolling = (invId: string) => {
-    pollRef.current = setInterval(async () => {
-      try {
-        const res = await fetch("/api/clan/check", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ invoiceId: invId }),
-        });
-        const data = await res.json();
-        if (data.status === "paid") {
-          if (pollRef.current) clearInterval(pollRef.current);
-          setPaymentSuccess(true);
-          setIsMember(true);
-        }
-      } catch {}
-    }, 5000);
+  const handleConfirmPayment = async () => {
+    if (!referenceId) return;
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/clan/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referenceId }),
+      });
+      const data = await res.json();
+      if (data.status === "submitted") {
+        setPaymentSubmitted(true);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(field);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   if (loading) {
@@ -85,7 +87,7 @@ export default function ClanPage() {
     );
   }
 
-  if (paymentSuccess) {
+  if (paymentSubmitted) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
         <div className="mb-6 flex h-20 w-20 items-center justify-center bg-[#cc2200]">
@@ -94,13 +96,19 @@ export default function ClanPage() {
           </svg>
         </div>
         <h1 className="mb-3 font-[Bebas_Neue] text-5xl tracking-[2px] text-[#ede8df]">
-          Кланд тавтай морил
+          Төлбөр хүлээн авлаа
         </h1>
-        <p className="mb-8 text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
-          Та одоо Дижитал Үндэстний нэг хэсэг боллоо.
+        <p className="mb-4 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
+          Таны төлбөр баталгаажуулалт хүлээгдэж байна. Гүйлгээний утга:
+        </p>
+        <div className="mb-8 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#cc2200]">
+          {referenceId}
+        </div>
+        <p className="mb-8 max-w-md text-[12px] leading-[2] text-[rgba(240,236,227,0.35)]">
+          Төлбөр баталгаажсаны дараа таны гишүүнчлэл идэвхжинэ. Ихэвчлэн 24 цагийн дотор шалгагдана.
         </p>
         <Link href="/" className="btn-blood">
-          Нийгэмлэгт нэвтрэх
+          Нүүр хуудас руу буцах
         </Link>
       </div>
     );
@@ -196,7 +204,7 @@ export default function ClanPage() {
               Гишүүнчлэл
             </div>
             <div className="font-[Bebas_Neue] text-[clamp(36px,5vw,60px)] leading-[1] text-[#030303]">
-              ₮29,900<span className="ml-2 text-[20px] text-[rgba(5,5,5,0.4)]">/сар</span>
+              ₮{CLAN_PRICE}<span className="ml-2 text-[20px] text-[rgba(5,5,5,0.4)]">/сар</span>
             </div>
           </div>
 
@@ -210,49 +218,147 @@ export default function ClanPage() {
                   Нэвтэрч нэгдэх
                 </Link>
               </div>
-            ) : qrImage ? (
-              <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
-                <div className="flex flex-col items-center">
-                  <img
-                    src={`data:image/png;base64,${qrImage}`}
-                    alt="QPay QR код"
-                    className="h-56 w-56 bg-white p-3"
-                  />
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
-                    Банкны апп-аар уншуулах
-                  </p>
+            ) : showPayment ? (
+              <div>
+                <div className="mb-6 text-[11px] uppercase tracking-[1px] text-[#c8c8c0]">
+                  Дансаар шилжүүлэх эсвэл QR код уншуулах
                 </div>
 
-                <div className="flex-1">
-                  <p className="mb-4 text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
-                    QR кодыг банкны апп-аар уншуулна уу, эсвэл доорх банкыг дарж шууд төлнө үү.
-                  </p>
-
-                  {bankApps.length > 0 && (
-                    <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
-                      {bankApps.map((app, i) => (
-                        <a
-                          key={i}
-                          href={app.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex flex-col items-center gap-1 rounded p-2 transition hover:bg-[rgba(240,236,227,0.03)]"
-                          title={app.description}
-                        >
-                          <img src={app.logo} alt={app.name} className="h-10 w-10 rounded" />
-                          <span className="text-[8px] text-[#5a5550] line-clamp-1">{app.name}</span>
-                        </a>
-                      ))}
+                <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+                  {/* QR Code */}
+                  <div className="flex flex-col items-center">
+                    <div className="overflow-hidden rounded-lg bg-white p-3">
+                      <Image
+                        src="/qpay.png"
+                        alt="QPay QR код"
+                        width={220}
+                        height={220}
+                        className="h-[220px] w-[220px] object-contain"
+                      />
                     </div>
-                  )}
+                    <p className="mt-3 text-center text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+                      Банкны апп-аар уншуулах
+                    </p>
+                  </div>
 
-                  <div className="mt-6 flex items-center gap-3">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-[#cc2200]" />
-                    <span className="text-[11px] tracking-[0.3px] text-[#5a5550]">
-                      ТӨЛБӨР ХҮЛЭЭЖ БАЙНА...
-                    </span>
+                  {/* Bank Transfer Details */}
+                  <div className="flex-1 space-y-4">
+                    <div className="rounded-lg border border-[rgba(240,236,227,0.08)] p-4">
+                      <div className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+                        Хүлээн авах данс
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-[Bebas_Neue] text-xl tracking-[1px] text-[#ede8df]">
+                          {BANK_ACCOUNT}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(BANK_ACCOUNT, "account")}
+                          className="rounded p-1.5 text-[#5a5550] transition hover:bg-[rgba(240,236,227,0.05)] hover:text-[#ede8df]"
+                        >
+                          {copied === "account" ? (
+                            <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-[rgba(240,236,227,0.08)] p-4">
+                      <div className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+                        Хүлээн авагч
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-[Bebas_Neue] text-xl tracking-[1px] text-[#ede8df]">
+                          {BANK_RECIPIENT}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(BANK_RECIPIENT, "recipient")}
+                          className="rounded p-1.5 text-[#5a5550] transition hover:bg-[rgba(240,236,227,0.05)] hover:text-[#ede8df]"
+                        >
+                          {copied === "recipient" ? (
+                            <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-[rgba(240,236,227,0.08)] p-4">
+                      <div className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+                        Төлбөрийн дүн
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-[Bebas_Neue] text-xl tracking-[1px] text-[#ede8df]">
+                          {CLAN_PRICE} ₮
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard("25000", "amount")}
+                          className="rounded p-1.5 text-[#5a5550] transition hover:bg-[rgba(240,236,227,0.05)] hover:text-[#ede8df]"
+                        >
+                          {copied === "amount" ? (
+                            <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-[#cc2200]/30 bg-[#cc2200]/5 p-4">
+                      <div className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#cc2200]">
+                        Гүйлгээний утга
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-[Bebas_Neue] text-xl tracking-[1px] text-[#cc2200]">
+                          {referenceId}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(referenceId, "ref")}
+                          className="rounded p-1.5 text-[#cc2200]/60 transition hover:bg-[#cc2200]/10 hover:text-[#cc2200]"
+                        >
+                          {copied === "ref" ? (
+                            <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <div className="mt-6 rounded-lg border border-[rgba(240,236,227,0.08)] bg-[rgba(240,236,227,0.02)] p-4">
+                  <p className="text-[12px] leading-[2] text-[rgba(240,236,227,0.45)]">
+                    Төлбөрийг дээрх дансанд шилжүүлж, гүйлгээний утга дээр <strong className="text-[#cc2200]">{referenceId}</strong> дугаарыг бичнэ үү.
+                    Мөн та банкны аппликейшнээр QR кодыг уншуулж төлбөр төлөх боломжтой.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={submitting}
+                  className="btn-blood mt-6"
+                >
+                  {submitting ? "Илгээж байна..." : "Төлбөр шилжүүлсэн"}
+                </button>
               </div>
             ) : (
               <div>
@@ -272,10 +378,10 @@ export default function ClanPage() {
                 </ul>
                 <button
                   onClick={handleJoin}
-                  disabled={paying}
+                  disabled={submitting}
                   className="btn-blood"
                 >
-                  {paying ? "Нэхэмжлэл үүсгэж байна..." : "Кланд нэгдэх — ₮29,900"}
+                  {submitting ? "Уншиж байна..." : `Кланд нэгдэх — ₮${CLAN_PRICE}`}
                 </button>
               </div>
             )}
