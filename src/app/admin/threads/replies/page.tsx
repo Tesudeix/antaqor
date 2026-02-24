@@ -136,7 +136,7 @@ export default function RepliesManagementPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[5px] md:text-4xl">
+        <h1 className="font-[Bebas_Neue] text-3xl tracking-[2px] md:text-4xl">
           REPLY <span className="text-[#cc2200]">MANAGEMENT</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
@@ -159,7 +159,7 @@ export default function RepliesManagementPage() {
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Thread Selector */}
         <div className="lg:col-span-2">
-          <div className="text-[9px] uppercase tracking-[3px] text-[#5a5550] mb-3">
+          <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550] mb-3">
             Your Threads
           </div>
           <div className="max-h-[60vh] space-y-2 overflow-y-auto border border-[#1c1c1c] bg-[#0a0a0a] p-3">

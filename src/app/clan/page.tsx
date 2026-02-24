@@ -93,7 +93,7 @@ export default function ClanPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="mb-3 font-[Bebas_Neue] text-5xl tracking-[4px] text-[#ede8df]">
+        <h1 className="mb-3 font-[Bebas_Neue] text-5xl tracking-[2px] text-[#ede8df]">
           Кланд тавтай морил
         </h1>
         <p className="mb-8 text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
@@ -110,7 +110,7 @@ export default function ClanPage() {
     return (
       <div>
         <section className="mb-16 py-16 md:py-24">
-          <div className="mb-3 text-[11px] uppercase tracking-[4px] text-[#c8c8c0]">
+          <div className="mb-3 text-[11px] uppercase tracking-[1px] text-[#c8c8c0]">
             Клан · Гишүүнчлэл идэвхтэй
           </div>
           <h1 className="mb-4 font-[Bebas_Neue] text-[clamp(48px,8vw,100px)] leading-[0.9] tracking-[-2px] text-[#ede8df]">
@@ -123,21 +123,21 @@ export default function ClanPage() {
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="card p-6">
-            <div className="mb-3 text-[10px] uppercase tracking-[3px] text-[rgba(240,236,227,0.2)]">01</div>
+            <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[rgba(240,236,227,0.2)]">01</div>
             <div className="mb-2 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#ede8df]">Нийгэмлэг</div>
             <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.5)]">
               Бүтээгчидтэй холбогдож, санаа хуваалцаж, хамтдаа өсөж хөгж.
             </p>
           </div>
           <div className="card p-6">
-            <div className="mb-3 text-[10px] uppercase tracking-[3px] text-[rgba(240,236,227,0.2)]">02</div>
+            <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[rgba(240,236,227,0.2)]">02</div>
             <div className="mb-2 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#ede8df]">Нөөц</div>
             <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.5)]">
               Тусгай контент, AI хичээлүүд, бүтээгчийн хэрэгслүүдэд хандах.
             </p>
           </div>
           <div className="card p-6">
-            <div className="mb-3 text-[10px] uppercase tracking-[3px] text-[rgba(240,236,227,0.2)]">03</div>
+            <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[rgba(240,236,227,0.2)]">03</div>
             <div className="mb-2 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#cc2200]">Мөнхийн байлдан дагуулалт</div>
             <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.5)]">
               Оргил бүр дараагийн өндөрлөгийг харуулна. Эрхэм зорилго мөнхийн.
@@ -153,7 +153,7 @@ export default function ClanPage() {
       <section className="relative mb-16 overflow-hidden py-16 md:py-24">
         <div className="absolute right-[-200px] top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(204,34,0,0.10)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="animate-fade-up-delay-1 mb-3 text-[11px] uppercase tracking-[4px] text-[#c8c8c0]">
+        <div className="animate-fade-up-delay-1 mb-3 text-[11px] uppercase tracking-[1px] text-[#c8c8c0]">
           Клан · Дижитал Үндэстэн
         </div>
         <h1 className="animate-fade-up-delay-2 font-[Bebas_Neue] text-[clamp(48px,8vw,100px)] leading-[0.9] tracking-[-2px]">
@@ -178,11 +178,11 @@ export default function ClanPage() {
               {v.num === "04" && (
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(204,34,0,0.06)_0%,transparent_60%)]" />
               )}
-              <div className="mb-4 text-[10px] tracking-[3px] text-[rgba(240,236,227,0.2)]">{v.num}</div>
-              <div className={`mb-2 font-[Bebas_Neue] text-2xl tracking-[2px] ${v.num === "04" ? "text-[#cc2200]" : "text-[#ede8df]"}`}>
+                <div className="mb-4 text-[10px] tracking-[0.5px] text-[rgba(240,236,227,0.2)]">{v.num}</div>
+                <div className={`mb-2 font-[Bebas_Neue] text-2xl tracking-[1px] ${v.num === "04" ? "text-[#cc2200]" : "text-[#ede8df]"}`}>
                 {v.name}
               </div>
-              <div className="mb-3 text-[10px] uppercase tracking-[3px] text-[#c8c8c0]">{v.role}</div>
+                <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#c8c8c0]">{v.role}</div>
               <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.5)]">{v.desc}</p>
             </div>
           ))}
@@ -192,7 +192,7 @@ export default function ClanPage() {
       <section className="mb-16">
         <div className="card overflow-hidden">
           <div className="bg-[#cc2200] px-6 py-8 md:px-10">
-            <div className="mb-2 text-[10px] uppercase tracking-[5px] text-[rgba(5,5,5,0.4)]">
+            <div className="mb-2 text-[10px] uppercase tracking-[1px] text-[rgba(5,5,5,0.4)]">
               Гишүүнчлэл
             </div>
             <div className="font-[Bebas_Neue] text-[clamp(36px,5vw,60px)] leading-[1] text-[#030303]">
@@ -218,7 +218,7 @@ export default function ClanPage() {
                     alt="QPay QR код"
                     className="h-56 w-56 bg-white p-3"
                   />
-                  <p className="mt-3 text-[10px] uppercase tracking-[3px] text-[#5a5550]">
+                  <p className="mt-3 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
                     Банкны апп-аар уншуулах
                   </p>
                 </div>
@@ -248,7 +248,7 @@ export default function ClanPage() {
 
                   <div className="mt-6 flex items-center gap-3">
                     <div className="h-2 w-2 animate-pulse rounded-full bg-[#cc2200]" />
-                    <span className="text-[11px] tracking-[2px] text-[#5a5550]">
+                    <span className="text-[11px] tracking-[0.3px] text-[#5a5550]">
                       ТӨЛБӨР ХҮЛЭЭЖ БАЙНА...
                     </span>
                   </div>
@@ -284,14 +284,14 @@ export default function ClanPage() {
       </section>
 
       <section className="mb-16 overflow-hidden bg-[#cc2200] p-8 md:p-16">
-        <div className="font-[Bebas_Neue] text-[clamp(28px,4vw,56px)] leading-[1.3] tracking-[3px] text-[#030303]">
+        <div className="font-[Bebas_Neue] text-[clamp(28px,4vw,56px)] leading-[1.3] tracking-[2px] text-[#030303]">
           <span className="text-[rgba(5,5,5,0.4)]">Ирээдүй хүлээхгүй.</span><br />
           Бид ч мөн адил.<br /><br />
           <span className="text-[rgba(5,5,5,0.4)]">Бид бүтээнэ. Бид заана. Бид дасна.</span><br />
           Одоогоор байхгүй —<br />гэхдээ байх болно<br />гэсэн үндэстний төлөө.
         </div>
-        <div className="mt-8 font-[Bebas_Neue] text-[clamp(40px,6vw,80px)] leading-[1] tracking-[6px] text-[#030303]">
-          Зэрлэг бай.<br />Ирээдүйг<br />байлд.
+        <div className="mt-8 font-[Bebas_Neue] text-[clamp(40px,6vw,80px)] leading-[1] tracking-[4px] text-[#030303]">
+          Be Wild.<br />Conquer<br />the Future.
         </div>
       </section>
     </div>

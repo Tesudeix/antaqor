@@ -55,7 +55,7 @@ function MembersContent() {
   return (
     <div>
       <div className="mb-12">
-        <div className="mb-3 text-[11px] uppercase tracking-[4px] text-[#c8c8c0]">
+        <div className="mb-3 text-[11px] uppercase tracking-[1px] text-[#c8c8c0]">
           Нийгэмлэг · Гишүүд
         </div>
         <h1 className="font-[Bebas_Neue] text-[clamp(40px,6vw,80px)] leading-[0.9] tracking-[-2px] text-[#ede8df]">
@@ -67,7 +67,7 @@ function MembersContent() {
             <span className="font-[Bebas_Neue] text-3xl tracking-[2px] text-[#ede8df]">
               {loading ? "—" : totalMembers}
             </span>
-            <span className="text-[11px] uppercase tracking-[3px] text-[#5a5550]">Гишүүд</span>
+            <span className="text-[11px] uppercase tracking-[0.5px] text-[#5a5550]">Гишүүд</span>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ function MembersContent() {
                       </p>
                     </div>
                     {memberIsAdmin ? (
-                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[3px] text-[#cc2200]">
+                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[#cc2200]">
                         Эзэн хаан
                       </p>
                     ) : member.bio ? (
@@ -146,7 +146,7 @@ function MembersContent() {
                         {member.bio}
                       </p>
                     ) : (
-                      <p className="mt-0.5 text-[10px] uppercase tracking-[2px] text-[#5a5550]">
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.3px] text-[#5a5550]">
                         Кланы гишүүн
                       </p>
                     )}

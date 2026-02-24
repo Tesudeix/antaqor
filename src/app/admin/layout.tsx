@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin border-2 border-[#cc2200] border-t-transparent mx-auto" />
-          <p className="text-[10px] uppercase tracking-[3px] text-[#5a5550]">
+          <p className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
             Хандалт шалгаж байна
           </p>
         </div>
@@ -80,10 +80,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       >
         <div className="flex h-full flex-col">
           <div className="border-b border-[#1c1c1c] px-5 py-6">
-            <div className="text-[9px] uppercase tracking-[4px] text-[#cc2200]">
+            <div className="text-[9px] uppercase tracking-[1px] text-[#cc2200]">
               Удирдлагын төв
             </div>
-            <div className="mt-1 font-[Bebas_Neue] text-xl tracking-[3px]">
+            <div className="mt-1 font-[Bebas_Neue] text-xl tracking-[1px]">
               АДМИН
             </div>
           </div>

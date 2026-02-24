@@ -110,7 +110,7 @@ function NewPostContent() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">
+      <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">
         Пост үүсгэх
       </h1>
       <p className="mb-8 text-[11px] tracking-[2px] text-[#5a5550]">
@@ -146,7 +146,7 @@ function NewPostContent() {
                 <div className="absolute inset-0 flex items-center justify-center bg-[rgba(3,3,3,0.7)]">
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
-                    <span className="text-[10px] uppercase tracking-[3px] text-[#c8c8c0]">
+                    <span className="text-[10px] uppercase tracking-[0.5px] text-[#c8c8c0]">
                       Оновчилж байна...
                     </span>
                   </div>

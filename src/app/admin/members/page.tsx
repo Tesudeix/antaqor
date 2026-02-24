@@ -106,7 +106,7 @@ export default function AdminMembersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df]">
+        <h1 className="font-[Bebas_Neue] text-3xl tracking-[1px] text-[#ede8df]">
           Гишүүд удирдах
         </h1>
         <p className="mt-1 text-[11px] tracking-[2px] text-[#5a5550]">
@@ -129,15 +129,15 @@ export default function AdminMembersPage() {
       {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[3px] text-[#5a5550]">Нийт хэрэглэгч</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Нийт хэрэглэгч</div>
           <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#ede8df]">{totalUsers}</div>
         </div>
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[3px] text-[#5a5550]">Кланы гишүүд</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
           <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#cc2200]">{totalMembers}</div>
         </div>
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[3px] text-[#5a5550]">Гишүүн бус</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Гишүүн бус</div>
           <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">{totalUsers - totalMembers}</div>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function AdminMembersPage() {
       {grantModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="card mx-4 w-full max-w-md p-6">
-            <h2 className="mb-4 font-[Bebas_Neue] text-2xl tracking-[3px] text-[#ede8df]">
+            <h2 className="mb-4 font-[Bebas_Neue] text-2xl tracking-[1px] text-[#ede8df]">
               {isMember(grantModal) ? "Гишүүнчлэл сунгах" : "Гишүүнчлэл олгох"}
             </h2>
             <p className="mb-4 text-[12px] text-[rgba(240,236,227,0.5)]">
@@ -305,7 +305,7 @@ export default function AdminMembersPage() {
             </p>
 
             <div className="mb-4">
-              <label className="mb-2 block text-[10px] uppercase tracking-[3px] text-[#5a5550]">
+              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
                 Хоногийн тоо
               </label>
               <div className="flex gap-2">

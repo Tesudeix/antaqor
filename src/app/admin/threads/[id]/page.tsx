@@ -132,7 +132,7 @@ export default function ThreadDetailPage() {
           </svg>
         </Link>
         <div>
-          <h1 className="font-[Bebas_Neue] text-2xl tracking-[4px]">
+          <h1 className="font-[Bebas_Neue] text-2xl tracking-[1px]">
             THREAD <span className="text-[#cc2200]">CONVERSATION</span>
           </h1>
           <p className="text-[10px] tracking-[2px] text-[#3a3835]">

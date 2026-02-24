@@ -47,17 +47,17 @@ function NavTicker() {
     <div className="hidden items-center gap-2.5 md:flex">
       <div className="h-3 w-[1px] bg-[#1c1c1c]" />
       <div className="flex items-center gap-1.5">
-        <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
+        <span className="text-[10px] uppercase tracking-[0.5px] text-[#3a3835]">
           Зорилго
         </span>
         <span className="font-[Bebas_Neue] text-[13px] leading-none tracking-[1px] text-[#cc2200]">
           {display.toLocaleString()}
         </span>
-        <span className="text-[9px] text-[#3a3835]">/</span>
+        <span className="text-[10px] text-[#3a3835]">/</span>
         <span className="font-[Bebas_Neue] text-[13px] leading-none tracking-[1px] text-[#3a3835]">
           10K
         </span>
-        <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
+        <span className="text-[10px] uppercase tracking-[0.5px] text-[#3a3835]">
           AI Байлдагч
         </span>
       </div>
@@ -85,22 +85,23 @@ export default function Navbar() {
           <NavTicker />
         </div>
 
+        {/* Desktop nav */}
         <div className="hidden items-center gap-5 md:flex">
-          <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+          <Link href="/" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
             Мэдээ
           </Link>
-          <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+          <Link href="/classroom" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
             Хичээл
           </Link>
-          <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+          <Link href="/members" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
             Гишүүд
           </Link>
-          <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+          <Link href="/clan" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
             Клан
           </Link>
           {session ? (
             <>
-              <Link href="/posts/new" className="btn-blood !py-2 !px-5 !text-[10px]">
+              <Link href="/posts/new" className="btn-blood !py-2 !px-5 !text-[11px]">
                 Шинэ пост
               </Link>
               <NotificationBell />
@@ -112,23 +113,24 @@ export default function Navbar() {
               </Link>
               <button
                 onClick={() => signOut()}
-                className="text-[11px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#cc2200]"
+                className="text-[12px] font-medium text-[#5a5550] transition hover:text-[#cc2200]"
               >
                 Гарах
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
+              <Link href="/auth/signin" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
                 Нэвтрэх
               </Link>
-              <Link href="/auth/signup" className="btn-blood !py-2 !px-5 !text-[10px]">
+              <Link href="/auth/signup" className="btn-blood !py-2 !px-5 !text-[11px]">
                 Нэгдэх
               </Link>
             </>
           )}
         </div>
 
+        {/* Mobile: notification bell + hamburger */}
         <div className="flex items-center gap-3 md:hidden">
           {session && <NotificationBell />}
           <button
@@ -146,43 +148,45 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile mission ticker */}
       <div className="flex items-center justify-center gap-2 border-t border-[rgba(240,236,227,0.04)] py-1.5 md:hidden">
         <MobileTicker />
       </div>
 
+      {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t border-[rgba(240,236,227,0.06)] bg-[#0f0f0f] px-6 py-5 md:hidden">
           <div className="flex flex-col gap-4">
-            <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+            <Link href="/" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Мэдээ
             </Link>
-            <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+            <Link href="/classroom" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Хичээл
             </Link>
-            <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+            <Link href="/members" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Гишүүд
             </Link>
-            <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+            <Link href="/clan" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Клан
             </Link>
             {session ? (
               <>
-                <Link href="/posts/new" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
+                <Link href="/posts/new" className="text-[13px] font-semibold text-[#cc2200]" onClick={() => setMenuOpen(false)}>
                   Шинэ пост
                 </Link>
-                <Link href={`/profile/${(session.user as { id?: string })?.id || ""}`} className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+                <Link href={`/profile/${(session.user as { id?: string })?.id || ""}`} className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
                   Профайл
                 </Link>
-                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-[11px] uppercase tracking-[3px] text-[#5a5550]">
+                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-[13px] font-medium text-[#5a5550]">
                   Гарах
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+                <Link href="/auth/signin" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
                   Нэвтрэх
                 </Link>
-                <Link href="/auth/signup" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
+                <Link href="/auth/signup" className="text-[13px] font-semibold text-[#cc2200]" onClick={() => setMenuOpen(false)}>
                   Кланд нэгдэх
                 </Link>
               </>
@@ -216,14 +220,14 @@ function MobileTicker() {
 
   return (
     <div className="flex w-full items-center gap-2 px-6">
-      <span className="text-[8px] uppercase tracking-[2px] text-[#3a3835] shrink-0">Зорилго</span>
+      <span className="text-[9px] uppercase tracking-[0.5px] text-[#3a3835] shrink-0">Зорилго</span>
       <div className="relative flex-1 h-[2px] overflow-hidden bg-[#1c1c1c]">
         <div className="h-full bg-[#cc2200] transition-all duration-700" style={{ width: `${pct}%` }} />
       </div>
       <span className="font-[Bebas_Neue] text-[11px] tracking-[1px] text-[#cc2200] shrink-0">
         {count.toLocaleString()}
       </span>
-      <span className="text-[8px] text-[#3a3835] shrink-0">/10K AI Байлдагч</span>
+      <span className="text-[9px] text-[#3a3835] shrink-0">/10K AI Байлдагч</span>
     </div>
   );
 }

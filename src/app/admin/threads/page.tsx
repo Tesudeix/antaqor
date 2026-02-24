@@ -135,7 +135,7 @@ export default function ThreadsManagementPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[5px] md:text-4xl">
+        <h1 className="font-[Bebas_Neue] text-3xl tracking-[2px] md:text-4xl">
           THREADS <span className="text-[#cc2200]">POSTS</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">

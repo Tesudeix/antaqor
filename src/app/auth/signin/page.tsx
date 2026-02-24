@@ -43,10 +43,10 @@ export default function SignIn() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-md">
         <div className="card p-8 md:p-10">
-          <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">
+          <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">
             Нэвтрэх
           </h1>
-          <p className="mb-8 text-[11px] tracking-[2px] text-[#5a5550]">
+          <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">
             ДИЖИТАЛ ҮНДЭСТЭНД НЭВТРЭХ
           </p>
 
@@ -58,7 +58,7 @@ export default function SignIn() {
 
           <button
             onClick={handleGoogle}
-            className="btn-ghost mb-6 flex w-full items-center justify-center gap-3 !tracking-[2px]"
+            className="btn-ghost mb-6 flex w-full items-center justify-center gap-3"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#c8c8c0" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -71,13 +71,13 @@ export default function SignIn() {
 
           <div className="mb-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-[#1c1c1c]" />
-            <span className="text-[10px] tracking-[3px] text-[#5a5550]">ЭСВЭЛ</span>
+            <span className="text-[10px] tracking-[1px] text-[#5a5550]">ЭСВЭЛ</span>
             <div className="h-px flex-1 bg-[#1c1c1c]" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[3px] text-[#5a5550]">
+              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
                 Имэйл
               </label>
               <input
@@ -91,7 +91,7 @@ export default function SignIn() {
             </div>
 
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[3px] text-[#5a5550]">
+              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
                 Нууц үг
               </label>
               <input

@@ -7,7 +7,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
   title: {
-    default: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
+    default: "Antaqor — Be Wild. Conquer the Future.",
     template: "%s | Antaqor",
   },
   description:
@@ -34,13 +34,13 @@ export const metadata: Metadata = {
     locale: "mn_MN",
     url: "https://tesudeix.com",
     siteName: "Antaqor",
-    title: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
+    title: "Antaqor — Be Wild. Conquer the Future.",
     description:
       "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
+    title: "Antaqor — Be Wild. Conquer the Future.",
     description:
       "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
     creator: "@antaqor",

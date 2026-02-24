@@ -171,7 +171,7 @@ export default function ClassroomPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Хичээлийн танхим</h1>
+        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
         <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Хичээлийн танхимд хандахын тулд нэвтэрнэ үү.</p>
         <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
@@ -181,7 +181,7 @@ export default function ClassroomPage() {
   if (!isMember) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Хичээлийн танхим</h1>
+        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
         <p className="mb-8 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
           Хичээлийн танхим нь зөвхөн Кланы гишүүдэд зориулагдсан. Бүх хичээлд хандахын тулд Кланд нэгдээрэй.
         </p>
@@ -207,7 +207,7 @@ export default function ClassroomPage() {
       `}>
         {lessons.length > 0 && (
           <div className="mb-6">
-            <div className="mb-2 text-[10px] uppercase tracking-[3px] text-[#5a5550]">Явц</div>
+            <div className="mb-2 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Явц</div>
             <div className="mb-1 flex items-center justify-between">
               <span className="text-[11px] font-bold text-[#cc2200]">{progressPercent}%</span>
               <span className="text-[10px] text-[#5a5550]">{completedCount}/{lessons.length}</span>
@@ -274,7 +274,7 @@ export default function ClassroomPage() {
         {currentCourse ? (
           <>
             <div className="mb-8">
-              <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df]">
+              <h1 className="font-[Bebas_Neue] text-3xl tracking-[1px] text-[#ede8df]">
                 {currentCourse.title}
               </h1>
               {currentCourse.description && (
