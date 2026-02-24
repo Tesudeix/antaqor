@@ -13,11 +13,10 @@
   --color-dim: #0f0f0f;
   --color-background: #030303;
   --color-foreground: #ede8df;
-  /* Bebas Neue = Latin/ASCII brand marks; Oswald = Cyrillic/Mongolian headings fallback */
-  --font-heading: "Bebas Neue", "Oswald", sans-serif;
-  /* Inter = modern readable body font with full Cyrillic support */
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Space Mono", ui-monospace, monospace;
+  /* Bebas Neue = ASCII brand mark only (ANTAQOR logo); Commissioner = all Mongolian headings & body */
+  --font-heading: "Bebas Neue", "Commissioner", sans-serif;
+  --font-body: "Commissioner", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Commissioner", ui-monospace, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -222,17 +221,17 @@ input, textarea, select {
   background: var(--color-blood);
 }
 
-/* Mongolian Cyrillic in heading contexts — Oswald renders these naturally */
+/* Commissioner for all heading contexts */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
 }
 
-/* Post and comment body text — slightly looser line height for Cyrillic */
+/* Post and comment body text — slightly looser line height for Mongolian Cyrillic */
 p {
   line-height: 1.75;
 }
 
-/* Ensure Oswald is used for all font-[Bebas_Neue] fallback */
+/* Bebas Neue applies only to ASCII logo mark; Commissioner handles Cyrillic fallback */
 [class*="font-[Bebas"] {
   font-family: var(--font-heading);
 }
