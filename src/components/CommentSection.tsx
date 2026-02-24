@@ -60,14 +60,14 @@ export default function CommentSection({ postId }: { postId: string }) {
 
   return (
     <div className="mt-8">
-      <div className="section-label !mb-6">Comments</div>
+      <div className="section-label !mb-6">Сэтгэгдэл</div>
 
       {session ? (
         <form onSubmit={handleSubmit} className="mb-8">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Write a comment..."
+            placeholder="Сэтгэгдэл бичих..."
             rows={3}
             maxLength={500}
             className="input-dark mb-3 resize-none"
@@ -78,16 +78,16 @@ export default function CommentSection({ postId }: { postId: string }) {
               disabled={submitting || !content.trim()}
               className="btn-blood !py-2 !px-5 !text-[10px]"
             >
-              {submitting ? "Posting..." : "Post Comment"}
+              {submitting ? "Нийтэлж байна..." : "Сэтгэгдэл нийтлэх"}
             </button>
           </div>
         </form>
       ) : (
         <p className="mb-8 text-[12px] text-[#5a5550]">
           <Link href="/auth/signin" className="text-[#cc2200] hover:text-[#e8440f]">
-            Sign in
+            Нэвтэрнэ үү
           </Link>{" "}
-          to leave a comment.
+          сэтгэгдэл бичихийн тулд.
         </p>
       )}
 
@@ -97,7 +97,7 @@ export default function CommentSection({ postId }: { postId: string }) {
         </div>
       ) : comments.length === 0 ? (
         <p className="py-6 text-center text-[12px] text-[#5a5550]">
-          No comments yet. Be the first.
+          Сэтгэгдэл байхгүй байна. Эхлээд та бичээрэй.
         </p>
       ) : (
         <div className="space-y-3">

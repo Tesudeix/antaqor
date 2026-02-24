@@ -92,7 +92,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Image must be under 5MB");
+      alert("Зураг 5MB-с бага байх ёстой");
       return;
     }
 
@@ -108,7 +108,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       const uploadData = await uploadRes.json();
 
       if (!uploadRes.ok) {
-        alert(uploadData.error || "Upload failed");
+        alert(uploadData.error || "Оруулах амжилтгүй");
         return;
       }
 
@@ -143,7 +143,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     return (
       <div className="py-16 text-center">
         <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
-          User not found
+          Хэрэглэгч олдсонгүй
         </p>
       </div>
     );
@@ -158,10 +158,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="mx-auto max-w-2xl">
-      {/* Profile header */}
       <div className="card mb-10 p-6 md:p-8">
         <div className="flex flex-col items-start gap-5 sm:flex-row">
-          {/* Avatar with upload */}
           <div className="relative group">
             {user.avatar ? (
               <img
@@ -208,7 +206,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   className="input-dark"
-                  placeholder="Name"
+                  placeholder="Нэр"
                 />
                 <textarea
                   value={editBio}
@@ -216,7 +214,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   rows={3}
                   maxLength={300}
                   className="input-dark resize-none"
-                  placeholder="Write a short bio..."
+                  placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-3">
                   <button
@@ -224,13 +222,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     disabled={saving}
                     className="btn-blood !py-2 !px-5 !text-[10px]"
                   >
-                    {saving ? "Saving..." : "Save"}
+                    {saving ? "Хадгалж байна..." : "Хадгалах"}
                   </button>
                   <button
                     onClick={() => setEditing(false)}
                     className="btn-ghost !py-2 !px-5 !text-[10px]"
                   >
-                    Cancel
+                    Цуцлах
                   </button>
                 </div>
               </div>
@@ -243,7 +241,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     </h1>
                     {user.clan && (
                       <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#cc2200]">
-                        Clan Member
+                        Кланы гишүүн
                       </span>
                     )}
                   </div>
@@ -252,7 +250,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       onClick={() => setEditing(true)}
                       className="btn-ghost !py-2 !px-4 !text-[10px]"
                     >
-                      Edit
+                      Засах
                     </button>
                   )}
                 </div>
@@ -262,7 +260,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   </p>
                 )}
                 <p className="mt-3 text-[10px] tracking-[2px] text-[#5a5550]">
-                  JOINED {formatDistanceToNow(user.createdAt).toUpperCase()}
+                  НЭГДСЭН {formatDistanceToNow(user.createdAt).toUpperCase()}
                 </p>
               </>
             )}
@@ -270,13 +268,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Posts */}
       <div className="section-label">
-        Posts ({posts.length})
+        Нийтлэлүүд ({posts.length})
       </div>
 
       {posts.length === 0 ? (
-        <p className="py-8 text-center text-[12px] text-[#5a5550]">No posts yet.</p>
+        <p className="py-8 text-center text-[12px] text-[#5a5550]">Нийтлэл байхгүй байна.</p>
       ) : (
         <div className="space-y-3">
           {posts.map((post) => (

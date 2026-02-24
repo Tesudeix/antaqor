@@ -54,16 +54,16 @@ export default function InstallPrompt() {
             A
           </div>
           <div className="flex-1">
-            <p className="text-[12px] font-bold text-[#ede8df]">Install Antaqor</p>
+            <p className="text-[12px] font-bold text-[#ede8df]">Antaqor суулгах</p>
             <p className="mt-1 text-[11px] leading-relaxed text-[#5a5550]">
-              Add to your home screen for quick access
+              Хурдан хандалтын тулд нүүр хуудсандаа нэмнэ үү
             </p>
             <div className="mt-3 flex gap-2">
               <button onClick={handleInstall} className="bg-[#cc2200] px-4 py-2 text-[10px] font-bold uppercase tracking-[2px] text-[#ede8df] transition hover:bg-[#e8440f]">
-                Install
+                Суулгах
               </button>
               <button onClick={handleDismiss} className="px-4 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#c8c8c0]">
-                Not now
+                Одоо биш
               </button>
             </div>
           </div>

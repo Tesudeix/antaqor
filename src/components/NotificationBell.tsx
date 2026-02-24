@@ -63,12 +63,12 @@ export default function NotificationBell() {
   const timeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "now";
-    if (mins < 60) return `${mins}m`;
+    if (mins < 1) return "одоо";
+    if (mins < 60) return `${mins}м`;
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h`;
+    if (hours < 24) return `${hours}ц`;
     const days = Math.floor(hours / 24);
-    return `${days}d`;
+    return `${days}ө`;
   };
 
   if (!session) return null;
@@ -93,13 +93,13 @@ export default function NotificationBell() {
         <div className="absolute right-0 top-full mt-2 w-[320px] border border-[#1c1c1c] bg-[#0f0f0f] shadow-2xl z-50">
           <div className="border-b border-[#1c1c1c] px-4 py-3">
             <span className="text-[11px] font-bold uppercase tracking-[3px] text-[#ede8df]">
-              Notifications
+              Мэдэгдэл
             </span>
           </div>
           <div className="max-h-[400px] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-[11px] text-[#5a5550]">
-                No notifications yet
+                Мэдэгдэл байхгүй
               </div>
             ) : (
               notifications.map((n) => (

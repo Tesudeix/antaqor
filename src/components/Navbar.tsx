@@ -25,7 +25,6 @@ function NavTicker() {
     return () => clearInterval(i);
   }, []);
 
-  // animate number
   useEffect(() => {
     if (count === null) return;
     let start = display;
@@ -49,7 +48,7 @@ function NavTicker() {
       <div className="h-3 w-[1px] bg-[#1c1c1c]" />
       <div className="flex items-center gap-1.5">
         <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
-          Mission
+          Зорилго
         </span>
         <span className="font-[Bebas_Neue] text-[13px] leading-none tracking-[1px] text-[#cc2200]">
           {display.toLocaleString()}
@@ -59,10 +58,9 @@ function NavTicker() {
           10K
         </span>
         <span className="text-[9px] uppercase tracking-[2px] text-[#3a3835]">
-          AI Conquerors
+          AI Байлдагч
         </span>
       </div>
-      {/* tiny progress bar */}
       <div className="h-[2px] w-12 overflow-hidden bg-[#1c1c1c]">
         <div
           className="h-full bg-[#cc2200] transition-all duration-700"
@@ -87,24 +85,23 @@ export default function Navbar() {
           <NavTicker />
         </div>
 
-        {/* Desktop nav */}
         <div className="hidden items-center gap-5 md:flex">
           <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
-            Feed
+            Мэдээ
           </Link>
           <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
-            Classroom
+            Хичээл
           </Link>
           <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
-            Members
+            Гишүүд
           </Link>
           <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
-            Clan
+            Клан
           </Link>
           {session ? (
             <>
               <Link href="/posts/new" className="btn-blood !py-2 !px-5 !text-[10px]">
-                New Post
+                Шинэ пост
               </Link>
               <NotificationBell />
               <Link
@@ -117,27 +114,26 @@ export default function Navbar() {
                 onClick={() => signOut()}
                 className="text-[11px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#cc2200]"
               >
-                Exit
+                Гарах
               </button>
             </>
           ) : (
             <>
               <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0] transition hover:text-[#ede8df]">
-                Sign In
+                Нэвтрэх
               </Link>
               <Link href="/auth/signup" className="btn-blood !py-2 !px-5 !text-[10px]">
-                Join
+                Нэгдэх
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile: notification bell + hamburger */}
         <div className="flex items-center gap-3 md:hidden">
           {session && <NotificationBell />}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
+            aria-label="Цэс нээх"
           >
             <svg className="h-6 w-6 text-[#c8c8c0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuOpen ? (
@@ -150,46 +146,44 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile mission ticker */}
       <div className="flex items-center justify-center gap-2 border-t border-[rgba(240,236,227,0.04)] py-1.5 md:hidden">
         <MobileTicker />
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t border-[rgba(240,236,227,0.06)] bg-[#0f0f0f] px-6 py-5 md:hidden">
           <div className="flex flex-col gap-4">
             <Link href="/" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-              Feed
+              Мэдээ
             </Link>
             <Link href="/classroom" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-              Classroom
+              Хичээл
             </Link>
             <Link href="/members" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-              Members
+              Гишүүд
             </Link>
             <Link href="/clan" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-              Clan
+              Клан
             </Link>
             {session ? (
               <>
                 <Link href="/posts/new" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
-                  New Post
+                  Шинэ пост
                 </Link>
                 <Link href={`/profile/${(session.user as { id?: string })?.id || ""}`} className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-                  Profile
+                  Профайл
                 </Link>
                 <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left text-[11px] uppercase tracking-[3px] text-[#5a5550]">
-                  Exit
+                  Гарах
                 </button>
               </>
             ) : (
               <>
                 <Link href="/auth/signin" className="text-[11px] uppercase tracking-[3px] text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
-                  Sign In
+                  Нэвтрэх
                 </Link>
                 <Link href="/auth/signup" className="text-[11px] uppercase tracking-[3px] text-[#cc2200]" onClick={() => setMenuOpen(false)}>
-                  Join the Clan
+                  Кланд нэгдэх
                 </Link>
               </>
             )}
@@ -222,14 +216,14 @@ function MobileTicker() {
 
   return (
     <div className="flex w-full items-center gap-2 px-6">
-      <span className="text-[8px] uppercase tracking-[2px] text-[#3a3835] shrink-0">Mission</span>
+      <span className="text-[8px] uppercase tracking-[2px] text-[#3a3835] shrink-0">Зорилго</span>
       <div className="relative flex-1 h-[2px] overflow-hidden bg-[#1c1c1c]">
         <div className="h-full bg-[#cc2200] transition-all duration-700" style={{ width: `${pct}%` }} />
       </div>
       <span className="font-[Bebas_Neue] text-[11px] tracking-[1px] text-[#cc2200] shrink-0">
         {count.toLocaleString()}
       </span>
-      <span className="text-[8px] text-[#3a3835] shrink-0">/10K AI Conquerors</span>
+      <span className="text-[8px] text-[#3a3835] shrink-0">/10K AI Байлдагч</span>
     </div>
   );
 }

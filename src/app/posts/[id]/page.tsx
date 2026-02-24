@@ -58,10 +58,10 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
     return (
       <div className="py-16 text-center">
         <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
-          Post not found
+          Пост олдсонгүй
         </p>
         <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#cc2200] hover:text-[#e8440f]">
-          ← BACK TO FEED
+          ← МЭДЭЭ РҮҮ БУЦАХ
         </Link>
       </div>
     );
@@ -70,7 +70,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   return (
     <div className="mx-auto max-w-2xl">
       <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#cc2200]">
-        ← Back to Feed
+        ← Мэдээ рүү буцах
       </Link>
       <PostCard post={post} onDelete={handleDelete} />
       <CommentSection postId={id} />

@@ -27,11 +27,11 @@ function NewPostContent() {
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
-      setError("Only image files are allowed");
+      setError("Зөвхөн зургийн файл зөвшөөрөгдөнө");
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError("Image must be under 10MB");
+      setError("Зураг 10MB-с бага байх ёстой");
       return;
     }
 
@@ -45,13 +45,13 @@ function NewPostContent() {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Upload failed");
+        setError(data.error || "Оруулах амжилтгүй");
         setImagePreview("");
         return;
       }
       setImageUrl(data.url);
     } catch {
-      setError("Upload failed. Try again.");
+      setError("Оруулах амжилтгүй. Дахин оролдоно уу.");
       setImagePreview("");
     } finally {
       setUploading(false);
@@ -111,10 +111,10 @@ function NewPostContent() {
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">
-        Create a Post
+        Пост үүсгэх
       </h1>
       <p className="mb-8 text-[11px] tracking-[2px] text-[#5a5550]">
-        SHARE WITH THE DIGITAL NATION
+        ДИЖИТАЛ ҮНДЭСТЭНТЭЙ ХУВААЛЦААРАЙ
       </p>
 
       {error && (
@@ -128,18 +128,17 @@ function NewPostContent() {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="What's on your mind? (optional with image)"
+            placeholder="Та юу бодож байна? (зурагтай бол заавал биш)"
             rows={4}
             maxLength={2000}
             className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#ede8df] placeholder-[#5a5550] focus:outline-none"
           />
 
-          {/* Image preview */}
           {imagePreview && (
             <div className="relative mt-4 overflow-hidden border border-[#1c1c1c]">
               <img
                 src={imagePreview}
-                alt="Preview"
+                alt="Урьдчилан харах"
                 className="w-full object-contain"
                 style={{ maxHeight: "480px" }}
               />
@@ -148,7 +147,7 @@ function NewPostContent() {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
                     <span className="text-[10px] uppercase tracking-[3px] text-[#c8c8c0]">
-                      Optimizing...
+                      Оновчилж байна...
                     </span>
                   </div>
                 </div>
@@ -167,7 +166,6 @@ function NewPostContent() {
             </div>
           )}
 
-          {/* Upload zone */}
           {!imagePreview && (
             <div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -184,10 +182,10 @@ function NewPostContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span className="text-[11px] tracking-[2px] text-[#5a5550]">
-                {dragOver ? "DROP IMAGE HERE" : "CLICK OR DRAG IMAGE"}
+                {dragOver ? "ЗУРГАА ЭНД ТАВИНА УУ" : "ЗУРАГ ДАРАХ ЭСВЭЛ ЧИРЭХ"}
               </span>
               <span className="text-[9px] text-[#3a3835]">
-                JPEG, PNG, WebP, GIF · Max 10MB
+                JPEG, PNG, WebP, GIF · Хамгийн ихдээ 10MB
               </span>
             </div>
           )}
@@ -210,7 +208,7 @@ function NewPostContent() {
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Image ready
+                  Зураг бэлэн
                 </span>
               )}
             </div>
@@ -219,7 +217,7 @@ function NewPostContent() {
               disabled={!canPost}
               className="btn-blood !py-2 !px-6 !text-[10px]"
             >
-              {loading ? "Posting..." : "Post"}
+              {loading ? "Нийтэлж байна..." : "Нийтлэх"}
             </button>
           </div>
         </div>

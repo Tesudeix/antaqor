@@ -1,7 +1,7 @@
 {
-  "name": "Antaqor — Be Wild. Conquer the Future.",
+  "name": "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
   "short_name": "Antaqor",
-  "description": "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future.",
+  "description": "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#030303",

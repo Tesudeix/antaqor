@@ -55,7 +55,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   };
 
   const handleDelete = async () => {
-    if (!confirm("Delete this post?")) return;
+    if (!confirm("Энэ постыг устгах уу?")) return;
     const res = await fetch(`/api/posts/${post._id}`, { method: "DELETE" });
     if (res.ok && onDelete) {
       onDelete(post._id);
@@ -71,7 +71,6 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
 
   return (
     <article className="card overflow-hidden">
-      {/* Header — always shown */}
       <div className="flex items-center justify-between px-5 pt-5 md:px-6 md:pt-6">
         <Link href={`/profile/${post.author._id}`} className="flex items-center gap-3">
           {post.author.avatar ? (
@@ -99,7 +98,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
           <button
             onClick={handleDelete}
             className="text-[#5a5550] transition hover:text-[#cc2200]"
-            title="Delete post"
+            title="Пост устгах"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -108,7 +107,6 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
         )}
       </div>
 
-      {/* Text content */}
       {hasText && (
         <Link href={`/posts/${post._id}`} className="block px-5 md:px-6">
           <p className={`whitespace-pre-wrap text-[13px] leading-[1.9] text-[rgba(240,236,227,0.7)] ${hasImage ? "mt-3 mb-3" : "mt-4 mb-4"}`}>
@@ -117,7 +115,6 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
         </Link>
       )}
 
-      {/* Image — full width, dark border, max aspect ratio */}
       {hasImage && (
         <Link href={`/posts/${post._id}`} className="block">
           <div className={`relative overflow-hidden border-y border-[#1c1c1c] bg-[#0a0a0a] ${isImageOnly ? "mt-4" : ""}`}>
@@ -128,7 +125,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
             )}
             <img
               src={post.image}
-              alt="Post"
+              alt="Пост"
               onLoad={() => setImgLoaded(true)}
               className={`w-full object-contain transition-opacity duration-300 ${
                 imgLoaded ? "opacity-100" : "h-0 opacity-0"
@@ -139,7 +136,6 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
         </Link>
       )}
 
-      {/* Actions */}
       <div className="flex items-center gap-6 border-t border-[rgba(240,236,227,0.06)] px-5 py-4 md:px-6">
         <button
           onClick={handleLike}

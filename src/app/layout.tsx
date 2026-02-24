@@ -7,20 +7,20 @@ import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
   title: {
-    default: "Antaqor — Be Wild. Conquer the Future.",
+    default: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
     template: "%s | Antaqor",
   },
   description:
-    "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future. Mongolian roots. Global force.",
+    "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн. Монгол үндэс. Дэлхийн хүч.",
   keywords: [
     "Antaqor",
-    "Digital Nation",
+    "Дижитал Үндэстэн",
     "AI",
-    "Mongolian builders",
-    "community",
-    "futurism",
-    "tech",
-    "education",
+    "Монгол бүтээгчид",
+    "нийгэмлэг",
+    "футуризм",
+    "технологи",
+    "боловсрол",
   ],
   authors: [{ name: "Antaqor" }],
   creator: "Antaqor",
@@ -31,18 +31,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "mn_MN",
     url: "https://tesudeix.com",
     siteName: "Antaqor",
-    title: "Antaqor — Be Wild. Conquer the Future.",
+    title: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
     description:
-      "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future.",
+      "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Antaqor — Be Wild. Conquer the Future.",
+    title: "Antaqor — Зэрлэг бай. Ирээдүйг байлд.",
     description:
-      "The Digital Nation community. A nation of builders who own AI, shape their tools, and define their future.",
+      "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
     creator: "@antaqor",
   },
   robots: {
@@ -73,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="mn">
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
@@ -113,8 +113,8 @@ export default function RootLayout({
                 </a>
               </div>
               <div className="text-center text-[10px] tracking-[3px] text-[rgba(240,236,227,0.3)] md:text-right" style={{ lineHeight: 2 }}>
-                FUTURISM · TIME · HYPER ADAPTIVE · ETERNAL CONQUEST<br />
-                BUILDING A DIGITAL NATION · 2025–2027
+                ФУТУРИЗМ · ЦАГ ХУГАЦАА · ДАСАН ЗОХИЦОЛ · МӨНХИЙН БАЙЛДАН ДАГУУЛАЛТ<br />
+                ДИЖИТАЛ ҮНДЭСТЭН БҮТЭЭЖ БАЙНА · 2025–2027
               </div>
             </div>
           </footer>

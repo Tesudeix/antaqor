@@ -28,7 +28,6 @@ function AnimatedNumber({ value }: { value: number }) {
       if (!startRef.current) startRef.current = ts;
       const elapsed = ts - startRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(Math.round(from + (to - from) * eased));
       if (progress < 1) {
@@ -73,17 +72,15 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
   const pct = Math.min((conquerors / stats.goal) * 100, 100);
   const remaining = stats.goal - conquerors;
 
-  // Compact inline version for navbar ticker
   if (inline) {
     return (
       <div className="hidden items-center gap-2 md:flex">
-        <span className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">Mission</span>
+        <span className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">Зорилго</span>
         <span className="font-[Bebas_Neue] text-sm tracking-[2px] text-[#cc2200]">
           <AnimatedNumber value={conquerors} />
           <span className="text-[#5a5550]">/{stats.goal.toLocaleString()}</span>
         </span>
-        <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">AI Conquerors</span>
-        {/* Mini bar */}
+        <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">AI Байлдагч</span>
         <div className="h-[2px] w-16 overflow-hidden bg-[#1c1c1c]">
           <div
             className="h-full bg-[#cc2200] transition-all duration-1000"
@@ -94,18 +91,15 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
     );
   }
 
-  // Full hero version
   return (
     <div className="mt-10 w-full max-w-xl">
-      {/* Label row */}
       <div className="mb-3 flex items-end justify-between">
         <div>
           <div className="text-[10px] uppercase tracking-[4px] text-[#5a5550]">
-            Mission · Progress
+            Эрхэм зорилго · Явц
           </div>
           <div className="mt-1 font-[Bebas_Neue] text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#ede8df]">
-            Creating{" "}
-            <span className="text-[#cc2200]">10,000</span> AI Conquerors
+            <span className="text-[#cc2200]">10,000</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
         <div className="text-right">
@@ -113,25 +107,22 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             <AnimatedNumber value={conquerors} />
           </div>
           <div className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">
-            joined
+            нэгдсэн
           </div>
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="relative h-[3px] w-full overflow-hidden bg-[#1c1c1c]">
         <div
           className="h-full bg-[#cc2200] transition-all duration-1000 ease-out"
           style={{ width: `${pct}%` }}
         />
-        {/* Glow pulse */}
         <div
           className="absolute top-0 h-full w-4 bg-gradient-to-r from-transparent via-[rgba(204,34,0,0.8)] to-transparent blur-sm transition-all duration-1000"
           style={{ left: `calc(${pct}% - 8px)` }}
         />
       </div>
 
-      {/* Footer stats */}
       <div className="mt-3 flex items-center justify-between">
         <div className="flex gap-6">
           <div>
@@ -139,7 +130,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
               <AnimatedNumber value={stats.paidMembers} />
             </span>
             <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5a5550]">
-              Clan Members
+              Кланы гишүүд
             </span>
           </div>
           <div>
@@ -147,7 +138,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
               <AnimatedNumber value={remaining > 0 ? remaining : 0} />
             </span>
             <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5a5550]">
-              Remaining
+              Үлдсэн
             </span>
           </div>
         </div>
@@ -158,7 +149,6 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
         </div>
       </div>
 
-      {/* CTA nudge */}
       {remaining > 0 && (
         <div className="mt-4 flex items-center gap-2">
           <div className="h-[1px] flex-1 bg-[rgba(240,236,227,0.05)]" />
@@ -166,7 +156,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             href="/auth/signup"
             className="text-[9px] uppercase tracking-[3px] text-[#cc2200] transition hover:text-[#e8440f]"
           >
-            Be one of them →
+            Тэдний нэг бол →
           </Link>
         </div>
       )}

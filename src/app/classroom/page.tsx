@@ -106,7 +106,7 @@ export default function ClassroomPage() {
   };
 
   const handleDeleteCourse = async (id: string) => {
-    if (!confirm("Delete this course and all its lessons?")) return;
+    if (!confirm("Энэ хичээл болон бүх контентыг устгах уу?")) return;
     await fetch(`/api/classroom/courses/${id}`, { method: "DELETE" });
     if (selectedCourse === id) {
       setSelectedCourse("");
@@ -171,9 +171,9 @@ export default function ClassroomPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Classroom</h1>
-        <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Sign in to access the classroom.</p>
-        <Link href="/auth/signin" className="btn-blood">Sign In</Link>
+        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Хичээлийн танхим</h1>
+        <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Хичээлийн танхимд хандахын тулд нэвтэрнэ үү.</p>
+        <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
     );
   }
@@ -181,18 +181,17 @@ export default function ClassroomPage() {
   if (!isMember) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Classroom</h1>
+        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[4px] text-[#ede8df]">Хичээлийн танхим</h1>
         <p className="mb-8 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
-          Classroom is exclusive to Clan members. Join the Clan to access all courses and lessons.
+          Хичээлийн танхим нь зөвхөн Кланы гишүүдэд зориулагдсан. Бүх хичээлд хандахын тулд Кланд нэгдээрэй.
         </p>
-        <Link href="/clan" className="btn-blood">Join the Clan</Link>
+        <Link href="/clan" className="btn-blood">Кланд нэгдэх</Link>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-[60vh] gap-0 md:gap-6">
-      {/* Mobile sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center bg-[#cc2200] text-[#ede8df] shadow-lg md:hidden"
@@ -202,15 +201,13 @@ export default function ClassroomPage() {
         </svg>
       </button>
 
-      {/* Sidebar */}
       <aside className={`
         fixed inset-y-0 left-0 z-30 w-72 overflow-y-auto border-r border-[#1c1c1c] bg-[#0a0a0a] p-5 pt-20 transition-transform md:relative md:inset-auto md:z-auto md:w-64 md:shrink-0 md:translate-x-0 md:border-r-0 md:bg-transparent md:p-0 md:pt-0
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
-        {/* Progress */}
         {lessons.length > 0 && (
           <div className="mb-6">
-            <div className="mb-2 text-[10px] uppercase tracking-[3px] text-[#5a5550]">Progress</div>
+            <div className="mb-2 text-[10px] uppercase tracking-[3px] text-[#5a5550]">Явц</div>
             <div className="mb-1 flex items-center justify-between">
               <span className="text-[11px] font-bold text-[#cc2200]">{progressPercent}%</span>
               <span className="text-[10px] text-[#5a5550]">{completedCount}/{lessons.length}</span>
@@ -221,7 +218,6 @@ export default function ClassroomPage() {
           </div>
         )}
 
-        {/* Course list */}
         <div className="space-y-1">
           {courses.map((course) => (
             <div key={course._id} className="group">
@@ -241,42 +237,39 @@ export default function ClassroomPage() {
                   onClick={() => handleDeleteCourse(course._id)}
                   className="ml-3 hidden text-[9px] text-[#5a5550] hover:text-[#cc2200] group-hover:inline"
                 >
-                  DELETE
+                  УСТГАХ
                 </button>
               )}
             </div>
           ))}
         </div>
 
-        {/* Admin: add course */}
         {admin && (
           <div className="mt-6">
             {showNewCourse ? (
               <div className="space-y-2">
-                <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Course title" className="input-dark !py-2 !text-[11px]" />
-                <input value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Description (optional)" className="input-dark !py-2 !text-[11px]" />
+                <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Хичээлийн нэр" className="input-dark !py-2 !text-[11px]" />
+                <input value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар (заавал биш)" className="input-dark !py-2 !text-[11px]" />
                 <div className="flex gap-2">
                   <button onClick={handleCreateCourse} disabled={creating} className="btn-blood !py-1.5 !px-4 !text-[9px]">
-                    {creating ? "..." : "Create"}
+                    {creating ? "..." : "Үүсгэх"}
                   </button>
-                  <button onClick={() => setShowNewCourse(false)} className="btn-ghost !py-1.5 !px-4 !text-[9px]">Cancel</button>
+                  <button onClick={() => setShowNewCourse(false)} className="btn-ghost !py-1.5 !px-4 !text-[9px]">Цуцлах</button>
                 </div>
               </div>
             ) : (
               <button onClick={() => setShowNewCourse(true)} className="w-full border border-dashed border-[#2a2825] px-3 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#cc2200] hover:text-[#cc2200]">
-                + Add Course
+                + Хичээл нэмэх
               </button>
             )}
           </div>
         )}
 
-        {/* Overlay for mobile */}
         {sidebarOpen && (
           <button onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-[-1] bg-black/50 md:hidden" />
         )}
       </aside>
 
-      {/* Main content */}
       <main className="min-w-0 flex-1">
         {currentCourse ? (
           <>
@@ -291,46 +284,44 @@ export default function ClassroomPage() {
               )}
             </div>
 
-            {/* Admin: add lesson */}
             {admin && (
               <div className="mb-6">
                 {showNewLesson ? (
                   <div className="card space-y-3 p-5">
-                    <input value={newLesson.title} onChange={(e) => setNewLesson((p) => ({ ...p, title: e.target.value }))} placeholder="Lesson title" className="input-dark" />
-                    <textarea value={newLesson.description} onChange={(e) => setNewLesson((p) => ({ ...p, description: e.target.value }))} placeholder="Description" rows={3} className="input-dark resize-none" />
+                    <input value={newLesson.title} onChange={(e) => setNewLesson((p) => ({ ...p, title: e.target.value }))} placeholder="Хичээлийн нэр" className="input-dark" />
+                    <textarea value={newLesson.description} onChange={(e) => setNewLesson((p) => ({ ...p, description: e.target.value }))} placeholder="Тайлбар" rows={3} className="input-dark resize-none" />
                     <div className="flex flex-wrap items-center gap-3">
-                      <input value={newLesson.videoUrl} onChange={(e) => setNewLesson((p) => ({ ...p, videoUrl: e.target.value, videoType: "link" }))} placeholder="Video URL (YouTube, etc.)" className="input-dark flex-1" />
-                      <span className="text-[10px] text-[#5a5550]">or</span>
+                      <input value={newLesson.videoUrl} onChange={(e) => setNewLesson((p) => ({ ...p, videoUrl: e.target.value, videoType: "link" }))} placeholder="Видео URL (YouTube гэх мэт)" className="input-dark flex-1" />
+                      <span className="text-[10px] text-[#5a5550]">эсвэл</span>
                       <label className="btn-ghost cursor-pointer !py-2 !px-4 !text-[9px]">
-                        Upload Video
+                        Видео оруулах
                         <input type="file" accept="video/*,image/*" onChange={handleVideoUpload} className="hidden" />
                       </label>
                     </div>
                     {newLesson.videoUrl && (
-                      <p className="text-[10px] text-[#cc2200] break-all">Video: {newLesson.videoUrl}</p>
+                      <p className="text-[10px] text-[#cc2200] break-all">Видео: {newLesson.videoUrl}</p>
                     )}
                     <div className="flex gap-2">
                       <button onClick={handleCreateLesson} disabled={creatingLesson} className="btn-blood !py-2 !px-5 !text-[10px]">
-                        {creatingLesson ? "Creating..." : "Add Lesson"}
+                        {creatingLesson ? "Үүсгэж байна..." : "Хичээл нэмэх"}
                       </button>
-                      <button onClick={() => setShowNewLesson(false)} className="btn-ghost !py-2 !px-5 !text-[10px]">Cancel</button>
+                      <button onClick={() => setShowNewLesson(false)} className="btn-ghost !py-2 !px-5 !text-[10px]">Цуцлах</button>
                     </div>
                   </div>
                 ) : (
                   <button onClick={() => setShowNewLesson(true)} className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#cc2200] hover:text-[#cc2200]">
-                    + Add Lesson
+                    + Хичээл нэмэх
                   </button>
                 )}
               </div>
             )}
 
-            {/* Lessons list */}
             {lessonsLoading ? (
               <div className="flex justify-center py-12">
                 <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
               </div>
             ) : lessons.length === 0 ? (
-              <p className="py-12 text-center text-[12px] text-[#5a5550]">No lessons yet.</p>
+              <p className="py-12 text-center text-[12px] text-[#5a5550]">Хичээл байхгүй байна.</p>
             ) : (
               <div className="space-y-3">
                 {lessons.map((lesson) => {
@@ -338,7 +329,6 @@ export default function ClassroomPage() {
                   return (
                     <div key={lesson._id} className="card group relative overflow-hidden p-5">
                       <div className="flex gap-4">
-                        {/* Completion toggle */}
                         <button
                           onClick={() => toggleComplete(lesson._id)}
                           className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border transition ${
@@ -365,7 +355,6 @@ export default function ClassroomPage() {
                           </Link>
                         </div>
 
-                        {/* Thumbnail */}
                         {(lesson.videoUrl || lesson.thumbnail) && (
                           <Link href={`/classroom/${lesson._id}`} className="relative hidden h-16 w-24 shrink-0 overflow-hidden bg-[#1c1c1c] sm:block">
                             {lesson.thumbnail ? (
@@ -393,7 +382,7 @@ export default function ClassroomPage() {
         ) : (
           <div className="py-16 text-center">
             <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
-              {courses.length === 0 ? "No courses yet" : "Select a course"}
+              {courses.length === 0 ? "Хичээл байхгүй" : "Хичээл сонгоно уу"}
             </p>
           </div>
         )}
