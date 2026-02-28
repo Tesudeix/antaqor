@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import { awardXP } from "@/lib/xp";
 
 export async function POST(
   req: NextRequest,
@@ -31,6 +32,12 @@ export async function POST(
       post.likes.splice(likeIndex, 1);
     } else {
       post.likes.push(userId as unknown as import("mongoose").Types.ObjectId);
+
+      // Award XP to post author (skip self-likes)
+      const authorId = post.author.toString();
+      if (authorId !== userId) {
+        awardXP(authorId, "RECEIVE_LIKE", 5, post._id.toString()).catch(() => {});
+      }
     }
 
     await post.save();

@@ -4,14 +4,41 @@ import { useEffect, useState, use, useRef } from "react";
 import { useSession } from "next-auth/react";
 import PostCard from "@/components/PostCard";
 import { formatDistanceToNow } from "@/lib/utils";
+import { getLevelTitle, getLevelProgress, xpForLevel } from "@/lib/xpClient";
+
+const AI_LEVEL_LABELS: Record<string, string> = {
+  beginner: "Эхлэгч",
+  intermediate: "Дунд",
+  advanced: "Ахисан",
+  expert: "Мэргэжилтэн",
+};
+
+const INTEREST_LABELS: Record<string, string> = {
+  ai_tools: "AI Хэрэгслүүд",
+  programming: "Програмчлал",
+  design: "Дизайн",
+  business: "Бизнес",
+  data_science: "Дата шинжилгээ",
+  robotics: "Робот техник",
+  content_creation: "Контент бүтээх",
+  education: "Боловсрол",
+  finance: "Санхүү",
+  health: "Эрүүл мэнд",
+};
 
 interface UserProfile {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   avatar?: string;
   bio?: string;
+  age?: number;
+  aiExperience?: string;
+  interests?: string[];
   clan?: string;
+  xp?: number;
+  level?: number;
   createdAt: string;
 }
 
@@ -38,6 +65,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
+  const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,6 +90,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         setUser(userData.user);
         setEditName(userData.user.name);
         setEditBio(userData.user.bio || "");
+        setEditPhone(userData.user.phone || "");
       }
       if (postsRes.ok) setPosts(postsData.posts);
     } finally {
@@ -75,7 +104,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       const res = await fetch(`/api/users/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: editName, bio: editBio }),
+        body: JSON.stringify({ name: editName, bio: editBio, phone: editPhone }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -134,7 +163,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
       </div>
     );
   }
@@ -165,7 +194,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               <img
                 src={user.avatar}
                 alt={user.name}
-                className="h-20 w-20 rounded-full object-cover ring-2 ring-[#1c1c1c]"
+                className="h-20 w-20 object-cover ring-2 ring-[#1c1c1c]"
               />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center bg-[#1c1c1c] font-[Bebas_Neue] text-2xl tracking-wider text-[#c8c8c0]">
@@ -177,10 +206,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="absolute inset-0 flex items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
+                  className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
                 >
                   {uploading ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#cc2200] border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin border-2 border-[#cc2200] border-t-transparent" />
                   ) : (
                     <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -207,6 +236,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditName(e.target.value)}
                   className="input-dark"
                   placeholder="Нэр"
+                />
+                <input
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  className="input-dark"
+                  placeholder="Утасны дугаар"
                 />
                 <textarea
                   value={editBio}
@@ -239,6 +274,36 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df]">
                       {user.name}
                     </h1>
+                    {(() => {
+                      const level = user.level || 1;
+                      const xp = user.xp || 0;
+                      const title = getLevelTitle(level);
+                      const progress = getLevelProgress(xp, level);
+                      const nextXP = xpForLevel(level + 1);
+                      return (
+                        <div className="mt-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#cc2200]">
+                              LV.{level}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-[2px] text-[#c8c8c0]">
+                              {title.titleMN}
+                            </span>
+                          </div>
+                          <div className="mt-1.5 flex items-center gap-2">
+                            <div className="h-1.5 w-32 overflow-hidden bg-[#1c1c1c]">
+                              <div
+                                className="h-full bg-[#cc2200] transition-all"
+                                style={{ width: `${Math.round(progress * 100)}%` }}
+                              />
+                            </div>
+                            <span className="text-[9px] text-[#5a5550]">
+                              {xp.toLocaleString()} / {nextXP.toLocaleString()} XP
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {user.clan && (
                       <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#cc2200]">
                         Кланы гишүүн
@@ -254,14 +319,42 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     </button>
                   )}
                 </div>
+
                 {user.bio && (
                   <p className="mt-3 text-[13px] leading-[1.8] text-[rgba(240,236,227,0.6)]">
                     {user.bio}
                   </p>
                 )}
-                <p className="mt-3 text-[10px] tracking-[2px] text-[#5a5550]">
-                  НЭГДСЭН {formatDistanceToNow(user.createdAt).toUpperCase()}
-                </p>
+
+                {/* Profile details */}
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                  {user.aiExperience && (
+                    <span className="text-[10px] tracking-[1px] text-[#c8c8c0]">
+                      AI: {AI_LEVEL_LABELS[user.aiExperience] || user.aiExperience}
+                    </span>
+                  )}
+                  {user.age && (
+                    <span className="text-[10px] tracking-[1px] text-[#5a5550]">
+                      {user.age} нас
+                    </span>
+                  )}
+                  <span className="text-[10px] tracking-[2px] text-[#5a5550]">
+                    НЭГДСЭН {formatDistanceToNow(user.createdAt).toUpperCase()}
+                  </span>
+                </div>
+
+                {user.interests && user.interests.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {user.interests.map((i) => (
+                      <span
+                        key={i}
+                        className="border border-[#1c1c1c] px-2 py-0.5 text-[9px] uppercase tracking-[1px] text-[#5a5550]"
+                      >
+                        {INTEREST_LABELS[i] || i}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>

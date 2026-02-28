@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
 import Post from "@/models/Post";
+import { awardXP } from "@/lib/xp";
 
 export async function GET(
   req: NextRequest,
@@ -62,6 +63,8 @@ export async function POST(
     await post.save();
 
     const populated = await comment.populate("author", "name avatar");
+
+    awardXP(userId, "COMMENT", 10, comment._id.toString()).catch(() => {});
 
     return NextResponse.json({ comment: populated }, { status: 201 });
   } catch (error: unknown) {

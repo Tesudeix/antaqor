@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Lesson from "@/models/Lesson";
+import { awardXP } from "@/lib/xp";
 
 export async function POST(
   req: NextRequest,
@@ -33,6 +34,7 @@ export async function POST(
       );
     } else {
       lesson.completedBy.push(userId as any);
+      awardXP(userId, "COMPLETE_LESSON", 100, lesson._id.toString()).catch(() => {});
     }
 
     await lesson.save();

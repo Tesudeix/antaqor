@@ -18,6 +18,7 @@ interface Lesson {
   description: string;
   videoUrl: string;
   thumbnail: string;
+  requiredLevel: number;
   completedBy: string[];
   likes: string[];
   commentsCount: number;
@@ -40,16 +41,27 @@ export default function ClassroomPage() {
   const [creating, setCreating] = useState(false);
 
   const [showNewLesson, setShowNewLesson] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: "", description: "", videoUrl: "", videoType: "link" as "link" | "upload" });
+  const [newLesson, setNewLesson] = useState({ title: "", description: "", videoUrl: "", videoType: "link" as "link" | "upload", requiredLevel: 0 });
   const [creatingLesson, setCreatingLesson] = useState(false);
+  const [userLevel, setUserLevel] = useState(1);
 
   useEffect(() => {
     if (!memberLoading && isMember) {
       fetchCourses();
+      // Fetch user level
+      if (session?.user) {
+        const uid = (session.user as { id?: string }).id;
+        if (uid) {
+          fetch(`/api/users/${uid}`)
+            .then((r) => r.json())
+            .then((d) => { if (d.user?.level) setUserLevel(d.user.level); })
+            .catch(() => {});
+        }
+      }
     } else if (!memberLoading) {
       setLoading(false);
     }
-  }, [memberLoading, isMember]);
+  }, [memberLoading, isMember, session]);
 
   const fetchCourses = async () => {
     try {
@@ -125,7 +137,7 @@ export default function ClassroomPage() {
         body: JSON.stringify({ ...newLesson, course: selectedCourse, order: lessons.length }),
       });
       if (res.ok) {
-        setNewLesson({ title: "", description: "", videoUrl: "", videoType: "link" });
+        setNewLesson({ title: "", description: "", videoUrl: "", videoType: "link", requiredLevel: 0 });
         setShowNewLesson(false);
         fetchLessons(selectedCourse);
         fetchCourses();
@@ -163,7 +175,7 @@ export default function ClassroomPage() {
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
       </div>
     );
   }
@@ -298,6 +310,17 @@ export default function ClassroomPage() {
                         <input type="file" accept="video/*,image/*" onChange={handleVideoUpload} className="hidden" />
                       </label>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-[10px] text-[#5a5550]">Шаардлагатай түвшин:</label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={newLesson.requiredLevel}
+                        onChange={(e) => setNewLesson((p) => ({ ...p, requiredLevel: parseInt(e.target.value) || 0 }))}
+                        className="input-dark !w-20 !py-1.5 !text-[11px]"
+                      />
+                    </div>
                     {newLesson.videoUrl && (
                       <p className="text-[10px] text-[#cc2200] break-all">Видео: {newLesson.videoUrl}</p>
                     )}
@@ -318,7 +341,7 @@ export default function ClassroomPage() {
 
             {lessonsLoading ? (
               <div className="flex justify-center py-12">
-                <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+                <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
               </div>
             ) : lessons.length === 0 ? (
               <p className="py-12 text-center text-[12px] text-[#5a5550]">Хичээл байхгүй байна.</p>
@@ -326,33 +349,53 @@ export default function ClassroomPage() {
               <div className="space-y-3">
                 {lessons.map((lesson) => {
                   const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
+                  const isLocked = (lesson.requiredLevel || 0) > userLevel && !admin;
                   return (
-                    <div key={lesson._id} className="card group relative overflow-hidden p-5">
+                    <div key={lesson._id} className={`card group relative overflow-hidden p-5 ${isLocked ? "opacity-60" : ""}`}>
                       <div className="flex gap-4">
-                        <button
-                          onClick={() => toggleComplete(lesson._id)}
-                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border transition ${
-                            isCompleted
-                              ? "border-[#cc2200] bg-[#cc2200] text-[#ede8df]"
-                              : "border-[#2a2825] text-transparent hover:border-[#5a5550]"
-                          }`}
-                        >
-                          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </button>
+                        {isLocked ? (
+                          <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border border-[#2a2825] text-[#5a5550]">
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => toggleComplete(lesson._id)}
+                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border transition ${
+                              isCompleted
+                                ? "border-[#cc2200] bg-[#cc2200] text-[#ede8df]"
+                                : "border-[#2a2825] text-transparent hover:border-[#5a5550]"
+                            }`}
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </button>
+                        )}
 
                         <div className="min-w-0 flex-1">
-                          <Link href={`/classroom/${lesson._id}`} className="block">
-                            <h3 className={`text-[14px] font-bold transition ${isCompleted ? "text-[#5a5550] line-through" : "text-[#ede8df] group-hover:text-[#cc2200]"}`}>
-                              {lesson.title}
-                            </h3>
-                            {lesson.description && (
-                              <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)] line-clamp-2">
-                                {lesson.description}
+                          {isLocked ? (
+                            <div>
+                              <h3 className="text-[14px] font-bold text-[#5a5550]">
+                                {lesson.title}
+                              </h3>
+                              <p className="mt-1 text-[10px] uppercase tracking-[1px] text-[#cc2200]">
+                                LV.{lesson.requiredLevel} шаардлагатай
                               </p>
-                            )}
-                          </Link>
+                            </div>
+                          ) : (
+                            <Link href={`/classroom/${lesson._id}`} className="block">
+                              <h3 className={`text-[14px] font-bold transition ${isCompleted ? "text-[#5a5550] line-through" : "text-[#ede8df] group-hover:text-[#cc2200]"}`}>
+                                {lesson.title}
+                              </h3>
+                              {lesson.description && (
+                                <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)] line-clamp-2">
+                                  {lesson.description}
+                                </p>
+                              )}
+                            </Link>
+                          )}
                         </div>
 
                         {(lesson.videoUrl || lesson.thumbnail) && (
@@ -377,7 +420,7 @@ export default function ClassroomPage() {
           </>
         ) : loading ? (
           <div className="flex justify-center py-16">
-            <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+            <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
           </div>
         ) : (
           <div className="py-16 text-center">

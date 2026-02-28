@@ -29,6 +29,48 @@ export async function GET(
   }
 }
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userIsAdmin = isAdmin(session.user.email);
+    if (!userIsAdmin) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    await dbConnect();
+    const { id } = await params;
+    const { visibility } = await req.json();
+
+    if (!["free", "members"].includes(visibility)) {
+      return NextResponse.json({ error: "Invalid visibility" }, { status: 400 });
+    }
+
+    const post = await Post.findByIdAndUpdate(
+      id,
+      { visibility },
+      { new: true }
+    )
+      .populate("author", "name avatar")
+      .lean();
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ post });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

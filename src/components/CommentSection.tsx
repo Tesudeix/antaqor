@@ -93,7 +93,7 @@ export default function CommentSection({ postId }: { postId: string }) {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+          <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
         </div>
       ) : comments.length === 0 ? (
         <p className="py-6 text-center text-[12px] text-[#5a5550]">
@@ -117,7 +117,7 @@ export default function CommentSection({ postId }: { postId: string }) {
                 <div className="mb-2 flex items-center gap-2">
                   <Link href={`/profile/${comment.author._id}`} className="flex items-center gap-2">
                     {comment.author.avatar ? (
-                      <img src={comment.author.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
+                      <img src={comment.author.avatar} alt="" className="h-6 w-6 object-cover" />
                     ) : (
                       <div className="flex h-6 w-6 items-center justify-center bg-[#1c1c1c] text-[9px] font-bold text-[#c8c8c0]">
                         {initials}

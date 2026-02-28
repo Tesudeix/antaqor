@@ -1,41 +1,36 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        login: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+        const login = credentials?.login || (credentials as Record<string, string>)?.email;
+        if (!login || !credentials?.password) {
+          throw new Error("Имэйл/хэрэглэгчийн нэр болон нууц үг шаардлагатай");
         }
 
         await dbConnect();
 
-        const user = await User.findOne({ email: credentials.email });
+        const isEmail = login.includes("@");
+        const user = isEmail
+          ? await User.findOne({ email: login.toLowerCase() })
+          : await User.findOne({ username: login.toLowerCase() });
         if (!user) {
-          throw new Error("No account found with that email");
-        }
-
-        if (!user.password) {
-          throw new Error("This account uses Google sign-in");
+          throw new Error("Бүртгэл олдсонгүй");
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
-          throw new Error("Invalid password");
+          throw new Error("Нууц үг буруу байна");
         }
 
         return {
@@ -51,52 +46,9 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
-        try {
-          await dbConnect();
-          const existingUser = await User.findOne({ email: user.email });
-          if (!existingUser) {
-            const newUser = await User.create({
-              name: user.name || "User",
-              email: user.email,
-              avatar: user.image || "",
-              provider: "google",
-              providerId: account.providerAccountId,
-            });
-            user.id = newUser._id.toString();
-          } else {
-            user.id = existingUser._id.toString();
-            if (!existingUser.avatar && user.image) {
-              existingUser.avatar = user.image;
-              await existingUser.save();
-            }
-          }
-        } catch (err) {
-          console.error("SignIn callback error:", err);
-          return false;
-        }
-      }
-      return true;
-    },
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       if (user) {
-        if (user.id) {
-          token.id = user.id;
-        } else if (user.email) {
-          await dbConnect();
-          const dbUser = await User.findOne({ email: user.email });
-          if (dbUser) {
-            token.id = dbUser._id.toString();
-          }
-        }
-      }
-      if (trigger === "update" || (!token.id && token.email)) {
-        await dbConnect();
-        const dbUser = await User.findOne({ email: token.email });
-        if (dbUser) {
-          token.id = dbUser._id.toString();
-        }
+        token.id = user.id;
       }
       return token;
     },
@@ -111,6 +63,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
     error: "/auth/signin",
   },
-  debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -49,7 +49,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
       </div>
     );
   }

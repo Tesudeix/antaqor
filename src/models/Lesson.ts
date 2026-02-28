@@ -10,6 +10,7 @@ export interface ILesson extends Document {
   videoType: "link" | "upload";
   thumbnail: string;
   order: number;
+  requiredLevel: number;
   completedBy: mongoose.Types.ObjectId[];
   likes: mongoose.Types.ObjectId[];
   commentsCount: number;
@@ -53,6 +54,10 @@ const LessonSchema = new Schema<ILesson>(
       default: "",
     },
     order: {
+      type: Number,
+      default: 0,
+    },
+    requiredLevel: {
       type: Number,
       default: 0,
     },

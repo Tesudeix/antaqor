@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    const { course, title, description, content, videoUrl, videoType, thumbnail, order } =
+    const { course, title, description, content, videoUrl, videoType, thumbnail, order, requiredLevel } =
       await req.json();
 
     if (!course || !title?.trim()) {
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       videoType: videoType || "link",
       thumbnail: thumbnail?.trim() || "",
       order: order ?? 0,
+      requiredLevel: requiredLevel ?? 0,
     });
 
     await Course.findByIdAndUpdate(course, { $inc: { lessonsCount: 1 } });

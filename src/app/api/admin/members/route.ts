@@ -21,6 +21,7 @@ export async function GET(req: Request) {
         $or: [
           { name: { $regex: search, $options: "i" } },
           { email: { $regex: search, $options: "i" } },
+          { phone: { $regex: search, $options: "i" } },
         ],
       });
     }
@@ -37,17 +38,31 @@ export async function GET(req: Request) {
     const query = conditions.length > 0 ? { $and: conditions } : {};
 
     const users = await User.find(query)
-      .select("name email avatar bio clan clanJoinedAt subscriptionExpiresAt createdAt")
+      .select("name email phone avatar bio age aiExperience interests clan clanJoinedAt subscriptionExpiresAt createdAt")
       .sort({ createdAt: -1 })
       .lean();
 
     const totalUsers = await User.countDocuments();
     const totalMembers = await User.countDocuments({ clan: { $ne: "" } });
 
+    const aiLevelCounts = await User.aggregate([
+      { $match: { aiExperience: { $ne: "" } } },
+      { $group: { _id: "$aiExperience", count: { $sum: 1 } } },
+    ]);
+
+    const interestCounts = await User.aggregate([
+      { $unwind: "$interests" },
+      { $group: { _id: "$interests", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
     return NextResponse.json({
       users,
       totalUsers,
       totalMembers,
+      aiLevelCounts,
+      interestCounts,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Серверийн алдаа";

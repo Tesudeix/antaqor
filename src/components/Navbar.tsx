@@ -99,6 +99,9 @@ export default function Navbar() {
           <Link href="/clan" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
             Клан
           </Link>
+          <Link href="/tasks" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#ede8df]">
+            Даалгавар
+          </Link>
           {session ? (
             <>
               <Link href="/posts/new" className="btn-blood !py-2 !px-5 !text-[11px]">
@@ -168,6 +171,9 @@ export default function Navbar() {
             </Link>
             <Link href="/clan" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Клан
+            </Link>
+            <Link href="/tasks" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              Даалгавар
             </Link>
             {session ? (
               <>

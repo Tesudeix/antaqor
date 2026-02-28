@@ -6,12 +6,6 @@ import Payment from "@/models/Payment";
 
 const CLAN_PRICE = 25000;
 
-function generateReferenceId(): string {
-  const prefix = "R";
-  const num = Math.floor(100000000 + Math.random() * 900000000);
-  return `${prefix}${num}`;
-}
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -20,6 +14,8 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = (session.user as { id: string }).id;
+    const userEmail = session.user.email || "";
+
     await dbConnect();
 
     const existing = await Payment.findOne({
@@ -31,23 +27,23 @@ export async function POST(req: NextRequest) {
     if (existing) {
       return NextResponse.json({
         referenceId: existing.senderCode,
+        email: userEmail,
         paymentId: existing._id,
       });
     }
 
-    const referenceId = generateReferenceId();
-
     const payment = await Payment.create({
       user: userId,
-      invoiceId: referenceId,
-      senderCode: referenceId,
+      invoiceId: `INV-${Date.now()}`,
+      senderCode: userEmail,
       amount: CLAN_PRICE,
-      description: "Antaqor Clan Membership",
+      description: `Antaqor Clan — ${userEmail}`,
       status: "pending",
     });
 
     return NextResponse.json({
-      referenceId,
+      referenceId: userEmail,
+      email: userEmail,
       paymentId: payment._id,
     });
   } catch (error: unknown) {

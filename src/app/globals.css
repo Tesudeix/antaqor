@@ -69,7 +69,7 @@ body::before {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-ghost);
-  border-radius: 3px;
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted);

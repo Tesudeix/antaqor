@@ -11,6 +11,7 @@ interface PostCardProps {
     _id: string;
     content: string;
     image?: string;
+    visibility?: string;
     likes: string[];
     commentsCount: number;
     createdAt: string;
@@ -20,10 +21,11 @@ interface PostCardProps {
       avatar?: string;
     } | null;
   };
+  locked?: boolean;
   onDelete?: (id: string) => void;
 }
 
-export default function PostCard({ post, onDelete }: PostCardProps) {
+export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   const { data: session } = useSession();
   const userId = session?.user ? (session.user as { id?: string }).id ?? null : null;
   const userIsAdmin = isAdminEmail(session?.user?.email);
@@ -31,6 +33,8 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const [liked, setLiked] = useState(userId ? (post.likes || []).includes(userId) : false);
   const [liking, setLiking] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [visibility, setVisibility] = useState(post.visibility || "members");
+  const [toggling, setToggling] = useState(false);
 
   if (!post.author) return null;
 
@@ -38,9 +42,10 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const hasText = post.content && post.content.trim().length > 0;
   const hasImage = !!post.image;
   const isImageOnly = hasImage && !hasText;
+  const isFree = visibility === "free";
 
   const handleLike = async () => {
-    if (!session || liking) return;
+    if (!session || liking || locked) return;
     setLiking(true);
     try {
       const res = await fetch(`/api/posts/${post._id}/like`, { method: "POST" });
@@ -62,6 +67,24 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     }
   };
 
+  const handleToggleVisibility = async () => {
+    if (toggling) return;
+    setToggling(true);
+    const newVis = isFree ? "members" : "free";
+    try {
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visibility: newVis }),
+      });
+      if (res.ok) {
+        setVisibility(newVis);
+      }
+    } finally {
+      setToggling(false);
+    }
+  };
+
   const initials = post.author.name
     .split(" ")
     .map((n) => n[0])
@@ -69,42 +92,96 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     .toUpperCase()
     .slice(0, 2);
 
+  if (locked) {
+    return (
+      <article className="card relative overflow-hidden">
+        <div className="px-5 pt-5 md:px-6 md:pt-6">
+          <div className="flex items-center gap-3">
+            {post.author.avatar ? (
+              <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 object-cover ring-1 ring-[rgba(240,236,227,0.1)]" />
+            ) : (
+              <div className="flex h-9 w-9 items-center justify-center bg-[#1c1c1c] text-[11px] font-bold tracking-wider text-[#c8c8c0]">{initials}</div>
+            )}
+            <div>
+              <p className="text-[13px] font-bold text-[#ede8df]">{post.author.name}</p>
+              <p className="text-[10px] tracking-[2px] text-[#5a5550]">{formatDistanceToNow(post.createdAt)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative px-5 py-6 md:px-6">
+          <div className="select-none blur-[6px]">
+            <p className="text-[13px] leading-[1.9] text-[rgba(240,236,227,0.4)]">
+              {post.content?.slice(0, 120) || "Энэ нийтлэлийн агуулгыг зөвхөн гишүүд харах боломжтой..."}
+            </p>
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[rgba(3,3,3,0.6)]">
+            <svg className="mb-2 h-5 w-5 text-[#cc2200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-[10px] uppercase tracking-[2px] text-[#cc2200]">Гишүүдэд зориулсан</span>
+            <Link href="/clan" className="mt-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#ede8df]">
+              Кланд нэгдэх →
+            </Link>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className="card overflow-hidden">
       <div className="flex items-center justify-between px-5 pt-5 md:px-6 md:pt-6">
         <Link href={`/profile/${post.author._id}`} className="flex items-center gap-3">
           {post.author.avatar ? (
-            <img
-              src={post.author.avatar}
-              alt={post.author.name}
-              className="h-9 w-9 rounded-full object-cover ring-1 ring-[rgba(240,236,227,0.1)]"
-            />
+            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 object-cover ring-1 ring-[rgba(240,236,227,0.1)]" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center bg-[#1c1c1c] text-[11px] font-bold tracking-wider text-[#c8c8c0]">
-              {initials}
-            </div>
+            <div className="flex h-9 w-9 items-center justify-center bg-[#1c1c1c] text-[11px] font-bold tracking-wider text-[#c8c8c0]">{initials}</div>
           )}
           <div>
-            <p className="text-[13px] font-bold text-[#ede8df]">
-              {post.author.name}
-            </p>
-            <p className="text-[10px] tracking-[2px] text-[#5a5550]">
-              {formatDistanceToNow(post.createdAt)}
-            </p>
+            <p className="text-[13px] font-bold text-[#ede8df]">{post.author.name}</p>
+            <p className="text-[10px] tracking-[2px] text-[#5a5550]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </Link>
 
-        {canDelete && (
-          <button
-            onClick={handleDelete}
-            className="text-[#5a5550] transition hover:text-[#cc2200]"
-            title="Пост устгах"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {isFree && (
+            <span className="px-2 py-0.5 text-[8px] uppercase tracking-[1px] border border-[rgba(34,197,94,0.3)] text-green-500">
+              Нээлттэй
+            </span>
+          )}
+          {userIsAdmin && (
+            <button
+              onClick={handleToggleVisibility}
+              disabled={toggling}
+              title={isFree ? "Гишүүдэд зориулах" : "Нээлттэй болгох"}
+              className={`flex h-7 items-center gap-1 px-2 text-[8px] uppercase tracking-[1px] transition ${
+                isFree
+                  ? "text-green-500 hover:text-green-400"
+                  : "text-[#5a5550] hover:text-[#cc2200]"
+              }`}
+            >
+              {toggling ? (
+                <div className="h-2.5 w-2.5 animate-spin border border-current border-t-transparent" />
+              ) : isFree ? (
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                </svg>
+              ) : (
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              )}
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={handleDelete} className="text-[#5a5550] transition hover:text-[#cc2200]" title="Пост устгах">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {hasText && (
@@ -120,16 +197,14 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
           <div className={`relative overflow-hidden border-y border-[#1c1c1c] bg-[#0a0a0a] ${isImageOnly ? "mt-4" : ""}`}>
             {!imgLoaded && (
               <div className="flex items-center justify-center py-24">
-                <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+                <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
               </div>
             )}
             <img
               src={post.image}
               alt="Пост"
               onLoad={() => setImgLoaded(true)}
-              className={`w-full object-contain transition-opacity duration-300 ${
-                imgLoaded ? "opacity-100" : "h-0 opacity-0"
-              }`}
+              className={`w-full object-contain transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "h-0 opacity-0"}`}
               style={{ maxHeight: "600px" }}
             />
           </div>
@@ -141,9 +216,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
           onClick={handleLike}
           disabled={!session}
           className={`flex items-center gap-2 text-[11px] tracking-[2px] transition ${
-            liked
-              ? "font-bold text-[#cc2200]"
-              : "text-[#5a5550] hover:text-[#cc2200]"
+            liked ? "font-bold text-[#cc2200]" : "text-[#5a5550] hover:text-[#cc2200]"
           }`}
         >
           <svg className="h-4 w-4" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">

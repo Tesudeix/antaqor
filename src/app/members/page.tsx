@@ -63,7 +63,7 @@ function MembersContent() {
         </h1>
         <div className="mt-4 flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[#cc2200]" />
+            <div className="h-2 w-2 bg-[#cc2200]" />
             <span className="font-[Bebas_Neue] text-3xl tracking-[2px] text-[#ede8df]">
               {loading ? "—" : totalMembers}
             </span>
@@ -74,7 +74,7 @@ function MembersContent() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+          <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
         </div>
       ) : members.length === 0 ? (
         <div className="py-16 text-center">
@@ -109,7 +109,7 @@ function MembersContent() {
                       <img
                         src={member.avatar}
                         alt={member.name}
-                        className={`h-12 w-12 rounded-full object-cover ${
+                        className={`h-12 w-12 object-cover ${
                           memberIsAdmin ? "ring-2 ring-[#cc2200]" : "ring-1 ring-[#1c1c1c]"
                         }`}
                       />

@@ -16,9 +16,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Reference ID required" }, { status: 400 });
     }
 
+    const userId = (session.user as { id: string }).id;
     await dbConnect();
 
-    const payment = await Payment.findOne({ senderCode: referenceId });
+    const payment = await Payment.findOne({
+      $or: [
+        { senderCode: referenceId },
+        { user: userId, status: "pending" },
+      ],
+    }).sort({ createdAt: -1 });
+
     if (!payment) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }

@@ -13,6 +13,7 @@ interface LessonData {
   content: string;
   videoUrl: string;
   videoType: string;
+  requiredLevel: number;
   completedBy: string[];
   likes: string[];
   commentsCount: number;
@@ -39,13 +40,20 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ title: "", description: "", content: "", videoUrl: "" });
   const [saving, setSaving] = useState(false);
+  const [userLevel, setUserLevel] = useState(1);
 
   const admin = isAdminEmail(session?.user?.email);
   const userId = session ? (session.user as { id: string }).id : null;
 
   useEffect(() => {
     fetchLesson();
-  }, [id]);
+    if (userId) {
+      fetch(`/api/users/${userId}`)
+        .then((r) => r.json())
+        .then((d) => { if (d.user?.level) setUserLevel(d.user.level); })
+        .catch(() => {});
+    }
+  }, [id, userId]);
 
   const fetchLesson = async () => {
     try {
@@ -96,7 +104,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
       </div>
     );
   }
@@ -106,6 +114,25 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       <div className="py-16 text-center">
         <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">Lesson not found</p>
         <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#cc2200]">← BACK</Link>
+      </div>
+    );
+  }
+
+  if ((lesson.requiredLevel || 0) > userLevel && !admin) {
+    return (
+      <div className="py-16 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center border border-[#1c1c1c]">
+          <svg className="h-8 w-8 text-[#5a5550]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+          LV.{lesson.requiredLevel} ШААРДЛАГАТАЙ
+        </p>
+        <p className="mt-2 text-[12px] text-[#5a5550]">
+          Таны одоогийн түвшин: LV.{userLevel}
+        </p>
+        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#cc2200]">← БУЦАХ</Link>
       </div>
     );
   }

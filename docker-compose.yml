@@ -11,6 +11,8 @@ services:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
     depends_on:
       - mongo
+    volumes:
+      - uploads_data:/app/public/uploads
     restart: unless-stopped
 
   mongo:
@@ -23,3 +25,4 @@ services:
 
 volumes:
   mongo_data:
+  uploads_data:

@@ -41,15 +41,24 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { name, bio, avatar } = await req.json();
+    const { name, bio, avatar, phone, age, aiExperience, interests } =
+      await req.json();
 
     await dbConnect();
 
-    const updated = await User.findByIdAndUpdate(
-      id,
-      { ...(name && { name }), ...(bio !== undefined && { bio }), ...(avatar && { avatar }) },
-      { new: true, runValidators: true }
-    ).select("-password");
+    const updateData: Record<string, unknown> = {};
+    if (name) updateData.name = name;
+    if (bio !== undefined) updateData.bio = bio;
+    if (avatar) updateData.avatar = avatar;
+    if (phone !== undefined) updateData.phone = phone;
+    if (age !== undefined) updateData.age = age;
+    if (aiExperience !== undefined) updateData.aiExperience = aiExperience;
+    if (interests !== undefined) updateData.interests = interests;
+
+    const updated = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
 
     if (!updated) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
