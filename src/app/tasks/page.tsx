@@ -27,7 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   open: "text-green-400 border-green-900",
   submitted: "text-yellow-400 border-yellow-900",
-  accepted: "text-[#cc2200] border-[#cc2200]",
+  accepted: "text-[#FF6A00] border-[#FF6A00]",
   rejected: "text-[#5a5550] border-[#5a5550]",
 };
 
@@ -115,7 +115,7 @@ export default function TasksPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function TasksPage() {
           ) : (
             <button
               onClick={() => setShowCreate(true)}
-              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#cc2200] hover:text-[#cc2200]"
+              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#FF6A00] hover:text-[#FF6A00]"
             >
               + Даалгавар үүсгэх
             </button>
@@ -209,7 +209,7 @@ export default function TasksPage() {
                       </p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#cc2200]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -241,7 +241,7 @@ export default function TasksPage() {
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#cc2200]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -250,7 +250,7 @@ export default function TasksPage() {
                     Авах
                   </button>
                   {admin && (
-                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[9px] !text-[#cc2200]">
+                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[9px] !text-[#FF6A00]">
                       Устгах
                     </button>
                   )}
@@ -280,7 +280,7 @@ export default function TasksPage() {
                       </span>
                     </div>
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#cc2200]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
                     +{task.xpReward} XP
                   </span>
                 </div>

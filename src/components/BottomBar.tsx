@@ -94,7 +94,7 @@ export default function BottomBar() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#1c1c1c] bg-[rgba(3,3,3,0.95)] backdrop-blur-md md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#1a1a2e] bg-[rgba(5,5,10,0.95)] backdrop-blur-md md:hidden">
       <div className="flex items-center justify-around px-2 py-1">
         {links.map((link) => {
           const active = isActive(link.href);
@@ -104,14 +104,14 @@ export default function BottomBar() {
               href={link.href}
               className={`relative flex flex-col items-center gap-0.5 px-3 py-2 transition ${
                 link.accent
-                  ? "text-[#cc2200]"
+                  ? "text-[#FF6A00]"
                   : active
                   ? "text-[#ede8df]"
                   : "text-[#5a5550]"
               }`}
             >
               {link.accent ? (
-                <div className="flex h-8 w-8 items-center justify-center bg-[#cc2200] text-[#ede8df]">
+                <div className="flex h-8 w-8 items-center justify-center bg-[#FF6A00] text-[#fff]" style={{ boxShadow: '0 0 10px rgba(255,106,0,0.4)' }}>
                   {link.icon}
                 </div>
               ) : (
@@ -119,7 +119,7 @@ export default function BottomBar() {
               )}
               <span className="text-[8px] uppercase tracking-[1px]">{link.label}</span>
               {active && !link.accent && (
-                <span className="absolute -top-[1px] left-1/2 h-[2px] w-4 -translate-x-1/2 bg-[#cc2200]" />
+                <span className="absolute -top-[1px] left-1/2 h-[2px] w-4 -translate-x-1/2 bg-[#FF6A00]" style={{ boxShadow: '0 0 6px rgba(255,106,0,0.5)' }} />
               )}
             </Link>
           );

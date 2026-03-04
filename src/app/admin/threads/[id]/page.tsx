@@ -114,7 +114,7 @@ export default function ThreadDetailPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#cc2200] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
       </div>
     );
   }
@@ -125,7 +125,7 @@ export default function ThreadDetailPage() {
       <div className="mb-4 flex items-center gap-4">
         <Link
           href="/admin/threads"
-          className="flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#cc2200] hover:text-[#cc2200]"
+          className="flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#FF6A00] hover:text-[#FF6A00]"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -133,7 +133,7 @@ export default function ThreadDetailPage() {
         </Link>
         <div>
           <h1 className="font-[Bebas_Neue] text-2xl tracking-[1px]">
-            THREAD <span className="text-[#cc2200]">CONVERSATION</span>
+            THREAD <span className="text-[#FF6A00]">CONVERSATION</span>
           </h1>
           <p className="text-[10px] tracking-[2px] text-[#3a3835]">
             ID: {id}
@@ -181,14 +181,14 @@ export default function ThreadDetailPage() {
                   <div
                     className={`group relative max-w-[80%] ${
                       isOwn
-                        ? "bg-[rgba(204,34,0,0.15)] border border-[rgba(204,34,0,0.2)]"
+                        ? "bg-[rgba(255,106,0,0.15)] border border-[rgba(255,106,0,0.2)]"
                         : "bg-[#0f0f0f] border border-[#1c1c1c]"
                     } ${isHidden ? "opacity-40" : ""} p-4`}
                   >
                     <div className="mb-1 flex items-center gap-2">
                       <span
                         className={`text-[10px] font-bold uppercase tracking-[2px] ${
-                          isOwn ? "text-[#cc2200]" : "text-[#c8c8c0]"
+                          isOwn ? "text-[#FF6A00]" : "text-[#c8c8c0]"
                         }`}
                       >
                         @{reply.username || "unknown"}

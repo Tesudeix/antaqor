@@ -12,7 +12,7 @@ export async function GET() {
     if (!session?.user || !isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const stories = await Story.find().sort({ createdAt: -1 }).lean();
+    const stories = await Story.find().sort({ date: -1 }).lean();
     return NextResponse.json({ stories });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user || !isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { title, content, image } = await req.json();
+    const { title, content, image, date, category } = await req.json();
     if (!title?.trim() || !content?.trim()) {
       return NextResponse.json({ error: "Title and content required" }, { status: 400 });
     }
@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
       title: title.trim(),
       content: content.trim(),
       image: image || "",
+      date: date || new Date(),
+      category: category?.trim() || "",
     });
     return NextResponse.json({ story }, { status: 201 });
   } catch {

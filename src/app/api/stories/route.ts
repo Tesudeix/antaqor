@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await dbConnect();
     const stories = await Story.find({ published: true })
-      .sort({ createdAt: -1 })
+      .sort({ date: -1 })
       .lean();
     return NextResponse.json({ stories });
   } catch {

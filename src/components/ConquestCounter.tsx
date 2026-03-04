@@ -76,14 +76,14 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
     return (
       <div className="hidden items-center gap-2 md:flex">
         <span className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">Зорилго</span>
-        <span className="font-[Bebas_Neue] text-sm tracking-[2px] text-[#cc2200]">
+        <span className="font-[Bebas_Neue] text-sm tracking-[2px] text-[#FF6A00]">
           <AnimatedNumber value={conquerors} />
           <span className="text-[#5a5550]">/{stats.goal.toLocaleString()}</span>
         </span>
         <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">AI Байлдагч</span>
         <div className="h-[2px] w-16 overflow-hidden bg-[#1c1c1c]">
           <div
-            className="h-full bg-[#cc2200] transition-all duration-1000"
+            className="h-full bg-[#FF6A00] transition-all duration-1000"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -99,11 +99,11 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             Эрхэм зорилго · Явц
           </div>
           <div className="mt-1 font-[Bebas_Neue] text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#ede8df]">
-            <span className="text-[#cc2200]">10,000</span> AI Байлдан дагуулагч бэлтгэх
+            <span className="text-[#FF6A00]">10,000</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
         <div className="text-right">
-          <div className="font-[Bebas_Neue] text-[clamp(32px,5vw,52px)] leading-none tracking-[-1px] text-[#cc2200]">
+          <div className="font-[Bebas_Neue] text-[clamp(32px,5vw,52px)] leading-none tracking-[-1px] text-[#FF6A00]">
             <AnimatedNumber value={conquerors} />
           </div>
           <div className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">
@@ -114,11 +114,11 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
 
       <div className="relative h-[3px] w-full overflow-hidden bg-[#1c1c1c]">
         <div
-          className="h-full bg-[#cc2200] transition-all duration-1000 ease-out"
+          className="h-full bg-[#FF6A00] transition-all duration-1000 ease-out"
           style={{ width: `${pct}%` }}
         />
         <div
-          className="absolute top-0 h-full w-4 bg-gradient-to-r from-transparent via-[rgba(204,34,0,0.8)] to-transparent blur-sm transition-all duration-1000"
+          className="absolute top-0 h-full w-4 bg-gradient-to-r from-transparent via-[rgba(255,106,0,0.8)] to-transparent blur-sm transition-all duration-1000"
           style={{ left: `calc(${pct}% - 8px)` }}
         />
       </div>
@@ -154,7 +154,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
           <div className="h-[1px] flex-1 bg-[rgba(240,236,227,0.05)]" />
           <Link
             href="/auth/signup"
-            className="text-[9px] uppercase tracking-[3px] text-[#cc2200] transition hover:text-[#e8440f]"
+            className="text-[9px] uppercase tracking-[3px] text-[#FF6A00] transition hover:text-[#e8440f]"
           >
             Тэдний нэг бол →
           </Link>

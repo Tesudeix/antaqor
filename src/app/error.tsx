@@ -9,7 +9,7 @@ export default function Error({
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
       <div className="text-center">
-        <div className="font-[Bebas_Neue] text-6xl tracking-[4px] text-[#cc2200]">
+        <div className="font-[Bebas_Neue] text-6xl tracking-[4px] text-[#FF6A00]">
           ERROR
         </div>
         <p className="mt-4 text-[12px] text-[#5a5550]">

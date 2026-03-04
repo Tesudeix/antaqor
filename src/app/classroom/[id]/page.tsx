@@ -104,7 +104,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
     return (
       <div className="py-16 text-center">
         <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">Lesson not found</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#cc2200]">← BACK</Link>
+        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FF6A00]">← BACK</Link>
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         <p className="mt-2 text-[12px] text-[#5a5550]">
           Таны одоогийн түвшин: LV.{userLevel}
         </p>
-        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#cc2200]">← БУЦАХ</Link>
+        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FF6A00]">← БУЦАХ</Link>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/classroom" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#cc2200]">
+      <Link href="/classroom" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#FF6A00]">
         ← {lesson.course?.title || "Classroom"}
       </Link>
 
@@ -205,7 +205,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             <button
               onClick={toggleComplete}
               className={`flex h-10 w-10 items-center justify-center border transition ${
-                isCompleted ? "border-[#cc2200] bg-[#cc2200] text-[#ede8df]" : "border-[#2a2825] text-[#5a5550] hover:border-[#cc2200]"
+                isCompleted ? "border-[#FF6A00] bg-[#FF6A00] text-[#ede8df]" : "border-[#2a2825] text-[#5a5550] hover:border-[#FF6A00]"
               }`}
               title={isCompleted ? "Mark incomplete" : "Mark complete"}
             >
@@ -218,7 +218,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           {admin && !editing && (
             <>
               <button onClick={() => setEditing(true)} className="btn-ghost !py-2 !px-3 !text-[9px]">Edit</button>
-              <button onClick={handleDelete} className="btn-ghost !py-2 !px-3 !text-[9px] !text-[#cc2200] hover:!border-[#cc2200]">Del</button>
+              <button onClick={handleDelete} className="btn-ghost !py-2 !px-3 !text-[9px] !text-[#FF6A00] hover:!border-[#FF6A00]">Del</button>
             </>
           )}
         </div>

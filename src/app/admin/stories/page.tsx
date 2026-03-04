@@ -8,8 +8,12 @@ interface Story {
   content: string;
   image: string;
   published: boolean;
+  date: string;
+  category: string;
   createdAt: string;
 }
+
+const CATEGORIES = ["", "ORIGIN", "MILESTONE", "CONQUEST", "VISION", "LEGACY"];
 
 export default function AdminStories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -17,6 +21,8 @@ export default function AdminStories() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
+  const [date, setDate] = useState("");
+  const [category, setCategory] = useState("");
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -43,12 +49,20 @@ export default function AdminStories() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), content: content.trim(), image: image.trim() }),
+        body: JSON.stringify({
+          title: title.trim(),
+          content: content.trim(),
+          image: image.trim(),
+          date: date || undefined,
+          category: category.trim(),
+        }),
       });
       if (res.ok) {
         setTitle("");
         setContent("");
         setImage("");
+        setDate("");
+        setCategory("");
         setEditingId(null);
         fetchStories();
       }
@@ -62,6 +76,8 @@ export default function AdminStories() {
     setTitle(story.title);
     setContent(story.content);
     setImage(story.image);
+    setDate(story.date ? new Date(story.date).toISOString().split("T")[0] : "");
+    setCategory(story.category || "");
   };
 
   const handleDelete = async (id: string) => {
@@ -84,12 +100,14 @@ export default function AdminStories() {
     setTitle("");
     setContent("");
     setImage("");
+    setDate("");
+    setCategory("");
   };
 
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#cc2200] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
       </div>
     );
   }
@@ -97,8 +115,8 @@ export default function AdminStories() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[2px] md:text-4xl">
-          STORY <span className="text-[#cc2200]">MANAGER</span>
+        <h1 className="font-[Orbitron] text-2xl font-bold tracking-[2px] md:text-3xl">
+          STORY <span className="text-[#FF6A00]">MANAGER</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           ТҮҮХ НЭМЭХ, ЗАСАХ, УСТГАХ
@@ -107,7 +125,7 @@ export default function AdminStories() {
 
       {/* Add/Edit form */}
       <div className="card p-6">
-        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#cc2200]">
+        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#FF6A00]">
           {editingId ? "Түүх засах" : "Шинэ түүх нэмэх"}
         </div>
         <div className="space-y-4">
@@ -126,6 +144,30 @@ export default function AdminStories() {
             className="input-dark min-h-[200px] w-full resize-y"
             maxLength={10000}
           />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#5a5550]">Огноо (timeline)</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="input-dark w-full"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#5a5550]">Ангилал</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="input-dark w-full"
+              >
+                <option value="">— Сонгох —</option>
+                {CATEGORIES.filter(Boolean).map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
           <input
             type="text"
             value={image}
@@ -137,7 +179,7 @@ export default function AdminStories() {
             <button
               onClick={handleSubmit}
               disabled={!title.trim() || !content.trim() || saving}
-              className="btn-blood"
+              className="btn-neon"
             >
               {saving ? "Хадгалж байна..." : editingId ? "Шинэчлэх" : "Нэмэх"}
             </button>
@@ -160,7 +202,7 @@ export default function AdminStories() {
         </div>
         {stories.length === 0 ? (
           <div className="card p-10 text-center">
-            <p className="font-[Bebas_Neue] text-2xl tracking-[1px] text-[rgba(240,236,227,0.3)]">
+            <p className="font-[Orbitron] text-xl font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
               Түүх байхгүй
             </p>
             <p className="mt-2 text-[12px] text-[#5a5550]">
@@ -173,15 +215,20 @@ export default function AdminStories() {
               <div key={story._id} className="card p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-[Bebas_Neue] text-xl tracking-[1px] truncate">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-[Orbitron] text-base font-bold tracking-[1px] truncate">
                         {story.title}
                       </h3>
+                      {story.category && (
+                        <span className="shrink-0 text-[8px] uppercase tracking-[1px] px-2 py-0.5 bg-[rgba(0,240,255,0.1)] text-[#00F0FF] border border-[rgba(0,240,255,0.2)]">
+                          {story.category}
+                        </span>
+                      )}
                       <span
                         className={`shrink-0 text-[8px] uppercase tracking-[1px] px-2 py-0.5 ${
                           story.published
                             ? "bg-green-950/50 text-green-500 border border-green-900/50"
-                            : "bg-[#1c1c1c] text-[#5a5550] border border-[#1c1c1c]"
+                            : "bg-[#1a1a2e] text-[#5a5550] border border-[#1a1a2e]"
                         }`}
                       >
                         {story.published ? "Нийтлэгдсэн" : "Ноорог"}
@@ -190,23 +237,23 @@ export default function AdminStories() {
                     <p className="mt-2 text-[12px] leading-relaxed text-[#5a5550] line-clamp-3">
                       {story.content}
                     </p>
-                    <div className="mt-2 text-[10px] text-[#3a3835]">
-                      {new Date(story.createdAt).toLocaleDateString("mn-MN")}
+                    <div className="mt-2 flex gap-3 text-[10px] text-[#3a3835]">
+                      <span>{story.date ? new Date(story.date).toLocaleDateString("mn-MN") : "—"}</span>
                     </div>
                   </div>
                   {story.image && (
                     <img
                       src={story.image}
                       alt=""
-                      className="h-16 w-16 shrink-0 border border-[#1c1c1c] object-cover"
+                      className="h-16 w-16 shrink-0 border border-[#1a1a2e] object-cover"
                     />
                   )}
                 </div>
-                <div className="mt-3 flex gap-2 border-t border-[#1c1c1c] pt-3">
+                <div className="mt-3 flex gap-2 border-t border-[#1a1a2e] pt-3">
                   <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#c8c8c0] transition">
                     Засах
                   </button>
-                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#cc2200] transition">
+                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#FF6A00] transition">
                     {story.published ? "Нуух" : "Нийтлэх"}
                   </button>
                   <button onClick={() => handleDelete(story._id)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-red-500 transition">

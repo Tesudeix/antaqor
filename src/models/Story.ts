@@ -6,6 +6,8 @@ export interface IStory extends Document {
   content: string;
   image: string;
   published: boolean;
+  date: Date;
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,14 +34,23 @@ const StorySchema = new Schema<IStory>(
       type: Boolean,
       default: true,
     },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+    category: {
+      type: String,
+      default: "",
+      trim: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-StorySchema.index({ createdAt: -1 });
-StorySchema.index({ published: 1, createdAt: -1 });
+StorySchema.index({ date: -1 });
+StorySchema.index({ published: 1, date: -1 });
 
 const Story: Model<IStory> =
   mongoose.models.Story || mongoose.model<IStory>("Story", StorySchema);

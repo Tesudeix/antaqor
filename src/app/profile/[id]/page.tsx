@@ -163,7 +163,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
       </div>
     );
   }
@@ -209,7 +209,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
                 >
                   {uploading ? (
-                    <div className="h-4 w-4 animate-spin border-2 border-[#cc2200] border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
                   ) : (
                     <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -283,7 +283,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       return (
                         <div className="mt-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#cc2200]">
+                            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#FF6A00]">
                               LV.{level}
                             </span>
                             <span className="text-[10px] uppercase tracking-[2px] text-[#c8c8c0]">
@@ -293,7 +293,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                           <div className="mt-1.5 flex items-center gap-2">
                             <div className="h-1.5 w-32 overflow-hidden bg-[#1c1c1c]">
                               <div
-                                className="h-full bg-[#cc2200] transition-all"
+                                className="h-full bg-[#FF6A00] transition-all"
                                 style={{ width: `${Math.round(progress * 100)}%` }}
                               />
                             </div>
@@ -305,7 +305,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       );
                     })()}
                     {user.clan && (
-                      <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#cc2200]">
+                      <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#FF6A00]">
                         Кланы гишүүн
                       </span>
                     )}

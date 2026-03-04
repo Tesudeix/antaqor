@@ -20,14 +20,14 @@ export default function OGImage() {
         }}
       >
         {/* Top red line */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "#cc2200" }} />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "#FF6A00" }} />
 
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
           <span style={{ fontSize: 140, fontWeight: 900, color: "#ede8df", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
             ANTA
           </span>
-          <span style={{ fontSize: 140, fontWeight: 900, color: "#cc2200", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
+          <span style={{ fontSize: 140, fontWeight: 900, color: "#FF6A00", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
             QOR
           </span>
         </div>
@@ -43,7 +43,7 @@ export default function OGImage() {
         </div>
 
         {/* Bottom red line */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: "#cc2200" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: "#FF6A00" }} />
       </div>
     ),
     { ...size }

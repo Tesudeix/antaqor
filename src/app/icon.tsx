@@ -21,7 +21,7 @@ export default function Icon() {
           style={{
             fontSize: 24,
             fontWeight: 900,
-            color: "#cc2200",
+            color: "#FF6A00",
             fontFamily: "Arial Black, sans-serif",
             lineHeight: 1,
           }}

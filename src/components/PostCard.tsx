@@ -116,10 +116,10 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             </p>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[rgba(3,3,3,0.6)]">
-            <svg className="mb-2 h-5 w-5 text-[#cc2200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="mb-2 h-5 w-5 text-[#FF6A00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <span className="text-[10px] uppercase tracking-[2px] text-[#cc2200]">Гишүүдэд зориулсан</span>
+            <span className="text-[10px] uppercase tracking-[2px] text-[#FF6A00]">Гишүүдэд зориулсан</span>
             <Link href="/clan" className="mt-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#ede8df]">
               Кланд нэгдэх →
             </Link>
@@ -158,7 +158,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               className={`flex h-7 items-center gap-1 px-2 text-[8px] uppercase tracking-[1px] transition ${
                 isFree
                   ? "text-green-500 hover:text-green-400"
-                  : "text-[#5a5550] hover:text-[#cc2200]"
+                  : "text-[#5a5550] hover:text-[#FF6A00]"
               }`}
             >
               {toggling ? (
@@ -175,7 +175,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             </button>
           )}
           {canDelete && (
-            <button onClick={handleDelete} className="text-[#5a5550] transition hover:text-[#cc2200]" title="Пост устгах">
+            <button onClick={handleDelete} className="text-[#5a5550] transition hover:text-[#FF6A00]" title="Пост устгах">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -197,7 +197,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           <div className={`relative overflow-hidden border-y border-[#1c1c1c] bg-[#0a0a0a] ${isImageOnly ? "mt-4" : ""}`}>
             {!imgLoaded && (
               <div className="flex items-center justify-center py-24">
-                <div className="h-3 w-3 animate-pulse bg-[#cc2200]" />
+                <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
               </div>
             )}
             <img
@@ -216,7 +216,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           onClick={handleLike}
           disabled={!session}
           className={`flex items-center gap-2 text-[11px] tracking-[2px] transition ${
-            liked ? "font-bold text-[#cc2200]" : "text-[#5a5550] hover:text-[#cc2200]"
+            liked ? "font-bold text-[#FF6A00]" : "text-[#5a5550] hover:text-[#FF6A00]"
           }`}
         >
           <svg className="h-4 w-4" fill={liked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">

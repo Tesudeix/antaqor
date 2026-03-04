@@ -61,7 +61,7 @@ export default function ForgotPassword() {
           ) : (
             <>
               {error && (
-                <div className="mb-6 border-l-2 border-[#cc2200] bg-[rgba(204,34,0,0.08)] px-4 py-3 text-[12px] text-[#cc2200]">
+                <div className="mb-6 border-l-2 border-[#FF6A00] bg-[rgba(255,106,0,0.08)] px-4 py-3 text-[12px] text-[#FF6A00]">
                   {error}
                 </div>
               )}
@@ -92,7 +92,7 @@ export default function ForgotPassword() {
 
               <p className="mt-8 text-center text-[11px] text-[#5a5550]">
                 Нууц үгээ санаж байна уу?{" "}
-                <Link href="/auth/signin" className="text-[#cc2200] hover:text-[#e8440f]">
+                <Link href="/auth/signin" className="text-[#FF6A00] hover:text-[#e8440f]">
                   Нэвтрэх
                 </Link>
               </p>
