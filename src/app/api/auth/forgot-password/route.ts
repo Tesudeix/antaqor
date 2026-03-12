@@ -40,26 +40,26 @@ export async function POST(req: NextRequest) {
     const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
 
     await resend.emails.send({
-      from: "Antaqor <onboarding@resend.dev>",
+      from: "Tesudeix <onboarding@resend.dev>",
       to: user.email,
-      subject: "Нууц үг сэргээх — Antaqor",
+      subject: "Нууц үг сэргээх — Tesudeix",
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; background: #0f0f0f; color: #ede8df; padding: 40px; border: 1px solid #1c1c1c;">
           <div style="font-size: 24px; font-weight: bold; letter-spacing: 4px; margin-bottom: 24px;">
-            ANTA<span style="color: #FF6A00;">QOR</span>
+            TESU<span style="color: #006491;">DEIX</span>
           </div>
           <p style="font-size: 14px; color: #c8c8c0; line-height: 1.8; margin-bottom: 24px;">
             Сайн байна уу, <strong>${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
             Доорх товчийг дарж шинэ нууц үг тохируулна уу.
           </p>
-          <a href="${resetUrl}" style="display: inline-block; background: #FF6A00; color: #ede8df; padding: 12px 32px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none;">
+          <a href="${resetUrl}" style="display: inline-block; background: #006491; color: #ede8df; padding: 12px 32px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none;">
             Нууц үг сэргээх
           </a>
           <p style="font-size: 11px; color: #5a5550; margin-top: 24px; line-height: 1.8;">
             Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
           </p>
           <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #1c1c1c; font-size: 10px; color: #5a5550; letter-spacing: 2px;">
-            ДИЖИТАЛ ҮНДЭСТЭН · ANTAQOR
+            ДИЖИТАЛ ҮНДЭСТЭН · TESUDEIX
           </div>
         </div>
       `,

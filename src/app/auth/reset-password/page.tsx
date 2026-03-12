@@ -22,7 +22,7 @@ function ResetPasswordForm() {
   if (!ready) {
     return (
       <div className="flex justify-center py-8">
-        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -101,7 +101,7 @@ function ResetPasswordForm() {
       ) : (
         <>
           {error && (
-            <div className="mb-6 border-l-2 border-[#FF6A00] bg-[rgba(255,106,0,0.08)] px-4 py-3 text-[12px] text-[#FF6A00]">
+            <div className="mb-6 border-l-2 border-[#006491] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#006491]">
               {error}
             </div>
           )}
@@ -157,7 +157,7 @@ export default function ResetPassword() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-md">
         <div className="card p-8 md:p-10">
-          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse bg-[#FF6A00]" /></div>}>
+          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse bg-[#006491]" /></div>}>
             <ResetPasswordForm />
           </Suspense>
         </div>

@@ -28,7 +28,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let data = { title: "Antaqor", body: "New activity in the community" };
+  let data = { title: "Tesudeix", body: "New activity in the community" };
   try {
     data = event.data.json();
   } catch (e) {

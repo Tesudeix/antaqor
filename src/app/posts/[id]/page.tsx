@@ -49,7 +49,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -57,10 +57,10 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   if (!post) {
     return (
       <div className="py-16 text-center">
-        <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+        <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
           Пост олдсонгүй
         </p>
-        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FF6A00] hover:text-[#e8440f]">
+        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#006491] hover:text-[#004f73]">
           ← МЭДЭЭ РҮҮ БУЦАХ
         </Link>
       </div>
@@ -69,7 +69,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#FF6A00]">
+      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#006491]">
         ← Мэдээ рүү буцах
       </Link>
       <PostCard post={post} onDelete={handleDelete} />

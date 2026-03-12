@@ -27,7 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   open: "text-green-400 border-green-900",
   submitted: "text-yellow-400 border-yellow-900",
-  accepted: "text-[#FF6A00] border-[#FF6A00]",
+  accepted: "text-[#006491] border-[#006491]",
   rejected: "text-[#5a5550] border-[#5a5550]",
 };
 
@@ -105,7 +105,7 @@ export default function TasksPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">Даалгаврууд</h1>
+        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Даалгаврууд</h1>
         <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Нэвтэрч орно уу.</p>
         <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
@@ -115,7 +115,7 @@ export default function TasksPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function TasksPage() {
           ) : (
             <button
               onClick={() => setShowCreate(true)}
-              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#FF6A00] hover:text-[#FF6A00]"
+              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#006491] hover:text-[#006491]"
             >
               + Даалгавар үүсгэх
             </button>
@@ -209,7 +209,7 @@ export default function TasksPage() {
                       </p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#006491]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -241,7 +241,7 @@ export default function TasksPage() {
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#006491]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -250,7 +250,7 @@ export default function TasksPage() {
                     Авах
                   </button>
                   {admin && (
-                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[9px] !text-[#FF6A00]">
+                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[9px] !text-[#006491]">
                       Устгах
                     </button>
                   )}
@@ -280,7 +280,7 @@ export default function TasksPage() {
                       </span>
                     </div>
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FF6A00]">
+                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#006491]">
                     +{task.xpReward} XP
                   </span>
                 </div>

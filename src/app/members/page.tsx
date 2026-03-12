@@ -58,13 +58,13 @@ function MembersContent() {
         <div className="mb-3 text-[11px] uppercase tracking-[1px] text-[#c8c8c0]">
           Нийгэмлэг · Гишүүд
         </div>
-        <h1 className="font-[Bebas_Neue] text-[clamp(40px,6vw,80px)] leading-[0.9] tracking-[-2px] text-[#ede8df]">
-          <span className="text-[#FF6A00]">Клан</span>
+        <h1 className="text-[clamp(40px,6vw,80px)] leading-[0.9] tracking-[-2px] text-[#ede8df]">
+          <span className="text-[#006491]">Клан</span>
         </h1>
         <div className="mt-4 flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 bg-[#FF6A00]" />
-            <span className="font-[Bebas_Neue] text-3xl tracking-[2px] text-[#ede8df]">
+            <div className="h-2 w-2 bg-[#006491]" />
+            <span className="text-3xl tracking-[2px] text-[#ede8df]">
               {loading ? "—" : totalMembers}
             </span>
             <span className="text-[11px] uppercase tracking-[0.5px] text-[#5a5550]">Гишүүд</span>
@@ -74,11 +74,11 @@ function MembersContent() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+          <div className="h-3 w-3 animate-pulse bg-[#006491]" />
         </div>
       ) : members.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+          <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
             Гишүүд байхгүй байна
           </p>
           <p className="mt-2 text-[12px] text-[#5a5550]">Кланд хамгийн түрүүнд нэгд.</p>
@@ -100,7 +100,7 @@ function MembersContent() {
                 key={member._id}
                 href={`/profile/${member._id}`}
                 className={`card group p-5 transition ${
-                  memberIsAdmin ? "!border-[#FF6A00]/30" : ""
+                  memberIsAdmin ? "!border-[#006491]/30" : ""
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -110,7 +110,7 @@ function MembersContent() {
                         src={member.avatar}
                         alt={member.name}
                         className={`h-12 w-12 object-cover ${
-                          memberIsAdmin ? "ring-2 ring-[#FF6A00]" : "ring-1 ring-[#1c1c1c]"
+                          memberIsAdmin ? "ring-2 ring-[#006491]" : "ring-1 ring-[#1c1c1c]"
                         }`}
                       />
                       {memberIsAdmin && (
@@ -120,7 +120,7 @@ function MembersContent() {
                   ) : (
                     <div className={`relative flex h-12 w-12 items-center justify-center text-[12px] font-bold tracking-wider ${
                       memberIsAdmin
-                        ? "bg-[#FF6A00] text-[#ede8df]"
+                        ? "bg-[#006491] text-[#ede8df]"
                         : "bg-[#1c1c1c] text-[#c8c8c0]"
                     }`}>
                       {initials}
@@ -131,14 +131,14 @@ function MembersContent() {
                   )}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className={`truncate text-[13px] font-bold transition group-hover:text-[#FF6A00] ${
-                        memberIsAdmin ? "text-[#FF6A00]" : "text-[#ede8df]"
+                      <p className={`truncate text-[13px] font-bold transition group-hover:text-[#006491] ${
+                        memberIsAdmin ? "text-[#006491]" : "text-[#ede8df]"
                       }`}>
                         {member.name}
                       </p>
                     </div>
                     {memberIsAdmin ? (
-                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[#FF6A00]">
+                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[#006491]">
                         Эзэн хаан
                       </p>
                     ) : member.bio ? (

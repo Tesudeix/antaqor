@@ -107,7 +107,7 @@ export default function AdminStories() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#006491] border-t-transparent" />
       </div>
     );
   }
@@ -115,8 +115,8 @@ export default function AdminStories() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-[Orbitron] text-2xl font-bold tracking-[2px] md:text-3xl">
-          STORY <span className="text-[#FF6A00]">MANAGER</span>
+        <h1 className="text-2xl font-bold tracking-[2px] md:text-3xl">
+          STORY <span className="text-[#006491]">MANAGER</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           ТҮҮХ НЭМЭХ, ЗАСАХ, УСТГАХ
@@ -125,7 +125,7 @@ export default function AdminStories() {
 
       {/* Add/Edit form */}
       <div className="card p-6">
-        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#FF6A00]">
+        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#006491]">
           {editingId ? "Түүх засах" : "Шинэ түүх нэмэх"}
         </div>
         <div className="space-y-4">
@@ -202,7 +202,7 @@ export default function AdminStories() {
         </div>
         {stories.length === 0 ? (
           <div className="card p-10 text-center">
-            <p className="font-[Orbitron] text-xl font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
+            <p className="text-xl font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
               Түүх байхгүй
             </p>
             <p className="mt-2 text-[12px] text-[#5a5550]">
@@ -216,7 +216,7 @@ export default function AdminStories() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-[Orbitron] text-base font-bold tracking-[1px] truncate">
+                      <h3 className="text-base font-bold tracking-[1px] truncate">
                         {story.title}
                       </h3>
                       {story.category && (
@@ -253,7 +253,7 @@ export default function AdminStories() {
                   <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#c8c8c0] transition">
                     Засах
                   </button>
-                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#FF6A00] transition">
+                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#006491] transition">
                     {story.published ? "Нуух" : "Нийтлэх"}
                   </button>
                   <button onClick={() => handleDelete(story._id)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-red-500 transition">

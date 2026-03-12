@@ -128,7 +128,7 @@ export default function RepliesManagementPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#006491] border-t-transparent" />
       </div>
     );
   }
@@ -136,8 +136,8 @@ export default function RepliesManagementPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[2px] md:text-4xl">
-          REPLY <span className="text-[#FF6A00]">MANAGEMENT</span>
+        <h1 className="text-3xl tracking-[2px] md:text-4xl">
+          REPLY <span className="text-[#006491]">MANAGEMENT</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           SELECT A THREAD TO VIEW AND MANAGE ITS REPLIES
@@ -171,7 +171,7 @@ export default function RepliesManagementPage() {
                   onClick={() => loadReplies(post.id)}
                   className={`w-full text-left p-3 border transition ${
                     selectedPost === post.id
-                      ? "border-[#FF6A00] bg-[rgba(255,106,0,0.08)]"
+                      ? "border-[#006491] bg-[rgba(0,100,145,0.08)]"
                       : "border-[#1c1c1c] hover:border-[rgba(240,236,227,0.1)]"
                   }`}
                 >
@@ -201,7 +201,7 @@ export default function RepliesManagementPage() {
             </div>
           ) : loadingReplies ? (
             <div className="flex h-full min-h-[300px] items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a]">
-              <div className="h-6 w-6 animate-spin border-2 border-[#FF6A00] border-t-transparent" />
+              <div className="h-6 w-6 animate-spin border-2 border-[#006491] border-t-transparent" />
             </div>
           ) : (
             <div className="border border-[#1c1c1c] bg-[#0a0a0a]">
@@ -211,7 +211,7 @@ export default function RepliesManagementPage() {
                 </span>
                 <Link
                   href={`/admin/threads/${selectedPost}`}
-                  className="text-[10px] uppercase tracking-[2px] text-[#FF6A00] transition hover:text-[#e8440f]"
+                  className="text-[10px] uppercase tracking-[2px] text-[#006491] transition hover:text-[#004f73]"
                 >
                   Open Chat View
                 </Link>

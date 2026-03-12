@@ -84,7 +84,7 @@ export default function CommentSection({ postId }: { postId: string }) {
         </form>
       ) : (
         <p className="mb-8 text-[12px] text-[#5a5550]">
-          <Link href="/auth/signin" className="text-[#FF6A00] hover:text-[#e8440f]">
+          <Link href="/auth/signin" className="text-[#006491] hover:text-[#004f73]">
             Нэвтэрнэ үү
           </Link>{" "}
           сэтгэгдэл бичихийн тулд.
@@ -93,7 +93,7 @@ export default function CommentSection({ postId }: { postId: string }) {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+          <div className="h-3 w-3 animate-pulse bg-[#006491]" />
         </div>
       ) : comments.length === 0 ? (
         <p className="py-6 text-center text-[12px] text-[#5a5550]">
@@ -112,7 +112,7 @@ export default function CommentSection({ postId }: { postId: string }) {
             return (
               <div
                 key={comment._id}
-                className="border-l-2 border-[#1c1c1c] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#FF6A00]"
+                className="border-l-2 border-[#1c1c1c] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#006491]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <Link href={`/profile/${comment.author._id}`} className="flex items-center gap-2">

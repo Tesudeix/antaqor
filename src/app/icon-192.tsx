@@ -20,7 +20,7 @@ export default function Icon192() {
           style={{
             fontSize: 130,
             fontWeight: 900,
-            color: "#FF6A00",
+            color: "#006491",
             fontFamily: "Arial Black, sans-serif",
             lineHeight: 1,
           }}

@@ -77,13 +77,13 @@ export default function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={handleOpen}
-        className="relative flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[#c8c8c0] transition hover:border-[#FF6A00] hover:text-[#ede8df]"
+        className="relative flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[#c8c8c0] transition hover:border-[#006491] hover:text-[#ede8df]"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-[#FF6A00] text-[8px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-[#006491] text-[8px] font-bold text-white">
             {unread > 9 ? "9+" : unread}
           </span>
         )}
@@ -107,8 +107,8 @@ export default function NotificationBell() {
                   key={n._id}
                   href={n.link}
                   onClick={() => setOpen(false)}
-                  className={`block border-b border-[rgba(28,28,28,0.5)] px-4 py-3 transition hover:bg-[rgba(255,106,0,0.05)] ${
-                    !n.read ? "bg-[rgba(255,106,0,0.03)]" : ""
+                  className={`block border-b border-[rgba(28,28,28,0.5)] px-4 py-3 transition hover:bg-[rgba(0,100,145,0.05)] ${
+                    !n.read ? "bg-[rgba(0,100,145,0.03)]" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -119,7 +119,7 @@ export default function NotificationBell() {
                     <span className="shrink-0 text-[9px] text-[#5a5550]">{timeAgo(n.createdAt)}</span>
                   </div>
                   {!n.read && (
-                    <div className="mt-1 h-[2px] w-4 bg-[#FF6A00]" />
+                    <div className="mt-1 h-[2px] w-4 bg-[#006491]" />
                   )}
                 </Link>
               ))

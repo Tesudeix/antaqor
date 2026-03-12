@@ -111,14 +111,14 @@ export default function SignUp() {
               <div
                 key={s}
                 className={`h-[2px] flex-1 transition-all ${
-                  s <= step ? "bg-[#FF6A00]" : "bg-[#1c1c1c]"
+                  s <= step ? "bg-[#006491]" : "bg-[#1c1c1c]"
                 }`}
               />
             ))}
           </div>
 
           {error && (
-            <div className="mb-6 border-l-2 border-[#FF6A00] bg-[rgba(255,106,0,0.08)] px-4 py-3 text-[12px] text-[#FF6A00]">
+            <div className="mb-6 border-l-2 border-[#006491] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#006491]">
               {error}
             </div>
           )}
@@ -127,7 +127,7 @@ export default function SignUp() {
             {/* Step 1: Account */}
             {step === 1 && (
               <div className="space-y-4">
-                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#FF6A00]">
+                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#006491]">
                   Бүртгэлийн мэдээлэл
                 </div>
 
@@ -225,7 +225,7 @@ export default function SignUp() {
             {/* Step 2: Personal Info */}
             {step === 2 && (
               <div className="space-y-4">
-                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#FF6A00]">
+                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#006491]">
                   Хувийн мэдээлэл
                 </div>
 
@@ -256,11 +256,11 @@ export default function SignUp() {
                         onClick={() => setAiExperience(level.value)}
                         className={`border p-3 text-left transition ${
                           aiExperience === level.value
-                            ? "border-[#FF6A00] bg-[rgba(255,106,0,0.08)]"
+                            ? "border-[#006491] bg-[rgba(0,100,145,0.08)]"
                             : "border-[#1c1c1c] hover:border-[rgba(240,236,227,0.1)]"
                         }`}
                       >
-                        <div className={`text-[11px] font-bold ${aiExperience === level.value ? "text-[#FF6A00]" : "text-[#ede8df]"}`}>
+                        <div className={`text-[11px] font-bold ${aiExperience === level.value ? "text-[#006491]" : "text-[#ede8df]"}`}>
                           {level.label}
                         </div>
                         <div className="mt-0.5 text-[9px] text-[#5a5550]">{level.desc}</div>
@@ -291,7 +291,7 @@ export default function SignUp() {
             {/* Step 3: Interests */}
             {step === 3 && (
               <div className="space-y-4">
-                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#FF6A00]">
+                <div className="mb-2 text-[10px] uppercase tracking-[2px] text-[#006491]">
                   Сонирхол (5 хүртэл)
                 </div>
 
@@ -303,7 +303,7 @@ export default function SignUp() {
                       onClick={() => toggleInterest(opt.value)}
                       className={`border px-3 py-2 text-[11px] transition ${
                         interests.includes(opt.value)
-                          ? "border-[#FF6A00] bg-[rgba(255,106,0,0.1)] text-[#FF6A00]"
+                          ? "border-[#006491] bg-[rgba(0,100,145,0.1)] text-[#006491]"
                           : "border-[#1c1c1c] text-[#5a5550] hover:border-[rgba(240,236,227,0.1)] hover:text-[#c8c8c0]"
                       }`}
                     >
@@ -338,7 +338,7 @@ export default function SignUp() {
 
           <p className="mt-8 text-center text-[11px] text-[#5a5550]">
             Бүртгэлтэй юу?{" "}
-            <Link href="/auth/signin" className="text-[#FF6A00] hover:text-[#e8440f]">
+            <Link href="/auth/signin" className="text-[#006491] hover:text-[#004f73]">
               Нэвтрэх
             </Link>
           </p>

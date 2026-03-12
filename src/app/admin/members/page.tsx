@@ -147,7 +147,7 @@ export default function AdminMembersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-[Bebas_Neue] text-3xl tracking-[1px] text-[#ede8df]">
+        <h1 className="text-3xl tracking-[1px] text-[#ede8df]">
           Гишүүд удирдах
         </h1>
         <p className="mt-1 text-[11px] tracking-[2px] text-[#5a5550]">
@@ -156,9 +156,9 @@ export default function AdminMembersPage() {
       </div>
 
       {message && (
-        <div className="mb-6 border-l-2 border-[#FF6A00] bg-[rgba(255,106,0,0.08)] px-4 py-3 text-[12px] text-[#FF6A00]">
+        <div className="mb-6 border-l-2 border-[#006491] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#006491]">
           {message}
-          <button onClick={() => setMessage("")} className="ml-3 text-[10px] text-[#5a5550] hover:text-[#FF6A00]">
+          <button onClick={() => setMessage("")} className="ml-3 text-[10px] text-[#5a5550] hover:text-[#006491]">
             ✕
           </button>
         </div>
@@ -168,19 +168,19 @@ export default function AdminMembersPage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Нийт хэрэглэгч</div>
-          <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#ede8df]">{totalUsers}</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[#ede8df]">{totalUsers}</div>
         </div>
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
-          <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#FF6A00]">{totalMembers}</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[#006491]">{totalMembers}</div>
         </div>
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Гишүүн бус</div>
-          <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">{totalUsers - totalMembers}</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">{totalUsers - totalMembers}</div>
         </div>
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Хөрвүүлэлт</div>
-          <div className="mt-1 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#e8440f]">
+          <div className="mt-1 text-2xl tracking-[2px] text-[#004f73]">
             {totalUsers > 0 ? Math.round((totalMembers / totalUsers) * 100) : 0}%
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function AdminMembersPage() {
       {/* AI Level + Interest Breakdown */}
       <div className="mb-8 grid gap-3 sm:grid-cols-2">
         <div className="card p-4">
-          <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#FF6A00]">AI Түвшин</div>
+          <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#006491]">AI Түвшин</div>
           <div className="space-y-2">
             {(["beginner", "intermediate", "advanced", "expert"] as const).map((level) => {
               const count = getAiCount(level);
@@ -198,7 +198,7 @@ export default function AdminMembersPage() {
                 <div key={level} className="flex items-center gap-3">
                   <span className="w-24 text-[10px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
                   <div className="h-[3px] flex-1 bg-[#1c1c1c]">
-                    <div className="h-full bg-[#FF6A00] transition-all" style={{ width: `${pct}%` }} />
+                    <div className="h-full bg-[#006491] transition-all" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-8 text-right text-[10px] text-[#5a5550]">{count}</span>
                 </div>
@@ -207,7 +207,7 @@ export default function AdminMembersPage() {
           </div>
         </div>
         <div className="card p-4">
-          <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#FF6A00]">Түгээмэл сонирхол</div>
+          <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#006491]">Түгээмэл сонирхол</div>
           <div className="flex flex-wrap gap-1.5">
             {interestCounts.map((ic) => (
               <span key={ic._id} className="border border-[#1c1c1c] px-2 py-1 text-[9px] text-[#c8c8c0]">
@@ -246,7 +246,7 @@ export default function AdminMembersPage() {
               onClick={() => setFilter(f.value)}
               className={`px-3 py-2 text-[9px] uppercase tracking-[2px] transition ${
                 filter === f.value
-                  ? "bg-[rgba(255,106,0,0.1)] text-[#FF6A00]"
+                  ? "bg-[rgba(0,100,145,0.1)] text-[#006491]"
                   : "text-[#5a5550] hover:text-[#c8c8c0]"
               }`}
             >
@@ -259,7 +259,7 @@ export default function AdminMembersPage() {
       {/* Users list */}
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+          <div className="h-3 w-3 animate-pulse bg-[#006491]" />
         </div>
       ) : users.length === 0 ? (
         <div className="py-16 text-center">
@@ -311,7 +311,7 @@ export default function AdminMembersPage() {
                     )}
 
                     {member ? (
-                      <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(255,106,0,0.1)] text-[#FF6A00]">
+                      <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(0,100,145,0.1)] text-[#006491]">
                         Гишүүн
                         {remaining !== null && remaining > 0 && (
                           <span className="ml-1 text-[#5a5550]">({remaining}д)</span>
@@ -331,7 +331,7 @@ export default function AdminMembersPage() {
                       <button
                         onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
                         disabled={actionLoading === user._id}
-                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#FF6A00] text-[#ede8df] transition hover:bg-[#e8440f] disabled:opacity-50"
+                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#006491] text-[#ede8df] transition hover:bg-[#004f73] disabled:opacity-50"
                       >
                         {actionLoading === user._id ? "..." : "Эрх олгох"}
                       </button>
@@ -340,7 +340,7 @@ export default function AdminMembersPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
                           disabled={actionLoading === user._id}
-                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#FF6A00] disabled:opacity-50"
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#006491] disabled:opacity-50"
                         >
                           Сунгах
                         </button>
@@ -352,7 +352,7 @@ export default function AdminMembersPage() {
                             }
                           }}
                           disabled={actionLoading === user._id}
-                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#FF6A00] disabled:opacity-50"
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#006491] disabled:opacity-50"
                         >
                           Цуцлах
                         </button>
@@ -412,7 +412,7 @@ export default function AdminMembersPage() {
       {grantModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="card mx-4 w-full max-w-md p-6">
-            <h2 className="mb-4 font-[Bebas_Neue] text-2xl tracking-[1px] text-[#ede8df]">
+            <h2 className="mb-4 text-2xl tracking-[1px] text-[#ede8df]">
               {isMember(grantModal) ? "Гишүүнчлэл сунгах" : "Гишүүнчлэл олгох"}
             </h2>
             <p className="mb-4 text-[12px] text-[rgba(240,236,227,0.5)]">
@@ -430,7 +430,7 @@ export default function AdminMembersPage() {
                     onClick={() => setGrantDays(d)}
                     className={`px-3 py-2 text-[10px] transition ${
                       grantDays === d
-                        ? "bg-[#FF6A00] text-[#ede8df]"
+                        ? "bg-[#006491] text-[#ede8df]"
                         : "bg-[#1c1c1c] text-[#5a5550] hover:text-[#c8c8c0]"
                     }`}
                   >

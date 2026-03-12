@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Antaqor — Be Wild. Conquer the Future.";
+export const alt = "Tesudeix — Be Wild. Conquer the Future.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -20,15 +20,15 @@ export default function OGImage() {
         }}
       >
         {/* Top red line */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "#FF6A00" }} />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "#006491" }} />
 
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
           <span style={{ fontSize: 140, fontWeight: 900, color: "#ede8df", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
-            ANTA
+            TESU
           </span>
-          <span style={{ fontSize: 140, fontWeight: 900, color: "#FF6A00", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
-            QOR
+          <span style={{ fontSize: 140, fontWeight: 900, color: "#006491", fontFamily: "Arial Black, sans-serif", lineHeight: 1 }}>
+            DEIX
           </span>
         </div>
 
@@ -43,7 +43,7 @@ export default function OGImage() {
         </div>
 
         {/* Bottom red line */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: "#FF6A00" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: "#006491" }} />
       </div>
     ),
     { ...size }

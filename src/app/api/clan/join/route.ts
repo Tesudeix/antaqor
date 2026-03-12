@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       invoiceId: `INV-${Date.now()}`,
       senderCode: userEmail,
       amount: CLAN_PRICE,
-      description: `Antaqor Clan — ${userEmail}`,
+      description: `Tesudeix Clan — ${userEmail}`,
       status: "pending",
     });
 

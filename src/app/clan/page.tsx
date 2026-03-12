@@ -79,7 +79,7 @@ export default function ClanPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-[2px] w-8 animate-pulse bg-[#FF6A00]" />
+        <div className="h-[2px] w-8 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -88,12 +88,12 @@ export default function ClanPage() {
   if (paymentSubmitted) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-8 flex h-16 w-16 items-center justify-center border border-[#FF6A00]">
-          <svg className="h-8 w-8 text-[#FF6A00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-8 flex h-16 w-16 items-center justify-center border border-[#006491]">
+          <svg className="h-8 w-8 text-[#006491]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="mb-4 font-[Bebas_Neue] text-5xl tracking-[4px] text-[#ede8df]">
+        <h1 className="mb-4 text-5xl tracking-[4px] text-[#ede8df]">
           ХҮЛЭЭН АВЛАА
         </h1>
         <p className="mb-3 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
@@ -101,7 +101,7 @@ export default function ClanPage() {
         </p>
         <div className="mb-8 border border-[#1c1c1c] bg-[#0a0a0a] px-6 py-3">
           <div className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">Гүйлгээний утга</div>
-          <div className="mt-1 text-[14px] font-medium tracking-wide text-[#FF6A00]">{userEmail}</div>
+          <div className="mt-1 text-[14px] font-medium tracking-wide text-[#006491]">{userEmail}</div>
         </div>
         <p className="mb-10 max-w-sm text-[11px] leading-[1.8] text-[rgba(240,236,227,0.3)]">
           Ихэвчлэн 24 цагийн дотор шалгагдана. Баталгаажсаны дараа таны гишүүнчлэл идэвхжинэ.
@@ -118,11 +118,11 @@ export default function ClanPage() {
     return (
       <div>
         <section className="py-20 md:py-28">
-          <div className="mb-4 text-[10px] uppercase tracking-[3px] text-[#FF6A00]">
+          <div className="mb-4 text-[10px] uppercase tracking-[3px] text-[#006491]">
             Гишүүнчлэл идэвхтэй
           </div>
-          <h1 className="font-[Bebas_Neue] text-[clamp(56px,10vw,120px)] leading-[0.85] tracking-[-2px] text-[#ede8df]">
-            Та <span className="text-[#FF6A00]">Кланд</span><br />байна
+          <h1 className="text-[clamp(56px,10vw,120px)] leading-[0.85] tracking-[-2px] text-[#ede8df]">
+            Та <span className="text-[#006491]">Кланд</span><br />байна
           </h1>
           <p className="mt-8 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.4)]">
             Дижитал Үндэстний бүрэн гишүүн. Бүтээж, суралцаж, байлдан дагуулж байгаарай.
@@ -136,7 +136,7 @@ export default function ClanPage() {
             { label: "Менторшип", desc: "Шууд менторшип, Q&A, бүтээлч feedback авах боломж." },
           ].map((item) => (
             <div key={item.label} className="bg-[#0a0a0a] p-8">
-              <div className="mb-3 font-[Bebas_Neue] text-xl tracking-[2px] text-[#ede8df]">{item.label}</div>
+              <div className="mb-3 text-xl tracking-[2px] text-[#ede8df]">{item.label}</div>
               <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.4)]">{item.desc}</p>
             </div>
           ))}
@@ -150,13 +150,13 @@ export default function ClanPage() {
     <div>
       {/* Hero */}
       <section className="relative py-20 md:py-32">
-        <div className="absolute right-0 top-1/2 h-[600px] w-[600px] -translate-y-1/2 translate-x-1/3 bg-[radial-gradient(circle,rgba(255,106,0,0.06)_0%,transparent_70%)] pointer-events-none" />
+        <div className="absolute right-0 top-1/2 h-[600px] w-[600px] -translate-y-1/2 translate-x-1/3 bg-[radial-gradient(circle,rgba(0,100,145,0.06)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="mb-4 text-[10px] uppercase tracking-[3px] text-[#5a5550]">
           Дижитал Үндэстэн
         </div>
-        <h1 className="font-[Bebas_Neue] text-[clamp(56px,10vw,140px)] leading-[0.85] tracking-[-2px]">
-          <span className="text-[#FF6A00]">Кланд</span><br />нэгдэх
+        <h1 className="text-[clamp(56px,10vw,140px)] leading-[0.85] tracking-[-2px]">
+          <span className="text-[#006491]">Кланд</span><br />нэгдэх
         </h1>
         <p className="mt-8 max-w-lg text-[14px] leading-[2] text-[rgba(240,236,227,0.45)]">
           AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн
@@ -174,7 +174,7 @@ export default function ClanPage() {
         ].map((v) => (
           <div key={v.num} className="bg-[#0a0a0a] p-8">
             <div className="mb-6 text-[10px] tracking-[1px] text-[rgba(240,236,227,0.15)]">{v.num}</div>
-            <div className={`mb-3 font-[Bebas_Neue] text-xl tracking-[2px] ${v.num === "04" ? "text-[#FF6A00]" : "text-[#ede8df]"}`}>
+            <div className={`mb-3 text-xl tracking-[2px] ${v.num === "04" ? "text-[#006491]" : "text-[#ede8df]"}`}>
               {v.name}
             </div>
             <p className="text-[12px] leading-[1.9] text-[rgba(240,236,227,0.4)]">{v.desc}</p>
@@ -186,13 +186,13 @@ export default function ClanPage() {
       <section className="mb-20">
         <div className="border border-[#1c1c1c]">
           {/* Price header */}
-          <div className="border-b border-[#1c1c1c] bg-[#FF6A00] px-8 py-10 md:px-12">
+          <div className="border-b border-[#1c1c1c] bg-[#006491] px-8 py-10 md:px-12">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <div className="mb-1 text-[9px] uppercase tracking-[3px] text-[rgba(3,3,3,0.5)]">
                   Сарын гишүүнчлэл
                 </div>
-                <div className="font-[Bebas_Neue] text-[clamp(48px,6vw,72px)] leading-[0.9] text-[#030303]">
+                <div className="text-[clamp(48px,6vw,72px)] leading-[0.9] text-[#030303]">
                   ₮{CLAN_PRICE}
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function ClanPage() {
               "Эрт хандалт — шинэ боломжууд",
             ].map((b) => (
               <div key={b} className="flex items-center gap-4 bg-[#0a0a0a] px-8 py-5">
-                <div className="h-[1px] w-4 bg-[#FF6A00]" />
+                <div className="h-[1px] w-4 bg-[#006491]" />
                 <span className="text-[12px] text-[rgba(240,236,227,0.6)]">{b}</span>
               </div>
             ))}
@@ -226,7 +226,7 @@ export default function ClanPage() {
               /* Not logged in — pre-order CTA */
               <div>
                 <div className="mb-6">
-                  <div className="mb-2 font-[Bebas_Neue] text-2xl tracking-[2px] text-[#ede8df]">
+                  <div className="mb-2 text-2xl tracking-[2px] text-[#ede8df]">
                     УРЬДЧИЛЖ БҮРТГҮҮЛЭХ
                   </div>
                   <p className="max-w-md text-[12px] leading-[1.9] text-[rgba(240,236,227,0.4)]">
@@ -246,8 +246,8 @@ export default function ClanPage() {
               /* Payment flow */
               <div>
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="h-[1px] w-6 bg-[#FF6A00]" />
-                  <span className="text-[10px] uppercase tracking-[3px] text-[#FF6A00]">Төлбөр</span>
+                  <div className="h-[1px] w-6 bg-[#006491]" />
+                  <span className="text-[10px] uppercase tracking-[3px] text-[#006491]">Төлбөр</span>
                 </div>
 
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
@@ -282,7 +282,7 @@ export default function ClanPage() {
                     <div className="flex items-center justify-between bg-[#0a0a0a] px-5 py-4">
                       <div>
                         <div className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">Данс</div>
-                        <div className="mt-1 font-[Bebas_Neue] text-[22px] tracking-[3px] text-[#ede8df]">{BANK_ACCOUNT}</div>
+                        <div className="mt-1 text-[22px] tracking-[3px] text-[#ede8df]">{BANK_ACCOUNT}</div>
                       </div>
                       <CopyBtn text={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} />
                     </div>
@@ -300,18 +300,18 @@ export default function ClanPage() {
                     <div className="flex items-center justify-between bg-[#0a0a0a] px-5 py-4">
                       <div>
                         <div className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">Дүн</div>
-                        <div className="mt-1 font-[Bebas_Neue] text-[22px] tracking-[3px] text-[#ede8df]">{CLAN_PRICE}₮</div>
+                        <div className="mt-1 text-[22px] tracking-[3px] text-[#ede8df]">{CLAN_PRICE}₮</div>
                       </div>
                       <CopyBtn text="25000" field="amount" copied={copied} onCopy={copyToClipboard} />
                     </div>
 
                     {/* Reference — email */}
-                    <div className="flex items-center justify-between bg-[rgba(255,106,0,0.04)] px-5 py-5 border-l-2 border-[#FF6A00]">
+                    <div className="flex items-center justify-between bg-[rgba(0,100,145,0.04)] px-5 py-5 border-l-2 border-[#006491]">
                       <div>
-                        <div className="text-[9px] uppercase tracking-[2px] text-[#FF6A00]">
+                        <div className="text-[9px] uppercase tracking-[2px] text-[#006491]">
                           Гүйлгээний утга
                         </div>
-                        <div className="mt-1 text-[15px] font-bold tracking-wide text-[#FF6A00]">
+                        <div className="mt-1 text-[15px] font-bold tracking-wide text-[#006491]">
                           {userEmail}
                         </div>
                       </div>
@@ -324,7 +324,7 @@ export default function ClanPage() {
                 <div className="mt-8 border-l-2 border-[rgba(240,236,227,0.06)] pl-5">
                   <p className="text-[12px] leading-[2] text-[rgba(240,236,227,0.35)]">
                     Дээрх дансанд төлбөрөө шилжүүлж, гүйлгээний утга дээр{" "}
-                    <strong className="text-[#FF6A00]">{userEmail}</strong>{" "}
+                    <strong className="text-[#006491]">{userEmail}</strong>{" "}
                     имэйлээ бичнэ үү. Мөн банкны аппликейшнээр QR код уншуулж болно.
                   </p>
                 </div>
@@ -372,20 +372,20 @@ export default function ClanPage() {
       </section>
 
       {/* CTA Banner */}
-      <section className="mb-20 bg-[#FF6A00]">
+      <section className="mb-20 bg-[#006491]">
         <div className="px-8 py-16 md:px-16 md:py-24">
-          <div className="font-[Bebas_Neue] text-[clamp(32px,5vw,64px)] leading-[1.2] tracking-[2px] text-[#030303]">
+          <div className="text-[clamp(32px,5vw,64px)] leading-[1.2] tracking-[2px] text-[#030303]">
             <span className="text-[rgba(3,3,3,0.35)]">Ирээдүй хүлээхгүй.</span><br />
             Бид ч мөн адил.
           </div>
-          <div className="mt-12 font-[Bebas_Neue] text-[clamp(48px,8vw,100px)] leading-[0.9] tracking-[4px] text-[#030303]">
+          <div className="mt-12 text-[clamp(48px,8vw,100px)] leading-[0.9] tracking-[4px] text-[#030303]">
             Be Wild.<br />Conquer<br />the Future.
           </div>
           {!session && (
             <div className="mt-12">
               <Link
                 href="/auth/signup"
-                className="inline-block border-2 border-[#030303] bg-[#030303] px-10 py-4 font-[Bebas_Neue] text-lg tracking-[3px] text-[#ede8df] transition hover:bg-transparent hover:text-[#030303]"
+                className="inline-block border-2 border-[#030303] bg-[#030303] px-10 py-4 text-lg tracking-[3px] text-[#ede8df] transition hover:bg-transparent hover:text-[#030303]"
               >
                 Одоо нэгдэх
               </Link>
@@ -416,7 +416,7 @@ function CopyBtn({
       onClick={() => onCopy(text, field)}
       className={`flex h-8 w-8 shrink-0 items-center justify-center transition ${
         accent
-          ? "text-[#FF6A00]/60 hover:text-[#FF6A00]"
+          ? "text-[#006491]/60 hover:text-[#006491]"
           : "text-[#5a5550] hover:text-[#ede8df]"
       }`}
     >

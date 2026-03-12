@@ -29,7 +29,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div className="flex min-h-[60vh] items-center justify-center">
           <div className="text-center">
-            <div className="font-[Bebas_Neue] text-6xl tracking-[4px] text-[#FF6A00]">
+            <div className="text-6xl tracking-[4px] text-[#006491]">
               ERROR
             </div>
             <p className="mt-4 text-[12px] text-[#5a5550]">

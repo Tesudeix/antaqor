@@ -104,14 +104,14 @@ export default function BottomBar() {
               href={link.href}
               className={`relative flex flex-col items-center gap-0.5 px-3 py-2 transition ${
                 link.accent
-                  ? "text-[#FF6A00]"
+                  ? "text-[#006491]"
                   : active
                   ? "text-[#ede8df]"
                   : "text-[#5a5550]"
               }`}
             >
               {link.accent ? (
-                <div className="flex h-8 w-8 items-center justify-center bg-[#FF6A00] text-[#fff]" style={{ boxShadow: '0 0 10px rgba(255,106,0,0.4)' }}>
+                <div className="flex h-8 w-8 items-center justify-center bg-[#006491] text-[#fff]" style={{ boxShadow: '0 0 10px rgba(0,100,145,0.4)' }}>
                   {link.icon}
                 </div>
               ) : (
@@ -119,7 +119,7 @@ export default function BottomBar() {
               )}
               <span className="text-[8px] uppercase tracking-[1px]">{link.label}</span>
               {active && !link.accent && (
-                <span className="absolute -top-[1px] left-1/2 h-[2px] w-4 -translate-x-1/2 bg-[#FF6A00]" style={{ boxShadow: '0 0 6px rgba(255,106,0,0.5)' }} />
+                <span className="absolute -top-[1px] left-1/2 h-[2px] w-4 -translate-x-1/2 bg-[#006491]" style={{ boxShadow: '0 0 6px rgba(0,100,145,0.5)' }} />
               )}
             </Link>
           );

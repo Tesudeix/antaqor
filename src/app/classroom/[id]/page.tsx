@@ -104,7 +104,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -112,8 +112,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">Lesson not found</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FF6A00]">← BACK</Link>
+        <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">Lesson not found</p>
+        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#006491]">← BACK</Link>
       </div>
     );
   }
@@ -126,13 +126,13 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+        <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
           LV.{lesson.requiredLevel} ШААРДЛАГАТАЙ
         </p>
         <p className="mt-2 text-[12px] text-[#5a5550]">
           Таны одоогийн түвшин: LV.{userLevel}
         </p>
-        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FF6A00]">← БУЦАХ</Link>
+        <Link href="/classroom" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#006491]">← БУЦАХ</Link>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/classroom" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#FF6A00]">
+      <Link href="/classroom" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#006491]">
         ← {lesson.course?.title || "Classroom"}
       </Link>
 
@@ -187,7 +187,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             </div>
           ) : (
             <>
-              <h1 className="font-[Bebas_Neue] text-3xl tracking-[3px] text-[#ede8df] md:text-4xl">
+              <h1 className="text-3xl tracking-[3px] text-[#ede8df] md:text-4xl">
                 {lesson.title}
               </h1>
               {lesson.description && (
@@ -205,7 +205,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             <button
               onClick={toggleComplete}
               className={`flex h-10 w-10 items-center justify-center border transition ${
-                isCompleted ? "border-[#FF6A00] bg-[#FF6A00] text-[#ede8df]" : "border-[#2a2825] text-[#5a5550] hover:border-[#FF6A00]"
+                isCompleted ? "border-[#006491] bg-[#006491] text-[#ede8df]" : "border-[#2a2825] text-[#5a5550] hover:border-[#006491]"
               }`}
               title={isCompleted ? "Mark incomplete" : "Mark complete"}
             >
@@ -218,7 +218,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           {admin && !editing && (
             <>
               <button onClick={() => setEditing(true)} className="btn-ghost !py-2 !px-3 !text-[9px]">Edit</button>
-              <button onClick={handleDelete} className="btn-ghost !py-2 !px-3 !text-[9px] !text-[#FF6A00] hover:!border-[#FF6A00]">Del</button>
+              <button onClick={handleDelete} className="btn-ghost !py-2 !px-3 !text-[9px] !text-[#006491] hover:!border-[#006491]">Del</button>
             </>
           )}
         </div>

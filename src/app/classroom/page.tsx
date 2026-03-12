@@ -175,7 +175,7 @@ export default function ClassroomPage() {
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
       </div>
     );
   }
@@ -183,7 +183,7 @@ export default function ClassroomPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
+        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
         <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Хичээлийн танхимд хандахын тулд нэвтэрнэ үү.</p>
         <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
@@ -193,7 +193,7 @@ export default function ClassroomPage() {
   if (!isMember) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
+        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
         <p className="mb-8 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
           Хичээлийн танхим нь зөвхөн Кланы гишүүдэд зориулагдсан. Бүх хичээлд хандахын тулд Кланд нэгдээрэй.
         </p>
@@ -206,7 +206,7 @@ export default function ClassroomPage() {
     <div className="flex min-h-[60vh] gap-0 md:gap-6">
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center bg-[#FF6A00] text-[#ede8df] shadow-lg md:hidden"
+        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center bg-[#006491] text-[#ede8df] shadow-lg md:hidden"
       >
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h8m-8 6h16" />
@@ -221,11 +221,11 @@ export default function ClassroomPage() {
           <div className="mb-6">
             <div className="mb-2 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Явц</div>
             <div className="mb-1 flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#FF6A00]">{progressPercent}%</span>
+              <span className="text-[11px] font-bold text-[#006491]">{progressPercent}%</span>
               <span className="text-[10px] text-[#5a5550]">{completedCount}/{lessons.length}</span>
             </div>
             <div className="h-1.5 overflow-hidden bg-[#1c1c1c]">
-              <div className="h-full bg-[#FF6A00] transition-all" style={{ width: `${progressPercent}%` }} />
+              <div className="h-full bg-[#006491] transition-all" style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
         )}
@@ -237,7 +237,7 @@ export default function ClassroomPage() {
                 onClick={() => selectCourse(course._id)}
                 className={`flex w-full items-center justify-between px-3 py-2.5 text-left text-[12px] transition ${
                   selectedCourse === course._id
-                    ? "bg-[rgba(255,106,0,0.1)] text-[#ede8df]"
+                    ? "bg-[rgba(0,100,145,0.1)] text-[#ede8df]"
                     : "text-[#c8c8c0] hover:bg-[rgba(240,236,227,0.03)] hover:text-[#ede8df]"
                 }`}
               >
@@ -247,7 +247,7 @@ export default function ClassroomPage() {
               {admin && (
                 <button
                   onClick={() => handleDeleteCourse(course._id)}
-                  className="ml-3 hidden text-[9px] text-[#5a5550] hover:text-[#FF6A00] group-hover:inline"
+                  className="ml-3 hidden text-[9px] text-[#5a5550] hover:text-[#006491] group-hover:inline"
                 >
                   УСТГАХ
                 </button>
@@ -270,7 +270,7 @@ export default function ClassroomPage() {
                 </div>
               </div>
             ) : (
-              <button onClick={() => setShowNewCourse(true)} className="w-full border border-dashed border-[#2a2825] px-3 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#FF6A00] hover:text-[#FF6A00]">
+              <button onClick={() => setShowNewCourse(true)} className="w-full border border-dashed border-[#2a2825] px-3 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#006491] hover:text-[#006491]">
                 + Хичээл нэмэх
               </button>
             )}
@@ -286,7 +286,7 @@ export default function ClassroomPage() {
         {currentCourse ? (
           <>
             <div className="mb-8">
-              <h1 className="font-[Bebas_Neue] text-3xl tracking-[1px] text-[#ede8df]">
+              <h1 className="text-3xl tracking-[1px] text-[#ede8df]">
                 {currentCourse.title}
               </h1>
               {currentCourse.description && (
@@ -322,7 +322,7 @@ export default function ClassroomPage() {
                       />
                     </div>
                     {newLesson.videoUrl && (
-                      <p className="text-[10px] text-[#FF6A00] break-all">Видео: {newLesson.videoUrl}</p>
+                      <p className="text-[10px] text-[#006491] break-all">Видео: {newLesson.videoUrl}</p>
                     )}
                     <div className="flex gap-2">
                       <button onClick={handleCreateLesson} disabled={creatingLesson} className="btn-blood !py-2 !px-5 !text-[10px]">
@@ -332,7 +332,7 @@ export default function ClassroomPage() {
                     </div>
                   </div>
                 ) : (
-                  <button onClick={() => setShowNewLesson(true)} className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#FF6A00] hover:text-[#FF6A00]">
+                  <button onClick={() => setShowNewLesson(true)} className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#006491] hover:text-[#006491]">
                     + Хичээл нэмэх
                   </button>
                 )}
@@ -341,7 +341,7 @@ export default function ClassroomPage() {
 
             {lessonsLoading ? (
               <div className="flex justify-center py-12">
-                <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+                <div className="h-3 w-3 animate-pulse bg-[#006491]" />
               </div>
             ) : lessons.length === 0 ? (
               <p className="py-12 text-center text-[12px] text-[#5a5550]">Хичээл байхгүй байна.</p>
@@ -364,7 +364,7 @@ export default function ClassroomPage() {
                             onClick={() => toggleComplete(lesson._id)}
                             className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border transition ${
                               isCompleted
-                                ? "border-[#FF6A00] bg-[#FF6A00] text-[#ede8df]"
+                                ? "border-[#006491] bg-[#006491] text-[#ede8df]"
                                 : "border-[#2a2825] text-transparent hover:border-[#5a5550]"
                             }`}
                           >
@@ -380,13 +380,13 @@ export default function ClassroomPage() {
                               <h3 className="text-[14px] font-bold text-[#5a5550]">
                                 {lesson.title}
                               </h3>
-                              <p className="mt-1 text-[10px] uppercase tracking-[1px] text-[#FF6A00]">
+                              <p className="mt-1 text-[10px] uppercase tracking-[1px] text-[#006491]">
                                 LV.{lesson.requiredLevel} шаардлагатай
                               </p>
                             </div>
                           ) : (
                             <Link href={`/classroom/${lesson._id}`} className="block">
-                              <h3 className={`text-[14px] font-bold transition ${isCompleted ? "text-[#5a5550] line-through" : "text-[#ede8df] group-hover:text-[#FF6A00]"}`}>
+                              <h3 className={`text-[14px] font-bold transition ${isCompleted ? "text-[#5a5550] line-through" : "text-[#ede8df] group-hover:text-[#006491]"}`}>
                                 {lesson.title}
                               </h3>
                               {lesson.description && (
@@ -420,11 +420,11 @@ export default function ClassroomPage() {
           </>
         ) : loading ? (
           <div className="flex justify-center py-16">
-            <div className="h-3 w-3 animate-pulse bg-[#FF6A00]" />
+            <div className="h-3 w-3 animate-pulse bg-[#006491]" />
           </div>
         ) : (
           <div className="py-16 text-center">
-            <p className="font-[Bebas_Neue] text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+            <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
               {courses.length === 0 ? "Хичээл байхгүй" : "Хичээл сонгоно уу"}
             </p>
           </div>
