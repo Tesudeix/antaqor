@@ -102,6 +102,9 @@ export default function Navbar() {
           <Link href="/tasks" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#006491]">
             Даалгавар
           </Link>
+          <Link href="/vpn" className="text-[12px] font-medium text-[#c8c8c0] transition hover:text-[#006491]">
+            VPN
+          </Link>
           {session ? (
             <>
               <Link href="/posts/new" className="btn-neon !py-2 !px-5 !text-[11px]">
@@ -174,6 +177,9 @@ export default function Navbar() {
             </Link>
             <Link href="/tasks" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
               Даалгавар
+            </Link>
+            <Link href="/vpn" className="text-[13px] font-medium text-[#c8c8c0]" onClick={() => setMenuOpen(false)}>
+              VPN
             </Link>
             {session ? (
               <>
