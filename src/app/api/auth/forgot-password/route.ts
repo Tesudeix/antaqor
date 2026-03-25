@@ -40,13 +40,13 @@ export async function POST(req: NextRequest) {
     const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
 
     await resend.emails.send({
-      from: "Tesudeix <onboarding@resend.dev>",
+      from: "Antaqor <onboarding@resend.dev>",
       to: user.email,
-      subject: "Нууц үг сэргээх — Tesudeix",
+      subject: "Нууц үг сэргээх — Antaqor",
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; background: #0f0f0f; color: #ede8df; padding: 40px; border: 1px solid #1c1c1c;">
           <div style="font-size: 24px; font-weight: bold; letter-spacing: 4px; margin-bottom: 24px;">
-            TESU<span style="color: #006491;">DEIX</span>
+            ANTA<span style="color: #006491;">QOR</span>
           </div>
           <p style="font-size: 14px; color: #c8c8c0; line-height: 1.8; margin-bottom: 24px;">
             Сайн байна уу, <strong>${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
             Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
           </p>
           <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #1c1c1c; font-size: 10px; color: #5a5550; letter-spacing: 2px;">
-            ДИЖИТАЛ ҮНДЭСТЭН · TESUDEIX
+            ДИЖИТАЛ ҮНДЭСТЭН · ANTAQOR
           </div>
         </div>
       `,

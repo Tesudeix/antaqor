@@ -78,7 +78,7 @@ export default function VpnPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "tesudeix-vpn.conf";
+    a.download = "antaqor-vpn.conf";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -143,7 +143,7 @@ export default function VpnPage() {
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               <div>
-                <div className="text-2xl tracking-[2px] text-[#030303]">TESUDEIX VPN</div>
+                <div className="text-2xl tracking-[2px] text-[#030303]">ANTAQOR VPN</div>
                 <div className="text-[11px] text-[rgba(3,3,3,0.5)]">WireGuard · Шифрлэгдсэн холболт</div>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function VpnPage() {
                 <div className="relative mb-6 overflow-hidden border border-[#1c1c1c] bg-[#0a0a0a]">
                   <div className="flex items-center justify-between border-b border-[#1c1c1c] px-4 py-2">
                     <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">
-                      tesudeix-vpn.conf
+                      antaqor-vpn.conf
                     </span>
                     <div className="flex gap-1">
                       <button

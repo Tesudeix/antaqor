@@ -54,7 +54,7 @@ export default function InstallPrompt() {
             A
           </div>
           <div className="flex-1">
-            <p className="text-[12px] font-bold text-[#ede8df]">Tesudeix суулгах</p>
+            <p className="text-[12px] font-bold text-[#ede8df]">Antaqor суулгах</p>
             <p className="mt-1 text-[11px] leading-relaxed text-[#5a5550]">
               Хурдан хандалтын тулд нүүр хуудсандаа нэмнэ үү
             </p>

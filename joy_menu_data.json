@@ -1,0 +1,363 @@
+{
+  "restaurant": {
+    "name": "Joy Billiard & Pub",
+    "source": "qrmenu.mn",
+    "currency": "₮"
+  },
+  "categories": [
+    {
+      "id": "appetizer_salad",
+      "name_mn": "Зууш, Салат",
+      "name_en": "Appetizer & Salad",
+      "items": [
+        { "name_mn": "Стейк салат", "name_en": "Steak salad", "kcal": 1000, "price": 28900 },
+        { "name_mn": "Үхрийн хэлэн зууш", "name_en": "Beef tongue snack", "kcal": 206, "price": 24900 },
+        { "name_mn": "Цезарь салат", "name_en": "Caesar salad", "kcal": 226, "price": 24900 },
+        { "name_mn": "Айсберг Туна загастай салат", "name_en": "Iceberg & tuna salad", "kcal": 220, "price": 24900 },
+        { "name_mn": "Терияки соустай тахиан махан салат", "name_en": "Teriyaki chicken salad", "kcal": 220, "price": 24900 }
+      ]
+    },
+    {
+      "id": "soup",
+      "name_mn": "Шөл",
+      "name_en": "Soup",
+      "items": [
+        { "name_mn": "Банштай хавиргатай шөл", "name_en": "Dumplings and ribs soup", "kcal": 306, "price": 25900 },
+        { "name_mn": "Борцтой гурилтай шөл", "name_en": "Jerky & noodle soup", "kcal": 250, "price": 26900 },
+        { "name_mn": "Кимчитэй шөл", "name_en": "Kimchi soup", "kcal": 350, "price": 24900 },
+        { "name_mn": "Хуушууртай хар шөл", "name_en": "Soup with khuushuur", "kcal": 380, "price": 25900 },
+        { "name_mn": "Банштай хар шөл", "name_en": "Dumplings soup", "kcal": 206, "price": 24900 },
+        { "name_mn": "Бантан", "name_en": "Bantan - Mongolian Soup", "kcal": 180, "price": 20900 }
+      ]
+    },
+    {
+      "id": "main_course",
+      "name_mn": "Үндсэн хоол",
+      "name_en": "Main Course",
+      "items": [
+        { "name_mn": "Соустай үхрийн хавирга", "name_en": "Beef Ribs", "kcal": 2800, "price": 31900 },
+        { "name_mn": "Хонины шарсан хавирга", "name_en": "Fried lamb ribs", "kcal": 2200, "price": 27900 },
+        { "name_mn": "Ананастай шарсан тахиа", "name_en": "Pineapple Chicken", "kcal": 1900, "price": 26900 },
+        { "name_mn": "Терияки соустай тахиа", "name_en": "Teriyaki Chicken", "kcal": 1900, "price": 26900 },
+        { "name_mn": "Үхрийн жигнэсэн мах", "name_en": "Slow Cooked Beef", "kcal": 2100, "price": 30900 },
+        { "name_mn": "Хуушуур", "name_en": "Mini Khuushuur", "kcal": 1900, "price": 29900, "note": "10ш мини хуушуур, ногооны салат / 10pcs & garden salad" },
+        { "name_mn": "Бууз", "name_en": "Buuz", "kcal": 1900, "price": 29900, "note": "10ш бууз, ногооны салат / 10pcs & garden salad" },
+        { "name_mn": "Цуйван", "name_en": "Tsuivan", "kcal": 1950, "price": 28900, "note": "үхрийн мах / beef" },
+        { "name_mn": "Будаатай хуурга", "name_en": "Beef fried rice", "kcal": 1800, "price": 28900, "note": "үхрийн мах / beef" }
+      ]
+    },
+    {
+      "id": "share_food",
+      "name_mn": "Цуглуулга",
+      "name_en": "Share Food",
+      "items": [
+        { "name_mn": "Махны цуглуулга", "name_en": "Meat set", "kcal": 5500, "price": 199900, "note": "Тахианы гуя, гахайн мах, үхрийн хавирга, хонины хавирга, амталсан зайдас, булууны чөмөг, хуурсан ногоо, шарсан төмс, шинэ ногооны салат" },
+        { "name_mn": "Тахианы махны цуглуулга", "name_en": "Chicken set", "kcal": 4500, "price": 169900, "note": "Шаржигнуур тахиа, зайдас, сүмстэй тахиа, грилдэж шарсан тахиа, амталж шарсан тахиа, брокли, шинэ ногооны салат, шарсан төмс" },
+        { "name_mn": "Монгол хоолны цуглуулга", "name_en": "Mongolian food set", "kcal": 5800, "price": 189900, "note": "Бууз-10, хуушуур-10, үхрийн хавирга, хонины шарсан хавирга, дарсан өргөст хэмх, брокли, шинэ ногооны салат, шарсан төмс" }
+      ]
+    },
+    {
+      "id": "snack",
+      "name_mn": "Зууш",
+      "name_en": "Snack",
+      "items": [
+        { "name_mn": "Гахайн тагалцаг", "name_en": "Pork knuckle", "kcal": 2900, "price": 79900 },
+        { "name_mn": "Холимог цуглуулга", "name_en": "Mixed platter", "kcal": 2800, "price": 37900 },
+        { "name_mn": "Соустай тахиа, шарсан төмс", "name_en": "Chicken & fries", "kcal": 1800, "price": 19900 },
+        { "name_mn": "Шарсан зайдас, шарсан төмс", "name_en": "Sausages & fries", "kcal": 2200, "price": 19900 },
+        { "name_mn": "Шаржигнуур тахиа, шарсан төмс", "name_en": "Crispy chicken & fries", "kcal": 1800, "price": 19900 },
+        { "name_mn": "Тахианы мах, догбугги", "name_en": "Chicken & tteokbokki", "kcal": 2200, "price": 22900 },
+        { "name_mn": "Шарсан төмс", "name_en": "Fries", "kcal": 200, "price": 11900 }
+      ]
+    },
+    {
+      "id": "burger",
+      "name_mn": "Бургер",
+      "name_en": "Burger",
+      "items": [
+        { "name_mn": "Давхар бургер", "name_en": "Double burger", "kcal": 2300, "price": 24900 },
+        { "name_mn": "Үхрийн махтай бургер", "name_en": "Beef burger", "kcal": 2200, "price": 20900 },
+        { "name_mn": "Тахианы махтай бургер", "name_en": "Chicken burger", "kcal": 1900, "price": 20900 }
+      ]
+    },
+    {
+      "id": "bowl_tsuivan",
+      "name_mn": "Bowl цуйван",
+      "name_en": "Bowl Tsuivan",
+      "items": [
+        { "name_mn": "BOWL цуйван / Үхрийн өвчүү", "name_en": "Bowl tsuivan / Beef brisket", "kcal": 3200, "price": 62900, "note": "2-3 хүний порц" },
+        { "name_mn": "BOWL цуйван / Хонины хавирга", "name_en": "Bowl tsuivan / Lamb ribs", "kcal": 2700, "price": 60900, "note": "2-3 хүний порц" }
+      ]
+    },
+    {
+      "id": "pizza",
+      "name_mn": "Пицца",
+      "name_en": "Pizza",
+      "items": [
+        { "name_mn": "Joy pizza", "name_en": "Joy pizza", "kcal": 4800, "price_m": 36900, "price_l": 42900 },
+        { "name_mn": "Mix pizza", "name_en": "Mix pizza", "kcal": 4680, "price_m": 35900, "price_l": 41900 },
+        { "name_mn": "Peperroni pizza", "name_en": "Peperroni pizza", "kcal": 4580, "price_m": 34900, "price_l": 40900 },
+        { "name_mn": "Hawaii pizza", "name_en": "Hawaii pizza", "kcal": 3570, "price_m": 34900, "price_l": 40900 },
+        { "name_mn": "Tuna pizza", "name_en": "Tuna pizza", "kcal": 3270, "price_m": 34900, "price_l": 40900 }
+      ]
+    },
+    {
+      "id": "skewers",
+      "name_mn": "Шорлог",
+      "name_en": "Skewers",
+      "items": [
+        { "name_mn": "Хятад маягийн шорлог /хачиртай/", "name_en": "Chinese style skewers", "kcal": 120, "price": 7900 },
+        { "name_mn": "Тахианы далавч", "name_en": "Chicken wings", "kcal": 110, "price": 9900 }
+      ]
+    },
+    {
+      "id": "soft_drink",
+      "name_mn": "Ус, ундаа",
+      "name_en": "Soft Drink",
+      "items": [
+        { "name_en": "Orgiluun 0.33", "price": 5500 },
+        { "name_en": "Selenge 0.33", "price": 6000 },
+        { "name_en": "Terelj 0.33", "price": 6000 },
+        { "name_en": "Origluun SODA water", "price": 6000 },
+        { "name_en": "Origluun TONIC water", "price": 6000 },
+        { "name_en": "Laimon Fresh", "price": 6000 },
+        { "name_en": "Cola / Sprite / Fanta 0.33", "price": 6000 },
+        { "name_en": "Pepsi 0.33", "price": 6000 },
+        { "name_en": "Ginger Ale", "price": 6000 },
+        { "name_en": "Calpis", "price": 8000 },
+        { "name_en": "Khujirt 0.5", "price": 5000 },
+        { "name_en": "Khujirt bottle 0.33", "price": 6000 },
+        { "name_en": "Juice 0.25", "price": 6500 },
+        { "name_en": "Blue Red Bull", "price": 9900 },
+        { "name_en": "+C", "price": 6000 }
+      ]
+    },
+    {
+      "id": "hot_drink",
+      "name_mn": "Халуун ундаа",
+      "name_en": "Hot Drink",
+      "items": [
+        { "name_mn": "Зөгийн балтай сүү", "name_en": "Honey milk", "price": 6000 },
+        { "name_en": "Fruit Tea", "price": 3500 },
+        { "name_en": "Tea tone", "price": 3500 },
+        { "name_en": "Coffee", "price": 7000 },
+        { "name_mn": "Аньс", "name_en": "Currant tea", "price": 5500 },
+        { "name_mn": "Чацаргана", "name_en": "Sea buckthorn tea", "price": 5500 },
+        { "name_mn": "Гүцтэй цай", "name_en": "Milk tea (large)", "price": 11900 }
+      ]
+    },
+    {
+      "id": "draft_beer",
+      "name_mn": "Always Fresh (Драфт)",
+      "name_en": "Always Fresh (Draft)",
+      "items": [
+        { "name_en": "Heineken 0.33", "price": 11900 },
+        { "name_en": "Heineken 0.5", "price": 13900 },
+        { "name_en": "Kaltenberg 0.5", "price": 12900 },
+        { "name_mn": "Алтанговь 0.33", "name_en": "Altangovi 0.33", "price": 10900 },
+        { "name_mn": "Алтанговь 0.45", "name_en": "Altangovi 0.45", "price": 11900 },
+        { "name_en": "Tiger 0.5", "price": 9900 },
+        { "name_mn": "Боргио 0.45", "name_en": "Borgio 0.45", "price": 9900 },
+        { "name_mn": "Сэнгүр 0.45", "name_en": "Sengur 0.45", "price": 9900 },
+        { "name_mn": "Сэнгүр 0.33 Ultra", "name_en": "Sengur 0.33 Ultra", "price": 9900 },
+        { "name_mn": "Сэнгүр radler 0.45", "name_en": "Sengur radler 0.45", "price": 9900 },
+        { "name_mn": "Нийслэл Lite 0.45", "name_en": "Niislel Lite 0.45", "price": 9900 },
+        { "name_mn": "Нийслэл Super Lite 0.45", "name_en": "Niislel Super Lite 0.45", "price": 9900 }
+      ]
+    },
+    {
+      "id": "beer_bottle",
+      "name_mn": "Шар айраг",
+      "name_en": "Beer (Bottle)",
+      "items": [
+        { "name_en": "Kirin Ichiban 0.6", "price": 17900 },
+        { "name_en": "Tsingtao 0.6", "price": 14900 },
+        { "name_en": "Yanjin 0.6", "price": 14900 },
+        { "name_en": "Guinness 0.45", "price": 19900 },
+        { "name_en": "Asahi /Super Dry/ 0.6", "price": 18900 },
+        { "name_en": "Corona Extra 0.33", "price": 14900 },
+        { "name_en": "Oasis 1L", "price": 23900 },
+        { "name_en": "Harbin 0.6", "price": 14900 },
+        { "name_en": "Budweiser 0.5", "price": 12900 },
+        { "name_mn": "Gem draft 0.5 /задгай/", "name_en": "Gem draft 0.5", "price": 12900 },
+        { "name_en": "Craft 0.5", "price": 11900 }
+      ]
+    },
+    {
+      "id": "cocktail",
+      "name_mn": "Коктейль",
+      "name_en": "Cocktail",
+      "items": [
+        { "name_en": "OOZE Umeshu 0.33 - 7.0%", "price": 11900 },
+        { "name_en": "OOZE Bourbon Whiskey & Cola 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "OOZE Vodka & Granberry 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "OOZE Gin & Tonic 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "OOZE Mojito 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "EVE Vanilla & Coconut 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "EVE Elderflower & Forestberry 0.33 - 4.5%", "price": 11900 },
+        { "name_en": "EVE Lemonglass & Orange peel 0.33 - 4.5%", "price": 11900 }
+      ]
+    },
+    {
+      "id": "tequila",
+      "name_mn": "Текила",
+      "name_en": "Tequila",
+      "items": [
+        { "name_en": "Jose Cuervo Premium 0.75", "price_50ml": 16500, "price_bottle": 240000 },
+        { "name_en": "Jose Cuervo Silver 0.75", "price_50ml": 16500, "price_bottle": 240000 },
+        { "name_en": "Sierra Reposado 0.7", "price_bottle": 180000 },
+        { "name_en": "Sierra Reposado 1L", "price_50ml": 12500, "price_bottle": 240000 },
+        { "name_en": "Sierra Silver 0.7", "price_bottle": 180000 },
+        { "name_en": "Sierra Silver 1L", "price_50ml": 12500, "price_bottle": 240000 },
+        { "name_en": "Olmega Gold 0.7", "price_50ml": 15500, "price_bottle": 210000 },
+        { "name_en": "Olmega Silver 0.7", "price_50ml": 15500, "price_bottle": 210000 }
+      ]
+    },
+    {
+      "id": "ice_cold",
+      "name_mn": "Ice Cold -18C",
+      "name_en": "Ice Cold -18C",
+      "items": [
+        { "name_en": "Jagermeister 1L", "price_50ml": 13000, "price_bottle": 250000 },
+        { "name_en": "Jagermeister 0.7", "price_bottle": 210000 }
+      ]
+    },
+    {
+      "id": "cognac",
+      "name_mn": "Коньяк",
+      "name_en": "Cognac",
+      "items": [
+        { "name_en": "Hennessy 0.7", "price_50ml": 30500, "price_bottle": 420000 },
+        { "name_en": "Hennessy V.S.O.P 0.7", "price_50ml": 38500, "price_bottle": 530000 }
+      ]
+    },
+    {
+      "id": "gin",
+      "name_mn": "Жин",
+      "name_en": "Gin",
+      "items": [
+        { "name_en": "Barrister Blue 0.7", "price_50ml": 14000, "price_bottle": 190000 },
+        { "name_en": "Barrister Pink 0.7", "price_50ml": 14000, "price_bottle": 190000 },
+        { "name_en": "Barrister Dry 0.7", "price_50ml": 14000, "price_bottle": 190000 },
+        { "name_en": "Barrister Orange 0.7", "price_50ml": 14000, "price_bottle": 190000 },
+        { "name_en": "Gordon's 1L", "price_50ml": 12000, "price_bottle": 230000 },
+        { "name_en": "Gordon's 0.7", "price_bottle": 190000 }
+      ]
+    },
+    {
+      "id": "vodka",
+      "name_mn": "Архи",
+      "name_en": "Vodka",
+      "items": [
+        { "name_en": "Bluemark 0.7", "price_50ml": 10500, "price_bottle": 140000 },
+        { "name_en": "SKYY 0.7", "price_50ml": 14000, "price_bottle": 190000 },
+        { "name_mn": "Соёмбо 0.7", "name_en": "Soyombo 0.7", "price_50ml": 14000, "price_bottle": 200000 },
+        { "name_en": "Velvet 0.7", "price_50ml": 11000, "price_bottle": 150000 },
+        { "name_en": "Evok 0.75", "price_50ml": 11500, "price_bottle": 150000 },
+        { "name_en": "Eden 0.7", "price_50ml": 7500, "price_bottle": 100000 },
+        { "name_en": "Export Wheat 0.75", "price_50ml": 6500, "price_bottle": 90000 },
+        { "name_en": "Aypyr Silver 0.7", "price_50ml": 7000, "price_bottle": 90000 },
+        { "name_mn": "Export 40 жил 0.75", "name_en": "Export 40yr 0.75", "price_50ml": 7000, "price_bottle": 90000 },
+        { "name_en": "Finlandia 1L", "price_50ml": 11500, "price_bottle": 220000 },
+        { "name_en": "Beluga Noble 1L", "price_50ml": 25500, "price_bottle": 500000 },
+        { "name_en": "Beluga Noble 0.7", "price_bottle": 400000 },
+        { "name_en": "Grey Goose 1L", "price_50ml": 22500, "price_bottle": 440000 },
+        { "name_en": "Nomad 0.75", "price_50ml": 8500, "price_bottle": 120000 },
+        { "name_en": "Golia 0.75", "price_50ml": 6500, "price_bottle": 90000 },
+        { "name_mn": "Соёрхол 0.75", "name_en": "Soyorkhol 0.75", "price_50ml": 6500, "price_bottle": 90000 },
+        { "name_en": "Three Sixty 1L", "price_50ml": 11000, "price_bottle": 210000 },
+        { "name_en": "Three Sixty 0.7", "price_bottle": 180000 },
+        { "name_en": "VIRU VALGE 1L", "price_50ml": 13500, "price_bottle": 260000 }
+      ]
+    },
+    {
+      "id": "whisky",
+      "name_mn": "Виски",
+      "name_en": "Whisky",
+      "items": [
+        { "name_en": "GlenGrant 12 years 0.7", "price_bottle": 510000 },
+        { "name_en": "GlenGrant IMR 0.7", "price_50ml": 22500, "price_bottle": 310000 },
+        { "name_en": "Balmoore 0.7", "price_50ml": 16000, "price_bottle": 220000 },
+        { "name_en": "Wild Turkey 1L", "price_50ml": 17000, "price_bottle": 330000 },
+        { "name_en": "Wild Turkey 0.7", "price_bottle": 270000 },
+        { "name_en": "Ballantine's 1L", "price_50ml": 14500, "price_bottle": 280000 },
+        { "name_en": "Ballantine's 0.7", "price_bottle": 240000 },
+        { "name_en": "Johnnie Walker / red / 1L", "price_50ml": 11500, "price_bottle": 220000 },
+        { "name_en": "Jack Daniel's 1L", "price_50ml": 15500, "price_bottle": 300000 },
+        { "name_en": "Jack Daniel's 0.7", "price_bottle": 230000 },
+        { "name_en": "Chivas Regal 18YO 1L", "price_bottle": 500000 },
+        { "name_en": "Chivas Regal 12YO 1L", "price_50ml": 19500, "price_bottle": 380000 },
+        { "name_en": "Chivas Regal 12YO 0.7", "price_bottle": 300000 },
+        { "name_en": "Glenmorangie X 0.7", "price_bottle": 440000 },
+        { "name_en": "Glenmorangie 10 0.7", "price_bottle": 480000 },
+        { "name_en": "Jameson 1L", "price_50ml": 17000, "price_bottle": 330000 },
+        { "name_en": "Jameson 0.7", "price_bottle": 290000 },
+        { "name_en": "Cutty 0.7", "price_50ml": 16000, "price_bottle": 220000 },
+        { "name_en": "Langs 0.7", "price_50ml": 16000, "price_bottle": 220000 }
+      ]
+    },
+    {
+      "id": "wine",
+      "name_mn": "Дарс",
+      "name_en": "Wine",
+      "items": [
+        { "name_en": "Maison Castel Merlot", "price": 90000 },
+        { "name_en": "Maison Castel Chardonnay", "price": 90000 },
+        { "name_en": "Maison Castel Grenache", "price": 90000 },
+        { "name_en": "Maison Castel Merlot Rose", "price": 90000 },
+        { "name_en": "Maison Castel Sauvignon Blanc", "price": 90000 },
+        { "name_en": "Kindzmarauli", "price": 90000 },
+        { "name_en": "Alazani Valley semi-sweet white/red wine", "price": 90000 },
+        { "name_en": "Saperavi dry red wine", "price": 90000 },
+        { "name_en": "Yellow tail", "price": 90000 }
+      ]
+    },
+    {
+      "id": "dessert",
+      "name_mn": "Амттан",
+      "name_en": "Dessert",
+      "items": [
+        { "name_mn": "Чипс", "name_en": "Chips", "price": 10000 },
+        { "name_mn": "Самар", "name_en": "Nuts", "price": 10000 },
+        { "name_en": "Toffifee", "price": 16000 },
+        { "name_en": "Smoke", "price": 9000 },
+        { "name_mn": "Хөзөр", "name_en": "Cards", "price": 3000 }
+      ]
+    },
+    {
+      "id": "party_set",
+      "name_mn": "Party Set",
+      "name_en": "Party Set",
+      "items": [
+        {
+          "name_en": "Party Set",
+          "price": 999000,
+          "note": "Finlandia 1L x2, Soft drink x10, Water x10, Beer x10 (Sengur, Tiger, Borgio, Niislel), Pork knuckle x1, Meat set x1, Pizza x1, Nuts x1, Chips x1"
+        },
+        {
+          "name_en": "Joy Set",
+          "price": 1199000,
+          "note": "Gordon's 1L x2, Soda & Tonic x10, Soft drink x10, Water x10, Beer x10 (Corona, Tsingtao, Yanjing, Harbin), Chicken set x1, Meat set x1, Nuts x1, Chips x1, Toffifee x1 + VIP ROOM"
+        },
+        {
+          "name_en": "Birthday Set",
+          "price": 1499000,
+          "note": "Jameson 1L x2, Soft drink x10, Water x10, Beer x15 (Sengur, Tiger, Borgio, Niislel), Soda & Tonic x10, Joy Pizza x2, Meat set x1, Chicken set x1, Toffifee x1, Nuts x2, Chips x2 + VIP ROOM"
+        }
+      ]
+    },
+    {
+      "id": "spirit_sets",
+      "name_mn": "Архины сэт",
+      "name_en": "Spirit Sets (450K each)",
+      "items": [
+        { "name_en": "Beer Set 450K", "price": 450000, "note": "Beer x20 (Сэнгүр, Боргио, Нийслэл, Tiger), Махан цуглуулга x1, Nuts x1, Chips x1, French fries x1" },
+        { "name_en": "Jagermeister Set 450K", "price": 450000, "note": "Jagermeister 0.7 x1, Тахианы махан цуглуулга x1, Ундаа x5, Ус x5, Soda & Tonic x5" },
+        { "name_en": "Ballantine's Set 450K", "price": 450000, "note": "Ballantine's 0.7 x1, Joy pizza x1, Ундаа x5, Ус x5, Гахайн тагалцаг x1, Chips x1, Nuts x1" },
+        { "name_en": "Jack Daniel's Set 450K", "price": 450000, "note": "Jack Daniel's 0.7 x1, Joy pizza x1, Гахайн тагалцаг x1, French fries x1, Ундаа x5, Ус x5, Chips x1, Nuts x1" },
+        { "name_en": "Finlandia Set 450K", "price": 450000, "note": "Finlandia 1L x1, Тахианы махан цуглуулга x1, Ундаа x5, Ус x5" },
+        { "name_en": "Jameson Set 450K", "price": 450000, "note": "Jameson 0.7 x1, Joy pizza x1, Холимог цуглуулга x1, Ундаа x5, Ус x5, Chips x1, Nuts x1" }
+      ]
+    }
+  ]
+}

@@ -80,7 +80,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4 md:px-10">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-xl font-bold tracking-[4px] text-[#ede8df]">
-            TESU<span className="text-[#006491]" style={{ textShadow: '0 0 10px rgba(0,100,145,0.5)' }}>DEIX</span>
+            ANTA<span className="text-[#006491]" style={{ textShadow: '0 0 10px rgba(0,100,145,0.5)' }}>QOR</span>
           </Link>
           <NavTicker />
         </div>

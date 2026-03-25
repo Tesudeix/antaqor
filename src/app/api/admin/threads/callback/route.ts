@@ -4,7 +4,7 @@ import { ThreadsAPI } from "@/lib/threads";
 import dbConnect from "@/lib/mongodb";
 import ThreadsToken from "@/models/ThreadsToken";
 
-const BASE = process.env.NEXTAUTH_URL || "https://tesudeix.com";
+const BASE = process.env.NEXTAUTH_URL || "https://antaqor.com";
 
 export async function GET(req: NextRequest) {
   const session = await getAdminSession();

@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JoyBilliard — Premium Pool & Lounge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #D4A843;
+  --gold-light: #F0D078;
+  --green: #1B6B3A;
+  --green-dark: #0D3D1F;
+  --green-felt: #2A8C4A;
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-card: #161616;
+  --bg-elevated: #1C1C1C;
+  --text-primary: #F5F0E8;
+  --text-secondary: #9A9488;
+  --text-muted: #5C574E;
+  --accent-red: #C0392B;
+  --border: rgba(212, 168, 67, 0.12);
+  --border-hover: rgba(212, 168, 67, 0.35);
+  --shadow-gold: 0 0 40px rgba(212, 168, 67, 0.08);
+  --radius: 4px;
+  --radius-lg: 8px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --max-width: 1280px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+/* ── Utility ── */
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+@media(min-width:768px) { .container { padding: 0 40px; } }
+@media(min-width:1024px) { .container { padding: 0 60px; } }
+
+.section-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+.section-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes rollBall {
+  0% { transform: translateX(-100px) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(0) rotate(360deg); opacity: 1; }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Header / Nav ── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 0 20px;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+header.scrolled {
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 var(--border);
+}
+@media(min-width:768px) { header { padding: 0 40px; } }
+
+nav {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-icon {
+  width: 42px; height: 42px;
+  background: var(--gold);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid var(--bg-primary);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-icon::before {
+  content: '';
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  color: var(--text-primary);
+}
+.logo-text span { color: var(--gold); }
+.logo-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  display: block;
+  margin-top: -2px;
+}
+
+.nav-links {
+  display: none;
+  list-style: none;
+  gap: 32px;
+  align-items: center;
+}
+@media(min-width:1024px) { .nav-links { display: flex; } }
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color var(--transition);
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 1.5px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform var(--transition);
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-cta {
+  display: none;
+  padding: 10px 24px;
+  border: 1.5px solid var(--gold);
+  color: var(--gold) !important;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+  transition: all var(--transition) !important;
+  text-decoration: none;
+}
+.nav-cta:hover {
+  background: var(--gold) !important;
+  color: var(--bg-primary) !important;
+}
+@media(min-width:1024px) { .nav-cta { display: inline-block; } }
+
+/* Hamburger */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+@media(min-width:1024px) { .hamburger { display: none; } }
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--gold);
+  transition: all var(--transition);
+}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed;
+  top: 0; right: -100%;
+  width: 100%;
+  height: 100vh;
+  background: rgba(10,10,10,0.98);
+  backdrop-filter: blur(30px);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  transition: right 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.mobile-menu.open { right: 0; }
+.mobile-menu a {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.mobile-menu a:hover { color: var(--gold); }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(27, 107, 58, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(212, 168, 67, 0.08) 0%, transparent 50%),
+    var(--bg-primary);
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  opacity: 0.3;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 67, 0.06);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 120px 0 60px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: center;
+}
+@media(min-width:1024px) {
+  .hero-grid { grid-template-columns: 1fr 1fr; gap: 80px; }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  animation: fadeUp 0.8s ease forwards;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green-felt);
+  animation: float 2s ease infinite;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease 0.15s forwards;
+  opacity: 0;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+  display: block;
+}
+
+.hero-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 440px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.8s ease 0.3s forwards;
+  opacity: 0;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  animation: fadeUp 0.8s ease 0.45s forwards;
+  opacity: 0;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: var(--gold);
+  color: var(--bg-primary);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 168, 67, 0.3);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  border: 1.5px solid var(--border-hover);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+}
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+
+/* Hero Visual */
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  animation: scaleIn 1s ease 0.3s forwards;
+  opacity: 0;
+}
+.hero-table {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 2/1.2;
+  background: var(--green-dark);
+  border-radius: 120px;
+  border: 12px solid #3D2B1F;
+  box-shadow: 
+    inset 0 0 60px rgba(0,0,0,0.5),
+    0 20px 60px rgba(0,0,0,0.4),
+    var(--shadow-gold);
+  overflow: hidden;
+}
+.hero-table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at center, var(--green-felt) 0%, var(--green-dark) 100%);
+  opacity: 0.7;
+}
+.felt-line {
+  position: absolute;
+  top: 50%; left: 15%; right: 15%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-50%);
+}
+.ball {
+  position: absolute;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 -2px 4px rgba(0,0,0,0.3);
+}
+.ball-1 { background: #FFF; top: 35%; left: 55%; animation: rollBall 1.2s ease 0.8s forwards; opacity: 0; }
+.ball-2 { background: #F1C40F; top: 50%; left: 65%; width: 22px; height: 22px; animation: rollBall 1.2s ease 1s forwards; opacity: 0; }
+.ball-3 { background: var(--accent-red); top: 42%; left: 72%; width: 22px; height: 22px; animation: rollBall 1.2s ease 1.2s forwards; opacity: 0; }
+.ball-4 { background: #2E4053; top: 55%; left: 60%; width: 20px; height: 20px; animation: rollBall 1.2s ease 1.4s forwards; opacity: 0; }
+.ball-8 {
+  background: #111;
+  top: 45%; left: 45%;
+  width: 26px; height: 26px;
+  animation: rollBall 1.2s ease 0.6s forwards;
+  opacity: 0;
+}
+.ball-8::after {
+  content: '8';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  width: 14px; height: 14px;
+  background: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #111;
+}
+
+.hero-stats {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 32px;
+  white-space: nowrap;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── Marquee ── */
+.marquee-section {
+  padding: 30px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  margin-top: 80px;
+}
+@media(min-width:1024px) { .marquee-section { margin-top: 40px; } }
+.marquee-track {
+  display: flex;
+  gap: 60px;
+  animation: marquee 25s linear infinite;
+  width: max-content;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-item {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.marquee-item .sep {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.4;
+}
+
+/* ── Tables Section ── */
+.tables-section {
+  padding: 100px 0;
+}
+.tables-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 60px;
+}
+@media(min-width:768px) {
+  .tables-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+.tables-header p {
+  color: var(--text-secondary);
+  max-width: 400px;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Tab Filter */
+.tab-filter {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-filter::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 8px 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.tab-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.tab-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212, 168, 67, 0.08);
+}
+
+/* Table Cards Grid */
+.tables-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media(min-width:600px) { .tables-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(min-width:1024px) { .tables-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.table-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition);
+  group: true;
+}
+.table-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-gold);
+}
+.table-card-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+.table-card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.table-card:hover .table-card-img img { transform: scale(1.05); }
+
+.table-card-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  padding: 4px 12px;
+  background: var(--gold);
+  color: var(--bg-primary);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+}
+.table-card-status {
+  position: absolute;
+  top: 12px; right: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.status-available { background: rgba(42, 140, 74, 0.9); color: #fff; }
+.status-occupied { background: rgba(192, 57, 43, 0.9); color: #fff; }
+.status-reserved { background: rgba(212, 168, 67, 0.9); color: var(--bg-primary); }
+
+.table-card-body { padding: 20px; }
+.table-card-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.table-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.table-card-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.meta-item svg { width: 14px; height: 14px; color: var(--gold); }
+.table-card-price {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.price-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.price-unit {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.book-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.book-btn:hover {
+  background: var(--gold);
+  color: var(--bg-primary);
+}
+
+/* ── Menu Section ── */
+.menu-section {
+  padding: 80px 0 100px;
+  background: var(--bg-secondary);
+  position: relative;
+}
+.menu-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.2;
+}
+
+.menu-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 50px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.menu-tabs::-webkit-scrollbar { display: none; }
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media(min-width:768px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.menu-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition);
+}
+.menu-item:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-gold);
+}
+.menu-item-img {
+  width: 100px; height: 100px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.menu-item-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.menu-item-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.menu-item-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.menu-item-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.menu-item-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.menu-item-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.menu-item-tag {
+  padding: 3px 8px;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 20px;
+  background: rgba(212, 168, 67, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(212, 168, 67, 0.2);
+}
+
+/* ── Drinks Section ── */
+.drinks-section {
+  padding: 100px 0;
+}
+.drinks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+@media(min-width:600px) { .drinks-grid { grid-template-columns: repeat(3, 1fr); } }
+@media(min-width:1024px) { .drinks-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+
+.drink-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  transition: all var(--transition);
+}
+.drink-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-gold);
+}
+.drink-card-img {
+  width: 80px; height: 160px;
+  margin: 0 auto 16px;
+  position: relative;
+}
+.drink-card-img img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+.drink-card-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.drink-card-detail {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.drink-card-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+}
+
+/* ── About / Features ── */
+.about-section {
+  padding: 100px 0;
+  background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
+}
+.about-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.2;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 60px;
+}
+@media(min-width:1024px) {
+  .about-grid { grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+}
+.about-visual {
+  position: relative;
+}
+.about-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.about-img img { width: 100%; height: 100%; object-fit: cover; }
+.about-floating-card {
+  position: absolute;
+  bottom: -20px; right: -10px;
+  padding: 20px 24px;
+  background: rgba(22, 22, 22, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+@media(min-width:768px) { .about-floating-card { right: -30px; bottom: -30px; } }
+.about-floating-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.about-floating-label {
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 32px;
+}
+.feature-item {
+  display: flex;
+  gap: 16px;
+}
+.feature-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.feature-icon svg { width: 20px; height: 20px; color: var(--gold); }
+.feature-text h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.feature-text p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Pricing ── */
+.pricing-section {
+  padding: 100px 0;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-top: 50px;
+}
+@media(min-width:768px) { .pricing-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.pricing-card {
+  padding: 32px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: all var(--transition);
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212, 168, 67, 0.06), var(--bg-card));
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-gold);
+}
+.pricing-card-tag {
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  background: var(--gold);
+  color: var(--bg-primary);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  border-radius: 20px;
+}
+.pricing-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+.pricing-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.pricing-unit {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.pricing-features {
+  list-style: none;
+  margin-bottom: 28px;
+}
+.pricing-features li {
+  padding: 10px 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pricing-features li:last-child { border: none; }
+.pricing-features .check { color: var(--gold); font-size: 0.9rem; }
+
+/* ── Gallery ── */
+.gallery-section {
+  padding: 80px 0;
+  background: var(--bg-secondary);
+  position: relative;
+}
+.gallery-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.2;
+}
+.gallery-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 40px 20px 20px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+}
+.gallery-scroll::-webkit-scrollbar { display: none; }
+.gallery-item {
+  flex-shrink: 0;
+  width: 280px;
+  aspect-ratio: 3/4;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all var(--transition);
+}
+@media(min-width:768px) { .gallery-item { width: 320px; } }
+.gallery-item:hover {
+  border-color: var(--border-hover);
+  transform: scale(1.02);
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.gallery-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+.gallery-overlay-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+}
+
+/* ── Contact ── */
+.contact-section {
+  padding: 100px 0;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 60px;
+  margin-top: 50px;
+}
+@media(min-width:1024px) {
+  .contact-grid { grid-template-columns: 1fr 1fr; gap: 80px; }
+}
+
+.contact-info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+.contact-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.contact-item-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contact-item-icon svg { width: 18px; height: 18px; color: var(--gold); }
+.contact-item-label {
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.contact-item-value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.contact-hours {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.contact-hours h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  color: var(--gold);
+}
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+.hours-row:last-child { border: none; }
+.hours-day { color: var(--text-secondary); }
+.hours-time { color: var(--text-primary); font-weight: 500; }
+
+/* Contact Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.form-label span { color: var(--gold); }
+.form-input,
+.form-textarea {
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  transition: border-color var(--transition);
+  outline: none;
+}
+.form-input:focus,
+.form-textarea:focus { border-color: var(--gold); }
+.form-textarea { resize: vertical; min-height: 120px; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Map ── */
+.map-section {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+@media(min-width:768px) { .map-section { height: 400px; } }
+.map-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: 
+    linear-gradient(rgba(10,10,10,0.7), rgba(10,10,10,0.7)),
+    repeating-linear-gradient(0deg, var(--border) 0px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(90deg, var(--border) 0px, transparent 1px, transparent 40px);
+}
+.map-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: float 3s ease infinite;
+}
+.map-pin svg { width: 40px; height: 40px; color: var(--gold); }
+.map-pin-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+
+/* ── Footer ── */
+footer {
+  padding: 60px 0 30px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+@media(min-width:768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
+
+.footer-brand p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 12px;
+  max-width: 300px;
+}
+.footer-col h5 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul a {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.footer-col ul a:hover { color: var(--text-primary); }
+
+.footer-socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.social-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.social-icon:hover {
+  border-color: var(--gold);
+  background: rgba(212, 168, 67, 0.1);
+}
+.social-icon svg { width: 16px; height: 16px; color: var(--text-secondary); }
+
+.footer-bottom {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+@media(min-width:768px) {
+  .footer-bottom { flex-direction: row; justify-content: space-between; }
+}
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+.footer-legal a {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.footer-legal a:hover { color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header id="header">
+  <nav>
+    <a href="#" class="logo">
+      <div class="logo-icon"></div>
+      <div>
+        <div class="logo-text">JOY<span>BILLIARD</span></div>
+        <div class="logo-sub">Premium Pool Lounge</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#tables">Ширээнүүд</a></li>
+      <li><a href="#menu">Цэс</a></li>
+      <li><a href="#pricing">Үнийн санал</a></li>
+      <li><a href="#about">Бидний тухай</a></li>
+      <li><a href="#contact">Холбоо барих</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Захиалга өгөх</a>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#tables" onclick="toggleMenu()">Ширээнүүд</a>
+  <a href="#menu" onclick="toggleMenu()">Цэс</a>
+  <a href="#pricing" onclick="toggleMenu()">Үнийн санал</a>
+  <a href="#about" onclick="toggleMenu()">Бидний тухай</a>
+  <a href="#contact" onclick="toggleMenu()">Холбоо барих</a>
+  <a href="#contact" onclick="toggleMenu()" style="color: var(--gold);">Захиалга өгөх</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Улаанбаатар хотод
+        </div>
+        <h1 class="hero-title">
+          Бильярдын
+          <em>шинэ түвшин.</em>
+        </h1>
+        <p class="hero-desc">
+          JoyBilliard — Монголын анхны premium бильярд лаунж. 
+          Дэлхийн зэрэглэлийн ширээ, коктейль бар, нөхөрсөг орчин.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="7"/><path d="M8 5v3l2 2"/></svg>
+            Ширээ захиалах
+          </a>
+          <a href="#tables" class="btn-outline">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8h14M8 1v14"/></svg>
+            Дэлгэрэнгүй
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-table">
+          <div class="felt-line"></div>
+          <div class="ball ball-8"></div>
+          <div class="ball ball-1"></div>
+          <div class="ball ball-2"></div>
+          <div class="ball ball-3"></div>
+          <div class="ball ball-4"></div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-num">12</div>
+            <div class="hero-stat-label">Ширээ</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">24/7</div>
+            <div class="hero-stat-label">Нээлттэй</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">VIP</div>
+            <div class="hero-stat-label">Өрөөнүүд</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ═══ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">Premium Tables <span class="sep"></span></div>
+    <div class="marquee-item">Cocktail Bar <span class="sep"></span></div>
+    <div class="marquee-item">VIP Rooms <span class="sep"></span></div>
+    <div class="marquee-item">Tournaments <span class="sep"></span></div>
+    <div class="marquee-item">Private Events <span class="sep"></span></div>
+    <div class="marquee-item">Food & Drinks <span class="sep"></span></div>
+    <div class="marquee-item">Live Sports <span class="sep"></span></div>
+    <div class="marquee-item">Premium Tables <span class="sep"></span></div>
+    <div class="marquee-item">Cocktail Bar <span class="sep"></span></div>
+    <div class="marquee-item">VIP Rooms <span class="sep"></span></div>
+    <div class="marquee-item">Tournaments <span class="sep"></span></div>
+    <div class="marquee-item">Private Events <span class="sep"></span></div>
+    <div class="marquee-item">Food & Drinks <span class="sep"></span></div>
+    <div class="marquee-item">Live Sports <span class="sep"></span></div>
+  </div>
+</div>
+
+<!-- ═══ TABLES ═══ -->
+<section class="tables-section" id="tables">
+  <div class="container">
+    <div class="tables-header animate-on-scroll">
+      <div>
+        <div class="section-label">Бильярдын ширээнүүд</div>
+        <h2 class="section-title">Манай <em>ширээнүүд</em></h2>
+      </div>
+      <div>
+        <div class="tab-filter">
+          <button class="tab-btn active" onclick="filterTables('all')">Бүгд</button>
+          <button class="tab-btn" onclick="filterTables('standard')">Standard</button>
+          <button class="tab-btn" onclick="filterTables('vip')">VIP</button>
+          <button class="tab-btn" onclick="filterTables('snooker')">Snooker</button>
+        </div>
+      </div>
+    </div>
+    <div class="tables-grid" id="tablesGrid">
+      <!-- Table 1 -->
+      <div class="table-card animate-on-scroll" data-type="standard">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1611068813633-a2c365b2b22f?w=600&h=400&fit=crop" alt="Standard Table" loading="lazy">
+          <div class="table-card-badge">Standard</div>
+          <div class="table-card-status status-available">Сул</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">Table 01 — Classic</div>
+          <div class="table-card-desc">9ft Brunswick Gold Crown ширээ, мэргэжлийн felt</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              2-4 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              9ft
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">25,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 2 -->
+      <div class="table-card animate-on-scroll" data-type="standard">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1581092160607-ee67df38db1d?w=600&h=400&fit=crop" alt="Standard Table" loading="lazy">
+          <div class="table-card-badge">Standard</div>
+          <div class="table-card-status status-occupied">Завгүй</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">Table 02 — Elite</div>
+          <div class="table-card-desc">8ft Diamond Professional ширээ, Simonis cloth</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              2-4 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              8ft
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">25,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 3 VIP -->
+      <div class="table-card animate-on-scroll" data-type="vip">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&h=400&fit=crop" alt="VIP Room" loading="lazy">
+          <div class="table-card-badge">VIP</div>
+          <div class="table-card-status status-available">Сул</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">VIP Room 01 — Gold</div>
+          <div class="table-card-desc">Хувийн өрөө, 9ft ширээ, караоке, мини бар</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              4-8 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              9ft
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Караоке
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">60,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 4 VIP -->
+      <div class="table-card animate-on-scroll" data-type="vip">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&h=400&fit=crop" alt="VIP Room" loading="lazy">
+          <div class="table-card-badge">VIP</div>
+          <div class="table-card-status status-reserved">Захиалсан</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">VIP Room 02 — Platinum</div>
+          <div class="table-card-desc">Том хувийн өрөө, 2 ширээ, дэлгэц, бүтэн бар</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              8-16 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              2× 9ft
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">120,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 5 Snooker -->
+      <div class="table-card animate-on-scroll" data-type="snooker">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1615214430411-0b8eb61507cf?w=600&h=400&fit=crop" alt="Snooker" loading="lazy">
+          <div class="table-card-badge">Snooker</div>
+          <div class="table-card-status status-available">Сул</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">Snooker 01 — Grand</div>
+          <div class="table-card-desc">12ft мэргэжлийн Snooker ширээ, Star бренд</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              2 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              12ft
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">35,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table 6 Snooker -->
+      <div class="table-card animate-on-scroll" data-type="snooker">
+        <div class="table-card-img">
+          <img src="https://images.unsplash.com/photo-1606503153255-59d8b8b82176?w=600&h=400&fit=crop" alt="Snooker" loading="lazy">
+          <div class="table-card-badge">Snooker</div>
+          <div class="table-card-status status-available">Сул</div>
+        </div>
+        <div class="table-card-body">
+          <div class="table-card-name">Snooker 02 — Pro</div>
+          <div class="table-card-desc">12ft Riley ширээ, тэмцээний зэрэглэлийн гэрэлтүүлэг</div>
+          <div class="table-card-meta">
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              2 тоглогч
+            </div>
+            <div class="meta-item">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              12ft
+            </div>
+          </div>
+          <div class="table-card-price">
+            <div>
+              <div class="price-amount">35,000 ₮</div>
+              <div class="price-unit">/ цагт</div>
+            </div>
+            <button class="book-btn">Захиалах</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MENU ═══ -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <div class="animate-on-scroll">
+      <div class="section-label">Хоол & Ундаа</div>
+      <h2 class="section-title">Бидний <em>цэс</em></h2>
+    </div>
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="filterMenu('all')">Бүгд</button>
+      <button class="tab-btn" onclick="filterMenu('beef')">Үхрийн мах</button>
+      <button class="tab-btn" onclick="filterMenu('chicken')">Тахиа</button>
+      <button class="tab-btn" onclick="filterMenu('pasta')">Паста</button>
+      <button class="tab-btn" onclick="filterMenu('pizza')">Пицца</button>
+      <button class="tab-btn" onclick="filterMenu('snack')">Зууш</button>
+    </div>
+    <div class="menu-grid" id="menuGrid">
+      <!-- Beef Items -->
+      <div class="menu-item animate-on-scroll" data-category="beef">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=200&h=200&fit=crop" alt="Steak">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Beef Sirloin Steak</div>
+          <div class="menu-item-desc">Хар чинжүүний соустой үхрийн нурууны мах</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">50,900 ₮</div>
+            <div class="menu-item-tag">🌶️ Шинэ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="beef">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=200&h=200&fit=crop" alt="Tenderloin">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Beef Tenderloin</div>
+          <div class="menu-item-desc">Улаан дарсны соустой үхрийн гол мах</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">47,900 ₮</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="beef">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop" alt="Ribs">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Beef Short Ribs</div>
+          <div class="menu-item-desc">Зөөлөн галаар жигнэсэн үхрийн хавирга</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">40,900 ₮</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="chicken">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=200&h=200&fit=crop" alt="Chicken">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Grilled Chicken</div>
+          <div class="menu-item-desc">Шарсан тахианы мах, хүрэн соустой</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">32,900 ₮</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="pasta">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=200&h=200&fit=crop" alt="Pasta">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Carbonara Pasta</div>
+          <div class="menu-item-desc">Классик итали карбонара, пармезан бялуутай</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">28,900 ₮</div>
+            <div class="menu-item-tag">Хит</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="pizza">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop" alt="Pizza">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Pepperoni Pizza</div>
+          <div class="menu-item-desc">Моцарелла, пепперони, итали соус</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">34,900 ₮</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="snack">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=200&h=200&fit=crop" alt="Fries">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Truffle Fries</div>
+          <div class="menu-item-desc">Трюфель тостой шарсан төмс, пармезан</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">18,900 ₮</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item animate-on-scroll" data-category="snack">
+        <div class="menu-item-img">
+          <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop" alt="Wings">
+        </div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">Buffalo Wings</div>
+          <div class="menu-item-desc">Халуун соустой далавчнууд, цэнхэр бяслагны дип</div>
+          <div class="menu-item-bottom">
+            <div class="menu-item-price">22,900 ₮</div>
+            <div class="menu-item-tag">🔥 Халуун</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DRINKS ═══ -->
+<section class="drinks-section" id="drinks">
+  <div class="container">
+    <div class="animate-on-scroll">
+      <div class="section-label">Дарс & Ундаа</div>
+      <h2 class="section-title">Манай <em>бар</em></h2>
+    </div>
+    <div class="drinks-grid">
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=150&h=300&fit=crop" alt="Wine">
+        </div>
+        <div class="drink-card-name">Sauvignon Blanc</div>
+        <div class="drink-card-detail">750ml / ALC 11.5%</div>
+        <div class="drink-card-price">79,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?w=150&h=300&fit=crop" alt="Rose">
+        </div>
+        <div class="drink-card-name">Merlot Rose</div>
+        <div class="drink-card-detail">750ml / ALC 12.5%</div>
+        <div class="drink-card-price">79,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1586370434639-0fe43b2d32e6?w=150&h=300&fit=crop" alt="Red">
+        </div>
+        <div class="drink-card-name">Grenache</div>
+        <div class="drink-card-detail">750ml / ALC 12.5%</div>
+        <div class="drink-card-price">79,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1566275529824-cca6d008f3da?w=150&h=300&fit=crop" alt="Chardonnay">
+        </div>
+        <div class="drink-card-name">Chardonnay</div>
+        <div class="drink-card-detail">750ml / ALC 13%</div>
+        <div class="drink-card-price">79,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1569919659476-f0852f9fcc16?w=150&h=300&fit=crop" alt="Whiskey">
+        </div>
+        <div class="drink-card-name">Jack Daniel's</div>
+        <div class="drink-card-detail">Bottle / ALC 40%</div>
+        <div class="drink-card-price">189,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1571950006640-02c9d0f8f285?w=150&h=300&fit=crop" alt="Hennessy">
+        </div>
+        <div class="drink-card-name">Hennessy VS</div>
+        <div class="drink-card-detail">Bottle / ALC 40%</div>
+        <div class="drink-card-price">289,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1582819509237-d5b75f20ff7a?w=150&h=300&fit=crop" alt="Beer">
+        </div>
+        <div class="drink-card-name">Draft Beer</div>
+        <div class="drink-card-detail">500ml</div>
+        <div class="drink-card-price">12,000 ₮</div>
+      </div>
+
+      <div class="drink-card animate-on-scroll">
+        <div class="drink-card-img">
+          <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=150&h=300&fit=crop" alt="Cocktail">
+        </div>
+        <div class="drink-card-name">Signature Cocktail</div>
+        <div class="drink-card-detail">Joy Special Mix</div>
+        <div class="drink-card-price">22,000 ₮</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual animate-on-scroll">
+        <div class="about-img">
+          <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop" alt="JoyBilliard Interior">
+        </div>
+        <div class="about-floating-card">
+          <div class="about-floating-num">5+</div>
+          <div class="about-floating-label">Жилийн туршлага</div>
+        </div>
+      </div>
+      <div class="animate-on-scroll">
+        <div class="section-label">Бидний тухай</div>
+        <h2 class="section-title">Бильярдын <em>соёлыг</em> шинэчлэх</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-top: 20px; font-size: 0.95rem;">
+          JoyBilliard нь Улаанбаатар хотын анхны premium бильярд лаунж юм. 
+          Бид дэлхийн зэрэглэлийн тоног төхөөрөмж, тав тухтай орчин, 
+          мэргэжлийн үйлчилгээгээр таныг хүлээж байна.
+        </p>
+        <div class="features-list">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>Дэлхийн зэрэглэлийн ширээ</h4>
+              <p>Brunswick, Diamond, Riley зэрэг шилдэг брэндийн мэргэжлийн ширээнүүд</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>Коктейль бар & Хоол</h4>
+              <p>Мэргэжлийн бармен, стейк хаус чанарын хоол, signature коктейлүүд</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>VIP хувийн өрөөнүүд</h4>
+              <p>Караоке, дэлгэц, хувийн бар бүхий VIP өрөөнүүд</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            </div>
+            <div class="feature-text">
+              <h4>Тэмцээн & Үйл явдал</h4>
+              <p>Сар бүрийн тэмцээн, корпорэйт арга хэмжээ, хувийн үдэшлэг</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div style="text-align: center;" class="animate-on-scroll">
+      <div class="section-label">Үнийн санал</div>
+      <h2 class="section-title">Өөрт тохирох <em>багцаа</em> сонго</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card animate-on-scroll">
+        <div class="pricing-name">Standard</div>
+        <div class="pricing-price">25K</div>
+        <div class="pricing-unit">₮ / цагт</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> 8-9ft ширээ</li>
+          <li><span class="check">✓</span> Чанарын cue stick</li>
+          <li><span class="check">✓</span> Wi-Fi</li>
+          <li><span class="check">✓</span> Гэрэлтүүлэг</li>
+          <li style="color:var(--text-muted)">✗ Хувийн өрөө</li>
+        </ul>
+        <button class="btn-outline" style="width:100%;">Захиалах</button>
+      </div>
+
+      <div class="pricing-card featured animate-on-scroll">
+        <div class="pricing-card-tag">Түгээмэл</div>
+        <div class="pricing-name">VIP Gold</div>
+        <div class="pricing-price">60K</div>
+        <div class="pricing-unit">₮ / цагт</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> 9ft premium ширээ</li>
+          <li><span class="check">✓</span> Хувийн VIP өрөө</li>
+          <li><span class="check">✓</span> Караоке</li>
+          <li><span class="check">✓</span> Мини бар</li>
+          <li><span class="check">✓</span> 65" дэлгэц</li>
+        </ul>
+        <button class="btn-primary" style="width:100%; border:none;">Захиалах</button>
+      </div>
+
+      <div class="pricing-card animate-on-scroll">
+        <div class="pricing-name">VIP Platinum</div>
+        <div class="pricing-price">120K</div>
+        <div class="pricing-unit">₮ / цагт</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> 2× 9ft ширээ</li>
+          <li><span class="check">✓</span> Том хувийн өрөө</li>
+          <li><span class="check">✓</span> Бүтэн бар</li>
+          <li><span class="check">✓</span> Караоке + DJ</li>
+          <li><span class="check">✓</span> Зориулалтын зөөгч</li>
+        </ul>
+        <button class="btn-outline" style="width:100%;">Захиалах</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GALLERY ═══ -->
+<section class="gallery-section" id="gallery">
+  <div class="container">
+    <div class="animate-on-scroll">
+      <div class="section-label">Зургийн цомог</div>
+      <h2 class="section-title">Манай <em>орчин</em></h2>
+    </div>
+  </div>
+  <div class="gallery-scroll">
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=530&fit=crop" alt="Interior" loading="lazy">
+      <div class="gallery-overlay"><div class="gallery-overlay-text">Үндсэн зал</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=530&fit=crop" alt="Bar" loading="lazy">
+      <div class="gallery-overlay"><div class="gallery-overlay-text">Коктейль бар</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=400&h=530&fit=crop" alt="VIP" loading="lazy">
+      <div class="gallery-overlay"><div class="gallery-overlay-text">VIP өрөө</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=530&fit=crop" alt="Food" loading="lazy">
+      <div class="gallery-overlay"><div class="gallery-overlay-text">Хоолны цэс</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://images.unsplash.com/photo-1611068813633-a2c365b2b22f?w=400&h=530&fit=crop" alt="Tables" loading="lazy">
+      <div class="gallery-overlay"><div class="gallery-overlay-text">Тоглоомын зал</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="animate-on-scroll">
+      <div class="section-label">Холбоо барих</div>
+      <h2 class="section-title">Бидэнтэй <em>холбогдох</em></h2>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-top: 20px; font-size: 0.95rem;">
+          Ширээ захиалах, арга хэмжээ зохион байгуулах, эсвэл ямар нэгэн асуулт байвал бидэнтэй холбогдоорой.
+        </p>
+        <div class="contact-info-items">
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Утас</div>
+              <div class="contact-item-value">+(976) 9911 2233</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">И-мэйл</div>
+              <div class="contact-item-value">info@joybilliard.mn</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Хаяг</div>
+              <div class="contact-item-value">Сүхбаатар дүүрэг, 1-р хороо<br>Улаанбаатар, Монгол</div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-hours">
+          <h4>Ажиллах цаг</h4>
+          <div class="hours-row">
+            <span class="hours-day">Даваа — Пүрэв</span>
+            <span class="hours-time">14:00 — 02:00</span>
+          </div>
+          <div class="hours-row">
+            <span class="hours-day">Баасан</span>
+            <span class="hours-time">14:00 — 04:00</span>
+          </div>
+          <div class="hours-row">
+            <span class="hours-day">Бямба — Ням</span>
+            <span class="hours-time">12:00 — 04:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Нэр <span>*</span></label>
+              <input type="text" class="form-input" placeholder="Таны нэр">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Утас <span>*</span></label>
+              <input type="tel" class="form-input" placeholder="+976">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">И-мэйл <span>*</span></label>
+            <input type="email" class="form-input" placeholder="name@email.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Огноо</label>
+              <input type="date" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Цаг</label>
+              <input type="time" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ширээний төрөл</label>
+            <select class="form-input">
+              <option>Standard — 25,000₮/цаг</option>
+              <option>VIP Gold — 60,000₮/цаг</option>
+              <option>VIP Platinum — 120,000₮/цаг</option>
+              <option>Snooker — 35,000₮/цаг</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Нэмэлт мэдээлэл</label>
+            <textarea class="form-textarea" placeholder="Тусгай хүсэлт, тоглогчдын тоо гэх мэт..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%; justify-content:center; border:none; padding: 16px;">
+            Захиалга илгээх
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MAP ═══ -->
+<div class="map-section">
+  <div class="map-placeholder">
+    <div class="map-pin">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <div class="map-pin-text">JoyBilliard — Улаанбаатар</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <div class="logo-icon"></div>
+          <div>
+            <div class="logo-text">JOY<span>BILLIARD</span></div>
+            <div class="logo-sub">Premium Pool Lounge</div>
+          </div>
+        </a>
+        <p>Монголын анхны premium бильярд лаунж. Дэлхийн зэрэглэлийн ширээ, тав тухтай орчин.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-icon">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="social-icon">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="social-icon">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Цэс</h5>
+        <ul>
+          <li><a href="#tables">Ширээнүүд</a></li>
+          <li><a href="#menu">Хоол</a></li>
+          <li><a href="#drinks">Ундаа</a></li>
+          <li><a href="#pricing">Үнийн санал</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Мэдээлэл</h5>
+        <ul>
+          <li><a href="#about">Бидний тухай</a></li>
+          <li><a href="#">Тэмцээнүүд</a></li>
+          <li><a href="#">Карьер</a></li>
+          <li><a href="#contact">Холбогдох</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Үйлчилгээ</h5>
+        <ul>
+          <li><a href="#">Корпорэйт үйл явдал</a></li>
+          <li><a href="#">Төрсөн өдрийн үдэшлэг</a></li>
+          <li><a href="#">Бильярд сургалт</a></li>
+          <li><a href="#">Гишүүнчлэл</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">©2026 JoyBilliard. Бүх эрх хуулиар хамгаалагдсан.</div>
+      <div class="footer-legal">
+        <a href="#">Нууцлалын бодлого</a>
+        <a href="#">Үйлчилгээний нөхцөл</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Header scroll effect
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Mobile menu
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const hamburger = document.querySelector('.hamburger');
+  menu.classList.toggle('open');
+  hamburger.classList.toggle('active');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+
+// Table filtering
+function filterTables(type) {
+  document.querySelectorAll('.tables-section .tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.table-card').forEach(card => {
+    if (type === 'all' || card.dataset.type === type) {
+      card.style.display = '';
+      card.style.animation = 'fadeUp 0.5s ease forwards';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Menu filtering
+function filterMenu(cat) {
+  document.querySelectorAll('.menu-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(item => {
+    if (cat === 'all' || item.dataset.category === cat) {
+      item.style.display = '';
+      item.style.animation = 'fadeUp 0.4s ease forwards';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+// Gallery drag scroll
+const gallery = document.querySelector('.gallery-scroll');
+let isDown = false, startX, scrollLeft;
+gallery.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - gallery.offsetLeft; scrollLeft = gallery.scrollLeft; gallery.style.cursor = 'grabbing'; });
+gallery.addEventListener('mouseleave', () => { isDown = false; gallery.style.cursor = 'grab'; });
+gallery.addEventListener('mouseup', () => { isDown = false; gallery.style.cursor = 'grab'; });
+gallery.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - gallery.offsetLeft;
+  gallery.scrollLeft = scrollLeft - (x - startX) * 1.5;
+});
+</script>
+</body>
+</html>

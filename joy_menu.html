@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joy Billiard & Pub — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f14;
+  --surface:#111920;
+  --surface2:#182028;
+  --gold:#d4a853;
+  --gold-dim:#9a7a3c;
+  --teal:#1a8a7a;
+  --teal-light:#2bc4af;
+  --white:#f0ece4;
+  --muted:#7a8694;
+  --danger:#c0392b;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --font-accent:'Bebas Neue',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--font-body);
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Noise overlay */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* Header */
+.hero{
+  position:relative;
+  padding:3rem 2rem 2rem;
+  text-align:center;
+  background:linear-gradient(180deg,#0d1a1f 0%,var(--bg) 100%);
+  border-bottom:1px solid rgba(212,168,83,.15);
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(ellipse at 50% 20%,rgba(26,138,122,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-block;
+  font-family:var(--font-accent);
+  letter-spacing:.35em;
+  font-size:.75rem;
+  color:var(--teal-light);
+  text-transform:uppercase;
+  border:1px solid rgba(43,196,175,.3);
+  padding:.35rem 1.2rem;
+  border-radius:2px;
+  margin-bottom:1rem;
+}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:900;
+  color:var(--gold);
+  letter-spacing:.02em;
+  line-height:1.1;
+}
+.hero h1 span{
+  display:block;
+  font-size:.45em;
+  font-family:var(--font-accent);
+  color:var(--muted);
+  letter-spacing:.4em;
+  margin-top:.5rem;
+  font-weight:400;
+}
+.hero-stats{
+  display:flex;justify-content:center;gap:2rem;margin-top:1.5rem;flex-wrap:wrap;
+}
+.hero-stat{text-align:center}
+.hero-stat .num{font-family:var(--font-accent);font-size:1.6rem;color:var(--gold);letter-spacing:.05em}
+.hero-stat .label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.15em}
+
+/* Nav */
+.nav-wrap{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,15,20,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(212,168,83,.1);
+}
+.nav{
+  display:flex;gap:.25rem;padding:.6rem 1rem;
+  overflow-x:auto;scrollbar-width:none;
+  max-width:1200px;margin:0 auto;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  flex-shrink:0;
+  font-family:var(--font-body);
+  font-size:.72rem;font-weight:500;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid transparent;
+  padding:.4rem .8rem;
+  border-radius:2px;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.nav-btn:hover{color:var(--white);border-color:rgba(212,168,83,.2)}
+.nav-btn.active{color:var(--gold);border-color:var(--gold-dim);background:rgba(212,168,83,.06)}
+
+/* Search */
+.search-bar{
+  max-width:1200px;margin:1.5rem auto .5rem;padding:0 1.5rem;
+}
+.search-input{
+  width:100%;
+  background:var(--surface);
+  border:1px solid rgba(212,168,83,.12);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-size:.9rem;
+  padding:.75rem 1rem .75rem 2.8rem;
+  border-radius:3px;
+  outline:none;
+  transition:border-color .2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237a8694' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:.85rem center;
+}
+.search-input:focus{border-color:var(--gold-dim)}
+.search-input::placeholder{color:var(--muted)}
+
+/* Sections */
+.menu-container{max-width:1200px;margin:0 auto;padding:1rem 1.5rem 4rem}
+
+.section{margin-bottom:3rem;animation:fadeUp .5s ease both}
+.section-header{
+  display:flex;align-items:baseline;gap:1rem;
+  margin-bottom:1.2rem;padding-bottom:.6rem;
+  border-bottom:1px solid rgba(212,168,83,.12);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:1.4rem;font-weight:700;
+  color:var(--gold);
+}
+.section-subtitle{
+  font-size:.75rem;color:var(--muted);
+  font-family:var(--font-accent);
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.section-count{
+  margin-left:auto;
+  font-size:.7rem;
+  color:var(--muted);
+  font-family:var(--font-accent);
+  letter-spacing:.1em;
+}
+
+/* Items grid */
+.items-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:.75rem;
+}
+
+.menu-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:.25rem .8rem;
+  padding:.85rem 1rem;
+  background:var(--surface);
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:3px;
+  transition:all .25s;
+  cursor:default;
+  align-items:start;
+}
+.menu-item:hover{
+  background:var(--surface2);
+  border-color:rgba(212,168,83,.15);
+  transform:translateY(-1px);
+}
+.item-name{
+  font-weight:600;font-size:.88rem;
+  color:var(--white);
+  line-height:1.35;
+}
+.item-name-mn{
+  display:block;
+  font-size:.75rem;
+  color:var(--muted);
+  font-weight:400;
+  margin-top:.1rem;
+}
+.item-price{
+  font-family:var(--font-accent);
+  font-size:1.05rem;
+  color:var(--gold);
+  letter-spacing:.04em;
+  text-align:right;
+  white-space:nowrap;
+}
+.item-meta{
+  grid-column:1/-1;
+  display:flex;gap:.8rem;align-items:center;
+  margin-top:.15rem;
+}
+.item-kcal{
+  font-size:.68rem;
+  color:var(--teal-light);
+  background:rgba(43,196,175,.08);
+  padding:.15rem .5rem;
+  border-radius:2px;
+  font-weight:500;
+}
+.item-note{
+  font-size:.7rem;
+  color:var(--muted);
+  font-style:italic;
+  line-height:1.4;
+}
+
+/* Size variants for pizza */
+.price-sizes{
+  display:flex;gap:.5rem;
+  text-align:right;
+  flex-direction:column;
+}
+.price-size{
+  font-family:var(--font-accent);
+  font-size:.85rem;
+  color:var(--gold);
+  letter-spacing:.04em;
+}
+.price-size .sz{
+  font-family:var(--font-body);
+  font-size:.6rem;
+  color:var(--muted);
+  font-weight:600;
+  margin-right:.3rem;
+  text-transform:uppercase;
+}
+
+/* Spirits with 50ml/bottle */
+.price-spirit{
+  display:flex;gap:.6rem;text-align:right;
+  flex-direction:column;
+}
+.price-spirit-line{
+  font-family:var(--font-accent);
+  font-size:.82rem;
+  color:var(--gold);
+  letter-spacing:.03em;
+}
+.price-spirit-line .vol{
+  font-family:var(--font-body);
+  font-size:.58rem;
+  color:var(--muted);
+  font-weight:600;
+  margin-right:.25rem;
+}
+
+/* Party / Set cards */
+.set-card{
+  padding:1.2rem 1.2rem;
+  background:linear-gradient(135deg,var(--surface) 0%,rgba(26,138,122,.06) 100%);
+  border:1px solid rgba(212,168,83,.15);
+  border-radius:4px;
+  margin-bottom:.75rem;
+  transition:all .25s;
+}
+.set-card:hover{
+  border-color:rgba(212,168,83,.35);
+  transform:translateY(-1px);
+}
+.set-card-head{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:.6rem;
+}
+.set-card-name{
+  font-family:var(--font-display);
+  font-size:1.1rem;font-weight:700;
+  color:var(--white);
+}
+.set-card-price{
+  font-family:var(--font-accent);
+  font-size:1.3rem;
+  color:var(--gold);
+  letter-spacing:.04em;
+}
+.set-card-note{
+  font-size:.78rem;
+  color:var(--muted);
+  line-height:1.55;
+}
+
+/* Hidden */
+.hidden{display:none!important}
+
+/* Animations */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Footer */
+.footer{
+  text-align:center;padding:2rem;
+  border-top:1px solid rgba(212,168,83,.08);
+  color:var(--muted);font-size:.72rem;
+  letter-spacing:.05em;
+}
+.footer a{color:var(--gold-dim);text-decoration:none}
+
+/* Responsive */
+@media(max-width:600px){
+  .items-grid{grid-template-columns:1fr}
+  .hero{padding:2rem 1rem 1.5rem}
+  .menu-container{padding:1rem 1rem 3rem}
+}
+
+/* Lang toggle */
+.lang-toggle{
+  position:absolute;top:1rem;right:1.5rem;
+  display:flex;gap:0;
+  border:1px solid rgba(212,168,83,.2);
+  border-radius:2px;overflow:hidden;
+}
+.lang-btn{
+  font-family:var(--font-body);
+  font-size:.68rem;font-weight:600;
+  color:var(--muted);
+  background:transparent;
+  border:none;
+  padding:.35rem .7rem;
+  cursor:pointer;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  transition:all .15s;
+}
+.lang-btn.active{
+  background:rgba(212,168,83,.12);
+  color:var(--gold);
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('mn')">MN</button>
+  </div>
+  <div class="hero-badge">Est. Ulaanbaatar</div>
+  <h1>Joy Billiard & Pub<span>Food & Drink Menu</span></h1>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num" id="stat-items">0</div><div class="label">Menu Items</div></div>
+    <div class="hero-stat"><div class="num" id="stat-categories">0</div><div class="label">Categories</div></div>
+    <div class="hero-stat"><div class="num" id="stat-range">0</div><div class="label">Price Range ₮</div></div>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav" id="nav"></div>
+</div>
+
+<div class="search-bar">
+  <input class="search-input" id="search" type="text" placeholder="Search menu items...">
+</div>
+
+<div class="menu-container" id="menu"></div>
+
+<div class="footer">
+  Joy Billiard & Pub &mdash; Source: <a href="https://qrmenu.mn" target="_blank">qrmenu.mn</a> &mdash; Prices in MNT (₮)
+</div>
+
+<script>
+const MENU_DATA = {"restaurant":{"name":"Joy Billiard & Pub","source":"qrmenu.mn","currency":"₮"},"categories":[{"id":"appetizer_salad","name_mn":"Зууш, Салат","name_en":"Appetizer & Salad","items":[{"name_mn":"Стейк салат","name_en":"Steak salad","kcal":1000,"price":28900},{"name_mn":"Үхрийн хэлэн зууш","name_en":"Beef tongue snack","kcal":206,"price":24900},{"name_mn":"Цезарь салат","name_en":"Caesar salad","kcal":226,"price":24900},{"name_mn":"Айсберг Туна загастай салат","name_en":"Iceberg & tuna salad","kcal":220,"price":24900},{"name_mn":"Терияки соустай тахиан махан салат","name_en":"Teriyaki chicken salad","kcal":220,"price":24900}]},{"id":"soup","name_mn":"Шөл","name_en":"Soup","items":[{"name_mn":"Банштай хавиргатай шөл","name_en":"Dumplings and ribs soup","kcal":306,"price":25900},{"name_mn":"Борцтой гурилтай шөл","name_en":"Jerky & noodle soup","kcal":250,"price":26900},{"name_mn":"Кимчитэй шөл","name_en":"Kimchi soup","kcal":350,"price":24900},{"name_mn":"Хуушууртай хар шөл","name_en":"Soup with khuushuur","kcal":380,"price":25900},{"name_mn":"Банштай хар шөл","name_en":"Dumplings soup","kcal":206,"price":24900},{"name_mn":"Бантан","name_en":"Bantan - Mongolian Soup","kcal":180,"price":20900}]},{"id":"main_course","name_mn":"Үндсэн хоол","name_en":"Main Course","items":[{"name_mn":"Соустай үхрийн хавирга","name_en":"Beef Ribs","kcal":2800,"price":31900},{"name_mn":"Хонины шарсан хавирга","name_en":"Fried lamb ribs","kcal":2200,"price":27900},{"name_mn":"Ананастай шарсан тахиа","name_en":"Pineapple Chicken","kcal":1900,"price":26900},{"name_mn":"Терияки соустай тахиа","name_en":"Teriyaki Chicken","kcal":1900,"price":26900},{"name_mn":"Үхрийн жигнэсэн мах","name_en":"Slow Cooked Beef","kcal":2100,"price":30900},{"name_mn":"Хуушуур","name_en":"Mini Khuushuur","kcal":1900,"price":29900,"note":"10pcs & garden salad"},{"name_mn":"Бууз","name_en":"Buuz","kcal":1900,"price":29900,"note":"10pcs & garden salad"},{"name_mn":"Цуйван","name_en":"Tsuivan","kcal":1950,"price":28900,"note":"beef"},{"name_mn":"Будаатай хуурга","name_en":"Beef fried rice","kcal":1800,"price":28900,"note":"beef"}]},{"id":"share_food","name_mn":"Цуглуулга","name_en":"Share Food","items":[{"name_mn":"Махны цуглуулга","name_en":"Meat set","kcal":5500,"price":199900,"note":"Chicken thigh, pork, beef ribs, lamb ribs, sausage, bone marrow, fried vegetables, fries, fresh salad"},{"name_mn":"Тахианы махны цуглуулга","name_en":"Chicken set","kcal":4500,"price":169900,"note":"Crispy chicken, sausage, chicken breast, grilled chicken, seasoned chicken, broccoli, fresh salad, fries"},{"name_mn":"Монгол хоолны цуглуулга","name_en":"Mongolian food set","kcal":5800,"price":189900,"note":"Buuz x10, Khuushuur x10, beef ribs, lamb ribs, pickled cucumber, broccoli, fresh salad, fries"}]},{"id":"snack","name_mn":"Зууш","name_en":"Snack","items":[{"name_mn":"Гахайн тагалцаг","name_en":"Pork knuckle","kcal":2900,"price":79900},{"name_mn":"Холимог цуглуулга","name_en":"Mixed platter","kcal":2800,"price":37900},{"name_mn":"Соустай тахиа, шарсан төмс","name_en":"Chicken & fries","kcal":1800,"price":19900},{"name_mn":"Шарсан зайдас, шарсан төмс","name_en":"Sausages & fries","kcal":2200,"price":19900},{"name_mn":"Шаржигнуур тахиа, шарсан төмс","name_en":"Crispy chicken & fries","kcal":1800,"price":19900},{"name_mn":"Тахианы мах, догбугги","name_en":"Chicken & tteokbokki","kcal":2200,"price":22900},{"name_mn":"Шарсан төмс","name_en":"Fries","kcal":200,"price":11900}]},{"id":"burger","name_mn":"Бургер","name_en":"Burger","items":[{"name_mn":"Давхар бургер","name_en":"Double burger","kcal":2300,"price":24900},{"name_mn":"Үхрийн махтай бургер","name_en":"Beef burger","kcal":2200,"price":20900},{"name_mn":"Тахианы махтай бургер","name_en":"Chicken burger","kcal":1900,"price":20900}]},{"id":"bowl_tsuivan","name_mn":"Bowl цуйван","name_en":"Bowl Tsuivan","items":[{"name_mn":"BOWL цуйван / Үхрийн өвчүү","name_en":"Bowl tsuivan / Beef brisket","kcal":3200,"price":62900,"note":"2-3 хүний порц"},{"name_mn":"BOWL цуйван / Хонины хавирга","name_en":"Bowl tsuivan / Lamb ribs","kcal":2700,"price":60900,"note":"2-3 хүний порц"}]},{"id":"pizza","name_mn":"Пицца","name_en":"Pizza","items":[{"name_en":"Joy pizza","kcal":4800,"price_m":36900,"price_l":42900},{"name_en":"Mix pizza","kcal":4680,"price_m":35900,"price_l":41900},{"name_en":"Peperroni pizza","kcal":4580,"price_m":34900,"price_l":40900},{"name_en":"Hawaii pizza","kcal":3570,"price_m":34900,"price_l":40900},{"name_en":"Tuna pizza","kcal":3270,"price_m":34900,"price_l":40900}]},{"id":"skewers","name_mn":"Шорлог","name_en":"Skewers","items":[{"name_en":"Chinese style skewers","kcal":120,"price":7900},{"name_en":"Chicken wings","kcal":110,"price":9900}]},{"id":"soft_drink","name_mn":"Ус, ундаа","name_en":"Soft Drink","items":[{"name_en":"Orgiluun 0.33","price":5500},{"name_en":"Selenge 0.33","price":6000},{"name_en":"Terelj 0.33","price":6000},{"name_en":"Origluun SODA water","price":6000},{"name_en":"Origluun TONIC water","price":6000},{"name_en":"Laimon Fresh","price":6000},{"name_en":"Cola / Sprite / Fanta 0.33","price":6000},{"name_en":"Pepsi 0.33","price":6000},{"name_en":"Ginger Ale","price":6000},{"name_en":"Calpis","price":8000},{"name_en":"Khujirt 0.5","price":5000},{"name_en":"Khujirt bottle 0.33","price":6000},{"name_en":"Juice 0.25","price":6500},{"name_en":"Blue Red Bull","price":9900},{"name_en":"+C","price":6000}]},{"id":"hot_drink","name_mn":"Халуун ундаа","name_en":"Hot Drink","items":[{"name_mn":"Зөгийн балтай сүү","name_en":"Honey milk","price":6000},{"name_en":"Fruit Tea","price":3500},{"name_en":"Tea tone","price":3500},{"name_en":"Coffee","price":7000},{"name_mn":"Аньс","name_en":"Currant tea","price":5500},{"name_mn":"Чацаргана","name_en":"Sea buckthorn tea","price":5500},{"name_mn":"Гүцтэй цай","name_en":"Milk tea (large)","price":11900}]},{"id":"draft_beer","name_mn":"Always Fresh","name_en":"Draft Beer","items":[{"name_en":"Heineken 0.33","price":11900},{"name_en":"Heineken 0.5","price":13900},{"name_en":"Kaltenberg 0.5","price":12900},{"name_en":"Altangovi 0.33","price":10900},{"name_en":"Altangovi 0.45","price":11900},{"name_en":"Tiger 0.5","price":9900},{"name_en":"Borgio 0.45","price":9900},{"name_en":"Sengur 0.45","price":9900},{"name_en":"Sengur 0.33 Ultra","price":9900},{"name_en":"Sengur radler 0.45","price":9900},{"name_en":"Niislel Lite 0.45","price":9900},{"name_en":"Niislel Super Lite 0.45","price":9900}]},{"id":"beer_bottle","name_mn":"Шар айраг","name_en":"Beer (Bottle)","items":[{"name_en":"Kirin Ichiban 0.6","price":17900},{"name_en":"Tsingtao 0.6","price":14900},{"name_en":"Yanjin 0.6","price":14900},{"name_en":"Guinness 0.45","price":19900},{"name_en":"Asahi /Super Dry/ 0.6","price":18900},{"name_en":"Corona Extra 0.33","price":14900},{"name_en":"Oasis 1L","price":23900},{"name_en":"Harbin 0.6","price":14900},{"name_en":"Budweiser 0.5","price":12900},{"name_en":"Gem draft 0.5","price":12900},{"name_en":"Craft 0.5","price":11900}]},{"id":"cocktail","name_mn":"Коктейль","name_en":"Cocktail","items":[{"name_en":"OOZE Umeshu 0.33 - 7.0%","price":11900},{"name_en":"OOZE Bourbon Whiskey & Cola 0.33","price":11900},{"name_en":"OOZE Vodka & Granberry 0.33","price":11900},{"name_en":"OOZE Gin & Tonic 0.33","price":11900},{"name_en":"OOZE Mojito 0.33","price":11900},{"name_en":"EVE Vanilla & Coconut 0.33","price":11900},{"name_en":"EVE Elderflower & Forestberry 0.33","price":11900},{"name_en":"EVE Lemonglass & Orange peel 0.33","price":11900}]},{"id":"tequila","name_mn":"Текила","name_en":"Tequila","items":[{"name_en":"Jose Cuervo Premium 0.75","price_50ml":16500,"price_bottle":240000},{"name_en":"Jose Cuervo Silver 0.75","price_50ml":16500,"price_bottle":240000},{"name_en":"Sierra Reposado 0.7","price_bottle":180000},{"name_en":"Sierra Reposado 1L","price_50ml":12500,"price_bottle":240000},{"name_en":"Sierra Silver 0.7","price_bottle":180000},{"name_en":"Sierra Silver 1L","price_50ml":12500,"price_bottle":240000},{"name_en":"Olmega Gold 0.7","price_50ml":15500,"price_bottle":210000},{"name_en":"Olmega Silver 0.7","price_50ml":15500,"price_bottle":210000}]},{"id":"ice_cold","name_mn":"Ice Cold -18C","name_en":"Ice Cold -18C","items":[{"name_en":"Jagermeister 1L","price_50ml":13000,"price_bottle":250000},{"name_en":"Jagermeister 0.7","price_bottle":210000}]},{"id":"cognac","name_mn":"Коньяк","name_en":"Cognac","items":[{"name_en":"Hennessy 0.7","price_50ml":30500,"price_bottle":420000},{"name_en":"Hennessy V.S.O.P 0.7","price_50ml":38500,"price_bottle":530000}]},{"id":"gin","name_mn":"Жин","name_en":"Gin","items":[{"name_en":"Barrister Blue 0.7","price_50ml":14000,"price_bottle":190000},{"name_en":"Barrister Pink 0.7","price_50ml":14000,"price_bottle":190000},{"name_en":"Barrister Dry 0.7","price_50ml":14000,"price_bottle":190000},{"name_en":"Barrister Orange 0.7","price_50ml":14000,"price_bottle":190000},{"name_en":"Gordon's 1L","price_50ml":12000,"price_bottle":230000},{"name_en":"Gordon's 0.7","price_bottle":190000}]},{"id":"vodka","name_mn":"Архи","name_en":"Vodka","items":[{"name_en":"Bluemark 0.7","price_50ml":10500,"price_bottle":140000},{"name_en":"SKYY 0.7","price_50ml":14000,"price_bottle":190000},{"name_en":"Soyombo 0.7","price_50ml":14000,"price_bottle":200000},{"name_en":"Velvet 0.7","price_50ml":11000,"price_bottle":150000},{"name_en":"Evok 0.75","price_50ml":11500,"price_bottle":150000},{"name_en":"Eden 0.7","price_50ml":7500,"price_bottle":100000},{"name_en":"Export Wheat 0.75","price_50ml":6500,"price_bottle":90000},{"name_en":"Aypyr Silver 0.7","price_50ml":7000,"price_bottle":90000},{"name_en":"Export 40yr 0.75","price_50ml":7000,"price_bottle":90000},{"name_en":"Finlandia 1L","price_50ml":11500,"price_bottle":220000},{"name_en":"Beluga Noble 1L","price_50ml":25500,"price_bottle":500000},{"name_en":"Beluga Noble 0.7","price_bottle":400000},{"name_en":"Grey Goose 1L","price_50ml":22500,"price_bottle":440000},{"name_en":"Nomad 0.75","price_50ml":8500,"price_bottle":120000},{"name_en":"Golia 0.75","price_50ml":6500,"price_bottle":90000},{"name_en":"Soyorkhol 0.75","price_50ml":6500,"price_bottle":90000},{"name_en":"Three Sixty 1L","price_50ml":11000,"price_bottle":210000},{"name_en":"Three Sixty 0.7","price_bottle":180000},{"name_en":"VIRU VALGE 1L","price_50ml":13500,"price_bottle":260000}]},{"id":"whisky","name_mn":"Виски","name_en":"Whisky","items":[{"name_en":"GlenGrant 12 years 0.7","price_bottle":510000},{"name_en":"GlenGrant IMR 0.7","price_50ml":22500,"price_bottle":310000},{"name_en":"Balmoore 0.7","price_50ml":16000,"price_bottle":220000},{"name_en":"Wild Turkey 1L","price_50ml":17000,"price_bottle":330000},{"name_en":"Wild Turkey 0.7","price_bottle":270000},{"name_en":"Ballantine's 1L","price_50ml":14500,"price_bottle":280000},{"name_en":"Ballantine's 0.7","price_bottle":240000},{"name_en":"Johnnie Walker /red/ 1L","price_50ml":11500,"price_bottle":220000},{"name_en":"Jack Daniel's 1L","price_50ml":15500,"price_bottle":300000},{"name_en":"Jack Daniel's 0.7","price_bottle":230000},{"name_en":"Chivas Regal 18YO 1L","price_bottle":500000},{"name_en":"Chivas Regal 12YO 1L","price_50ml":19500,"price_bottle":380000},{"name_en":"Chivas Regal 12YO 0.7","price_bottle":300000},{"name_en":"Glenmorangie X 0.7","price_bottle":440000},{"name_en":"Glenmorangie 10 0.7","price_bottle":480000},{"name_en":"Jameson 1L","price_50ml":17000,"price_bottle":330000},{"name_en":"Jameson 0.7","price_bottle":290000},{"name_en":"Cutty 0.7","price_50ml":16000,"price_bottle":220000},{"name_en":"Langs 0.7","price_50ml":16000,"price_bottle":220000}]},{"id":"wine","name_mn":"Дарс","name_en":"Wine","items":[{"name_en":"Maison Castel Merlot","price":90000},{"name_en":"Maison Castel Chardonnay","price":90000},{"name_en":"Maison Castel Grenache","price":90000},{"name_en":"Maison Castel Merlot Rose","price":90000},{"name_en":"Maison Castel Sauvignon Blanc","price":90000},{"name_en":"Kindzmarauli","price":90000},{"name_en":"Alazani Valley semi-sweet","price":90000},{"name_en":"Saperavi dry red wine","price":90000},{"name_en":"Yellow Tail","price":90000}]},{"id":"dessert","name_mn":"Амттан","name_en":"Dessert","items":[{"name_en":"Chips","price":10000},{"name_en":"Nuts","price":10000},{"name_en":"Toffifee","price":16000},{"name_en":"Smoke","price":9000},{"name_mn":"Хөзөр","name_en":"Cards","price":3000}]},{"id":"party_set","name_mn":"Party Set","name_en":"Party & Set Menus","items":[{"name_en":"Party Set","price":999000,"note":"Finlandia 1L ×2, Soft drink ×10, Water ×10, Beer ×10, Pork knuckle ×1, Meat set ×1, Pizza ×1, Nuts ×1, Chips ×1"},{"name_en":"Joy Set","price":1199000,"note":"Gordon's 1L ×2, Soda & Tonic ×10, Soft drink ×10, Water ×10, Beer ×10, Chicken set ×1, Meat set ×1, Nuts ×1, Chips ×1, Toffifee ×1 + VIP ROOM"},{"name_en":"Birthday Set","price":1499000,"note":"Jameson 1L ×2, Soft drink ×10, Water ×10, Beer ×15, Soda & Tonic ×10, Joy Pizza ×2, Meat set ×1, Chicken set ×1, Toffifee ×1, Nuts ×2, Chips ×2 + VIP ROOM"}]},{"id":"spirit_sets","name_mn":"Архины сэт","name_en":"Spirit Sets (450K)","items":[{"name_en":"Beer Set","price":450000,"note":"Beer ×20, Meat set ×1, Nuts ×1, Chips ×1, French fries ×1"},{"name_en":"Jagermeister Set","price":450000,"note":"Jagermeister 0.7 ×1, Chicken set ×1, Soft drink ×5, Water ×5, Soda & Tonic ×5"},{"name_en":"Ballantine's Set","price":450000,"note":"Ballantine's 0.7 ×1, Joy pizza ×1, Soft drink ×5, Water ×5, Pork knuckle ×1, Chips ×1, Nuts ×1"},{"name_en":"Jack Daniel's Set","price":450000,"note":"Jack Daniel's 0.7 ×1, Joy pizza ×1, Pork knuckle ×1, French fries ×1, Soft drink ×5, Water ×5, Chips ×1, Nuts ×1"},{"name_en":"Finlandia Set","price":450000,"note":"Finlandia 1L ×1, Chicken set ×1, Soft drink ×5, Water ×5"},{"name_en":"Jameson Set","price":450000,"note":"Jameson 0.7 ×1, Joy pizza ×1, Mixed platter ×1, Soft drink ×5, Water ×5, Chips ×1, Nuts ×1"}]}]};
+
+let currentLang = 'en';
+const setTypes = new Set(['party_set','spirit_sets']);
+const spiritTypes = new Set(['tequila','ice_cold','cognac','gin','vodka','whisky']);
+const fmt = n => n ? n.toLocaleString('en-US') + '₮' : '—';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
+  render();
+}
+
+function getItemName(item) {
+  if (currentLang === 'mn' && item.name_mn) return { primary: item.name_mn, secondary: item.name_en };
+  if (currentLang === 'en' && item.name_mn) return { primary: item.name_en, secondary: item.name_mn };
+  return { primary: item.name_en || item.name_mn, secondary: null };
+}
+
+function getCatName(cat) {
+  return currentLang === 'mn' ? (cat.name_mn || cat.name_en) : cat.name_en;
+}
+
+function buildNav() {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = MENU_DATA.categories.map(c =>
+    `<button class="nav-btn" data-id="${c.id}" onclick="scrollTo_('${c.id}')">${getCatName(c)}</button>`
+  ).join('');
+}
+
+function scrollTo_(id) {
+  const el = document.getElementById('sec-' + id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderItemPrice(item, catId) {
+  if (item.price_m !== undefined) {
+    return `<div class="price-sizes">
+      <div class="price-size"><span class="sz">M</span>${fmt(item.price_m)}</div>
+      <div class="price-size"><span class="sz">L</span>${fmt(item.price_l)}</div>
+    </div>`;
+  }
+  if (spiritTypes.has(catId) && (item.price_50ml || item.price_bottle)) {
+    let lines = '';
+    if (item.price_50ml) lines += `<div class="price-spirit-line"><span class="vol">50ml</span>${fmt(item.price_50ml)}</div>`;
+    if (item.price_bottle) lines += `<div class="price-spirit-line"><span class="vol">Bottle</span>${fmt(item.price_bottle)}</div>`;
+    return `<div class="price-spirit">${lines}</div>`;
+  }
+  return `<div class="item-price">${fmt(item.price)}</div>`;
+}
+
+function renderItem(item, catId) {
+  const n = getItemName(item);
+  const meta = [];
+  if (item.kcal) meta.push(`<span class="item-kcal">${item.kcal} kcal</span>`);
+  if (item.note) meta.push(`<span class="item-note">${item.note}</span>`);
+
+  return `<div class="menu-item" data-search="${(n.primary + ' ' + (n.secondary||'') + ' ' + (item.note||'')).toLowerCase()}">
+    <div>
+      <div class="item-name">${n.primary}${n.secondary ? `<span class="item-name-mn">${n.secondary}</span>` : ''}</div>
+    </div>
+    ${renderItemPrice(item, catId)}
+    ${meta.length ? `<div class="item-meta">${meta.join('')}</div>` : ''}
+  </div>`;
+}
+
+function renderSetItem(item) {
+  return `<div class="set-card">
+    <div class="set-card-head">
+      <div class="set-card-name">${item.name_en}</div>
+      <div class="set-card-price">${fmt(item.price)}</div>
+    </div>
+    ${item.note ? `<div class="set-card-note">${item.note}</div>` : ''}
+  </div>`;
+}
+
+function render() {
+  buildNav();
+  const menu = document.getElementById('menu');
+  let totalItems = 0;
+  let allPrices = [];
+
+  menu.innerHTML = MENU_DATA.categories.map(cat => {
+    totalItems += cat.items.length;
+    cat.items.forEach(i => {
+      if (i.price) allPrices.push(i.price);
+      if (i.price_m) allPrices.push(i.price_m);
+      if (i.price_50ml) allPrices.push(i.price_50ml);
+    });
+
+    const isSet = setTypes.has(cat.id);
+    const itemsHtml = isSet
+      ? cat.items.map(i => renderSetItem(i)).join('')
+      : `<div class="items-grid">${cat.items.map(i => renderItem(i, cat.id)).join('')}</div>`;
+
+    return `<div class="section" id="sec-${cat.id}">
+      <div class="section-header">
+        <div class="section-title">${getCatName(cat)}</div>
+        <div class="section-count">${cat.items.length} items</div>
+      </div>
+      ${itemsHtml}
+    </div>`;
+  }).join('');
+
+  // Stats
+  document.getElementById('stat-items').textContent = totalItems;
+  document.getElementById('stat-categories').textContent = MENU_DATA.categories.length;
+  const minP = Math.min(...allPrices.filter(p=>p>0));
+  const maxP = Math.max(...allPrices);
+  document.getElementById('stat-range').textContent = `${(minP/1000).toFixed(0)}K – ${(maxP/1000).toFixed(0)}K`;
+
+  // Intersection observer for nav highlight
+  setupObserver();
+}
+
+function setupObserver() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id.replace('sec-','');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+        const activeBtn = document.querySelector(`.nav-btn[data-id="${id}"]`);
+        if (activeBtn) activeBtn.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+      }
+    });
+  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+  document.querySelectorAll('.section').forEach(s => obs.observe(s));
+}
+
+// Search
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.menu-item').forEach(el => {
+    el.classList.toggle('hidden', q && !el.dataset.search.includes(q));
+  });
+  document.querySelectorAll('.set-card').forEach(el => {
+    const text = el.textContent.toLowerCase();
+    el.classList.toggle('hidden', q && !text.includes(q));
+  });
+  document.querySelectorAll('.section').forEach(sec => {
+    const visible = sec.querySelectorAll('.menu-item:not(.hidden), .set-card:not(.hidden)');
+    sec.classList.toggle('hidden', q && visible.length === 0);
+  });
+});
+
+render();
+</script>
+</body>
+</html>
