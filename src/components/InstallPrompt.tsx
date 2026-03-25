@@ -20,9 +20,7 @@ export default function InstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       const dismissed = localStorage.getItem("pwa-dismissed");
-      if (!dismissed) {
-        setShow(true);
-      }
+      if (!dismissed) setShow(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -33,9 +31,7 @@ export default function InstallPrompt() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      setShow(false);
-    }
+    if (outcome === "accepted") setShow(false);
     setDeferredPrompt(null);
   };
 
@@ -47,26 +43,17 @@ export default function InstallPrompt() {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-[60] md:bottom-6 md:left-auto md:right-6 md:w-[360px]">
-      <div className="border border-[#1c1c1c] bg-[#0f0f0f] p-4 shadow-2xl">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#030303] text-xl font-black text-[#006491]">
-            A
-          </div>
-          <div className="flex-1">
-            <p className="text-[12px] font-bold text-[#ede8df]">Antaqor суулгах</p>
-            <p className="mt-1 text-[11px] leading-relaxed text-[#5a5550]">
-              Хурдан хандалтын тулд нүүр хуудсандаа нэмнэ үү
-            </p>
-            <div className="mt-3 flex gap-2">
-              <button onClick={handleInstall} className="bg-[#006491] px-4 py-2 text-[10px] font-bold uppercase tracking-[2px] text-[#ede8df] transition hover:bg-[#004f73]">
-                Суулгах
-              </button>
-              <button onClick={handleDismiss} className="px-4 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#c8c8c0]">
-                Одоо биш
-              </button>
-            </div>
-          </div>
+    <div className="fixed bottom-20 left-4 right-4 z-[60] md:bottom-6 md:left-auto md:right-6 md:w-[320px]">
+      <div className="rounded-xl border border-[#1a1a22] bg-[#0c0c10] p-4 shadow-2xl">
+        <p className="text-[13px] font-semibold text-[#e8e6e1]">Antaqor суулгах</p>
+        <p className="mt-1 text-[12px] text-[#6b6b78]">Хурдан хандалтын тулд нүүр хуудсандаа нэмнэ үү</p>
+        <div className="mt-3 flex gap-2">
+          <button onClick={handleInstall} className="btn-primary !py-2 !px-4 !text-[12px]">
+            Суулгах
+          </button>
+          <button onClick={handleDismiss} className="text-[12px] text-[#6b6b78] transition hover:text-[#e8e6e1]">
+            Одоо биш
+          </button>
         </div>
       </div>
     </div>

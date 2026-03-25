@@ -33,7 +33,6 @@ export default function ClassroomPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [lessonsLoading, setLessonsLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [showNewCourse, setShowNewCourse] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
@@ -48,7 +47,6 @@ export default function ClassroomPage() {
   useEffect(() => {
     if (!memberLoading && isMember) {
       fetchCourses();
-      // Fetch user level
       if (session?.user) {
         const uid = (session.user as { id?: string }).id;
         if (uid) {
@@ -94,7 +92,6 @@ export default function ClassroomPage() {
   const selectCourse = (id: string) => {
     setSelectedCourse(id);
     fetchLessons(id);
-    setSidebarOpen(false);
   };
 
   const handleCreateCourse = async () => {
@@ -175,7 +172,7 @@ export default function ClassroomPage() {
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#006491]" />
       </div>
     );
   }
@@ -183,9 +180,9 @@ export default function ClassroomPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
-        <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Хичээлийн танхимд хандахын тулд нэвтэрнэ үү.</p>
-        <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
+        <h1 className="mb-3 text-2xl font-bold text-[#e8e6e1]">Хичээл</h1>
+        <p className="mb-6 text-[14px] text-[#6b6b78]">Хичээлд хандахын тулд нэвтэрнэ үү.</p>
+        <Link href="/auth/signin" className="btn-primary">Нэвтрэх</Link>
       </div>
     );
   }
@@ -193,243 +190,213 @@ export default function ClassroomPage() {
   if (!isMember) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Хичээлийн танхим</h1>
-        <p className="mb-8 max-w-md text-[13px] leading-[2] text-[rgba(240,236,227,0.5)]">
-          Хичээлийн танхим нь зөвхөн Кланы гишүүдэд зориулагдсан. Бүх хичээлд хандахын тулд Кланд нэгдээрэй.
+        <h1 className="mb-3 text-2xl font-bold text-[#e8e6e1]">Хичээл</h1>
+        <p className="mb-6 max-w-sm text-[14px] leading-relaxed text-[#6b6b78]">
+          Хичээл нь зөвхөн Кланы гишүүдэд зориулагдсан.
         </p>
-        <Link href="/clan" className="btn-blood">Кланд нэгдэх</Link>
+        <Link href="/clan" className="btn-primary">Кланд нэгдэх</Link>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[60vh] gap-0 md:gap-6">
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center bg-[#006491] text-[#ede8df] shadow-lg md:hidden"
-      >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h8m-8 6h16" />
-        </svg>
-      </button>
+    <div>
+      {/* Header with course selector */}
+      <div className="mb-6">
+        <h1 className="mb-4 text-lg font-bold text-[#e8e6e1]">Хичээл</h1>
 
-      <aside className={`
-        fixed inset-y-0 left-0 z-30 w-72 overflow-y-auto border-r border-[#1c1c1c] bg-[#0a0a0a] p-5 pt-20 transition-transform md:relative md:inset-auto md:z-auto md:w-64 md:shrink-0 md:translate-x-0 md:border-r-0 md:bg-transparent md:p-0 md:pt-0
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      `}>
-        {lessons.length > 0 && (
-          <div className="mb-6">
-            <div className="mb-2 text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Явц</div>
-            <div className="mb-1 flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#006491]">{progressPercent}%</span>
-              <span className="text-[10px] text-[#5a5550]">{completedCount}/{lessons.length}</span>
-            </div>
-            <div className="h-1.5 overflow-hidden bg-[#1c1c1c]">
-              <div className="h-full bg-[#006491] transition-all" style={{ width: `${progressPercent}%` }} />
-            </div>
+        {/* Course tabs */}
+        {courses.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {courses.map((course) => (
+              <button
+                key={course._id}
+                onClick={() => selectCourse(course._id)}
+                className={`group flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-medium transition ${
+                  selectedCourse === course._id
+                    ? "bg-[#006491] text-white"
+                    : "bg-[#0c0c10] text-[#6b6b78] hover:text-[#e8e6e1]"
+                }`}
+              >
+                {course.title}
+                <span className={`text-[11px] ${selectedCourse === course._id ? "text-white/60" : "text-[#3a3a48]"}`}>
+                  {course.lessonsCount}
+                </span>
+                {admin && selectedCourse !== course._id && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course._id); }}
+                    className="ml-1 hidden text-[#6b6b78] hover:text-red-400 group-hover:inline"
+                  >
+                    ×
+                  </button>
+                )}
+              </button>
+            ))}
           </div>
         )}
 
-        <div className="space-y-1">
-          {courses.map((course) => (
-            <div key={course._id} className="group">
-              <button
-                onClick={() => selectCourse(course._id)}
-                className={`flex w-full items-center justify-between px-3 py-2.5 text-left text-[12px] transition ${
-                  selectedCourse === course._id
-                    ? "bg-[rgba(0,100,145,0.1)] text-[#ede8df]"
-                    : "text-[#c8c8c0] hover:bg-[rgba(240,236,227,0.03)] hover:text-[#ede8df]"
-                }`}
-              >
-                <span className="font-bold">{course.title}</span>
-                <span className="text-[10px] text-[#5a5550]">{course.lessonsCount}</span>
-              </button>
-              {admin && (
-                <button
-                  onClick={() => handleDeleteCourse(course._id)}
-                  className="ml-3 hidden text-[9px] text-[#5a5550] hover:text-[#006491] group-hover:inline"
-                >
-                  УСТГАХ
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-
+        {/* Admin: add course */}
         {admin && (
-          <div className="mt-6">
+          <div className="mt-3">
             {showNewCourse ? (
-              <div className="space-y-2">
-                <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Хичээлийн нэр" className="input-dark !py-2 !text-[11px]" />
-                <input value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар (заавал биш)" className="input-dark !py-2 !text-[11px]" />
+              <div className="card space-y-3 p-4">
+                <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Курсийн нэр" className="input-dark" />
+                <input value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар" className="input-dark" />
                 <div className="flex gap-2">
-                  <button onClick={handleCreateCourse} disabled={creating} className="btn-blood !py-1.5 !px-4 !text-[9px]">
+                  <button onClick={handleCreateCourse} disabled={creating} className="btn-primary !text-[12px]">
                     {creating ? "..." : "Үүсгэх"}
                   </button>
-                  <button onClick={() => setShowNewCourse(false)} className="btn-ghost !py-1.5 !px-4 !text-[9px]">Цуцлах</button>
+                  <button onClick={() => setShowNewCourse(false)} className="btn-ghost !text-[12px]">Цуцлах</button>
                 </div>
               </div>
             ) : (
-              <button onClick={() => setShowNewCourse(true)} className="w-full border border-dashed border-[#2a2825] px-3 py-2 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#006491] hover:text-[#006491]">
-                + Хичээл нэмэх
+              <button onClick={() => setShowNewCourse(true)} className="text-[12px] font-medium text-[#006491] transition hover:text-[#0080b8]">
+                + Курс нэмэх
               </button>
             )}
           </div>
         )}
+      </div>
 
-        {sidebarOpen && (
-          <button onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-[-1] bg-black/50 md:hidden" />
-        )}
-      </aside>
+      {/* Progress */}
+      {currentCourse && lessons.length > 0 && (
+        <div className="mb-6">
+          <div className="mb-2 flex items-center justify-between text-[12px]">
+            <span className="text-[#6b6b78]">{currentCourse.title}</span>
+            <span className="font-medium text-[#e8e6e1]">{completedCount}/{lessons.length}</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-[#1a1a22]">
+            <div className="h-full rounded-full bg-[#006491] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+      )}
 
-      <main className="min-w-0 flex-1">
-        {currentCourse ? (
-          <>
-            <div className="mb-8">
-              <h1 className="text-3xl tracking-[1px] text-[#ede8df]">
-                {currentCourse.title}
-              </h1>
-              {currentCourse.description && (
-                <p className="mt-2 text-[12px] leading-[1.8] text-[rgba(240,236,227,0.5)]">
-                  {currentCourse.description}
-                </p>
-              )}
+      {/* Admin: add lesson */}
+      {admin && currentCourse && (
+        <div className="mb-4">
+          {showNewLesson ? (
+            <div className="card space-y-3 p-5">
+              <input value={newLesson.title} onChange={(e) => setNewLesson((p) => ({ ...p, title: e.target.value }))} placeholder="Хичээлийн нэр" className="input-dark" />
+              <textarea value={newLesson.description} onChange={(e) => setNewLesson((p) => ({ ...p, description: e.target.value }))} placeholder="Тайлбар" rows={3} className="input-dark resize-none" />
+              <div className="flex flex-wrap items-center gap-3">
+                <input value={newLesson.videoUrl} onChange={(e) => setNewLesson((p) => ({ ...p, videoUrl: e.target.value, videoType: "link" }))} placeholder="Видео URL" className="input-dark flex-1" />
+                <label className="btn-ghost cursor-pointer !py-2 !px-4 !text-[12px]">
+                  Файл
+                  <input type="file" accept="video/*,image/*" onChange={handleVideoUpload} className="hidden" />
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-[12px] text-[#6b6b78]">Түвшин:</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={newLesson.requiredLevel}
+                  onChange={(e) => setNewLesson((p) => ({ ...p, requiredLevel: parseInt(e.target.value) || 0 }))}
+                  className="input-dark !w-20"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={handleCreateLesson} disabled={creatingLesson} className="btn-primary !text-[12px]">
+                  {creatingLesson ? "..." : "Нэмэх"}
+                </button>
+                <button onClick={() => setShowNewLesson(false)} className="btn-ghost !text-[12px]">Цуцлах</button>
+              </div>
             </div>
+          ) : (
+            <button onClick={() => setShowNewLesson(true)} className="text-[12px] font-medium text-[#006491] transition hover:text-[#0080b8]">
+              + Хичээл нэмэх
+            </button>
+          )}
+        </div>
+      )}
 
-            {admin && (
-              <div className="mb-6">
-                {showNewLesson ? (
-                  <div className="card space-y-3 p-5">
-                    <input value={newLesson.title} onChange={(e) => setNewLesson((p) => ({ ...p, title: e.target.value }))} placeholder="Хичээлийн нэр" className="input-dark" />
-                    <textarea value={newLesson.description} onChange={(e) => setNewLesson((p) => ({ ...p, description: e.target.value }))} placeholder="Тайлбар" rows={3} className="input-dark resize-none" />
-                    <div className="flex flex-wrap items-center gap-3">
-                      <input value={newLesson.videoUrl} onChange={(e) => setNewLesson((p) => ({ ...p, videoUrl: e.target.value, videoType: "link" }))} placeholder="Видео URL (YouTube гэх мэт)" className="input-dark flex-1" />
-                      <span className="text-[10px] text-[#5a5550]">эсвэл</span>
-                      <label className="btn-ghost cursor-pointer !py-2 !px-4 !text-[9px]">
-                        Видео оруулах
-                        <input type="file" accept="video/*,image/*" onChange={handleVideoUpload} className="hidden" />
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="text-[10px] text-[#5a5550]">Шаардлагатай түвшин:</label>
-                      <input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={newLesson.requiredLevel}
-                        onChange={(e) => setNewLesson((p) => ({ ...p, requiredLevel: parseInt(e.target.value) || 0 }))}
-                        className="input-dark !w-20 !py-1.5 !text-[11px]"
-                      />
-                    </div>
-                    {newLesson.videoUrl && (
-                      <p className="text-[10px] text-[#006491] break-all">Видео: {newLesson.videoUrl}</p>
-                    )}
-                    <div className="flex gap-2">
-                      <button onClick={handleCreateLesson} disabled={creatingLesson} className="btn-blood !py-2 !px-5 !text-[10px]">
-                        {creatingLesson ? "Үүсгэж байна..." : "Хичээл нэмэх"}
-                      </button>
-                      <button onClick={() => setShowNewLesson(false)} className="btn-ghost !py-2 !px-5 !text-[10px]">Цуцлах</button>
-                    </div>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowNewLesson(true)} className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#006491] hover:text-[#006491]">
-                    + Хичээл нэмэх
-                  </button>
-                )}
-              </div>
-            )}
-
-            {lessonsLoading ? (
-              <div className="flex justify-center py-12">
-                <div className="h-3 w-3 animate-pulse bg-[#006491]" />
-              </div>
-            ) : lessons.length === 0 ? (
-              <p className="py-12 text-center text-[12px] text-[#5a5550]">Хичээл байхгүй байна.</p>
-            ) : (
-              <div className="space-y-3">
-                {lessons.map((lesson) => {
-                  const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
-                  const isLocked = (lesson.requiredLevel || 0) > userLevel && !admin;
-                  return (
-                    <div key={lesson._id} className={`card group relative overflow-hidden p-5 ${isLocked ? "opacity-60" : ""}`}>
-                      <div className="flex gap-4">
-                        {isLocked ? (
-                          <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border border-[#2a2825] text-[#5a5550]">
-                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => toggleComplete(lesson._id)}
-                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border transition ${
-                              isCompleted
-                                ? "border-[#006491] bg-[#006491] text-[#ede8df]"
-                                : "border-[#2a2825] text-transparent hover:border-[#5a5550]"
-                            }`}
-                          >
-                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </button>
-                        )}
-
-                        <div className="min-w-0 flex-1">
-                          {isLocked ? (
-                            <div>
-                              <h3 className="text-[14px] font-bold text-[#5a5550]">
-                                {lesson.title}
-                              </h3>
-                              <p className="mt-1 text-[10px] uppercase tracking-[1px] text-[#006491]">
-                                LV.{lesson.requiredLevel} шаардлагатай
-                              </p>
-                            </div>
-                          ) : (
-                            <Link href={`/classroom/${lesson._id}`} className="block">
-                              <h3 className={`text-[14px] font-bold transition ${isCompleted ? "text-[#5a5550] line-through" : "text-[#ede8df] group-hover:text-[#006491]"}`}>
-                                {lesson.title}
-                              </h3>
-                              {lesson.description && (
-                                <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)] line-clamp-2">
-                                  {lesson.description}
-                                </p>
-                              )}
-                            </Link>
-                          )}
-                        </div>
-
-                        {(lesson.videoUrl || lesson.thumbnail) && (
-                          <Link href={`/classroom/${lesson._id}`} className="relative hidden h-16 w-24 shrink-0 overflow-hidden bg-[#1c1c1c] sm:block">
-                            {lesson.thumbnail ? (
-                              <img src={lesson.thumbnail} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center">
-                                <svg className="h-6 w-6 text-[#5a5550]" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M8 5v14l11-7z" />
-                                </svg>
-                              </div>
-                            )}
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        ) : loading ? (
+      {/* Lessons */}
+      {currentCourse ? (
+        lessonsLoading ? (
           <div className="flex justify-center py-16">
-            <div className="h-3 w-3 animate-pulse bg-[#006491]" />
+            <div className="h-2 w-2 animate-pulse rounded-full bg-[#006491]" />
           </div>
+        ) : lessons.length === 0 ? (
+          <p className="py-16 text-center text-[14px] text-[#6b6b78]">Хичээл байхгүй байна.</p>
         ) : (
-          <div className="py-16 text-center">
-            <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
-              {courses.length === 0 ? "Хичээл байхгүй" : "Хичээл сонгоно уу"}
-            </p>
+          <div className="space-y-2">
+            {lessons.map((lesson, index) => {
+              const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
+              const isLocked = (lesson.requiredLevel || 0) > userLevel && !admin;
+              return (
+                <div key={lesson._id} className={`card overflow-hidden transition ${isLocked ? "opacity-50" : ""}`}>
+                  <div className="flex items-center gap-4 p-4">
+                    {/* Number / check / lock */}
+                    {isLocked ? (
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1a1a22] text-[#3a3a48]">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => toggleComplete(lesson._id)}
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
+                          isCompleted
+                            ? "bg-[#006491] text-white"
+                            : "bg-[#1a1a22] text-[#3a3a48] hover:text-[#6b6b78]"
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          <span className="text-[12px] font-medium">{index + 1}</span>
+                        )}
+                      </button>
+                    )}
+
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      {isLocked ? (
+                        <div>
+                          <h3 className="text-[14px] font-medium text-[#3a3a48]">{lesson.title}</h3>
+                          <p className="text-[11px] text-[#006491]">LV.{lesson.requiredLevel} шаардлагатай</p>
+                        </div>
+                      ) : (
+                        <Link href={`/classroom/${lesson._id}`} className="block">
+                          <h3 className={`text-[14px] font-medium transition ${isCompleted ? "text-[#6b6b78] line-through" : "text-[#e8e6e1]"}`}>
+                            {lesson.title}
+                          </h3>
+                          {lesson.description && (
+                            <p className="mt-0.5 text-[12px] text-[#6b6b78] line-clamp-1">{lesson.description}</p>
+                          )}
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Video indicator */}
+                    {lesson.videoUrl && !isLocked && (
+                      <Link href={`/classroom/${lesson._id}`} className="shrink-0 text-[#3a3a48]">
+                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </main>
+        )
+      ) : loading ? (
+        <div className="flex justify-center py-16">
+          <div className="h-2 w-2 animate-pulse rounded-full bg-[#006491]" />
+        </div>
+      ) : (
+        <div className="py-20 text-center">
+          <p className="text-[15px] text-[#6b6b78]">
+            {courses.length === 0 ? "Хичээл байхгүй" : "Курс сонгоно уу"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
