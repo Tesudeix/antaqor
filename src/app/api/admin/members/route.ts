@@ -43,7 +43,7 @@ export async function GET(req: Request) {
       .lean();
 
     const totalUsers = await User.countDocuments();
-    const totalMembers = await User.countDocuments({ clan: { $ne: "" } });
+    const totalMembers = await User.countDocuments({ clan: { $ne: "" }, subscriptionExpiresAt: { $gt: new Date() } });
 
     const aiLevelCounts = await User.aggregate([
       { $match: { aiExperience: { $ne: "" } } },

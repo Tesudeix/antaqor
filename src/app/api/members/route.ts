@@ -6,8 +6,12 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const members = await User.find({ clan: { $ne: "" } })
-      .select("name avatar bio email clan clanJoinedAt createdAt")
+    const now = new Date();
+    const members = await User.find({
+      clan: { $ne: "" },
+      subscriptionExpiresAt: { $gt: now },
+    })
+      .select("name avatar bio email clan clanJoinedAt createdAt xp level")
       .sort({ clanJoinedAt: -1 })
       .lean();
 

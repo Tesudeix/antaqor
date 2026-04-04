@@ -45,10 +45,10 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Auth write endpoints (login, signup, callbacks) — generous limit
+  // Auth write endpoints — strict: 20 req/min
   if (pathname.startsWith("/api/auth")) {
     const key = `auth:${getRateLimitKey(req)}`;
-    if (isRateLimited(key, 120, 60000)) {
+    if (isRateLimited(key, 20, 60000)) {
       return NextResponse.json(
         { error: "Too many login attempts. Please wait a minute and try again." },
         { status: 429 }
@@ -57,10 +57,32 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // General API: 120 requests per minute before throttling
+  // Upload endpoints — strict: 10 req/min
+  if (pathname.startsWith("/api/upload")) {
+    const key = `upload:${getRateLimitKey(req)}`;
+    if (isRateLimited(key, 10, 60000)) {
+      return NextResponse.json(
+        { error: "Too many uploads. Please slow down." },
+        { status: 429 }
+      );
+    }
+  }
+
+  // Admin API — 60 req/min
+  if (pathname.startsWith("/api/admin")) {
+    const key = `admin:${getRateLimitKey(req)}`;
+    if (isRateLimited(key, 60, 60000)) {
+      return NextResponse.json(
+        { error: "Too many requests." },
+        { status: 429 }
+      );
+    }
+  }
+
+  // General API: 100 requests per minute
   if (pathname.startsWith("/api/")) {
     const key = `api:${getRateLimitKey(req)}`;
-    if (isRateLimited(key, 120, 60000)) {
+    if (isRateLimited(key, 100, 60000)) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },
         { status: 429 }
@@ -73,7 +95,13 @@ export function middleware(req: NextRequest) {
     pathname.includes("..") ||
     pathname.includes(".env") ||
     pathname.includes(".git") ||
-    /\.(php|asp|aspx|jsp|cgi)$/i.test(pathname)
+    pathname.includes(".svn") ||
+    pathname.includes("wp-admin") ||
+    pathname.includes("wp-login") ||
+    pathname.includes("wp-content") ||
+    pathname.includes("xmlrpc") ||
+    pathname.includes("phpmyadmin") ||
+    /\.(php|asp|aspx|jsp|cgi|sql|bak|old|orig|swp)$/i.test(pathname)
   ) {
     return new NextResponse(null, { status: 404 });
   }
@@ -84,6 +112,8 @@ export function middleware(req: NextRequest) {
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
 
   return response;
 }

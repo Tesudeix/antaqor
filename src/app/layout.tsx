@@ -4,6 +4,7 @@ import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import BottomBar from "@/components/BottomBar";
 import InstallPrompt from "@/components/InstallPrompt";
+import SubscriptionBanner from "@/components/SubscriptionBanner";
 
 export const metadata: Metadata = {
   title: {
@@ -69,6 +70,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
+          <SubscriptionBanner />
           <Navbar />
           <main className="mx-auto max-w-2xl px-5 pb-24 pt-6 md:pb-12">
             {children}

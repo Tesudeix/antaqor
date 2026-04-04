@@ -17,9 +17,11 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const authorId = searchParams.get("author");
     const visibility = searchParams.get("visibility");
+    const category = searchParams.get("category");
 
     const query: Record<string, unknown> = {};
     if (authorId) query.author = authorId;
+    if (category === "мэдээлэл" || category === "ялалт") query.category = category;
 
     // Non-authenticated users can only see free posts
     if (!session?.user) {
@@ -64,7 +66,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, image, visibility } = await req.json();
+    const { content, image, visibility, category } = await req.json();
 
     const hasContent = content && content.trim().length > 0;
     const hasImage = image && image.trim().length > 0;
@@ -86,11 +88,14 @@ export async function POST(req: NextRequest) {
         ? visibility
         : "members";
 
+    const postCategory = (category === "мэдээлэл" || category === "ялалт") ? category : "мэдээлэл";
+
     const post = await Post.create({
       author: userId,
       content: hasContent ? content.trim() : "",
       image: hasImage ? image.trim() : "",
       visibility: postVisibility,
+      category: postCategory,
     });
 
     const populated = await post.populate("author", "name avatar");

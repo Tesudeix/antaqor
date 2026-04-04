@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, use, useRef } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import PostCard from "@/components/PostCard";
 import { formatDistanceToNow } from "@/lib/utils";
 import { getLevelTitle, getLevelProgress, xpForLevel } from "@/lib/xpClient";
@@ -163,7 +163,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse bg-[#006491]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFD300]" />
       </div>
     );
   }
@@ -171,7 +171,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (!user) {
     return (
       <div className="py-16 text-center">
-        <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
+        <p className="text-lg text-[#3a3a48]">
           Хэрэглэгч олдсонгүй
         </p>
       </div>
@@ -187,17 +187,18 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="card mb-10 p-6 md:p-8">
+      <div className="mb-8 border-b border-[#1a1a22] pb-8">
         <div className="flex flex-col items-start gap-5 sm:flex-row">
+          {/* Square avatar */}
           <div className="relative group">
             {user.avatar ? (
               <img
                 src={user.avatar}
                 alt={user.name}
-                className="h-20 w-20 object-cover ring-2 ring-[#1c1c1c]"
+                className="h-20 w-20 rounded-[4px] object-cover"
               />
             ) : (
-              <div className="flex h-20 w-20 items-center justify-center bg-[#1c1c1c] text-2xl tracking-wider text-[#c8c8c0]">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[4px] bg-[#1a1a22] text-2xl font-bold text-[#3a3a48]">
                 {initials}
               </div>
             )}
@@ -206,12 +207,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
+                  className="absolute inset-0 flex items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
                 >
                   {uploading ? (
-                    <div className="h-4 w-4 animate-spin border-2 border-[#006491] border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#FFD300] border-t-transparent" />
                   ) : (
-                    <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[#eeeee8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -228,19 +229,19 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             )}
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {editing ? (
               <div className="space-y-3">
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="input-dark"
+                  className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="input-dark"
+                  className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -248,20 +249,20 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="input-dark resize-none"
+                  className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="btn-blood !py-2 !px-5 !text-[10px]"
+                    className="rounded-[10px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50"
                   >
-                    {saving ? "Хадгалж байна..." : "Хадгалах"}
+                    {saving ? "..." : "Хадгалах"}
                   </button>
                   <button
                     onClick={() => setEditing(false)}
-                    className="btn-ghost !py-2 !px-5 !text-[10px]"
+                    className="rounded-[10px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:text-[#eeeee8]"
                   >
                     Цуцлах
                   </button>
@@ -269,9 +270,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h1 className="text-3xl tracking-[3px] text-[#ede8df]">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h1 className="text-xl font-bold text-[#eeeee8]">
                       {user.name}
                     </h1>
                     {(() => {
@@ -283,21 +284,21 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       return (
                         <div className="mt-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#006491]">
+                            <span className="text-[11px] font-bold text-[#FFD300]">
                               LV.{level}
                             </span>
-                            <span className="text-[10px] uppercase tracking-[2px] text-[#c8c8c0]">
+                            <span className="text-[11px] text-[#6a6a72]">
                               {title.titleMN}
                             </span>
                           </div>
                           <div className="mt-1.5 flex items-center gap-2">
-                            <div className="h-1.5 w-32 overflow-hidden bg-[#1c1c1c]">
+                            <div className="h-1 w-28 overflow-hidden rounded-full bg-[#1a1a22]">
                               <div
-                                className="h-full bg-[#006491] transition-all"
+                                className="h-full rounded-full bg-[#FFD300] transition-all"
                                 style={{ width: `${Math.round(progress * 100)}%` }}
                               />
                             </div>
-                            <span className="text-[9px] text-[#5a5550]">
+                            <span className="text-[10px] text-[#3a3a48]">
                               {xp.toLocaleString()} / {nextXP.toLocaleString()} XP
                             </span>
                           </div>
@@ -305,42 +306,43 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       );
                     })()}
                     {user.clan && (
-                      <span className="mt-1 inline-block text-[10px] uppercase tracking-[3px] text-[#006491]">
+                      <span className="mt-1.5 inline-block rounded-[4px] bg-[rgba(255,211,0,0.06)] border border-[rgba(255,211,0,0.1)] px-2 py-0.5 text-[10px] font-semibold text-[#FFD300]">
                         Кланы гишүүн
                       </span>
                     )}
                   </div>
                   {isOwner && (
-                    <button
-                      onClick={() => setEditing(true)}
-                      className="btn-ghost !py-2 !px-4 !text-[10px]"
-                    >
-                      Засах
-                    </button>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        onClick={() => setEditing(true)}
+                        className="rounded-[10px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]"
+                      >
+                        Засах
+                      </button>
+                      <button
+                        onClick={() => signOut()}
+                        className="rounded-[10px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400"
+                      >
+                        Гарах
+                      </button>
+                    </div>
                   )}
                 </div>
 
                 {user.bio && (
-                  <p className="mt-3 text-[13px] leading-[1.8] text-[rgba(240,236,227,0.6)]">
+                  <p className="mt-3 text-[13px] leading-[1.7] text-[#6a6a72]">
                     {user.bio}
                   </p>
                 )}
 
-                {/* Profile details */}
-                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-[#3a3a48]">
                   {user.aiExperience && (
-                    <span className="text-[10px] tracking-[1px] text-[#c8c8c0]">
-                      AI: {AI_LEVEL_LABELS[user.aiExperience] || user.aiExperience}
-                    </span>
+                    <span>AI: {AI_LEVEL_LABELS[user.aiExperience] || user.aiExperience}</span>
                   )}
                   {user.age && (
-                    <span className="text-[10px] tracking-[1px] text-[#5a5550]">
-                      {user.age} нас
-                    </span>
+                    <span>{user.age} нас</span>
                   )}
-                  <span className="text-[10px] tracking-[2px] text-[#5a5550]">
-                    НЭГДСЭН {formatDistanceToNow(user.createdAt).toUpperCase()}
-                  </span>
+                  <span>{formatDistanceToNow(user.createdAt)} нэгдсэн</span>
                 </div>
 
                 {user.interests && user.interests.length > 0 && (
@@ -348,7 +350,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     {user.interests.map((i) => (
                       <span
                         key={i}
-                        className="border border-[#1c1c1c] px-2 py-0.5 text-[9px] uppercase tracking-[1px] text-[#5a5550]"
+                        className="rounded-[4px] border border-[#1a1a22] px-2 py-0.5 text-[10px] text-[#3a3a48]"
                       >
                         {INTEREST_LABELS[i] || i}
                       </span>
@@ -361,14 +363,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
-      <div className="section-label">
-        Нийтлэлүүд ({posts.length})
+      {/* Posts section */}
+      <div className="mb-3 flex items-center gap-2 px-1">
+        <span className="text-[12px] font-semibold text-[#6a6a72]">Нийтлэлүүд</span>
+        <span className="text-[12px] text-[#3a3a48]">{posts.length}</span>
       </div>
 
       {posts.length === 0 ? (
-        <p className="py-8 text-center text-[12px] text-[#5a5550]">Нийтлэл байхгүй байна.</p>
+        <p className="py-8 text-center text-[13px] text-[#3a3a48]">Нийтлэл байхгүй байна.</p>
       ) : (
-        <div className="space-y-3">
+        <div className="-mx-5">
           {posts.map((post) => (
             <PostCard key={post._id} post={post} onDelete={handleDeletePost} />
           ))}

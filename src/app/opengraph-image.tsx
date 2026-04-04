@@ -22,7 +22,7 @@ export default function OGImage() {
           <span style={{ fontSize: 120, fontWeight: 900, color: "#e8e6e1", fontFamily: "Arial Black, sans-serif" }}>
             ANTA
           </span>
-          <span style={{ fontSize: 120, fontWeight: 900, color: "#006491", fontFamily: "Arial Black, sans-serif" }}>
+          <span style={{ fontSize: 120, fontWeight: 900, color: "#FFD300", fontFamily: "Arial Black, sans-serif" }}>
             QOR
           </span>
         </div>

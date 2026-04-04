@@ -6,7 +6,9 @@ export interface IPost extends Document {
   content: string;
   image: string;
   visibility: "free" | "members";
+  category: "мэдээлэл" | "ялалт";
   likes: mongoose.Types.ObjectId[];
+  reactions: Map<string, mongoose.Types.ObjectId[]>;
   commentsCount: number;
   createdAt: Date;
   updatedAt: Date;
@@ -34,12 +36,22 @@ const PostSchema = new Schema<IPost>(
       enum: ["free", "members"],
       default: "members",
     },
+    category: {
+      type: String,
+      enum: ["мэдээлэл", "ялалт"],
+      default: "мэдээлэл",
+    },
     likes: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
     ],
+    reactions: {
+      type: Map,
+      of: [{ type: Schema.Types.ObjectId, ref: "User" }],
+      default: () => new Map(),
+    },
     commentsCount: {
       type: Number,
       default: 0,
@@ -53,6 +65,7 @@ const PostSchema = new Schema<IPost>(
 PostSchema.index({ createdAt: -1 });
 PostSchema.index({ author: 1 });
 PostSchema.index({ visibility: 1, createdAt: -1 });
+PostSchema.index({ category: 1, createdAt: -1 });
 
 const Post: Model<IPost> =
   mongoose.models.Post || mongoose.model<IPost>("Post", PostSchema);

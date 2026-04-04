@@ -16,7 +16,7 @@ export async function GET() {
     const [totalUsers, totalMembers, totalPosts, recentSignups, aiLevelCounts, interestCounts, levelDistribution, topXPUsers] =
       await Promise.all([
         User.countDocuments(),
-        User.countDocuments({ clan: { $ne: "" } }),
+        User.countDocuments({ clan: { $ne: "" }, subscriptionExpiresAt: { $gt: new Date() } }),
         Post.countDocuments(),
         User.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
         User.aggregate([

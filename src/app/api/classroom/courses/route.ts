@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    const { title, description, order } = await req.json();
+    const { title, description, thumbnail, order } = await req.json();
     if (!title?.trim()) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     const course = await Course.create({
       title: title.trim(),
       description: description?.trim() || "",
+      thumbnail: thumbnail || "",
       order: order ?? 0,
     });
 

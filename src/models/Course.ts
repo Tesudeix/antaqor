@@ -4,6 +4,7 @@ export interface ICourse extends Document {
   _id: mongoose.Types.ObjectId;
   title: string;
   description: string;
+  thumbnail: string;
   order: number;
   lessonsCount: number;
   createdAt: Date;
@@ -22,6 +23,10 @@ const CourseSchema = new Schema<ICourse>(
       type: String,
       default: "",
       maxlength: 1000,
+    },
+    thumbnail: {
+      type: String,
+      default: "",
     },
     order: {
       type: Number,

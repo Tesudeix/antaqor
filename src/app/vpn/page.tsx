@@ -93,7 +93,7 @@ export default function VpnPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-[2px] w-8 animate-pulse bg-[#006491]" />
+        <div className="h-[2px] w-8 animate-pulse bg-[#FFD300]" />
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function VpnPage() {
           Хамгаалалтын давхарга
         </div>
         <h1 className="text-[clamp(48px,9vw,120px)] leading-[0.85] tracking-[-2px]">
-          <span className="text-[#006491]">VPN</span><br />
+          <span className="text-[#FFD300]">VPN</span><br />
           <span className="text-[#ede8df]">Холболт</span>
         </h1>
         <p className="mt-8 max-w-lg text-[14px] leading-[2] text-[rgba(240,236,227,0.45)]">
@@ -136,7 +136,7 @@ export default function VpnPage() {
       <section className="mb-20">
         <div className="border border-[#1c1c1c]">
           {/* Header */}
-          <div className="border-b border-[#1c1c1c] bg-[#006491] px-8 py-8 md:px-12">
+          <div className="border-b border-[#1c1c1c] bg-[#FFD300] px-8 py-8 md:px-12">
             <div className="flex items-center gap-4">
               <svg className="h-8 w-8 text-[#030303]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}

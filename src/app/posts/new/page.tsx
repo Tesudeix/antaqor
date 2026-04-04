@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
 import PaywallGate from "@/components/PaywallGate";
-import { isAdminEmail } from "@/lib/adminClient";
 
 export default function NewPost() {
   return (
@@ -24,10 +23,8 @@ function NewPostContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [visibility, setVisibility] = useState<"free" | "members">("members");
+  const [category, setCategory] = useState<"мэдээлэл" | "ялалт">("мэдээлэл");
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const userIsAdmin = isAdminEmail(session?.user?.email);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -96,7 +93,7 @@ function NewPostContent() {
         body: JSON.stringify({
           content: content.trim(),
           image: imageUrl,
-          visibility: userIsAdmin ? visibility : "members",
+          category,
         }),
       });
 
@@ -123,47 +120,39 @@ function NewPostContent() {
       </p>
 
       {error && (
-        <div className="mb-6 border-l-2 border-[#006491] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#006491]">
+        <div className="mb-6 border-l-2 border-[#FFD300] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFD300]">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         <div className="card p-5 md:p-6">
-          {/* Admin visibility toggle */}
-          {userIsAdmin && (
-            <div className="mb-4 flex items-center gap-3 border-b border-[rgba(240,236,227,0.06)] pb-4">
-              <span className="text-[10px] uppercase tracking-[1px] text-[#5a5550]">Харагдах:</span>
-              <button
-                type="button"
-                onClick={() => setVisibility("free")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-[1px] transition ${
-                  visibility === "free"
-                    ? "bg-[rgba(34,197,94,0.1)] text-green-500 border border-[rgba(34,197,94,0.3)]"
-                    : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
-                }`}
-              >
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                </svg>
-                Нээлттэй
-              </button>
-              <button
-                type="button"
-                onClick={() => setVisibility("members")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-[1px] transition ${
-                  visibility === "members"
-                    ? "bg-[rgba(0,100,145,0.1)] text-[#006491] border border-[rgba(0,100,145,0.3)]"
-                    : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
-                }`}
-              >
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                Гишүүдэд
-              </button>
-            </div>
-          )}
+          {/* Category selector */}
+          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(240,236,227,0.06)] pb-4">
+            <span className="text-[10px] uppercase tracking-[1px] text-[#5a5550]">Ангилал:</span>
+            <button
+              type="button"
+              onClick={() => setCategory("мэдээлэл")}
+              className={`rounded-[8px] px-3 py-1.5 text-[11px] font-semibold transition ${
+                category === "мэдээлэл"
+                  ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
+                  : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
+              }`}
+            >
+              Мэдээлэл
+            </button>
+            <button
+              type="button"
+              onClick={() => setCategory("ялалт")}
+              className={`rounded-[8px] px-3 py-1.5 text-[11px] font-semibold transition ${
+                category === "ялалт"
+                  ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
+                  : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
+              }`}
+            >
+              Ялалт
+            </button>
+          </div>
 
           <textarea
             value={content}
@@ -185,7 +174,7 @@ function NewPostContent() {
               {uploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-[rgba(3,3,3,0.7)]">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="h-3 w-3 animate-pulse bg-[#006491]" />
+                    <div className="h-3 w-3 animate-pulse bg-[#FFD300]" />
                     <span className="text-[10px] uppercase tracking-[0.5px] text-[#c8c8c0]">
                       Оновчилж байна...
                     </span>
@@ -196,7 +185,7 @@ function NewPostContent() {
                 <button
                   type="button"
                   onClick={removeImage}
-                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-[rgba(3,3,3,0.8)] text-[#c8c8c0] transition hover:bg-[#006491] hover:text-white"
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-[rgba(3,3,3,0.8)] text-[#c8c8c0] transition hover:bg-[#FFD300] hover:text-white"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -214,7 +203,7 @@ function NewPostContent() {
               onClick={() => fileRef.current?.click()}
               className={`mt-4 flex cursor-pointer flex-col items-center gap-2 border border-dashed py-8 transition ${
                 dragOver
-                  ? "border-[#006491] bg-[rgba(0,100,145,0.05)]"
+                  ? "border-[#FFD300] bg-[rgba(0,100,145,0.05)]"
                   : "border-[#1c1c1c] hover:border-[rgba(240,236,227,0.15)]"
               }`}
             >
@@ -244,16 +233,11 @@ function NewPostContent() {
                 {content.length}/2000
               </span>
               {imageUrl && (
-                <span className="flex items-center gap-1 text-[10px] tracking-[2px] text-[#006491]">
+                <span className="flex items-center gap-1 text-[10px] tracking-[2px] text-[#FFD300]">
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   Зураг бэлэн
-                </span>
-              )}
-              {userIsAdmin && (
-                <span className={`text-[9px] uppercase tracking-[1px] ${visibility === "free" ? "text-green-500" : "text-[#5a5550]"}`}>
-                  {visibility === "free" ? "Нээлттэй" : "Гишүүдэд"}
                 </span>
               )}
             </div>

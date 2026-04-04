@@ -13,6 +13,7 @@ export interface ILesson extends Document {
   requiredLevel: number;
   completedBy: mongoose.Types.ObjectId[];
   likes: mongoose.Types.ObjectId[];
+  reactions: Map<string, mongoose.Types.ObjectId[]>;
   commentsCount: number;
   createdAt: Date;
   updatedAt: Date;
@@ -76,6 +77,11 @@ const LessonSchema = new Schema<ILesson>(
     commentsCount: {
       type: Number,
       default: 0,
+    },
+    reactions: {
+      type: Map,
+      of: [{ type: Schema.Types.ObjectId, ref: "User" }],
+      default: () => new Map(),
     },
   },
   { timestamps: true }

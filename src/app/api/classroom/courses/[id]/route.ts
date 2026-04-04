@@ -39,7 +39,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { title, description, order } = await req.json();
+    const { title, description, thumbnail, order } = await req.json();
 
     await dbConnect();
     const course = await Course.findByIdAndUpdate(
@@ -47,6 +47,7 @@ export async function PUT(
       {
         ...(title && { title: title.trim() }),
         ...(description !== undefined && { description: description.trim() }),
+        ...(thumbnail !== undefined && { thumbnail }),
         ...(order !== undefined && { order }),
       },
       { new: true, runValidators: true }

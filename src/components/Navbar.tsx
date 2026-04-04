@@ -19,30 +19,40 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3">
         {/* Logo */}
         <Link href="/" className="text-lg font-bold tracking-[3px] text-[#e8e6e1]">
-          ANTA<span className="text-[#006491]">QOR</span>
+          ANTA<span className="text-[#FFD300]">QOR</span>
         </Link>
 
         {/* Center tabs - desktop */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-0.5 md:flex">
           <Link
             href="/"
-            className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${
-              isActive("/") && !isActive("/classroom")
-                ? "bg-[#0c0c10] text-[#e8e6e1]"
-                : "text-[#6b6b78] hover:text-[#e8e6e1]"
+            className={`px-4 py-2 text-[13px] font-semibold transition ${
+              isActive("/") && !isActive("/classroom") && !isActive("/members")
+                ? "text-[#e8e6e1]"
+                : "text-[#3a3a48] hover:text-[#6b6b78]"
             }`}
           >
             Мэдээ
           </Link>
           <Link
             href="/classroom"
-            className={`rounded-lg px-4 py-2 text-[13px] font-medium transition ${
+            className={`px-4 py-2 text-[13px] font-semibold transition ${
               isActive("/classroom")
-                ? "bg-[#0c0c10] text-[#e8e6e1]"
-                : "text-[#6b6b78] hover:text-[#e8e6e1]"
+                ? "text-[#e8e6e1]"
+                : "text-[#3a3a48] hover:text-[#6b6b78]"
             }`}
           >
             Хичээл
+          </Link>
+          <Link
+            href="/members"
+            className={`px-4 py-2 text-[13px] font-semibold transition ${
+              isActive("/members")
+                ? "text-[#e8e6e1]"
+                : "text-[#3a3a48] hover:text-[#6b6b78]"
+            }`}
+          >
+            Гишүүд
           </Link>
         </div>
 
@@ -53,23 +63,17 @@ export default function Navbar() {
               <NotificationBell />
               <Link
                 href={`/profile/${(session.user as { id?: string })?.id || ""}`}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0c0c10] text-[12px] font-bold text-[#e8e6e1] transition hover:bg-[#1a1a22]"
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#1a1a22] text-[12px] font-bold text-[#6b6b78] transition hover:text-[#e8e6e1]"
               >
                 {session.user?.name?.charAt(0).toUpperCase() || "U"}
               </Link>
-              <button
-                onClick={() => signOut()}
-                className="hidden text-[13px] text-[#6b6b78] transition hover:text-[#e8e6e1] md:block"
-              >
-                Гарах
-              </button>
             </>
           ) : (
             <>
-              <Link href="/auth/signin" className="text-[13px] text-[#6b6b78] transition hover:text-[#e8e6e1]">
+              <Link href="/auth/signin" className="text-[13px] text-[#3a3a48] transition hover:text-[#e8e6e1]">
                 Нэвтрэх
               </Link>
-              <Link href="/auth/signup" className="btn-primary !py-2 !px-4 !text-[12px]">
+              <Link href="/auth/signup" className="rounded-[10px] bg-[#FFD300] px-4 py-1.5 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]">
                 Бүртгүүлэх
               </Link>
             </>

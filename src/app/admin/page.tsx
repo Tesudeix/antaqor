@@ -124,7 +124,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#006491] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#FFD300] border-t-transparent" />
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          ADMIN <span className="text-[#006491]">DASHBOARD</span>
+          ADMIN <span className="text-[#FFD300]">DASHBOARD</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           НИЙГЭМЛЭГИЙН УДИРДЛАГЫН ХЯНАЛТЫН САМБАР
@@ -164,13 +164,13 @@ export default function AdminDashboard() {
             </div>
             <div className="card p-5">
               <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#006491]">
+              <div className="mt-2 text-3xl tracking-[2px] text-[#FFD300]">
                 {stats.totalMembers.toLocaleString()}
               </div>
             </div>
             <div className="card p-5">
               <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Нийтлэлүүд</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#004f73]">
+              <div className="mt-2 text-3xl tracking-[2px] text-[#B3B300]">
                 {stats.totalPosts.toLocaleString()}
               </div>
             </div>
@@ -186,8 +186,8 @@ export default function AdminDashboard() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="card p-5">
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.5px] text-[#006491]">AI Түвшин</span>
-                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#006491]">
+                <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">AI Түвшин</span>
+                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#FFD300]">
                   Бүгдийг харах →
                 </Link>
               </div>
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
                     <div key={level} className="flex items-center gap-3">
                       <span className="w-24 text-[11px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
                       <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                        <div className="h-full bg-[#006491] transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-full bg-[#FFD300] transition-all" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                     </div>
@@ -208,12 +208,12 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="card p-5">
-              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#006491]">Түгээмэл сонирхол</div>
+              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Түгээмэл сонирхол</div>
               <div className="flex flex-wrap gap-2">
                 {stats.interestCounts.length > 0 ? (
                   stats.interestCounts.map((ic) => (
                     <span key={ic._id} className="border border-[#1c1c1c] px-3 py-1.5 text-[10px] text-[#c8c8c0]">
-                      {ic._id.replace(/_/g, " ")} <span className="text-[#006491]">{ic.count}</span>
+                      {ic._id.replace(/_/g, " ")} <span className="text-[#FFD300]">{ic.count}</span>
                     </span>
                   ))
                 ) : (
@@ -230,8 +230,8 @@ export default function AdminDashboard() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="card p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-[0.5px] text-[#006491]">Түвшний тархалт</span>
-              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#006491]">
+              <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Түвшний тархалт</span>
+              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#FFD300]">
                 Даалгаврууд →
               </Link>
             </div>
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
                   <div key={tier.min} className="flex items-center gap-3">
                     <span className="w-32 text-[11px] text-[#c8c8c0]">{tier.label}</span>
                     <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                      <div className="h-full bg-[#006491] transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-[#FFD300] transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                   </div>
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="card p-5">
-            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#006491]">Шилдэг XP</div>
+            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Шилдэг XP</div>
             <div className="space-y-2">
               {(stats.topXPUsers || []).map((u, i) => (
                 <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-3 py-1 transition hover:bg-[rgba(240,236,227,0.03)]">
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                   )}
                   <span className="flex-1 text-[12px] text-[#c8c8c0]">{u.name}</span>
                   <span className="text-[10px] text-[#5a5550]">LV.{u.level || 1}</span>
-                  <span className="w-16 text-right text-[11px] font-bold text-[#006491]">{(u.xp || 0).toLocaleString()}</span>
+                  <span className="w-16 text-right text-[11px] font-bold text-[#FFD300]">{(u.xp || 0).toLocaleString()}</span>
                 </Link>
               ))}
               {(!stats.topXPUsers || stats.topXPUsers.length === 0) && (
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
                   {profile.threads_profile_picture_url ? (
                     <img src={profile.threads_profile_picture_url} alt={profile.username} className="h-12 w-12 border border-[#1c1c1c] object-cover" />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#006491]">
+                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#FFD300]">
                       {profile.name?.charAt(0) || "?"}
                     </div>
                   )}
@@ -336,7 +336,7 @@ export default function AdminDashboard() {
             ].map((stat) => (
               <div key={stat.key} className="card p-5">
                 <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">{stat.label}</div>
-                <div className="mt-2 text-3xl tracking-[2px] text-[#006491]">
+                <div className="mt-2 text-3xl tracking-[2px] text-[#FFD300]">
                   {getInsightValue(stat.key).toLocaleString()}
                 </div>
               </div>
