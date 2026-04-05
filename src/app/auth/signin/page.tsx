@@ -56,7 +56,7 @@ export default function SignIn() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-md">
         <div className="card p-8 md:p-10">
-          <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">
+          <h1 className="mb-2 text-[28px] font-bold tracking-[1px] text-[#ede8df]">
             Нэвтрэх
           </h1>
           <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">

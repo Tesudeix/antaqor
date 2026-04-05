@@ -16,7 +16,7 @@ export default function SubscriptionBanner() {
       </span>
       <Link
         href="/clan"
-        className="rounded-[6px] bg-white px-4 py-1.5 text-[12px] font-bold text-[#dc2626] transition hover:bg-white/90"
+        className="rounded-[4px] bg-white px-4 py-1.5 text-[12px] font-bold text-[#dc2626] transition hover:bg-white/90"
       >
         Төлбөр төлөх
       </Link>

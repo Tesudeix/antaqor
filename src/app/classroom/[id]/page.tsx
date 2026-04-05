@@ -232,7 +232,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       {/* Back link */}
       <Link
         href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-        className="mb-5 inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1 text-[13px] text-[#6a6a72] transition hover:bg-[#1a1a1e] hover:text-[#eeeee8]"
+        className="mb-5 inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[13px] text-[#6a6a72] transition hover:bg-[#1a1a1e] hover:text-[#eeeee8]"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -269,12 +269,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         <div className="min-w-0 flex-1">
           {editing ? (
             <div className="space-y-3">
-              <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-lg font-bold text-[#eeeee8] outline-none transition focus:border-[#FFD300]" />
-              <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Тайлбар" />
-              <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={10} className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Хичээлийн агуулга (текст)" />
+              <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-lg font-bold text-[#eeeee8] outline-none transition focus:border-[#FFD300]" />
+              <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Тайлбар" />
+              <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={10} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Хичээлийн агуулга (текст)" />
               <div className="flex items-center gap-3">
-                <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]" placeholder="Видео URL" />
-                <label className={`shrink-0 cursor-pointer rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+                <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]" placeholder="Видео URL" />
+                <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
                   {uploading ? `${uploadProgress}%` : "Файл"}
                   <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
                 </label>
@@ -285,8 +285,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 </div>
               )}
               <div className="flex gap-2">
-                <button onClick={handleSave} disabled={saving || uploading} className="rounded-[10px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-                <button onClick={() => setEditing(false)} className="rounded-[10px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Цуцлах</button>
+                <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
+                <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Цуцлах</button>
               </div>
             </div>
           ) : (
@@ -315,7 +315,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             {session && (
               <button
                 onClick={toggleComplete}
-                className={`flex h-9 w-9 items-center justify-center rounded-[10px] transition ${
+                className={`flex h-9 w-9 items-center justify-center rounded-[4px] transition ${
                   isCompleted ? "bg-[#00e676] text-black" : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] text-[#6a6a72] hover:text-[#eeeee8] hover:border-[rgba(255,211,0,0.2)]"
                 }`}
                 title={isCompleted ? "Дууссан" : "Дуусгах"}
@@ -327,8 +327,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
             )}
             {admin && (
               <>
-                <button onClick={() => setEditing(true)} className="rounded-[10px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[10px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400">Устгах</button>
+                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Засах</button>
+                <button onClick={handleDelete} className="rounded-[4px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400">Устгах</button>
               </>
             )}
           </div>
@@ -347,7 +347,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 key={key}
                 onClick={() => handleReaction(key)}
                 disabled={reactingEmoji === key}
-                className={`inline-flex items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 transition-all duration-200 ${
+                className={`inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 transition-all duration-200 ${
                   reacted
                     ? "bg-[rgba(255,211,0,0.08)] border border-[rgba(255,211,0,0.25)] shadow-[0_0_8px_rgba(255,211,0,0.08)]"
                     : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.12)] hover:bg-[#222226]"
@@ -369,7 +369,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       {!editing && !session && totalReactions > 0 && (
         <div className="mb-5 flex flex-wrap items-center gap-1.5">
           {REACTION_KEYS.filter((key) => (reactions[key]?.count || 0) > 0).map((key) => (
-            <div key={key} className="inline-flex items-center gap-1.5 rounded-[8px] bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] px-2.5 py-1.5">
+            <div key={key} className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] px-2.5 py-1.5">
               <ReactionIcon type={key} active={false} />
               <span className="text-[11px] font-semibold text-[#6a6a72]">{reactions[key].count}</span>
             </div>

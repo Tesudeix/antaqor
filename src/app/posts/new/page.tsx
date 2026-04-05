@@ -133,7 +133,7 @@ function NewPostContent() {
             <button
               type="button"
               onClick={() => setCategory("мэдээлэл")}
-              className={`rounded-[8px] px-3 py-1.5 text-[11px] font-semibold transition ${
+              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "мэдээлэл"
                   ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
                   : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
@@ -144,7 +144,7 @@ function NewPostContent() {
             <button
               type="button"
               onClick={() => setCategory("ялалт")}
-              className={`rounded-[8px] px-3 py-1.5 text-[11px] font-semibold transition ${
+              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "ялалт"
                   ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
                   : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"

@@ -73,7 +73,7 @@ export default function Navbar() {
               <Link href="/auth/signin" className="text-[13px] text-[#3a3a48] transition hover:text-[#e8e6e1]">
                 Нэвтрэх
               </Link>
-              <Link href="/auth/signup" className="rounded-[10px] bg-[#FFD300] px-4 py-1.5 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]">
+              <Link href="/auth/signup" className="rounded-[4px] bg-[#FFD300] px-4 py-1.5 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]">
                 Бүртгүүлэх
               </Link>
             </>

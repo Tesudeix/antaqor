@@ -168,7 +168,7 @@ export default function AdminEventsPage() {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
-          className="rounded-[10px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]"
+          className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]"
         >
           {showForm ? "Цуцлах" : "+ Шинэ эвент"}
         </button>
@@ -262,7 +262,7 @@ export default function AdminEventsPage() {
                       key={s}
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, status: s }))}
-                      className={`rounded-[8px] px-3 py-1.5 text-[11px] font-semibold transition ${
+                      className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                         form.status === s
                           ? STATUS_MAP[s].color + " border border-current"
                           : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
@@ -278,13 +278,13 @@ export default function AdminEventsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-[10px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50"
+                className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50"
               >
                 {saving ? "..." : editingId ? "Хадгалах" : "Үүсгэх"}
               </button>
               <button
                 onClick={resetForm}
-                className="rounded-[10px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:text-[#eeeee8]"
+                className="rounded-[4px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:text-[#eeeee8]"
               >
                 Цуцлах
               </button>
@@ -328,7 +328,7 @@ export default function AdminEventsPage() {
                     {ev.status !== "live" && (
                       <button
                         onClick={() => handleStatusChange(ev._id, "live")}
-                        className="rounded-[8px] bg-green-500/10 px-3 py-1.5 text-[10px] font-bold text-green-400 transition hover:bg-green-500/20"
+                        className="rounded-[4px] bg-green-500/10 px-3 py-1.5 text-[10px] font-bold text-green-400 transition hover:bg-green-500/20"
                       >
                         LIVE
                       </button>
@@ -336,14 +336,14 @@ export default function AdminEventsPage() {
                     {ev.status === "live" && (
                       <button
                         onClick={() => handleStatusChange(ev._id, "ended")}
-                        className="rounded-[8px] bg-[#5a5550]/10 px-3 py-1.5 text-[10px] font-bold text-[#5a5550] transition hover:bg-[#5a5550]/20"
+                        className="rounded-[4px] bg-[#5a5550]/10 px-3 py-1.5 text-[10px] font-bold text-[#5a5550] transition hover:bg-[#5a5550]/20"
                       >
                         Дуусгах
                       </button>
                     )}
                     <button
                       onClick={() => startEdit(ev)}
-                      className="rounded-[8px] p-2 text-[#5a5550] transition hover:text-[#ede8df]"
+                      className="rounded-[4px] p-2 text-[#5a5550] transition hover:text-[#ede8df]"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -351,7 +351,7 @@ export default function AdminEventsPage() {
                     </button>
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : ev._id)}
-                      className="rounded-[8px] p-2 text-[#5a5550] transition hover:text-[#ede8df]"
+                      className="rounded-[4px] p-2 text-[#5a5550] transition hover:text-[#ede8df]"
                     >
                       <svg className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
@@ -359,7 +359,7 @@ export default function AdminEventsPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(ev._id)}
-                      className="rounded-[8px] p-2 text-red-400/60 transition hover:text-red-400"
+                      className="rounded-[4px] p-2 text-red-400/60 transition hover:text-red-400"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -375,7 +375,7 @@ export default function AdminEventsPage() {
                       <p className="mb-3 text-[13px] leading-relaxed text-[#6a6a72]">{ev.description}</p>
                     )}
                     {ev.image && (
-                      <img src={ev.image} alt={ev.title} className="mb-3 max-h-40 rounded-[8px] object-cover" />
+                      <img src={ev.image} alt={ev.title} className="mb-3 max-h-40 rounded-[4px] object-cover" />
                     )}
                     {ev.endDate && (
                       <p className="mb-2 text-[11px] text-[#5a5550]">Дуусах: {formatDate(ev.endDate)}</p>

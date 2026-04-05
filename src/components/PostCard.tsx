@@ -216,7 +216,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                 key={key}
                 onClick={() => handleReaction(key)}
                 disabled={!session || reactingEmoji === key}
-                className={`inline-flex items-center gap-1 rounded-[6px] px-1.5 py-1 transition-all ${
+                className={`inline-flex items-center gap-1 rounded-[4px] px-1.5 py-1 transition-all ${
                   reacted
                     ? "bg-[rgba(255,211,0,0.08)] shadow-[0_0_6px_rgba(255,211,0,0.08)]"
                     : "text-[#3a3a48] hover:bg-[rgba(255,255,255,0.03)] hover:text-[#6b6b78]"

@@ -30,7 +30,7 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="text-center">
-        <div className="mb-4 font-[Bebas_Neue] text-2xl tracking-[1px] text-[rgba(240,236,227,0.3)]">
+        <div className="mb-4 text-[20px] font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
           Холбоос хүчингүй байна
         </div>
         <Link href="/auth/forgot-password" className="btn-blood inline-block">
@@ -79,7 +79,7 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <h1 className="mb-2 font-[Bebas_Neue] text-4xl tracking-[2px] text-[#ede8df]">
+      <h1 className="mb-2 text-[28px] font-bold tracking-[1px] text-[#ede8df]">
         Шинэ нууц үг
       </h1>
       <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">

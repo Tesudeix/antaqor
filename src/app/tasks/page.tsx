@@ -128,7 +128,7 @@ export default function TasksPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[Bebas_Neue] text-3xl tracking-[2px] text-[#ede8df]">
+          <h1 className="text-[24px] font-bold tracking-[1px] text-[#ede8df]">
             ДААЛГАВРУУД
           </h1>
           <p className="mt-1 text-[11px] tracking-[1px] text-[#5a5550]">
@@ -209,7 +209,7 @@ export default function TasksPage() {
                       </p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FFD300]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#FFD300]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -241,7 +241,7 @@ export default function TasksPage() {
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FFD300]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#FFD300]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -280,7 +280,7 @@ export default function TasksPage() {
                       </span>
                     </div>
                   </div>
-                  <span className="font-[Bebas_Neue] text-lg tracking-wider text-[#FFD300]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#FFD300]">
                     +{task.xpReward} XP
                   </span>
                 </div>

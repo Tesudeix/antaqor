@@ -108,7 +108,7 @@ export default function ClassroomPage() {
         </div>
         <h1 className="mb-1.5 text-xl font-bold text-[#eeeee8]">Classroom</h1>
         <p className="mb-5 text-[13px] text-[#6a6a72]">Хичээлд хандахын тулд нэвтэрнэ үү</p>
-        <Link href="/auth/signin" className="rounded-[10px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
+        <Link href="/auth/signin" className="rounded-[4px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
           Нэвтрэх
         </Link>
       </div>
@@ -127,7 +127,7 @@ export default function ClassroomPage() {
         <p className="mb-5 max-w-xs text-[13px] leading-relaxed text-[#6a6a72]">
           Зөвхөн Кланы гишүүдэд зориулагдсан
         </p>
-        <Link href="/clan" className="rounded-[10px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
+        <Link href="/clan" className="rounded-[4px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
           Кланд нэгдэх
         </Link>
       </div>
@@ -147,7 +147,7 @@ export default function ClassroomPage() {
         {admin && (
           <button
             onClick={() => setShowNewCourse(!showNewCourse)}
-            className="rounded-[10px] bg-[rgba(255,211,0,0.08)] px-4 py-2 text-[12px] font-semibold text-[#FFD300] transition hover:bg-[rgba(255,211,0,0.15)]"
+            className="rounded-[4px] bg-[rgba(255,211,0,0.08)] px-4 py-2 text-[12px] font-semibold text-[#FFD300] transition hover:bg-[rgba(255,211,0,0.15)]"
           >
             {showNewCourse ? "Цуцлах" : "+ Курс"}
           </button>
@@ -157,18 +157,18 @@ export default function ClassroomPage() {
       {/* Admin: new course form */}
       {admin && showNewCourse && (
         <div className="mb-6 rounded-[14px] border border-[rgba(255,211,0,0.12)] bg-[#1a1a1e] p-5 space-y-3">
-          <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Курсийн нэр" className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]" />
-          <textarea value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар (заавал биш)" rows={2} className="w-full rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" />
+          <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Курсийн нэр" className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]" />
+          <textarea value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар (заавал биш)" rows={2} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" />
           <div className="flex items-center gap-3">
-            <label className={`cursor-pointer rounded-[10px] border border-[#2a2a2e] bg-[#141416] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${thumbUploading ? "pointer-events-none opacity-50" : ""}`}>
+            <label className={`cursor-pointer rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${thumbUploading ? "pointer-events-none opacity-50" : ""}`}>
               {thumbUploading ? "..." : newCourseThumbnail ? "Солих" : "Thumbnail"}
               <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" disabled={thumbUploading} />
             </label>
             {newCourseThumbnail && (
-              <img src={newCourseThumbnail} alt="" className="h-14 w-10 rounded-[8px] object-cover border border-[#2a2a2e]" />
+              <img src={newCourseThumbnail} alt="" className="h-14 w-10 rounded-[4px] object-cover border border-[#2a2a2e]" />
             )}
             <div className="flex-1" />
-            <button onClick={handleCreateCourse} disabled={creating || !newCourseTitle.trim()} className="rounded-[10px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">
+            <button onClick={handleCreateCourse} disabled={creating || !newCourseTitle.trim()} className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">
               {creating ? "..." : "Үүсгэх"}
             </button>
           </div>
