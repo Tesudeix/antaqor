@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цэс — JoyBilliard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/transitions.css">
+<style>
+:root {
+  --gold: #D4A843;
+  --gold-light: #F0D078;
+  --green: #1B6B3A;
+  --green-dark: #0D3D1F;
+  --green-felt: #2A8C4A;
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-card: #161616;
+  --bg-elevated: #1C1C1C;
+  --text-primary: #F5F0E8;
+  --text-secondary: #9A9488;
+  --text-muted: #5C574E;
+  --accent-red: #C0392B;
+  --teal: #1a8a7a;
+  --teal-light: #2bc4af;
+  --border: rgba(212, 168, 67, 0.12);
+  --border-hover: rgba(212, 168, 67, 0.35);
+  --shadow-gold: 0 0 40px rgba(212, 168, 67, 0.08);
+  --radius: 4px;
+  --radius-lg: 8px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --max-width: 1280px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
+  word-spacing: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+@media(min-width:768px) { .container { padding: 0 40px; } }
+
+/* Page Header */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.page-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media(min-width:768px) { .page-header-inner { padding: 0 40px; height: 64px; } }
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--gold); color: var(--gold); }
+.back-btn svg { width: 18px; height: 18px; }
+
+.page-header-title {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+.page-header-title span { color: var(--gold); }
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.lang-btn {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+.lang-btn.active {
+  background: rgba(212, 168, 67, 0.12);
+  color: var(--gold);
+}
+
+/* Category Tabs */
+.cat-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 99;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+@media(min-width:768px) { .cat-bar { top: 64px; } }
+.cat-bar-inner {
+  display: flex;
+  gap: 2px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+@media(min-width:768px) { .cat-bar-inner { padding: 12px 40px; } }
+.cat-bar-inner::-webkit-scrollbar { display: none; }
+
+.cat-btn {
+  padding: 7px 18px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cat-btn:hover { border-color: var(--border-hover); color: var(--text-secondary); }
+.cat-btn.active {
+  border-color: var(--gold);
+  color: var(--bg-primary);
+  background: var(--gold);
+}
+
+/* Search */
+.search-wrap {
+  max-width: var(--max-width);
+  margin: 16px auto 0;
+  padding: 0 20px;
+}
+@media(min-width:768px) { .search-wrap { padding: 0 40px; } }
+.search-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.88rem;
+  padding: 10px 14px 10px 40px;
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: border-color 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%235C574E' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+.search-input:focus { border-color: var(--gold); }
+.search-input::placeholder { color: var(--text-muted); }
+
+/* Section */
+.menu-section {
+  margin-bottom: 2rem;
+}
+.menu-section-header {
+  padding: 32px 0 16px;
+}
+.menu-section-label {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.menu-section-title {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+.menu-section-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+/* Food list (no image) */
+.food-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.food-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  transition: background var(--transition);
+  align-items: center;
+}
+.food-item:hover { background: var(--bg-elevated); }
+
+.food-item-body {
+  flex: 1;
+  min-width: 0;
+}
+.food-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.food-item-name {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+.food-item-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 1px;
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
+}
+.food-item-price {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.food-item-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.food-item-prices .price-line {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.food-item-prices .price-line .vol {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 4px;
+  text-transform: uppercase;
+}
+.food-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.food-item-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+.food-tag {
+  padding: 2px 8px;
+  font-size: 0.58rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  background: rgba(43, 196, 175, 0.08);
+  color: var(--teal-light);
+  border: 1px solid rgba(43, 196, 175, 0.15);
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Set cards (party set, spirit set) */
+.set-card {
+  padding: 18px 16px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26,138,122,.05) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  transition: all var(--transition);
+}
+.set-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-gold);
+}
+.set-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.set-card-name {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.set-card-price {
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0;
+}
+.set-card-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* Hidden */
+.hidden { display: none !important; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-section {
+  animation: fadeUp 0.4s ease forwards;
+  opacity: 0;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-state p { font-size: 0.9rem; }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media(max-width:600px) {
+  .food-item { padding: 12px 14px; }
+  .container { padding: 0 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <a href="/" class="back-btn">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <div class="page-header-title">JOY<span>BILLIARD</span> — Цэс</div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('mn')">MN</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY TABS -->
+<div class="cat-bar">
+  <div class="cat-bar-inner" id="catBar"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <input class="search-input" id="search" type="text" placeholder="Хайх...">
+</div>
+
+<!-- CONTENT -->
+<div class="container" id="menuContent">
+  <div class="loading">Цэс ачааллаж байна...</div>
+</div>
+
+<script>
+let MENU = null;
+let currentLang = 'mn';
+let activeCategory = 'all';
+
+const setTypes = new Set(['party_set', 'spirit_sets']);
+const spiritTypes = new Set(['tequila', 'ice_cold', 'cognac', 'gin', 'vodka', 'whisky']);
+const fmt = n => n ? n.toLocaleString('en-US') + '₮' : '—';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang)
+  );
+  render();
+}
+
+function getName(item) {
+  if (currentLang === 'mn' && item.name_mn) return { primary: item.name_mn, secondary: item.name_en };
+  if (currentLang === 'en' && item.name_mn) return { primary: item.name_en, secondary: item.name_mn };
+  return { primary: item.name_en || item.name_mn, secondary: null };
+}
+
+function getCatName(cat) {
+  return currentLang === 'mn' ? (cat.name_mn || cat.name_en) : cat.name_en;
+}
+
+function buildCatBar() {
+  const bar = document.getElementById('catBar');
+  let html = '<button class="cat-btn active" onclick="filterCat(this,\'all\')">Бүгд</button>';
+  MENU.categories.forEach(c => {
+    html += `<button class="cat-btn" data-cat="${c.id}" onclick="filterCat(this,'${c.id}')">${getCatName(c)}</button>`;
+  });
+  bar.innerHTML = html;
+}
+
+function filterCat(btn, catId) {
+  activeCategory = catId;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.menu-section').forEach(sec => {
+    if (catId === 'all') {
+      sec.classList.remove('hidden');
+    } else {
+      sec.classList.toggle('hidden', sec.dataset.cat !== catId);
+    }
+  });
+  // Scroll active tab into view
+  btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function renderPrice(item, catId) {
+  // Pizza with M/L sizes
+  if (item.price_m !== undefined) {
+    return `<div class="food-item-prices">
+      <div class="price-line"><span class="vol">M</span>${fmt(item.price_m)}</div>
+      <div class="price-line"><span class="vol">L</span>${fmt(item.price_l)}</div>
+    </div>`;
+  }
+  // Spirits with 50ml/bottle
+  if (spiritTypes.has(catId) && (item.price_50ml || item.price_bottle)) {
+    let lines = '';
+    if (item.price_50ml) lines += `<div class="price-line"><span class="vol">50ml</span>${fmt(item.price_50ml)}</div>`;
+    if (item.price_bottle) lines += `<div class="price-line"><span class="vol">Btl</span>${fmt(item.price_bottle)}</div>`;
+    return `<div class="food-item-prices">${lines}</div>`;
+  }
+  return `<div class="food-item-price">${fmt(item.price)}</div>`;
+}
+
+function renderItem(item, catId, delay) {
+  const n = getName(item);
+  const tags = [];
+  if (item.kcal) tags.push(`<span class="food-tag">${item.kcal} kcal</span>`);
+
+  return `<div class="food-item anim-section" style="animation-delay:${delay}s"
+    data-search="${(n.primary + ' ' + (n.secondary || '') + ' ' + (item.note || '')).toLowerCase()}">
+    <div class="food-item-body">
+      <div class="food-item-top">
+        <div>
+          <div class="food-item-name">${n.primary}</div>
+          ${n.secondary ? `<div class="food-item-sub">${n.secondary}</div>` : ''}
+        </div>
+        ${renderPrice(item, catId)}
+      </div>
+      ${item.note ? `<div class="food-item-desc">${item.note}</div>` : ''}
+      ${tags.length ? `<div class="food-item-tags">${tags.join('')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderSetItem(item, delay) {
+  return `<div class="set-card anim-section" style="animation-delay:${delay}s"
+    data-search="${(item.name_en + ' ' + (item.note || '')).toLowerCase()}">
+    <div class="set-card-head">
+      <div class="set-card-name">${item.name_en}</div>
+      <div class="set-card-price">${fmt(item.price)}</div>
+    </div>
+    ${item.note ? `<div class="set-card-note">${item.note}</div>` : ''}
+  </div>`;
+}
+
+function render() {
+  buildCatBar();
+  const content = document.getElementById('menuContent');
+  let html = '';
+
+  MENU.categories.forEach((cat, ci) => {
+    const isSet = setTypes.has(cat.id);
+    const catName = getCatName(cat);
+    let itemsHtml = '';
+
+    if (isSet) {
+      itemsHtml = cat.items.map((item, i) => renderSetItem(item, ci * 0.05 + i * 0.03)).join('');
+    } else {
+      const inner = cat.items.map((item, i) => renderItem(item, cat.id, ci * 0.05 + i * 0.03)).join('');
+      itemsHtml = `<div class="food-list">${inner}</div>`;
+    }
+
+    html += `<div class="menu-section" data-cat="${cat.id}" id="sec-${cat.id}">
+      <div class="menu-section-header">
+        <div class="menu-section-label">${catName}</div>
+        <div class="menu-section-title">${catName}</div>
+        <div class="menu-section-count">${cat.items.length} ${currentLang === 'mn' ? 'бүтээгдэхүүн' : 'items'}</div>
+      </div>
+      ${itemsHtml}
+    </div>`;
+  });
+
+  content.innerHTML = html;
+
+  // Re-apply current filter
+  if (activeCategory !== 'all') {
+    document.querySelectorAll('.menu-section').forEach(sec => {
+      sec.classList.toggle('hidden', sec.dataset.cat !== activeCategory);
+    });
+  }
+
+  setupObserver();
+}
+
+function setupObserver() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.dataset.cat;
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          if (b.dataset.cat === id) {
+            document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-100px 0px -70% 0px', threshold: 0 });
+  document.querySelectorAll('.menu-section').forEach(s => obs.observe(s));
+}
+
+// Search
+document.getElementById('search').addEventListener('input', function () {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.food-item, .set-card').forEach(el => {
+    el.classList.toggle('hidden', q && !(el.dataset.search || '').includes(q));
+  });
+  document.querySelectorAll('.menu-section').forEach(sec => {
+    const visible = sec.querySelectorAll('.food-item:not(.hidden), .set-card:not(.hidden)');
+    sec.classList.toggle('hidden', q && visible.length === 0);
+  });
+});
+
+
+// Load menu data
+fetch('/joy_menu_data.json')
+  .then(r => r.json())
+  .then(data => { MENU = data; render(); })
+  .catch(() => {
+    document.getElementById('menuContent').innerHTML =
+      '<div class="empty-state"><p>Цэс ачаалахад алдаа гарлаа</p></div>';
+  });
+</script>
+<script src="/transitions.js"></script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>Холбоо барих — JoyBilliard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/transitions.css">
+<style>
+:root {
+  --accent: #D4A843;
+  --accent-hover: #F0D078;
+  --bg: #000;
+  --surface: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.08);
+  --border-hover: rgba(255,255,255,.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0; word-spacing: 0;
+  background: var(--bg);
+  color: #fff;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 100%; max-width: 420px;
+  padding: 0 16px;
+}
+
+/* Header */
+.page-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(0,0,0,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -16px; padding: 0 16px;
+}
+.page-header-inner {
+  display: flex; align-items: center; gap: 14px;
+  height: 56px;
+}
+.back-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 4px;
+  border: 1px solid var(--border); background: transparent;
+  color: rgba(255,255,255,.5); cursor: pointer;
+  transition: all .2s; text-decoration: none; flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+.back-btn svg { width: 18px; height: 18px; }
+.page-title {
+  font-size: 1rem; font-weight: 800; letter-spacing: 0;
+}
+.page-title span { color: var(--accent); }
+
+/* Contact cards */
+.contact-list {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-top: 24px;
+}
+.contact-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  text-decoration: none; color: #fff;
+  transition: background .2s, transform .15s, border-color .2s;
+}
+.contact-row:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.10);
+  border-color: var(--border-hover);
+}
+.contact-icon {
+  width: 42px; height: 42px; border-radius: 4px;
+  background: rgba(212,168,67,.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.contact-icon svg { width: 20px; height: 20px; color: var(--accent); }
+.contact-info { min-width: 0; }
+.contact-label {
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.4); margin-bottom: 2px;
+}
+.contact-value {
+  font-weight: 700; font-size: .92rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="back-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title">Холбоо <span>барих</span></div>
+    </div>
+  </div>
+
+  <div class="contact-list">
+    <a id="cPhone" href="tel:+97699112233" class="contact-row">
+      <div class="contact-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-label">Утас</div>
+        <div class="contact-value" id="cPhoneVal">+976 9911 2233</div>
+      </div>
+    </a>
+
+    <a id="cEmail" href="#" class="contact-row" style="display:none">
+      <div class="contact-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-label">Имэйл</div>
+        <div class="contact-value" id="cEmailVal"></div>
+      </div>
+    </a>
+
+    <a id="cMap" href="https://maps.app.goo.gl/9W9cpVcTaiwWHRCX8" target="_blank" class="contact-row">
+      <div class="contact-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-label">Байршил 1</div>
+        <div class="contact-value" id="cLocVal">Joy billiards</div>
+      </div>
+    </a>
+
+    <a id="cMap2" href="https://maps.app.goo.gl/QuybXy3ZvK2fFF5x9" target="_blank" class="contact-row">
+      <div class="contact-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-label">Байршил 2</div>
+        <div class="contact-value" id="cLoc2Val">Himchan Center</div>
+      </div>
+    </a>
+
+    <div class="contact-row">
+      <div class="contact-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="contact-info">
+        <div class="contact-label">Цагийн хуваарь</div>
+        <div class="contact-value" id="cHoursVal">Өдөр бүр 11:30 - 02:00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+fetch('/api/settings').then(r => r.json()).then(s => {
+  if (s.phone) {
+    const clean = s.phone.replace(/\s/g, '');
+    document.getElementById('cPhone').href = 'tel:' + clean;
+    document.getElementById('cPhoneVal').textContent = s.phone;
+  }
+  if (s.email) {
+    document.getElementById('cEmail').href = 'mailto:' + s.email;
+    document.getElementById('cEmailVal').textContent = s.email;
+    document.getElementById('cEmail').style.display = 'flex';
+  }
+  if (s.location) {
+    document.getElementById('cLocVal').textContent = s.location;
+  }
+  if (s.locationUrl) {
+    document.getElementById('cMap').href = s.locationUrl;
+  }
+  if (s.location2) {
+    document.getElementById('cLoc2Val').textContent = s.location2;
+    document.getElementById('cMap2').style.display = 'flex';
+    if (s.location2Url) document.getElementById('cMap2').href = s.location2Url;
+  }
+  if (s.hours) {
+    document.getElementById('cHoursVal').textContent = s.hours;
+  }
+}).catch(() => {});
+
+</script>
+<script src="/transitions.js"></script>
+</body>
+</html>

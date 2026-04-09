@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профайл — JoyBilliard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/transitions.css">
+<style>
+:root {
+  --accent: #D4A843;
+  --accent-hover: #F0D078;
+  --bg: #000;
+  --surface: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.08);
+  --border-hover: rgba(255,255,255,.14);
+  --green: #2A8C4A;
+  --red: #e74c3c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex; justify-content: center;
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: #fff;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { width: 100%; max-width: 420px; padding: 0 16px; }
+
+/* Header */
+.page-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(0,0,0,.92); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -16px; padding: 0 16px;
+}
+.page-header-inner { display: flex; align-items: center; gap: 14px; height: 56px; }
+.back-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 4px;
+  border: 1px solid var(--border); background: transparent;
+  color: rgba(255,255,255,.5); cursor: pointer; transition: all .2s;
+  text-decoration: none; flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+.back-btn svg { width: 18px; height: 18px; }
+.page-title { font-size: 1rem; font-weight: 800; }
+.page-title span { color: var(--accent); }
+
+/* Auth forms */
+.auth-section { margin-top: 24px; }
+.auth-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+}
+.auth-tab {
+  flex: 1; padding: 12px; background: transparent; border: none;
+  color: rgba(255,255,255,.4); font-family: inherit;
+  font-size: .78rem; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; cursor: pointer; transition: all .2s;
+}
+.auth-tab.active { background: rgba(212,168,67,.12); color: var(--accent); }
+.auth-form { display: none; flex-direction: column; gap: 14px; }
+.auth-form.show { display: flex; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-size: .62rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+}
+.form-input {
+  width: 100%; padding: 13px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  color: #fff; font-family: inherit; font-size: .9rem; font-weight: 500;
+  outline: none; transition: border-color .2s;
+}
+.form-input::placeholder { color: rgba(255,255,255,.2); }
+.form-input:focus { border-color: var(--accent); }
+.auth-btn {
+  width: 100%; padding: 14px; background: var(--accent);
+  border: none; border-radius: 4px; color: #000;
+  font-family: inherit; font-size: .92rem; font-weight: 800;
+  cursor: pointer; transition: all .2s; margin-top: 4px;
+}
+.auth-btn:hover { background: var(--accent-hover); }
+.auth-btn:disabled { opacity: .5; cursor: not-allowed; }
+.auth-msg {
+  display: none; text-align: center; font-size: .8rem;
+  padding: 10px; border-radius: 4px; margin-bottom: 10px;
+}
+.auth-msg.error { display: block; background: rgba(231,76,60,.12); color: var(--red); border: 1px solid rgba(231,76,60,.25); }
+.auth-msg.success { display: block; background: rgba(42,140,74,.12); color: var(--green); border: 1px solid rgba(42,140,74,.25); }
+
+/* Profile section */
+.profile-section { display: none; margin-top: 24px; }
+.profile-section.show { display: block; }
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(212,168,67,.15); border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 1.8rem; font-weight: 800; color: var(--accent);
+}
+.profile-name {
+  text-align: center; font-size: 1.15rem; font-weight: 800; margin-bottom: 4px;
+}
+.profile-email {
+  text-align: center; font-size: .78rem; color: rgba(255,255,255,.4); margin-bottom: 4px;
+}
+.profile-role {
+  text-align: center; margin-bottom: 24px;
+}
+.profile-role-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 3px;
+  font-size: .6rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+}
+.profile-role-badge.admin { background: rgba(212,168,67,.15); color: var(--accent); }
+.profile-role-badge.user { background: rgba(255,255,255,.06); color: rgba(255,255,255,.4); }
+
+.profile-menu { display: flex; flex-direction: column; gap: 8px; }
+.profile-menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  text-decoration: none; color: #fff; transition: all .2s; cursor: pointer;
+}
+.profile-menu-item:hover { border-color: var(--border-hover); background: rgba(255,255,255,.08); }
+.profile-menu-icon {
+  width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-menu-icon svg { width: 18px; height: 18px; }
+.profile-menu-icon.gold { background: rgba(212,168,67,.12); color: var(--accent); }
+.profile-menu-icon.green { background: rgba(42,140,74,.12); color: var(--green); }
+.profile-menu-icon.red { background: rgba(231,76,60,.1); color: var(--red); }
+.profile-menu-text { flex: 1; }
+.profile-menu-title { font-size: .88rem; font-weight: 700; }
+.profile-menu-sub { font-size: .7rem; color: rgba(255,255,255,.35); margin-top: 2px; }
+.profile-menu-arrow { color: rgba(255,255,255,.15); }
+.profile-menu-arrow svg { width: 16px; height: 16px; }
+.profile-menu-item:hover .profile-menu-arrow { color: rgba(255,255,255,.4); }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="back-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title" id="pageTitle">Нэвтрэх / <span>Бүртгэл</span></div>
+    </div>
+  </div>
+
+  <!-- AUTH SECTION (login/register) -->
+  <div class="auth-section" id="authSection">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showAuthTab('login')">Нэвтрэх</button>
+      <button class="auth-tab" onclick="showAuthTab('register')">Бүртгүүлэх</button>
+    </div>
+
+    <div id="authMsg" class="auth-msg"></div>
+
+    <!-- Login -->
+    <form class="auth-form show" id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">И-мэйл / Нэвтрэх нэр</label>
+        <input class="form-input" type="text" id="loginEmail" placeholder="name@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Нууц үг</label>
+        <input class="form-input" type="password" id="loginPassword" placeholder="••••••" required>
+      </div>
+      <button type="submit" class="auth-btn" id="loginBtn">Нэвтрэх</button>
+    </form>
+
+    <!-- Register -->
+    <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label class="form-label">Нэр</label>
+        <input class="form-input" type="text" id="regName" placeholder="Таны нэр" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">И-мэйл</label>
+        <input class="form-input" type="email" id="regEmail" placeholder="name@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Утас</label>
+        <input class="form-input" type="tel" id="regPhone" placeholder="+976 9911 2233">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Нууц үг</label>
+        <input class="form-input" type="password" id="regPassword" placeholder="6+ тэмдэгт" required minlength="6">
+      </div>
+      <button type="submit" class="auth-btn" id="regBtn">Бүртгүүлэх</button>
+    </form>
+  </div>
+
+  <!-- PROFILE SECTION (when logged in) -->
+  <div class="profile-section" id="profileSection">
+    <div class="profile-avatar" id="profileAvatar"></div>
+    <div class="profile-name" id="profileName"></div>
+    <div class="profile-email" id="profileEmail"></div>
+    <div class="profile-role"><span class="profile-role-badge" id="profileRole"></span></div>
+
+    <div class="profile-menu">
+      <!-- Admin panel link (only for admins) -->
+      <a href="/admin.html" class="profile-menu-item" id="adminLink" style="display:none">
+        <div class="profile-menu-icon gold">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <div class="profile-menu-text">
+          <div class="profile-menu-title">Админ хэсэг</div>
+          <div class="profile-menu-sub">Тохиргоо, мэдэгдэл, анкет удирдах</div>
+        </div>
+        <div class="profile-menu-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="/jobs.html" class="profile-menu-item">
+        <div class="profile-menu-icon green">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="profile-menu-text">
+          <div class="profile-menu-title">Ажлын анкет</div>
+          <div class="profile-menu-sub">Манай багт нэгдэх</div>
+        </div>
+        <div class="profile-menu-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="/feedback.html" class="profile-menu-item">
+        <div class="profile-menu-icon green">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        </div>
+        <div class="profile-menu-text">
+          <div class="profile-menu-title">Санал хүсэлт</div>
+          <div class="profile-menu-sub">Санал бодлоо илэрхийлэх</div>
+        </div>
+        <div class="profile-menu-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <div class="profile-menu-item" onclick="doLogout()" style="margin-top:12px">
+        <div class="profile-menu-icon red">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </div>
+        <div class="profile-menu-text">
+          <div class="profile-menu-title" style="color:var(--red)">Гарах</div>
+          <div class="profile-menu-sub">Бүртгэлээс гарах</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+  });
+  document.getElementById('loginForm').classList.toggle('show', tab === 'login');
+  document.getElementById('registerForm').classList.toggle('show', tab === 'register');
+  hideMsg();
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('authMsg');
+  el.textContent = text;
+  el.className = 'auth-msg ' + type;
+}
+function hideMsg() {
+  document.getElementById('authMsg').className = 'auth-msg';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  hideMsg();
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Нэвтэрч байна...';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('loginEmail').value,
+        password: document.getElementById('loginPassword').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    // Admin goes straight to admin panel
+    if (data.user.role === 'admin') {
+      window.location.href = '/admin.html';
+      return;
+    }
+
+    // Regular user sees profile
+    showProfile(data.user);
+  } catch (err) {
+    showMsg(err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Нэвтрэх';
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  hideMsg();
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true; btn.textContent = 'Бүртгүүлж байна...';
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        phone: document.getElementById('regPhone').value,
+        password: document.getElementById('regPassword').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    showProfile(data.user);
+  } catch (err) {
+    showMsg(err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Бүртгүүлэх';
+  }
+}
+
+function showProfile(user) {
+  document.getElementById('authSection').style.display = 'none';
+  document.getElementById('profileSection').classList.add('show');
+  document.getElementById('pageTitle').innerHTML = 'Миний <span>профайл</span>';
+
+  // Avatar (first letter)
+  document.getElementById('profileAvatar').textContent = (user.name || 'U')[0].toUpperCase();
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileEmail').textContent = user.email;
+
+  const roleEl = document.getElementById('profileRole');
+  if (user.role === 'admin') {
+    roleEl.textContent = 'АДМИН';
+    roleEl.className = 'profile-role-badge admin';
+    document.getElementById('adminLink').style.display = 'flex';
+  } else {
+    roleEl.textContent = 'ХЭРЭГЛЭГЧ';
+    roleEl.className = 'profile-role-badge user';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('joy_admin_token');
+  localStorage.removeItem('joy_admin_user');
+  window.location.reload();
+}
+
+// Check if already logged in
+(async function init() {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  if (!token || !userStr) return;
+
+  try {
+    // Validate token
+    const res = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return;
+    }
+    const data = await res.json();
+
+    // Admin goes straight to admin panel
+    if (data.user.role === 'admin') {
+      window.location.href = '/admin.html';
+      return;
+    }
+
+    // Show profile for regular users
+    showProfile(data.user);
+  } catch {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+})();
+</script>
+<script src="/transitions.js"></script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>Ажлын анкет — JoyBilliard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/transitions.css">
+<style>
+:root {
+  --accent: #D4A843;
+  --accent-hover: #F0D078;
+  --bg: #000;
+  --surface: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.08);
+  --border-hover: rgba(255,255,255,.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: Rubik, Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0; word-spacing: 0;
+  background: var(--bg);
+  color: #fff;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 100%; max-width: 420px;
+  padding: 0 16px;
+}
+
+/* Header */
+.page-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(0,0,0,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -16px; padding: 0 16px;
+}
+.page-header-inner {
+  display: flex; align-items: center; gap: 14px;
+  height: 56px;
+}
+.back-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 4px;
+  border: 1px solid var(--border); background: transparent;
+  color: rgba(255,255,255,.5); cursor: pointer;
+  transition: all .2s; text-decoration: none; flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+.back-btn svg { width: 18px; height: 18px; }
+.page-title {
+  font-size: 1rem; font-weight: 800; letter-spacing: 0;
+}
+.page-title span { color: var(--accent); }
+
+/* Intro */
+.jobs-intro {
+  margin-top: 24px; padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  text-align: center;
+}
+.jobs-intro-icon {
+  width: 48px; height: 48px; margin: 0 auto 12px;
+  border-radius: 50%; background: rgba(212,168,67,.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.jobs-intro-icon svg { width: 24px; height: 24px; color: var(--accent); }
+.jobs-intro-title {
+  font-size: 1rem; font-weight: 800; margin-bottom: 6px;
+}
+.jobs-intro-sub {
+  font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.5;
+}
+
+/* Position cards */
+.section-label {
+  margin: 24px 0 12px; font-weight: 800; font-size: .65rem;
+  text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.35);
+}
+.position-list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.position-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  cursor: pointer; transition: all .2s;
+}
+.position-card:hover {
+  background: rgba(255,255,255,.08);
+  border-color: var(--border-hover);
+}
+.position-card.selected {
+  border-color: var(--accent);
+  background: rgba(212,168,67,.08);
+}
+.position-radio {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .2s;
+}
+.position-card.selected .position-radio {
+  border-color: var(--accent);
+}
+.position-radio-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); transform: scale(0);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.position-card.selected .position-radio-dot {
+  transform: scale(1);
+}
+.position-info { flex: 1; min-width: 0; }
+.position-name {
+  font-weight: 700; font-size: .92rem;
+}
+.position-card.selected .position-name { color: var(--accent); }
+
+/* Form */
+.apply-form {
+  display: none; flex-direction: column; gap: 16px;
+  margin-top: 20px;
+}
+.apply-form.show { display: flex; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+.form-label .req { color: var(--accent); }
+.form-input, .form-textarea {
+  width: 100%; padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  color: #fff; font-family: inherit; font-size: .92rem; font-weight: 500;
+  outline: none; transition: border-color .2s, background .2s;
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color: rgba(255,255,255,.25);
+}
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  background: rgba(255,255,255,.08);
+}
+.form-textarea {
+  min-height: 100px; resize: vertical; line-height: 1.5;
+}
+
+/* Submit */
+.submit-btn {
+  width: 100%; padding: 16px;
+  background: var(--accent); border: none; border-radius: 4px;
+  color: #000; font-family: inherit;
+  font-size: .95rem; font-weight: 800;
+  cursor: pointer; transition: all .2s;
+  margin-top: 8px;
+}
+.submit-btn:hover { background: var(--accent-hover); }
+.submit-btn:active { transform: scale(.98); }
+.submit-btn:disabled {
+  opacity: .5; cursor: not-allowed; transform: none;
+}
+
+/* Success */
+.success-msg {
+  display: none; text-align: center; padding: 40px 20px;
+}
+.success-msg.show { display: block; }
+.success-icon {
+  width: 56px; height: 56px; margin: 0 auto 16px;
+  border-radius: 50%; background: rgba(42,140,74,.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.success-icon svg { width: 28px; height: 28px; color: #2A8C4A; }
+.success-title {
+  font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;
+}
+.success-sub {
+  font-size: .85rem; color: rgba(255,255,255,.5); line-height: 1.5;
+}
+.success-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 20px; padding: 12px 24px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; color: #fff; font-family: inherit;
+  font-size: .85rem; font-weight: 700;
+  cursor: pointer; transition: all .2s; text-decoration: none;
+}
+.success-back:hover {
+  background: rgba(255,255,255,.1); border-color: var(--border-hover);
+}
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="back-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title">Ажлын <span>анкет</span></div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+    <div class="jobs-intro">
+      <div class="jobs-intro-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="jobs-intro-title">Манай багт нэгдээрэй</div>
+      <div class="jobs-intro-sub">Доорх албан тушаалаас сонгон анкетаа илгээнэ үү</div>
+    </div>
+
+    <div class="section-label">Нээлттэй ажлын байр</div>
+
+    <div class="position-list">
+      <div class="position-card" onclick="selectPosition(this, 'Угаагч')">
+        <div class="position-radio"><div class="position-radio-dot"></div></div>
+        <div class="position-info">
+          <div class="position-name">Угаагч</div>
+        </div>
+      </div>
+      <div class="position-card" onclick="selectPosition(this, 'Үндсэн зөөгч')">
+        <div class="position-radio"><div class="position-radio-dot"></div></div>
+        <div class="position-info">
+          <div class="position-name">Үндсэн зөөгч</div>
+        </div>
+      </div>
+      <div class="position-card" onclick="selectPosition(this, 'Туслах тогооч')">
+        <div class="position-radio"><div class="position-radio-dot"></div></div>
+        <div class="position-info">
+          <div class="position-name">Туслах тогооч</div>
+        </div>
+      </div>
+      <div class="position-card" onclick="selectPosition(this, 'Бартендер')">
+        <div class="position-radio"><div class="position-radio-dot"></div></div>
+        <div class="position-info">
+          <div class="position-name">Бартендер</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPLICATION FORM -->
+    <form class="apply-form" id="applyForm" onsubmit="submitApplication(event)">
+      <div class="section-label">Хувийн мэдээлэл</div>
+
+      <div class="form-group">
+        <label class="form-label">Нэр <span class="req">*</span></label>
+        <input class="form-input" type="text" id="fName" placeholder="Овог нэр" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Утасны дугаар <span class="req">*</span></label>
+        <input class="form-input" type="tel" id="fPhone" placeholder="9911 2233" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Нас</label>
+        <input class="form-input" type="text" id="fAge" placeholder="25">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Туршлага</label>
+        <input class="form-input" type="text" id="fExperience" placeholder="Жишээ: 2 жил зөөгчөөр ажилласан">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Нэмэлт мэдээлэл</label>
+        <textarea class="form-textarea" id="fMessage" placeholder="Өөрийн тухай товч бичнэ үү..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Хүсэлт илгээх</button>
+    </form>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-msg" id="successMsg">
+    <div class="success-icon">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div class="success-title">Анкет амжилттай илгээгдлээ</div>
+    <div class="success-sub">Таны хүсэлтийг хүлээн авлаа.<br>Бид тантай удахгүй холбогдох болно.</div>
+    <a href="/" class="success-back">
+      <svg fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Нүүр хуудас
+    </a>
+  </div>
+</div>
+
+<script>
+let selectedPosition = '';
+
+function selectPosition(card, position) {
+  document.querySelectorAll('.position-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedPosition = position;
+  document.getElementById('applyForm').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('applyForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+async function submitApplication(e) {
+  e.preventDefault();
+  if (!selectedPosition) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Илгээж байна...';
+
+  try {
+    const res = await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        position: selectedPosition,
+        name: document.getElementById('fName').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        age: document.getElementById('fAge').value.trim(),
+        experience: document.getElementById('fExperience').value.trim(),
+        message: document.getElementById('fMessage').value.trim()
+      })
+    });
+
+    if (!res.ok) throw new Error('Failed');
+
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('successMsg').classList.add('show');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Хүсэлт илгээх';
+    alert('Алдаа гарлаа. Дахин оролдоно уу.');
+  }
+}
+</script>
+<script src="/transitions.js"></script>
+</body>
+</html>

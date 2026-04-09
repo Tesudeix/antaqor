@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>Karaoke — Joy Billiard & Pub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/transitions.css">
+<style>
+:root{
+  --accent:#D4A843;--accent-hover:#F0D078;
+  --bg:#000;--surface:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.08);--border-hover:rgba(255,255,255,.16);
+  --bar-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:flex;justify-content:center;
+  font-family:Rubik,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:#fff;line-height:1.4;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom));
+}
+.page{width:100%;max-width:420px}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  position:sticky;top:0;z-index:200;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.page-header-inner{
+  display:flex;align-items:center;gap:12px;
+  height:56px;padding:0 16px;
+}
+.back-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:4px;
+  border:1px solid var(--border);background:transparent;
+  color:rgba(255,255,255,.5);cursor:pointer;
+  transition:all .2s;text-decoration:none;flex-shrink:0;
+}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.back-btn svg{width:18px;height:18px}
+.page-title{font-size:1rem;font-weight:800}
+.page-title span{color:var(--accent)}
+
+/* ── HERO SLIDER ── */
+.hero-slider{
+  position:relative;width:100%;overflow:hidden;
+  height:280px;background:#0a0a0a;
+}
+@media(min-width:380px){.hero-slider{height:320px}}
+.slider-track{
+  display:flex;height:100%;
+  transition:transform .6s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+.slider-slide{flex:0 0 100%;height:100%;position:relative;overflow:hidden}
+.slider-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.slide-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.6) 100%);
+}
+/* gradient placeholder slides */
+.kslide-1{background:linear-gradient(135deg,#1a0030 0%,#2d0050 40%,#0a0015 100%)}
+.kslide-2{background:linear-gradient(135deg,#000d1a 0%,#001a2b 40%,#000 100%)}
+.kslide-3{background:linear-gradient(135deg,#1a0010 0%,#2b0018 40%,#000 100%)}
+/* slide content overlay */
+.slide-content{
+  position:absolute;inset:0;display:flex;
+  flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:28px 20px;z-index:2;
+}
+.slide-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.3);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;
+}
+.slide-icon svg{width:32px;height:32px;color:var(--accent)}
+.slide-title{font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.slide-sub{font-size:.8rem;color:rgba(255,255,255,.65);text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+/* dots */
+.slider-dots{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;z-index:5;
+}
+.sdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .35s;cursor:pointer}
+.sdot.active{width:20px;border-radius:3px;background:var(--accent)}
+.slider-counter{
+  position:absolute;top:12px;right:12px;z-index:5;
+  padding:3px 10px;border-radius:100px;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
+  font-size:.6rem;font-weight:700;color:rgba(255,255,255,.65);
+}
+/* shimmer */
+.hero-shimmer{
+  position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.06) 50%,transparent 65%);
+  animation:heroSweep 6s ease-in-out infinite;z-index:3;pointer-events:none;
+}
+@keyframes heroSweep{0%{left:-100%}50%,100%{left:150%}}
+
+/* ── IDENTITY ── */
+.karaoke-intro{padding:24px 16px 0}
+.k-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:100px;
+  background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.2);
+  font-size:.62rem;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:14px;
+}
+.k-badge svg{width:14px;height:14px}
+.k-heading{font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:10px}
+.k-heading span{color:var(--accent)}
+.k-desc{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:20px}
+
+/* ── FEATURE CHIPS ── */
+.k-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.k-feat{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:100px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:.7rem;font-weight:600;color:rgba(255,255,255,.7);
+}
+.k-feat svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
+
+/* ── CTA BOOK ── */
+.k-cta{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:17px 20px;border-radius:4px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-hover));
+  color:#000;font-weight:800;font-size:.95rem;
+  text-decoration:none;transition:all .2s;margin-bottom:28px;
+}
+.k-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,168,67,.3)}
+.k-cta svg{width:20px;height:20px;flex-shrink:0}
+
+/* ── ROOMS ── */
+.section-label{
+  padding:0 16px;margin-bottom:12px;
+  font-weight:800;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:0;color:rgba(255,255,255,.4);
+}
+.rooms-list{display:flex;flex-direction:column;gap:10px;padding:0 16px}
+.room-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;overflow:hidden;text-decoration:none;color:#fff;
+  display:block;transition:border-color .2s,transform .15s;
+}
+.room-card:hover{border-color:var(--border-hover);transform:translateY(-1px)}
+.room-card-img{width:100%;height:160px;object-fit:cover;display:block;background:rgba(255,255,255,.04)}
+.room-card-img.placeholder{
+  height:120px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1a0030,#0a0015);
+}
+.room-card-img.placeholder svg{width:40px;height:40px;color:rgba(212,168,67,.4)}
+.room-card-body{padding:16px}
+.room-card-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:100px;
+  background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.25);
+  font-size:.52rem;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:10px;
+}
+.room-card-name{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.room-card-desc{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:12px}
+.room-card-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.room-meta-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:.7rem;color:rgba(255,255,255,.5);
+}
+.room-meta-item svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
+.room-card-feats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.r-feat{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:100px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  font-size:.64rem;font-weight:600;color:rgba(255,255,255,.6);
+}
+.r-feat svg{width:11px;height:11px;color:var(--accent);flex-shrink:0}
+.room-card-footer{display:flex;align-items:center;justify-content:space-between}
+.room-price-amount{font-size:1.15rem;font-weight:800;color:var(--accent)}
+.room-price-unit{font-size:.7rem;color:rgba(255,255,255,.4);margin-left:4px}
+.room-book-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:4px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-hover));
+  color:#000;font-size:.72rem;font-weight:800;
+  text-decoration:none;transition:all .2s;
+}
+.room-book-btn:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(212,168,67,.25)}
+.room-book-btn svg{width:14px;height:14px}
+
+/* empty */
+.empty-rooms{
+  text-align:center;padding:48px 20px;
+  color:rgba(255,255,255,.3);font-size:.88rem;
+}
+.empty-rooms svg{width:48px;height:48px;color:rgba(255,255,255,.12);margin:0 auto 12px;display:block}
+
+/* ── INFO ROW ── */
+.info-list{display:flex;flex-direction:column;gap:10px;padding:0 16px;margin-top:4px}
+.info-row{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;background:var(--surface);
+  border:1px solid var(--border);border-radius:4px;
+  text-decoration:none;color:#fff;
+  transition:background .2s,transform .15s,border-color .2s;
+}
+.info-row:hover{transform:translateY(-1px);background:rgba(255,255,255,.1);border-color:var(--border-hover)}
+.info-icon{
+  width:42px;height:42px;border-radius:4px;
+  background:rgba(212,168,67,.1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.info-icon svg{width:20px;height:20px;color:var(--accent)}
+.info-label{font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px}
+.info-value{font-weight:700;font-size:.92rem}
+
+/* ── FOOTER ── */
+.page-footer{padding:32px 16px 12px;border-top:1px solid var(--border);text-align:center;font-size:.65rem;color:rgba(255,255,255,.25);margin-top:28px}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:rgba(6,6,6,.95);border-top:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(20px);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-bar-inner{
+  display:flex;justify-content:space-around;align-items:stretch;
+  height:var(--bar-h);max-width:420px;margin:0 auto;
+}
+.bar-item{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  text-decoration:none;color:rgba(255,255,255,.35);
+  font-size:.52rem;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;padding:0 14px;
+  transition:color .2s;position:relative;flex:1;
+}
+.bar-item::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;
+  height:2px;border-radius:0 0 2px 2px;
+  background:var(--accent);opacity:0;transition:opacity .2s,transform .2s;transform:scaleX(.5);
+}
+.bar-item.bar-active{color:var(--accent)}
+.bar-item.bar-active::before{opacity:1;transform:scaleX(1)}
+.bar-item svg{width:22px;height:22px;flex-shrink:0}
+
+/* skel */
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:skelPulse 1.4s ease-in-out infinite;border-radius:4px}
+@keyframes skelPulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-header-inner">
+      <a href="/" class="back-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title">JOY <span>KARAOKE</span></div>
+    </div>
+  </div>
+
+  <!-- HERO SLIDER -->
+  <div class="hero-slider" id="heroSlider">
+    <div class="slider-track" id="sliderTrack">
+      <div class="slider-slide kslide-1">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <div class="slide-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg>
+          </div>
+          <div class="slide-title">Premium Karaoke</div>
+          <div class="slide-sub">Private үрөөнд дуу дуулаарай</div>
+        </div>
+      </div>
+      <div class="slider-slide kslide-2">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <div class="slide-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+          </div>
+          <div class="slide-title">Хэдэн мянган дуу</div>
+          <div class="slide-sub">Монгол, Солонгос, Хятад, Англи</div>
+        </div>
+      </div>
+      <div class="slider-slide kslide-3">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <div class="slide-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div class="slide-title">Найз нөхдтэйгөө</div>
+          <div class="slide-sub">2–20 хүртэл хүний багтаамж</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-shimmer"></div>
+    <div class="slider-dots" id="sliderDots"></div>
+    <div class="slider-counter" id="sliderCounter">1 / 3</div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="karaoke-intro joy-scroll-in">
+    <div class="k-badge">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+      Premium Experience
+    </div>
+    <h1 class="k-heading">JOY <span>KARAOKE</span><br>Өрөөний үйлчилгээ</h1>
+    <p class="k-desc">Найз нөхөд, гэр бүл, хамт олноороо дуу дуулах тав тухтай, private орчин. Орчин үеийн тоног төхөөрөмж, өргөн сонголттой дуунуудаар таныг хүлээж байна.</p>
+
+    <div class="k-features">
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg> HD Microphone</div>
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> 4K Screen</div>
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 9.5l-.707.707a1 1 0 000 1.414L12 12.328m0-2.828v5.656M12 9.5a2 2 0 110 4M8.464 8.464a5 5 0 000 7.072"/></svg> Sound System</div>
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Private Room</div>
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg> Хоол & Ундаа</div>
+      <div class="k-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg> 10,000+ Дуу</div>
+    </div>
+
+    <a class="k-cta" id="ctaPhone" href="tel:+97699112233">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+      Одоо захиалах
+    </a>
+  </div>
+
+  <!-- ROOMS -->
+  <div class="section-label" id="roomsLabel" style="margin-top:0">Karaoke Өрөөнүүд</div>
+  <div class="rooms-list" id="roomsList">
+    <!-- skeleton -->
+    <div class="skel" style="height:260px;border-radius:4px"></div>
+    <div class="skel" style="height:260px;border-radius:4px;margin-top:0"></div>
+  </div>
+
+  <!-- INFO -->
+  <div class="section-label" style="margin-top:28px;padding:0 16px">Мэдээлэл</div>
+  <div class="info-list">
+    <div class="info-row">
+      <div class="info-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <div>
+        <div class="info-label">Цагийн хуваарь</div>
+        <div class="info-value">Өдөр бүр 11:30 – 02:00</div>
+      </div>
+    </div>
+    <a class="info-row" id="infoPhone" href="tel:+97699112233">
+      <div class="info-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+      <div>
+        <div class="info-label">Утас</div>
+        <div class="info-value" id="infoPhoneVal">+976 9911 2233</div>
+      </div>
+    </a>
+    <a class="info-row" href="https://maps.app.goo.gl/9W9cpVcTaiwWHRCX8" target="_blank">
+      <div class="info-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+      <div>
+        <div class="info-label">Байршил</div>
+        <div class="info-value">Joy Billiard — Газрын зураг</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="page-footer">&copy; 2026 Joy Billiard & Pub · Karaoke</div>
+</div>
+
+<!-- BOTTOM BAR -->
+<nav id="bottomBar" class="bottom-bar">
+  <div class="bottom-bar-inner">
+    <a class="bar-item" href="/">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span>Нүүр</span>
+    </a>
+    <a class="bar-item bar-active" href="/karaoke.html">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg>
+      <span>Karaoke</span>
+    </a>
+    <a class="bar-item" href="/jobs.html">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <span>Ажил</span>
+    </a>
+    <a class="bar-item" href="/contact.html">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+      <span>Холбоо</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+/* ── SLIDER ── */
+var sliderIdx = 0;
+var sliderTimer = null;
+var SLIDES = document.querySelectorAll('.slider-slide');
+
+function initSlider() {
+  if (SLIDES.length <= 1) {
+    document.getElementById('sliderDots').style.display = 'none';
+    document.getElementById('sliderCounter').style.display = 'none';
+    return;
+  }
+  var dots = document.getElementById('sliderDots');
+  SLIDES.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.className = 'sdot' + (i === 0 ? ' active' : '');
+    d.onclick = function(){ goSlide(i); resetTimer(); };
+    dots.appendChild(d);
+  });
+  updateSlider();
+  resetTimer();
+
+  var startX = 0;
+  var el = document.getElementById('heroSlider');
+  el.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+  el.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) { goSlide(sliderIdx + (dx < 0 ? 1 : -1)); resetTimer(); }
+  }, {passive:true});
+}
+function goSlide(n) { sliderIdx = ((n % SLIDES.length) + SLIDES.length) % SLIDES.length; updateSlider(); }
+function updateSlider() {
+  document.getElementById('sliderTrack').style.transform = 'translateX(-' + (sliderIdx * 100) + '%)';
+  document.getElementById('sliderCounter').textContent = (sliderIdx + 1) + ' / ' + SLIDES.length;
+  document.querySelectorAll('.sdot').forEach(function(d, i){ d.classList.toggle('active', i === sliderIdx); });
+}
+function resetTimer() {
+  clearInterval(sliderTimer);
+  sliderTimer = setInterval(function(){ goSlide(sliderIdx + 1); }, 4500);
+}
+initSlider();
+
+/* ── LOAD ROOMS ── */
+fetch('/api/karaokerooms').then(function(r){ return r.json(); }).then(function(rooms) {
+  var list = document.getElementById('roomsList');
+  if (!rooms || !rooms.length) {
+    list.innerHTML = '<div class="empty-rooms"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg>Karaoke өрөөний мэдээлэл удахгүй нэмэгдэнэ</div>';
+    return;
+  }
+  list.innerHTML = '';
+  rooms.forEach(function(rm) {
+    var feats = (rm.features||[]).map(function(f){
+      return '<span class="r-feat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' + f + '</span>';
+    }).join('');
+    var imgHtml = rm.image
+      ? '<img class="room-card-img" src="' + rm.image + '" alt="' + rm.name + '">'
+      : '<div class="room-card-img placeholder"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg></div>';
+    var cap = rm.capacity ? '<span class="room-meta-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' + rm.capacity + ' хүн</span>' : '';
+    var tel = (rm.phone || '').replace(/\s/g,'') || '+97699112233';
+    list.innerHTML += '<div class="room-card joy-scroll-in">'
+      + imgHtml
+      + '<div class="room-card-body">'
+      + '<div class="room-card-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg> ' + (rm.badge||'KARAOKE') + '</div>'
+      + '<div class="room-card-name">' + rm.name + '</div>'
+      + '<div class="room-card-desc">' + rm.description + '</div>'
+      + '<div class="room-card-meta">' + cap + '</div>'
+      + '<div class="room-card-feats">' + feats + '</div>'
+      + '<div class="room-card-footer">'
+      + '<div><span class="room-price-amount">' + rm.price + '</span><span class="room-price-unit">' + rm.priceUnit + '</span></div>'
+      + '<a class="room-book-btn" href="tel:' + tel + '"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> Захиалах</a>'
+      + '</div></div></div>';
+  });
+}).catch(function(){
+  document.getElementById('roomsList').innerHTML = '<div class="empty-rooms"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 4a3 3 0 013 3v5a3 3 0 01-6 0V7a3 3 0 013-3z"/></svg>Karaoke өрөөний мэдээлэл удахгүй нэмэгдэнэ</div>';
+});
+
+/* ── SETTINGS ── */
+fetch('/api/settings').then(function(r){ return r.json(); }).then(function(s){
+  if (s.phone) {
+    var clean = s.phone.replace(/\s/g,'');
+    document.getElementById('ctaPhone').href = 'tel:' + clean;
+    document.getElementById('infoPhone').href = 'tel:' + clean;
+    document.getElementById('infoPhoneVal').textContent = s.phone;
+  }
+}).catch(function(){});
+</script>
+<script src="/transitions.js"></script>
+</body>
+</html>
