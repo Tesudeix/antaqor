@@ -47,7 +47,7 @@ export default function ChatListPage() {
   if (status === "loading" || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#FFD300]" />
+        <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#FFFF01]" />
       </div>
     );
   }
@@ -139,7 +139,7 @@ export default function ChatListPage() {
                       {conv.lastMessage || "Шинэ харилцан яриа"}
                     </p>
                     {conv.unreadCount > 0 && (
-                      <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#FFD300] px-1.5 text-[10px] font-bold text-black">
+                      <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#FFFF01] px-1.5 text-[10px] font-bold text-black">
                         {conv.unreadCount}
                       </span>
                     )}

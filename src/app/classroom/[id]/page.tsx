@@ -30,16 +30,16 @@ interface LessonData {
 const REACTION_KEYS = ["fire", "heart", "clap", "rocket", "think", "hundred", "haha"];
 
 const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
-  const color = active ? "#FFD300" : "currentColor";
+  const color = active ? "#FFFF01" : "currentColor";
   const props = { className: "h-[16px] w-[16px]", fill: "none", stroke: color, viewBox: "0 0 24 24", strokeWidth: active ? 2 : 1.5 };
   switch (type) {
-    case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(255,211,0,0.2)" : "none"} /></svg>);
-    case "heart": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" fill={active ? "rgba(255,211,0,0.2)" : "none"} /></svg>);
+    case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(255,255,1,0.2)" : "none"} /></svg>);
+    case "heart": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" fill={active ? "rgba(255,255,1,0.2)" : "none"} /></svg>);
     case "clap": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" /></svg>);
     case "rocket": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>);
     case "think": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>);
-    case "hundred": return (<svg {...props} fill={active ? "rgba(255,211,0,0.2)" : "none"}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>);
-    case "haha": return (<svg {...props}><circle cx="12" cy="12" r="9" fill={active ? "rgba(255,211,0,0.15)" : "none"} /><path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>);
+    case "hundred": return (<svg {...props} fill={active ? "rgba(255,255,1,0.2)" : "none"}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>);
+    case "haha": return (<svg {...props}><circle cx="12" cy="12" r="9" fill={active ? "rgba(255,255,1,0.15)" : "none"} /><path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>);
     default: return null;
   }
 };
@@ -193,7 +193,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFD300]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#0a0a0a]" />
       </div>
     );
   }
@@ -201,8 +201,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="text-[15px] text-[#6a6a72]">Хичээл олдсонгүй</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">← Буцах</Link>
+        <p className="text-[15px] text-[rgba(0,0,0,0.4)]">Хичээл олдсонгүй</p>
+        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#0a0a0a] transition hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -210,14 +210,14 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if ((lesson.requiredLevel || 0) > userLevel && !admin) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1a1a1e] border border-[rgba(255,211,0,0.1)]">
-          <svg className="h-6 w-6 text-[#6a6a72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] bg-[#0a0a0a]">
+          <svg className="h-7 w-7 text-[rgba(255,255,255,0.3)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="text-[15px] font-medium text-[#eeeee8]">LV.{lesson.requiredLevel} шаардлагатай</p>
-        <p className="mt-1 text-[13px] text-[#6a6a72]">Таны түвшин: LV.{userLevel}</p>
-        <Link href="/classroom" className="mt-6 text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">← Буцах</Link>
+        <p className="text-[16px] font-bold text-[#0a0a0a]">LV.{lesson.requiredLevel} шаардлагатай</p>
+        <p className="mt-1.5 text-[14px] text-[rgba(0,0,0,0.4)]">Таны түвшин: LV.{userLevel}</p>
+        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#0a0a0a] transition hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -228,11 +228,11 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const totalReactions = Object.values(reactions).reduce((sum, r) => sum + r.count, 0);
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-3xl">
       {/* Back link */}
       <Link
         href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-        className="mb-5 inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[13px] text-[#6a6a72] transition hover:bg-[#1a1a1e] hover:text-[#eeeee8]"
+        className="mb-8 inline-flex items-center gap-2 text-[13px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:text-[#0a0a0a]"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -240,9 +240,80 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         {lesson.course?.title || "Classroom"}
       </Link>
 
-      {/* Video */}
+      {/* Title + meta — blog article style */}
+      {!editing && (
+        <header className="mb-8">
+          <h1 className="text-[28px] font-black leading-tight text-[#0a0a0a] sm:text-[36px] lg:text-[40px]">{lesson.title}</h1>
+          {lesson.description && (
+            <p className="mt-3 text-[16px] leading-relaxed text-[rgba(0,0,0,0.45)] lg:text-[18px]">{lesson.description}</p>
+          )}
+          <div className="mt-4 flex flex-wrap items-center gap-4 text-[13px] text-[rgba(0,0,0,0.3)]">
+            <span>{formatDistanceToNow(lesson.createdAt)}</span>
+            <span className="h-1 w-1 rounded-full bg-[rgba(0,0,0,0.15)]" />
+            <span>{lesson.completedBy.length} дуусгасан</span>
+            {totalReactions > 0 && (
+              <>
+                <span className="h-1 w-1 rounded-full bg-[rgba(0,0,0,0.15)]" />
+                <span>{totalReactions} reaction</span>
+              </>
+            )}
+          </div>
+
+          {/* Actions row */}
+          <div className="mt-6 flex items-center gap-3">
+            {session && (
+              <button
+                onClick={toggleComplete}
+                className={`flex items-center gap-2 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
+                  isCompleted
+                    ? "bg-[#00e676] text-black"
+                    : "bg-[#0a0a0a] text-[#FFFF01] hover:scale-105"
+                }`}
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {isCompleted ? "Дууссан" : "Дуусгах"}
+              </button>
+            )}
+            {admin && (
+              <>
+                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-4 py-2 text-[12px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:border-[#0a0a0a] hover:text-[#0a0a0a]">Засах</button>
+                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-4 py-2 text-[12px] font-semibold text-red-500/50 transition hover:border-red-400 hover:text-red-500">Устгах</button>
+              </>
+            )}
+          </div>
+        </header>
+      )}
+
+      {/* Edit form */}
+      {editing && (
+        <div className="mb-8 space-y-4">
+          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[18px] font-bold text-[#0a0a0a] outline-none transition focus:border-[#0a0a0a]" />
+          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a] resize-none" placeholder="Тайлбар" />
+          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a] resize-none" placeholder="Хичээлийн агуулга (текст)" />
+          <div className="flex items-center gap-3">
+            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[14px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a]" placeholder="Видео URL" />
+            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[12px] font-medium text-[rgba(0,0,0,0.4)] transition hover:border-[#0a0a0a] hover:text-[#0a0a0a] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+              {uploading ? `${uploadProgress}%` : "Файл"}
+              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
+            </label>
+          </div>
+          {uploading && (
+            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.05)]">
+              <div className="h-full rounded-full bg-[#0a0a0a] transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+            </div>
+          )}
+          <div className="flex gap-3">
+            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#0a0a0a] px-6 py-2.5 text-[12px] font-bold text-[#FFFF01] transition hover:scale-105 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
+            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-5 py-2.5 text-[12px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:text-[#0a0a0a]">Цуцлах</button>
+          </div>
+        </div>
+      )}
+
+      {/* Video — full width, prominent */}
       {lesson.videoUrl && !editing && (
-        <div className="mb-5 overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.04)] bg-[#0e0e10]">
+        <div className="mb-8 overflow-hidden rounded-[4px] bg-[#0a0a0a]">
           {embedUrl ? (
             <div className="relative aspect-video w-full">
               <iframe
@@ -257,87 +328,16 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
               <source src={lesson.videoUrl} />
             </video>
           ) : (
-            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-6 text-center text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">
+            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#FFFF01] transition hover:underline">
               Видео нээх →
             </a>
           )}
         </div>
       )}
 
-      {/* Title + actions */}
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          {editing ? (
-            <div className="space-y-3">
-              <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-lg font-bold text-[#eeeee8] outline-none transition focus:border-[#FFD300]" />
-              <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Тайлбар" />
-              <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={10} className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none" placeholder="Хичээлийн агуулга (текст)" />
-              <div className="flex items-center gap-3">
-                <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]" placeholder="Видео URL" />
-                <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-                  {uploading ? `${uploadProgress}%` : "Файл"}
-                  <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
-                </label>
-              </div>
-              {uploading && (
-                <div className="h-1.5 overflow-hidden rounded-full bg-[#141416]">
-                  <div className="h-full rounded-full bg-gradient-to-r from-[#FFD300] to-[#ffeb80] transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-                </div>
-              )}
-              <div className="flex gap-2">
-                <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-                <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Цуцлах</button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <h1 className="text-xl font-bold text-[#eeeee8] sm:text-2xl">{lesson.title}</h1>
-              {lesson.description && (
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#6a6a72]">{lesson.description}</p>
-              )}
-              <div className="mt-2 flex items-center gap-3 text-[12px] text-[#4a4a55]">
-                <span>{formatDistanceToNow(lesson.createdAt)}</span>
-                <span>·</span>
-                <span>{lesson.completedBy.length} дуусгасан</span>
-                {totalReactions > 0 && (
-                  <>
-                    <span>·</span>
-                    <span>{totalReactions} reaction</span>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-
-        {!editing && (
-          <div className="flex shrink-0 gap-2">
-            {session && (
-              <button
-                onClick={toggleComplete}
-                className={`flex h-9 w-9 items-center justify-center rounded-[4px] transition ${
-                  isCompleted ? "bg-[#00e676] text-black" : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] text-[#6a6a72] hover:text-[#eeeee8] hover:border-[rgba(255,211,0,0.2)]"
-                }`}
-                title={isCompleted ? "Дууссан" : "Дуусгах"}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </button>
-            )}
-            {admin && (
-              <>
-                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[4px] border border-[#2a2a2e] px-3 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400">Устгах</button>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Reactions bar */}
       {!editing && session && (
-        <div className="mb-5 flex flex-wrap items-center gap-1.5">
+        <div className="mb-8 flex flex-wrap items-center gap-2">
           {REACTION_KEYS.map((key) => {
             const data = reactions[key];
             const count = data?.count || 0;
@@ -347,15 +347,15 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 key={key}
                 onClick={() => handleReaction(key)}
                 disabled={reactingEmoji === key}
-                className={`inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 transition-all duration-200 ${
+                className={`inline-flex items-center gap-1.5 rounded-[4px] px-3 py-2 transition-all duration-200 ${
                   reacted
-                    ? "bg-[rgba(255,211,0,0.08)] border border-[rgba(255,211,0,0.25)] shadow-[0_0_8px_rgba(255,211,0,0.08)]"
-                    : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.12)] hover:bg-[#222226]"
+                    ? "bg-[#0a0a0a] border border-[rgba(255,255,1,0.3)]"
+                    : "bg-[rgba(0,0,0,0.04)] border border-transparent hover:bg-[rgba(0,0,0,0.08)]"
                 } ${reactingEmoji === key ? "scale-110" : "active:scale-95"}`}
               >
                 <ReactionIcon type={key} active={reacted} />
                 {count > 0 && (
-                  <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#FFD300]" : "text-[#6a6a72]"}`}>
+                  <span className={`text-[11px] font-bold tabular-nums ${reacted ? "text-[#FFFF01]" : "text-[rgba(0,0,0,0.35)]"}`}>
                     {count}
                   </span>
                 )}
@@ -367,33 +367,27 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
       {/* Reactions display for non-logged-in */}
       {!editing && !session && totalReactions > 0 && (
-        <div className="mb-5 flex flex-wrap items-center gap-1.5">
+        <div className="mb-8 flex flex-wrap items-center gap-2">
           {REACTION_KEYS.filter((key) => (reactions[key]?.count || 0) > 0).map((key) => (
-            <div key={key} className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] px-2.5 py-1.5">
+            <div key={key} className="inline-flex items-center gap-1.5 rounded-[4px] bg-[rgba(0,0,0,0.04)] px-3 py-2">
               <ReactionIcon type={key} active={false} />
-              <span className="text-[11px] font-semibold text-[#6a6a72]">{reactions[key].count}</span>
+              <span className="text-[11px] font-bold text-[rgba(0,0,0,0.35)]">{reactions[key].count}</span>
             </div>
           ))}
         </div>
       )}
 
-      {/* Text content section */}
+      {/* Text content — blog article body */}
       {lesson.content && !editing && (
-        <div className="mb-6 rounded-[12px] border border-[rgba(255,255,255,0.04)] bg-[#1a1a1e]">
-          <div className="border-b border-[rgba(255,255,255,0.04)] px-5 py-3">
-            <div className="flex items-center gap-2">
-              <svg className="h-4 w-4 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="text-[13px] font-semibold text-[#eeeee8]">Хичээлийн тэмдэглэл</span>
-            </div>
+        <article className="mb-8">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="h-[2px] w-6 bg-[#0a0a0a]" />
+            <span className="text-[11px] font-bold tracking-[2px] uppercase text-[rgba(0,0,0,0.3)]">Хичээлийн тэмдэглэл</span>
           </div>
-          <div className="px-5 py-4">
-            <div className="whitespace-pre-wrap text-[14px] leading-[1.85] text-[rgba(238,238,232,0.7)]">
-              {lesson.content}
-            </div>
+          <div className="whitespace-pre-wrap text-[15px] leading-[2] text-[rgba(0,0,0,0.65)] lg:text-[16px]">
+            {lesson.content}
           </div>
-        </div>
+        </article>
       )}
     </div>
   );

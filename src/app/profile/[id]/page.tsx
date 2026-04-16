@@ -163,7 +163,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFD300]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFFF01]" />
       </div>
     );
   }
@@ -210,7 +210,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   className="absolute inset-0 flex items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
                 >
                   {uploading ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#FFD300] border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#FFFF01] border-t-transparent" />
                   ) : (
                     <svg className="h-5 w-5 text-[#eeeee8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -235,13 +235,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]"
+                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFFF01]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]"
+                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFFF01]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -249,14 +249,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none"
+                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFFF01] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50"
+                    className="rounded-[4px] bg-[#FFFF01] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6e600] disabled:opacity-50"
                   >
                     {saving ? "..." : "Хадгалах"}
                   </button>
@@ -284,7 +284,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       return (
                         <div className="mt-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-[#FFD300]">
+                            <span className="text-[11px] font-bold text-[#FFFF01]">
                               LV.{level}
                             </span>
                             <span className="text-[11px] text-[#6a6a72]">
@@ -294,7 +294,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                           <div className="mt-1.5 flex items-center gap-2">
                             <div className="h-1 w-28 overflow-hidden rounded-full bg-[#1a1a22]">
                               <div
-                                className="h-full rounded-full bg-[#FFD300] transition-all"
+                                className="h-full rounded-full bg-[#FFFF01] transition-all"
                                 style={{ width: `${Math.round(progress * 100)}%` }}
                               />
                             </div>
@@ -306,7 +306,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       );
                     })()}
                     {user.clan && (
-                      <span className="mt-1.5 inline-block rounded-[4px] bg-[rgba(255,211,0,0.06)] border border-[rgba(255,211,0,0.1)] px-2 py-0.5 text-[10px] font-semibold text-[#FFD300]">
+                      <span className="mt-1.5 inline-block rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.1)] px-2 py-0.5 text-[10px] font-semibold text-[#FFFF01]">
                         Кланы гишүүн
                       </span>
                     )}
@@ -315,7 +315,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     <div className="flex shrink-0 gap-2">
                       <button
                         onClick={() => setEditing(true)}
-                        className="rounded-[4px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]"
+                        className="rounded-[4px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFFF01] hover:text-[#eeeee8]"
                       >
                         Засах
                       </button>

@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-black: #060608;
-  --color-surface: #0c0c10;
-  --color-border: #1a1a22;
-  --color-accent: #FFD300;
-  --color-accent-hover: #e6be00;
-  --color-ink: #e8e6e1;
-  --color-muted: #6b6b78;
-  --color-dim: #3a3a48;
-  --color-background: #060608;
-  --color-foreground: #e8e6e1;
+  --color-black: #0a0a0a;
+  --color-surface: #0a0a0a;
+  --color-border: #1a1a1a;
+  --color-accent: #0a0a0a;
+  --color-accent-hover: #222;
+  --color-ink: #fff;
+  --color-muted: rgba(255,255,255,.5);
+  --color-dim: rgba(255,255,255,.25);
+  --color-background: #FFFF01;
+  --color-foreground: #0a0a0a;
+  --color-yellow: #FFFF01;
   --font-sans: "Rubik", "Roboto", system-ui, sans-serif;
 }
 
@@ -19,23 +20,23 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--color-black);
+  background: var(--color-yellow);
   color: var(--color-foreground);
   font-family: var(--font-sans);
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.75;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--color-accent);
-  color: #000;
+  background: var(--color-black);
+  color: var(--color-yellow);
 }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-dim); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 4px; }
 
 input, textarea, select {
   font-family: var(--font-sans);
@@ -48,37 +49,36 @@ input, textarea, select {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--color-accent);
-  color: #000;
-  padding: 10px 24px;
+  background: var(--color-black);
+  color: var(--color-yellow);
+  padding: 12px 28px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
-.btn-primary:hover { background: var(--color-accent-hover); }
+.btn-primary:hover { box-shadow: 0 4px 16px rgba(0,0,0,.15); transform: translateY(-1px); }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Keep old names as aliases */
 .btn-neon, .btn-blood {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--color-accent);
-  color: #000;
-  padding: 10px 24px;
+  background: var(--color-black);
+  color: var(--color-yellow);
+  padding: 12px 28px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
-.btn-neon:hover, .btn-blood:hover { background: var(--color-accent-hover); }
+.btn-neon:hover, .btn-blood:hover { box-shadow: 0 4px 16px rgba(0,0,0,.15); transform: translateY(-1px); }
 .btn-neon:active, .btn-blood:active { transform: scale(0.98); }
 .btn-neon:disabled, .btn-blood:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -88,57 +88,59 @@ input, textarea, select {
   justify-content: center;
   gap: 8px;
   background: transparent;
-  color: var(--color-muted);
-  padding: 10px 24px;
+  color: rgba(0,0,0,.5);
+  padding: 12px 28px;
   font-size: 13px;
-  font-weight: 500;
-  border: 1px solid var(--color-border);
+  font-weight: 600;
+  border: 1px solid rgba(0,0,0,.1);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .btn-ghost:hover {
-  border-color: var(--color-dim);
-  color: var(--color-ink);
+  border-color: rgba(0,0,0,.2);
+  color: var(--color-black);
 }
 
 /* ─── Inputs ─── */
 .input-dark {
   width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-ink);
-  padding: 10px 14px;
+  background: var(--color-black);
+  border: 1px solid #222;
+  color: #fff;
+  padding: 12px 16px;
   font-size: 14px;
   line-height: 1.5;
   border-radius: 4px;
   transition: border-color 0.2s;
 }
-.input-dark::placeholder { color: var(--color-muted); }
+.input-dark::placeholder { color: rgba(255,255,255,.35); }
 .input-dark:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--color-yellow);
 }
 
 /* ─── Cards ─── */
 .card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--color-black);
+  border: none;
   border-radius: 4px;
-  transition: border-color 0.2s;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
 .card:hover {
-  border-color: #2a2a35;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
 }
 
 /* ─── Section label ─── */
 .section-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--color-muted);
-  margin-bottom: 20px;
+  color: rgba(0,0,0,.4);
+  margin-bottom: 24px;
 }
 
 /* ─── Animations ─── */
@@ -153,9 +155,18 @@ input, textarea, select {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
+  line-height: 1.3;
 }
 
+h1 { letter-spacing: -0.02em; }
+h2 { letter-spacing: -0.01em; }
 
 p {
-  line-height: 1.7;
+  line-height: 1.75;
 }
+
+/* ─── Spacing rhythm (8px base) ─── */
+.space-section { margin-bottom: 48px; }
+.space-block { margin-bottom: 32px; }
+.space-element { margin-bottom: 16px; }
+.space-tight { margin-bottom: 8px; }

@@ -126,27 +126,27 @@ export default function BottomBar() {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#1a1a22] bg-[rgba(6,6,8,0.95)] backdrop-blur-lg md:hidden">
-      <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#FFFF01] bg-[rgba(10,10,10,0.97)] backdrop-blur-xl md:hidden">
+      <div className="flex items-center justify-around px-2 py-2.5">
         {links.map((link) => {
           const active = isActive(link.href);
           return (
             <Link
               key={link.label}
               href={link.href}
-              className={`relative flex flex-col items-center gap-0.5 px-2 py-1.5 transition ${
-                active ? "text-[#e8e6e1]" : "text-[#6b6b78]"
+              className={`relative flex flex-col items-center gap-1 px-3 py-1 transition ${
+                active ? "text-[#FFFF01]" : "text-[rgba(255,255,255,0.3)]"
               }`}
             >
               <div className="relative">
                 {link.icon}
                 {link.badge > 0 && (
-                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FFD300] px-1 text-[8px] font-bold text-black">
+                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FFFF01] px-1 text-[8px] font-bold text-black">
                     {link.badge > 99 ? "99+" : link.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[9px] font-medium">{link.label}</span>
+              <span className="text-[9px] font-bold tracking-wide">{link.label}</span>
             </Link>
           );
         })}

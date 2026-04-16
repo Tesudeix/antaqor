@@ -63,16 +63,16 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#060608" />
+        <meta name="theme-color" content="#FFFF01" />
       </head>
       <body>
         <Providers>
           <SubscriptionBanner />
           <Navbar />
-          <main className="mx-auto max-w-2xl px-5 pb-24 pt-6 md:pb-12">
+          <main className="w-full px-4 pb-24 pt-8 sm:px-6 md:px-8 md:pb-12 lg:px-12">
             {children}
           </main>
           <BottomBar />

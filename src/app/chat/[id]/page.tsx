@@ -136,7 +136,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {loading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#FFD300]" />
+            <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#FFFF01]" />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
@@ -168,7 +168,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     <div
                       className={`max-w-[75%] rounded-[4px] px-3 py-2 text-[13px] leading-relaxed ${
                         isMine
-                          ? "bg-[#FFD300] text-black"
+                          ? "bg-[#FFFF01] text-black"
                           : "bg-[#1a1a22] text-[#e8e6e1]"
                       }`}
                     >
@@ -194,12 +194,12 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             onKeyDown={handleKeyDown}
             placeholder="Мессеж бичих..."
             maxLength={2000}
-            className="flex-1 rounded-[4px] border border-[#1a1a22] bg-[#0c0c10] px-3.5 py-2.5 text-[13px] text-[#e8e6e1] placeholder-[#3a3a48] outline-none transition focus:border-[#FFD300]/50"
+            className="flex-1 rounded-[4px] border border-[#1a1a22] bg-[#0c0c10] px-3.5 py-2.5 text-[13px] text-[#e8e6e1] placeholder-[#3a3a48] outline-none transition focus:border-[#FFFF01]/50"
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[4px] bg-[#FFD300] text-black transition hover:bg-[#e6be00] disabled:opacity-30"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[4px] bg-[#FFFF01] text-black transition hover:bg-[#e6e600] disabled:opacity-30"
           >
             {sending ? (
               <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-black border-t-transparent" />

@@ -61,7 +61,7 @@ export default function SignUp() {
           </p>
 
           {error && (
-            <div className="mb-6 border-l-2 border-[#FFD300] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFD300]">
+            <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
               {error}
             </div>
           )}
@@ -137,7 +137,7 @@ export default function SignUp() {
 
           <p className="mt-8 text-center text-[11px] text-[#5a5550]">
             Бүртгэлтэй юу?{" "}
-            <Link href="/auth/signin" className="text-[#FFD300] hover:text-[#B3B300]">
+            <Link href="/auth/signin" className="text-[#FFFF01] hover:text-[#B3B300]">
               Нэвтрэх
             </Link>
           </p>

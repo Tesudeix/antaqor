@@ -120,7 +120,7 @@ function NewPostContent() {
       </p>
 
       {error && (
-        <div className="mb-6 border-l-2 border-[#FFD300] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFD300]">
+        <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
           {error}
         </div>
       )}
@@ -135,7 +135,7 @@ function NewPostContent() {
               onClick={() => setCategory("мэдээлэл")}
               className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "мэдээлэл"
-                  ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
+                  ? "bg-[rgba(255,255,1,0.1)] text-[#FFFF01] border border-[rgba(255,255,1,0.3)]"
                   : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
               }`}
             >
@@ -146,7 +146,7 @@ function NewPostContent() {
               onClick={() => setCategory("ялалт")}
               className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "ялалт"
-                  ? "bg-[rgba(255,211,0,0.1)] text-[#FFD300] border border-[rgba(255,211,0,0.3)]"
+                  ? "bg-[rgba(255,255,1,0.1)] text-[#FFFF01] border border-[rgba(255,255,1,0.3)]"
                   : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
               }`}
             >
@@ -174,7 +174,7 @@ function NewPostContent() {
               {uploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-[rgba(3,3,3,0.7)]">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="h-3 w-3 animate-pulse bg-[#FFD300]" />
+                    <div className="h-3 w-3 animate-pulse bg-[#FFFF01]" />
                     <span className="text-[10px] uppercase tracking-[0.5px] text-[#c8c8c0]">
                       Оновчилж байна...
                     </span>
@@ -185,7 +185,7 @@ function NewPostContent() {
                 <button
                   type="button"
                   onClick={removeImage}
-                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-[rgba(3,3,3,0.8)] text-[#c8c8c0] transition hover:bg-[#FFD300] hover:text-white"
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-[rgba(3,3,3,0.8)] text-[#c8c8c0] transition hover:bg-[#FFFF01] hover:text-white"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -203,7 +203,7 @@ function NewPostContent() {
               onClick={() => fileRef.current?.click()}
               className={`mt-4 flex cursor-pointer flex-col items-center gap-2 border border-dashed py-8 transition ${
                 dragOver
-                  ? "border-[#FFD300] bg-[rgba(0,100,145,0.05)]"
+                  ? "border-[#FFFF01] bg-[rgba(0,100,145,0.05)]"
                   : "border-[#1c1c1c] hover:border-[rgba(240,236,227,0.15)]"
               }`}
             >
@@ -233,7 +233,7 @@ function NewPostContent() {
                 {content.length}/2000
               </span>
               {imageUrl && (
-                <span className="flex items-center gap-1 text-[10px] tracking-[2px] text-[#FFD300]">
+                <span className="flex items-center gap-1 text-[10px] tracking-[2px] text-[#FFFF01]">
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>

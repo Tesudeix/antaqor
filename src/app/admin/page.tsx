@@ -49,6 +49,17 @@ export default function AdminDashboard() {
   const [posting, setPosting] = useState(false);
   const [postResult, setPostResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [igToken, setIgToken] = useState("");
+  const [igStatus, setIgStatus] = useState<{hasToken:boolean;tokenPreview?:string|null;username?:string} | null>(null);
+  const [igSaving, setIgSaving] = useState(false);
+  const [igMsg, setIgMsg] = useState<string | null>(null);
+
+  // Announcements state
+  const [announcements, setAnnouncements] = useState<{_id:string;title:string;content:string;image?:string;tag:string;pinned:boolean;published:boolean;createdAt:string}[]>([]);
+  const [annForm, setAnnForm] = useState({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
+  const [annEditing, setAnnEditing] = useState<string|null>(null);
+  const [annSaving, setAnnSaving] = useState(false);
+  const [annMsg, setAnnMsg] = useState<string|null>(null);
 
   const error = searchParams.get("error");
   const justConnected = searchParams.get("connected");
@@ -80,6 +91,19 @@ export default function AdminDashboard() {
           }
         }
       }
+      // Instagram token status
+      try {
+        const igRes = await fetch("/api/instagram/token");
+        if (igRes.ok) setIgStatus(await igRes.json());
+      } catch {}
+      // Load announcements
+      try {
+        const annRes = await fetch("/api/announcements?limit=50");
+        if (annRes.ok) {
+          const annData = await annRes.json();
+          setAnnouncements(annData.announcements || []);
+        }
+      } catch {}
     } catch {
       setThreadsConnected(false);
     } finally {
@@ -113,6 +137,93 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleIgSave = async () => {
+    if (!igToken.trim() || igSaving) return;
+    setIgSaving(true);
+    setIgMsg(null);
+    try {
+      const res = await fetch("/api/instagram/token", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: igToken.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setIgMsg(`Холбогдлоо! @${data.username}`);
+      setIgToken("");
+      setIgStatus({ hasToken: true, username: data.username });
+      setTimeout(() => setIgMsg(null), 4000);
+    } catch (err) {
+      setIgMsg(`Алдаа: ${err instanceof Error ? err.message : "Token буруу"}`);
+    } finally {
+      setIgSaving(false);
+    }
+  };
+
+  const handleIgDelete = async () => {
+    try {
+      await fetch("/api/instagram/token", { method: "DELETE" });
+      setIgStatus({ hasToken: false });
+      setIgMsg("Token устгагдлаа");
+      setTimeout(() => setIgMsg(null), 3000);
+    } catch {}
+  };
+
+  const handleIgRefresh = async () => {
+    setIgMsg("Refreshing...");
+    try {
+      const res = await fetch("/api/instagram/refresh");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setIgMsg("Token шинэчлэгдлээ!");
+      setTimeout(() => setIgMsg(null), 3000);
+    } catch (err) {
+      setIgMsg(`Алдаа: ${err instanceof Error ? err.message : "Refresh failed"}`);
+    }
+  };
+
+  const handleAnnSave = async () => {
+    if (!annForm.title.trim() || !annForm.content.trim() || annSaving) return;
+    setAnnSaving(true);
+    setAnnMsg(null);
+    try {
+      const isEdit = !!annEditing;
+      const url = isEdit ? `/api/announcements/${annEditing}` : "/api/announcements";
+      const res = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(annForm),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      if (isEdit) {
+        setAnnouncements(prev => prev.map(a => a._id === annEditing ? data.announcement : a));
+      } else {
+        setAnnouncements(prev => [data.announcement, ...prev]);
+      }
+      setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
+      setAnnEditing(null);
+      setAnnMsg(isEdit ? "Шинэчлэгдлээ!" : "Нэмэгдлээ!");
+      setTimeout(() => setAnnMsg(null), 3000);
+    } catch (err) {
+      setAnnMsg(`Алдаа: ${err instanceof Error ? err.message : "Failed"}`);
+    } finally {
+      setAnnSaving(false);
+    }
+  };
+
+  const handleAnnDelete = async (id: string) => {
+    try {
+      await fetch(`/api/announcements/${id}`, { method: "DELETE" });
+      setAnnouncements(prev => prev.filter(a => a._id !== id));
+    } catch {}
+  };
+
+  const startAnnEdit = (a: typeof announcements[0]) => {
+    setAnnEditing(a._id);
+    setAnnForm({ title: a.title, content: a.content, image: a.image || "", tag: a.tag, pinned: a.pinned });
+  };
+
   const getInsightValue = (name: string): number => {
     const metric = insights.find((i) => i.name === name);
     if (!metric) return 0;
@@ -124,7 +235,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFD300] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
       </div>
     );
   }
@@ -134,7 +245,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          ADMIN <span className="text-[#FFD300]">DASHBOARD</span>
+          ADMIN <span className="text-[#FFFF01]">DASHBOARD</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           НИЙГЭМЛЭГИЙН УДИРДЛАГЫН ХЯНАЛТЫН САМБАР
@@ -164,7 +275,7 @@ export default function AdminDashboard() {
             </div>
             <div className="card p-5">
               <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#FFD300]">
+              <div className="mt-2 text-3xl tracking-[2px] text-[#FFFF01]">
                 {stats.totalMembers.toLocaleString()}
               </div>
             </div>
@@ -186,8 +297,8 @@ export default function AdminDashboard() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="card p-5">
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">AI Түвшин</span>
-                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#FFD300]">
+                <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">AI Түвшин</span>
+                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#FFFF01]">
                   Бүгдийг харах →
                 </Link>
               </div>
@@ -199,7 +310,7 @@ export default function AdminDashboard() {
                     <div key={level} className="flex items-center gap-3">
                       <span className="w-24 text-[11px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
                       <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                        <div className="h-full bg-[#FFD300] transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-full bg-[#FFFF01] transition-all" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                     </div>
@@ -208,12 +319,12 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="card p-5">
-              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Түгээмэл сонирхол</div>
+              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Түгээмэл сонирхол</div>
               <div className="flex flex-wrap gap-2">
                 {stats.interestCounts.length > 0 ? (
                   stats.interestCounts.map((ic) => (
                     <span key={ic._id} className="border border-[#1c1c1c] px-3 py-1.5 text-[10px] text-[#c8c8c0]">
-                      {ic._id.replace(/_/g, " ")} <span className="text-[#FFD300]">{ic.count}</span>
+                      {ic._id.replace(/_/g, " ")} <span className="text-[#FFFF01]">{ic.count}</span>
                     </span>
                   ))
                 ) : (
@@ -230,8 +341,8 @@ export default function AdminDashboard() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="card p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Түвшний тархалт</span>
-              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#FFD300]">
+              <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Түвшний тархалт</span>
+              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#FFFF01]">
                 Даалгаврууд →
               </Link>
             </div>
@@ -250,7 +361,7 @@ export default function AdminDashboard() {
                   <div key={tier.min} className="flex items-center gap-3">
                     <span className="w-32 text-[11px] text-[#c8c8c0]">{tier.label}</span>
                     <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                      <div className="h-full bg-[#FFD300] transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-[#FFFF01] transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                   </div>
@@ -259,7 +370,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="card p-5">
-            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFD300]">Шилдэг XP</div>
+            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Шилдэг XP</div>
             <div className="space-y-2">
               {(stats.topXPUsers || []).map((u, i) => (
                 <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-3 py-1 transition hover:bg-[rgba(240,236,227,0.03)]">
@@ -273,7 +384,7 @@ export default function AdminDashboard() {
                   )}
                   <span className="flex-1 text-[12px] text-[#c8c8c0]">{u.name}</span>
                   <span className="text-[10px] text-[#5a5550]">LV.{u.level || 1}</span>
-                  <span className="w-16 text-right text-[11px] font-bold text-[#FFD300]">{(u.xp || 0).toLocaleString()}</span>
+                  <span className="w-16 text-right text-[11px] font-bold text-[#FFFF01]">{(u.xp || 0).toLocaleString()}</span>
                 </Link>
               ))}
               {(!stats.topXPUsers || stats.topXPUsers.length === 0) && (
@@ -314,7 +425,7 @@ export default function AdminDashboard() {
                   {profile.threads_profile_picture_url ? (
                     <img src={profile.threads_profile_picture_url} alt={profile.username} className="h-12 w-12 border border-[#1c1c1c] object-cover" />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#FFD300]">
+                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#FFFF01]">
                       {profile.name?.charAt(0) || "?"}
                     </div>
                   )}
@@ -336,13 +447,144 @@ export default function AdminDashboard() {
             ].map((stat) => (
               <div key={stat.key} className="card p-5">
                 <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">{stat.label}</div>
-                <div className="mt-2 text-3xl tracking-[2px] text-[#FFD300]">
+                <div className="mt-2 text-3xl tracking-[2px] text-[#FFFF01]">
                   {getInsightValue(stat.key).toLocaleString()}
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* Instagram Integration */}
+        <div className="card p-5">
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550] mb-3">Instagram интеграц</div>
+          {igStatus?.hasToken ? (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-2 w-2 rounded-full bg-green-400" />
+                <span className="text-[13px] font-semibold text-[#e8e6e1]">
+                  Холбогдсон {igStatus.username ? `(@${igStatus.username})` : ""}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#5a5550] mb-3">
+                Token: {igStatus.tokenPreview || "***"}
+              </p>
+              <div className="flex gap-2">
+                <button onClick={handleIgRefresh} className="btn-ghost text-[11px] px-3 py-1.5">
+                  Token шинэчлэх
+                </button>
+                <button onClick={handleIgDelete} className="btn-ghost text-[11px] px-3 py-1.5 text-red-400 border-red-900/30 hover:border-red-500/50">
+                  Устгах
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-[12px] text-[#5a5550] mb-2 leading-relaxed">
+                Instagram Graph API token оруулна уу. Reels болон постууд нүүр хуудсанд харагдана.
+              </p>
+              <p className="text-[11px] text-[#3a3835] mb-3">
+                Meta Developer → App → Instagram Basic Display → Generate Token
+              </p>
+              <input
+                value={igToken}
+                onChange={(e) => setIgToken(e.target.value)}
+                placeholder="IGQVJ..."
+                className="input-dark mb-3"
+                type="password"
+              />
+              <button onClick={handleIgSave} disabled={!igToken.trim() || igSaving} className="btn-blood">
+                {igSaving ? "Холбож байна..." : "Холбох"}
+              </button>
+            </div>
+          )}
+          {igMsg && (
+            <p className={`mt-3 text-[11px] ${igMsg.startsWith("Алдаа") ? "text-red-400" : "text-green-400"}`}>
+              {igMsg}
+            </p>
+          )}
+        </div>
+
+        {/* Announcements Management */}
+        <div className="card mt-4 p-5">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01] mb-4">МЭДЭГДЭЛ УДИРДЛАГА</div>
+
+          {/* Form */}
+          <div className="space-y-3 mb-4">
+            <input
+              value={annForm.title}
+              onChange={(e) => setAnnForm(f => ({...f, title: e.target.value}))}
+              placeholder="Гарчиг"
+              className="input-dark"
+              maxLength={200}
+            />
+            <textarea
+              value={annForm.content}
+              onChange={(e) => setAnnForm(f => ({...f, content: e.target.value}))}
+              placeholder="Агуулга..."
+              className="input-dark min-h-[80px] resize-y"
+              maxLength={5000}
+            />
+            <input
+              value={annForm.image}
+              onChange={(e) => setAnnForm(f => ({...f, image: e.target.value}))}
+              placeholder="Зургийн URL (заавал биш)"
+              className="input-dark"
+            />
+            <div className="flex items-center gap-3">
+              <select
+                value={annForm.tag}
+                onChange={(e) => setAnnForm(f => ({...f, tag: e.target.value}))}
+                className="input-dark w-auto"
+              >
+                {["мэдэгдэл","шинэчлэл","AI","эвент","бусад"].map(t => (
+                  <option key={t} value={t}>{t.toUpperCase()}</option>
+                ))}
+              </select>
+              <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={annForm.pinned}
+                  onChange={(e) => setAnnForm(f => ({...f, pinned: e.target.checked}))}
+                  className="accent-[#FFFF01]"
+                />
+                Pinned
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={handleAnnSave} disabled={!annForm.title.trim() || !annForm.content.trim() || annSaving} className="btn-blood">
+                {annSaving ? "Хадгалж байна..." : annEditing ? "Шинэчлэх" : "Нэмэх"}
+              </button>
+              {annEditing && (
+                <button onClick={() => { setAnnEditing(null); setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false}); }} className="btn-ghost text-[11px] px-3 py-1.5">
+                  Болих
+                </button>
+              )}
+              {annMsg && <span className={`text-[11px] ${annMsg.startsWith("Алдаа") ? "text-red-400" : "text-green-400"}`}>{annMsg}</span>}
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="space-y-2">
+            {announcements.map(a => (
+              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {a.pinned && <span className="text-[9px] font-bold text-[#FFFF01]">PIN</span>}
+                    <span className="text-[9px] font-bold text-[#5a5550] uppercase">{a.tag}</span>
+                  </div>
+                  <div className="text-[13px] font-bold text-[#e8e6e1] truncate">{a.title}</div>
+                  <div className="text-[11px] text-[#5a5550] line-clamp-1">{a.content}</div>
+                </div>
+                <div className="flex shrink-0 gap-1.5">
+                  <button onClick={() => startAnnEdit(a)} className="text-[10px] text-[#FFFF01] hover:underline">Засах</button>
+                  <button onClick={() => handleAnnDelete(a._id)} className="text-[10px] text-red-400 hover:underline">Устгах</button>
+                </div>
+              </div>
+            ))}
+            {announcements.length === 0 && <p className="text-[11px] text-[#5a5550]">Мэдэгдэл байхгүй</p>}
+          </div>
+        </div>
 
         {threadsConnected && (
           <div className="card mt-4 p-5">

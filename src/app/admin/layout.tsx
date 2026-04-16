@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="mb-4 h-8 w-8 animate-spin border-2 border-[#FFD300] border-t-transparent mx-auto" />
+          <div className="mb-4 h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent mx-auto" />
           <p className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
             Хандалт шалгаж байна
           </p>
@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="card max-w-md p-10 text-center">
-          <div className="mb-6 text-4xl tracking-[6px] text-[#FFD300]">
+          <div className="mb-6 text-4xl tracking-[6px] text-[#FFFF01]">
             ХАНДАЛТ ХОРИГЛОГДСОН
           </div>
           <p className="mb-6 text-[12px] leading-relaxed text-[#5a5550]">
@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-[60vh] gap-0 -mx-6 -my-8 md:-mx-10">
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center bg-[#FFD300] md:hidden"
+        className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center bg-[#FFFF01] md:hidden"
         aria-label="Админ цэс"
       >
         <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       >
         <div className="flex h-full flex-col">
           <div className="border-b border-[#1c1c1c] px-5 py-6">
-            <div className="text-[9px] uppercase tracking-[1px] text-[#FFD300]">
+            <div className="text-[9px] uppercase tracking-[1px] text-[#FFFF01]">
               Удирдлагын төв
             </div>
             <div className="mt-1 text-xl tracking-[1px]">
@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   href={item.href}
                   className={`mb-1 flex items-center gap-3 px-3 py-3 text-[11px] uppercase tracking-[2px] transition-all ${
                     active
-                      ? "bg-[rgba(0,100,145,0.1)] text-[#FFD300] border-l-2 border-[#FFD300]"
+                      ? "bg-[rgba(0,100,145,0.1)] text-[#FFFF01] border-l-2 border-[#FFFF01]"
                       : "text-[#5a5550] hover:bg-[rgba(240,236,227,0.03)] hover:text-[#c8c8c0]"
                   }`}
                 >

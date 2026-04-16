@@ -66,8 +66,8 @@ export default function SignIn() {
           {error && (
             <div className={`mb-6 border-l-2 px-4 py-3 text-[12px] ${
               cooldown > 0
-                ? "border-[#FFD300] bg-[rgba(0,100,145,0.12)] text-[#FFD300]"
-                : "border-[#FFD300] bg-[rgba(0,100,145,0.08)] text-[#FFD300]"
+                ? "border-[#FFFF01] bg-[rgba(0,100,145,0.12)] text-[#FFFF01]"
+                : "border-[#FFFF01] bg-[rgba(0,100,145,0.08)] text-[#FFFF01]"
             }`}>
               <div>{error}</div>
               {cooldown > 0 && (
@@ -100,7 +100,7 @@ export default function SignIn() {
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-[10px] text-[#FFD300] hover:text-[#B3B300] transition"
+                  className="text-[10px] text-[#FFFF01] hover:text-[#B3B300] transition"
                 >
                   Мартсан уу?
                 </Link>
@@ -126,7 +126,7 @@ export default function SignIn() {
 
           <p className="mt-8 text-center text-[11px] text-[#5a5550]">
             Бүртгэлгүй юу?{" "}
-            <Link href="/auth/signup" className="text-[#FFD300] hover:text-[#B3B300]">
+            <Link href="/auth/signup" className="text-[#FFFF01] hover:text-[#B3B300]">
               Кланд нэгдэх
             </Link>
           </p>

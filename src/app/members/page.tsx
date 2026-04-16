@@ -74,7 +74,7 @@ export default function MembersPage() {
               <h1 className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#e8e6e1] sm:text-[36px]">Гишүүд</h1>
             </div>
             <div className="flex items-center gap-1.5 pb-1">
-              <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFD300]" />
+              <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFFF01]" />
               <span className="text-[22px] font-bold tabular-nums text-[#e8e6e1]">—</span>
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function MembersPage() {
               <h1 className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#e8e6e1] sm:text-[36px]">Гишүүд</h1>
             </div>
             <div className="flex items-center gap-1.5 pb-1">
-              <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFD300]" />
+              <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFFF01]" />
               <span className="text-[22px] font-bold tabular-nums text-[#e8e6e1] sm:text-[28px]">{totalMembers}</span>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function MembersPage() {
         {/* CTA */}
         <div className="mx-5 rounded-[4px] border border-[#1a1a22] bg-[#0c0c10] p-6 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#1a1a22]">
-            <svg className="h-7 w-7 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-7 w-7 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
@@ -115,16 +115,16 @@ export default function MembersPage() {
             Community-д нэгдээрэй
           </h2>
           <p className="mx-auto mt-2 max-w-sm text-[13px] leading-relaxed text-[#6b6b78]">
-            Кланд нэгдэж <span className="font-semibold text-[#FFD300]">{totalMembers}</span> гишүүдтэй танилцаарай.
+            Кланд нэгдэж <span className="font-semibold text-[#FFFF01]">{totalMembers}</span> гишүүдтэй танилцаарай.
             Бие биенээсээ суралцаж, хамтдаа бүтээж, мессеж бичиж харилцаарай.
           </p>
           {isLoggedIn ? (
-            <Link href="/clan" className="mt-5 inline-flex items-center gap-2 rounded-[4px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
+            <Link href="/clan" className="mt-5 inline-flex items-center gap-2 rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6e600]">
               Клан нэгдэх
             </Link>
           ) : (
             <div className="mt-5 flex items-center justify-center gap-3">
-              <Link href="/auth/signup" className="rounded-[4px] bg-[#FFD300] px-5 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00]">
+              <Link href="/auth/signup" className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6e600]">
                 Бүртгүүлэх
               </Link>
               <Link href="/auth/signin" className="rounded-[4px] border border-[#1a1a22] px-5 py-2.5 text-[13px] font-medium text-[#6b6b78] transition hover:text-[#e8e6e1]">
@@ -171,7 +171,7 @@ export default function MembersPage() {
             <h1 className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#e8e6e1] sm:text-[36px]">Гишүүд</h1>
           </div>
           <div className="flex items-center gap-2 pb-1">
-            <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFD300]" />
+            <div className="h-1.5 w-1.5 rounded-[4px] bg-[#FFFF01]" />
             <span className="text-[22px] font-bold tabular-nums text-[#e8e6e1] sm:text-[28px]">{totalMembers}</span>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function MembersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Гишүүн хайх..."
-              className="w-full rounded-[4px] bg-[#0c0c10] border border-[#1a1a22] py-2 pl-9 pr-3 text-[13px] text-[#e8e6e1] placeholder-[#3a3a48] outline-none transition focus:border-[#FFD300]/50"
+              className="w-full rounded-[4px] bg-[#0c0c10] border border-[#1a1a22] py-2 pl-9 pr-3 text-[13px] text-[#e8e6e1] placeholder-[#3a3a48] outline-none transition focus:border-[#FFFF01]/50"
             />
             {search && (
               <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#3a3a48] transition hover:text-[#e8e6e1]">
@@ -285,20 +285,20 @@ function MemberRow({ member, index }: { member: Member; index: number }) {
             src={member.avatar}
             alt={member.name}
             className={`h-11 w-11 rounded-[4px] object-cover sm:h-12 sm:w-12 ${
-              admin ? "ring-2 ring-[#FFD300] ring-offset-1 ring-offset-[#060608]" : ""
+              admin ? "ring-2 ring-[#FFFF01] ring-offset-1 ring-offset-[#060608]" : ""
             }`}
           />
         ) : (
           <div
             className={`flex h-11 w-11 items-center justify-center rounded-[4px] text-[12px] font-bold sm:h-12 sm:w-12 ${
-              admin ? "bg-[#FFD300] text-black" : "bg-[#1a1a22] text-[#6b6b78]"
+              admin ? "bg-[#FFFF01] text-black" : "bg-[#1a1a22] text-[#6b6b78]"
             }`}
           >
             {initials}
           </div>
         )}
         {admin && (
-          <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-[4px] bg-[#FFD300]">
+          <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-[4px] bg-[#FFFF01]">
             <svg className="h-2.5 w-2.5 text-black" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
@@ -309,17 +309,17 @@ function MemberRow({ member, index }: { member: Member; index: number }) {
       {/* Info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className={`truncate text-[14px] font-semibold transition group-hover:text-[#FFD300] ${admin ? "text-[#FFD300]" : "text-[#e8e6e1]"}`}>
+          <p className={`truncate text-[14px] font-semibold transition group-hover:text-[#FFFF01] ${admin ? "text-[#FFFF01]" : "text-[#e8e6e1]"}`}>
             {member.name}
           </p>
           {admin && (
-            <span className="shrink-0 rounded-[4px] bg-[rgba(255,211,0,0.08)] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#FFD300]">
+            <span className="shrink-0 rounded-[4px] bg-[rgba(255,255,1,0.08)] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#FFFF01]">
               Үндэслэгч
             </span>
           )}
         </div>
         <div className="mt-0.5 flex items-center gap-2">
-          <span className="shrink-0 text-[10px] font-bold text-[#FFD300]">LV.{level}</span>
+          <span className="shrink-0 text-[10px] font-bold text-[#FFFF01]">LV.{level}</span>
           <span className="text-[10px] text-[#3a3a48]">{title.titleMN}</span>
           {member.bio && (
             <>
@@ -340,7 +340,7 @@ function MemberRow({ member, index }: { member: Member; index: number }) {
         {!isMe && (
           <button
             onClick={startChat}
-            className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#1a1a22] text-[#3a3a48] transition hover:border-[#FFD300]/30 hover:text-[#FFD300]"
+            className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#1a1a22] text-[#3a3a48] transition hover:border-[#FFFF01]/30 hover:text-[#FFFF01]"
             title="Мессеж"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

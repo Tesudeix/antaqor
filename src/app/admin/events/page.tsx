@@ -153,7 +153,7 @@ export default function AdminEventsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-6 w-6 animate-spin border-2 border-[#FFD300] border-t-transparent" />
+        <div className="h-6 w-6 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
       </div>
     );
   }
@@ -168,14 +168,14 @@ export default function AdminEventsPage() {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
-          className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00]"
+          className="rounded-[4px] bg-[#FFFF01] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6e600]"
         >
           {showForm ? "Цуцлах" : "+ Шинэ эвент"}
         </button>
       </div>
 
       {flash && (
-        <div className="mb-4 border-l-2 border-[#FFD300] bg-[rgba(255,211,0,0.05)] px-4 py-3 text-[12px] text-[#FFD300]">
+        <div className="mb-4 border-l-2 border-[#FFFF01] bg-[rgba(255,255,1,0.05)] px-4 py-3 text-[12px] text-[#FFFF01]">
           {flash}
         </div>
       )}
@@ -278,7 +278,7 @@ export default function AdminEventsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-[4px] bg-[#FFD300] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50"
+                className="rounded-[4px] bg-[#FFFF01] px-5 py-2 text-[12px] font-semibold text-black transition hover:bg-[#e6e600] disabled:opacity-50"
               >
                 {saving ? "..." : editingId ? "Хадгалах" : "Үүсгэх"}
               </button>
@@ -318,7 +318,7 @@ export default function AdminEventsPage() {
                       {ev.location && <span>· {ev.location}</span>}
                       <span>· {ev.attendees.length} оролцогч</span>
                       {ev.liveLink && (
-                        <a href={ev.liveLink} target="_blank" rel="noopener noreferrer" className="text-[#FFD300] hover:text-[#e6be00]">
+                        <a href={ev.liveLink} target="_blank" rel="noopener noreferrer" className="text-[#FFFF01] hover:text-[#e6e600]">
                           Live линк →
                         </a>
                       )}

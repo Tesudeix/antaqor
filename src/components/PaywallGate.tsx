@@ -20,7 +20,7 @@ export default function PaywallGate({ children }: { children: React.ReactNode })
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#FFD300]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FFFF01]" />
       </div>
     );
   }
@@ -28,7 +28,7 @@ export default function PaywallGate({ children }: { children: React.ReactNode })
   if (!isLoggedIn || !isMember) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#FFD300]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FFFF01]" />
       </div>
     );
   }
