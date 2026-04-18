@@ -20,7 +20,7 @@ router.get('/stats', requireAdmin, async (req, res) => {
       totalProducts,
       totalOrders,
       pendingOrders,
-      revenue: revenue[0]?.total || 0,
+      totalRevenue: revenue[0]?.total || 0,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

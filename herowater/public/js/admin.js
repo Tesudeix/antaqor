@@ -122,6 +122,8 @@ async function editProduct(id) {
     document.getElementById('pf_stock').value = p.stock;
     document.getElementById('pf_description').value = p.description || '';
     document.getElementById('pf_image').value = p.images?.[0] || '';
+    setImagePreview(p.images?.[0] || '');
+    document.getElementById('pf_imageStatus').textContent = '';
     document.getElementById('pf_featured').checked = p.featured;
     document.getElementById('productModalTitle').textContent = 'Бүтээгдэхүүн засах';
     document.getElementById('productModal').classList.add('open');
@@ -139,12 +141,63 @@ async function deleteProduct(id) {
 function openProductModal() {
   document.getElementById('productForm').reset();
   document.getElementById('pf_id').value = '';
+  document.getElementById('pf_image').value = '';
+  document.getElementById('pf_imagePreview').innerHTML = '';
+  document.getElementById('pf_imageStatus').textContent = '';
   document.getElementById('productModalTitle').textContent = 'Бүтээгдэхүүн нэмэх';
   document.getElementById('productModal').classList.add('open');
 }
 
 function closeProductModal() {
   document.getElementById('productModal').classList.remove('open');
+}
+
+function setImagePreview(url) {
+  const preview = document.getElementById('pf_imagePreview');
+  if (url) {
+    preview.innerHTML = `<div style="position:relative;width:80px;height:80px;border-radius:var(--radius-xs);overflow:hidden;border:1px solid var(--border-light);background:var(--surface);display:flex;align-items:center;justify-content:center;">
+      <img src="${url}" style="width:100%;height:100%;object-fit:contain;">
+      <button onclick="clearProductImage()" type="button" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;">&times;</button>
+    </div>`;
+  } else {
+    preview.innerHTML = '';
+  }
+}
+
+function clearProductImage() {
+  document.getElementById('pf_image').value = '';
+  document.getElementById('pf_imagePreview').innerHTML = '';
+  document.getElementById('pf_imageStatus').textContent = '';
+}
+
+async function uploadProductImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('pf_imageStatus');
+  status.textContent = 'Илгээж байна...';
+  status.style.color = 'var(--accent)';
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const res = await fetch('/api/upload/image', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    document.getElementById('pf_image').value = data.url;
+    setImagePreview(data.url);
+    status.textContent = 'Амжилттай!';
+    status.style.color = 'var(--success)';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  } catch (err) {
+    status.textContent = err.message;
+    status.style.color = 'var(--danger)';
+  }
+  input.value = '';
 }
 
 // Close modal on overlay click

@@ -26,6 +26,34 @@ const videoUpload = multer({
   }
 });
 
+// Image upload via multer
+const imageStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+    cb(null, `img_${Date.now()}${ext}`);
+  }
+});
+const imageUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error('Only png, jpg, jpeg, gif, webp allowed'));
+  }
+});
+
+// POST /api/upload/image — multipart file upload
+router.post('/image', requireAdmin, (req, res) => {
+  imageUpload.single('image')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: 'No image file' });
+    res.json({ url: '/uploads/' + req.file.filename });
+  });
+});
+
 // POST /api/upload — base64 image
 router.post('/', requireAdmin, (req, res) => {
   try {

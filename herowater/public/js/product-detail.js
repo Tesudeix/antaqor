@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetch(`/api/products/${slug}`)
     .then(r => r.json())
-    .then(p => {
+    .then(data => {
+      const p = data.product || data;
       if (!p || p.error) { location.href = '/products.html'; return; }
       product = p;
       document.title = `${p.name} — Herowater`;
