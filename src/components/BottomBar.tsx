@@ -29,6 +29,12 @@ export default function BottomBar() {
     return () => clearInterval(interval);
   }, [session]);
 
+  const servicesIcon = (
+    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+    </svg>
+  );
+
   const links = session
     ? [
         {
@@ -42,14 +48,10 @@ export default function BottomBar() {
           ),
         },
         {
-          href: "/members",
-          label: "Гишүүд",
+          href: "/services",
+          label: "Үйлчилгээ",
           badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          ),
+          icon: servicesIcon,
         },
         {
           href: "/chat",
@@ -62,12 +64,12 @@ export default function BottomBar() {
           ),
         },
         {
-          href: "/classroom",
-          label: "Хичээл",
+          href: "/announcements",
+          label: "Мэдэгдэл",
           badge: 0,
           icon: (
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
           ),
         },
@@ -75,7 +77,9 @@ export default function BottomBar() {
           href: `/profile/${(session?.user as { id?: string })?.id || ""}`,
           label: "Профайл",
           badge: 0,
-          icon: (
+          icon: session?.user?.image ? (
+            <img src={session.user.image} alt={session.user?.name || ""} className="h-5 w-5 rounded-full object-cover" />
+          ) : (
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -94,22 +98,18 @@ export default function BottomBar() {
           ),
         },
         {
-          href: "/members",
-          label: "Гишүүд",
+          href: "/services",
+          label: "Үйлчилгээ",
           badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          ),
+          icon: servicesIcon,
         },
         {
-          href: "/classroom",
-          label: "Хичээл",
+          href: "/announcements",
+          label: "Мэдэгдэл",
           badge: 0,
           icon: (
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
           ),
         },
@@ -126,27 +126,30 @@ export default function BottomBar() {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-[#FFFF01] bg-[rgba(10,10,10,0.97)] backdrop-blur-xl md:hidden">
-      <div className="flex items-center justify-around px-2 py-2.5">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.06)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
+      <div className="flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1">
         {links.map((link) => {
           const active = isActive(link.href);
           return (
             <Link
               key={link.label}
               href={link.href}
-              className={`relative flex flex-col items-center gap-1 px-3 py-1 transition ${
-                active ? "text-[#FFFF01]" : "text-[rgba(255,255,255,0.3)]"
+              className={`relative flex flex-col items-center gap-0.5 px-2 py-2 transition-colors duration-200 ${
+                active ? "text-[#FFFF01]" : "text-[#6B6B6B]"
               }`}
             >
               <div className="relative">
                 {link.icon}
                 {link.badge > 0 && (
-                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FFFF01] px-1 text-[8px] font-bold text-black">
+                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FFFF01] px-1 text-[8px] font-bold text-[#0A0A0A]">
                     {link.badge > 99 ? "99+" : link.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[9px] font-bold tracking-wide">{link.label}</span>
+              <span className="text-[9px] font-semibold tracking-wide">{link.label}</span>
+              {active && (
+                <div className="absolute -top-px left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#FFFF01]" />
+              )}
             </Link>
           );
         })}

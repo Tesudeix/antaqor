@@ -58,7 +58,7 @@ interface Post {
 
 export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -149,6 +149,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       const updateData = await updateRes.json();
       if (updateRes.ok) {
         setUser(updateData.user);
+        updateSession();
       }
     } finally {
       setUploading(false);

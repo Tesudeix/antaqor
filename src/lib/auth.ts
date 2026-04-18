@@ -46,15 +46,32 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
+        token.avatar = user.image || "";
+      }
+      // Refresh avatar from DB on session update or every 5 minutes
+      const now = Date.now();
+      const lastRefresh = (token.avatarRefreshedAt as number) || 0;
+      if (trigger === "update" || now - lastRefresh > 5 * 60 * 1000) {
+        try {
+          await dbConnect();
+          const dbUser = await User.findById(token.id).select("avatar").lean();
+          if (dbUser) {
+            token.avatar = (dbUser as { avatar?: string }).avatar || "";
+          }
+          token.avatarRefreshedAt = now;
+        } catch {
+          // ignore DB errors in JWT callback
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.id) {
         (session.user as { id: string }).id = token.id as string;
+        (session.user as { image?: string | null }).image = (token.avatar as string) || null;
       }
       return session;
     },
