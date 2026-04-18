@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Бүтээгдэхүүн — Herowater</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <nav class="nav scrolled" id="nav">
+  <nav class="nav" id="nav">
     <a href="/" class="nav-logo">HEROWATER</a>
     <div class="nav-links">
       <a href="/products.html">Бүтээгдэхүүн</a>
@@ -22,34 +23,120 @@
     </div>
   </nav>
 
-  <div style="height: 80px;"></div>
+  <div style="height: 64px;"></div>
 
-  <section class="section" id="productDetail" style="display:none;">
-    <a href="/products.html" style="font-size:13px;color:var(--text-muted);display:inline-block;margin-bottom:40px;">← Бүтээгдэхүүн</a>
+  <!-- Breadcrumb -->
+  <div style="max-width:1200px;margin:0 auto;padding:20px 40px;">
+    <nav style="font-size:13px;color:var(--text-muted);">
+      <a href="/" style="color:var(--text-muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">Нүүр</a>
+      <span style="margin:0 8px;">/</span>
+      <a href="/products.html" style="color:var(--text-muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">Бүтээгдэхүүн</a>
+      <span style="margin:0 8px;">/</span>
+      <span id="breadcrumbName" style="color:var(--text);">...</span>
+    </nav>
+  </div>
+
+  <section class="section" id="productDetail" style="display:none;padding-top:24px;">
     <div class="product-detail">
-      <div class="product-detail-img" id="productImg"></div>
+      <!-- Left: Gallery -->
+      <div class="product-detail-gallery">
+        <div class="product-detail-img" id="productImg"></div>
+        <div class="product-detail-thumbs" id="productThumbs"></div>
+      </div>
+
+      <!-- Right: Info -->
       <div class="product-detail-info">
-        <p class="section-label" id="productCategory"></p>
-        <h1 class="section-title" id="productName"></h1>
+        <div class="product-badge" id="productCategory"></div>
+        <h1 class="product-detail-name" id="productName"></h1>
         <p class="product-detail-desc" id="productDesc"></p>
         <div class="product-detail-volume" id="productVolume"></div>
         <div class="product-detail-price" id="productPrice"></div>
-        <div class="product-detail-actions">
+
+        <!-- Stock indicator -->
+        <div class="product-detail-stock" id="productStock">
+          <span class="stock-dot"></span>
+          <span></span>
+        </div>
+
+        <!-- Add to cart -->
+        <div class="product-detail-actions" style="margin-top:24px;">
           <div class="qty-control">
-            <button class="qty-btn" id="qtyMinus">−</button>
+            <button class="qty-btn" id="qtyMinus">-</button>
             <span class="qty-num" id="qtyNum">1</span>
             <button class="qty-btn" id="qtyPlus">+</button>
           </div>
-          <button class="btn btn-primary" id="addToCartBtn">Сагсанд нэмэх</button>
+          <button class="btn btn-primary" id="addToCartBtn" style="flex:1;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            Сагсанд нэмэх
+          </button>
         </div>
-        <div class="product-detail-stock" id="productStock"></div>
+
+        <!-- Trust badges -->
+        <div class="trust-badges">
+          <div class="trust-badge-item">
+            <svg class="trust-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Баталгаат чанар
+          </div>
+          <div class="trust-badge-item">
+            <svg class="trust-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+            50,000₮+ үнэгүй хүргэлт
+          </div>
+          <div class="trust-badge-item">
+            <svg class="trust-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Буцаалт боломжтой
+          </div>
+        </div>
+
+        <!-- Product meta -->
+        <div class="product-detail-meta" id="productMeta">
+          <div class="product-meta-row">
+            <span>Ангилал</span>
+            <span id="metaCategory"></span>
+          </div>
+          <div class="product-meta-row">
+            <span>Хэмжээ</span>
+            <span id="metaVolume"></span>
+          </div>
+          <div class="product-meta-row">
+            <span>Багцын тоо</span>
+            <span id="metaPack"></span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <div id="loading" style="text-align:center;padding:200px 20px;color:var(--text-muted);">Уншиж байна...</div>
+  <!-- Related products -->
+  <section class="section fade-in" id="relatedSection" style="display:none;padding-top:0;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:24px;">Төстэй бүтээгдэхүүн</h2>
+    <div class="products-grid" id="relatedGrid"></div>
+  </section>
+
+  <div id="loading" style="text-align:center;padding:200px 20px;color:var(--text-muted);">
+    <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+    Уншиж байна...
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+  </div>
 
   <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Herowater</h4>
+        <a href="/products.html">Бүтээгдэхүүн</a>
+        <a href="/about.html">Бидний тухай</a>
+        <a href="/contact.html">Холбоо барих</a>
+      </div>
+      <div class="footer-col">
+        <h4>Худалдан авалт</h4>
+        <a href="/cart.html">Сагс</a>
+        <p>50,000₮+ үнэгүй хүргэлт</p>
+      </div>
+      <div class="footer-col">
+        <h4>Холбоо барих</h4>
+        <p>+976 9999 0000</p>
+        <p>info@herowater.mn</p>
+      </div>
+    </div>
     <div class="footer-bottom">© 2026 Herowater. Бүх эрх хуулиар хамгаалагдсан.</div>
   </footer>
 

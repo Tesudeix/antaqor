@@ -4,30 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Нэвтрэх — Herowater Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-  <nav class="nav scrolled" id="nav">
-    <a href="/" class="nav-logo">HEROWATER</a>
-  </nav>
-
-  <div style="height:80px;"></div>
-
-  <section class="section" style="max-width:400px;">
-    <h1 class="section-title" style="text-align:center;">Нэвтрэх</h1>
-    <form id="loginForm" style="margin-top:40px;">
-      <div class="form-group">
-        <label class="form-label">Имэйл</label>
-        <input type="email" id="loginEmail" required placeholder="admin@herowater.mn">
+<body style="background:var(--surface);display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div style="width:100%;max-width:400px;padding:20px;">
+    <div style="background:#fff;border-radius:var(--radius);padding:40px;box-shadow:var(--shadow-md);border:1px solid var(--border-light);">
+      <div style="text-align:center;margin-bottom:32px;">
+        <a href="/" style="font-size:20px;font-weight:800;letter-spacing:2px;color:var(--accent);">HEROWATER</a>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Админ нэвтрэх</p>
       </div>
-      <div class="form-group">
-        <label class="form-label">Нууц үг</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••">
-      </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;" id="loginBtn">Нэвтрэх</button>
-      <div id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;"></div>
-    </form>
-  </section>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Имэйл</label>
+          <input type="email" id="loginEmail" required placeholder="admin@herowater.mn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Нууц үг</label>
+          <input type="password" id="loginPassword" required placeholder="Нууц үг">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:14px;" id="loginBtn">Нэвтрэх</button>
+        <div id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;text-align:center;"></div>
+      </form>
+    </div>
+  </div>
 
   <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -37,7 +37,6 @@
       errorEl.style.display = 'none';
       btn.disabled = true;
       btn.textContent = 'Нэвтэрч байна...';
-
       try {
         const res = await fetch('/api/auth/login', {
           method: 'POST',

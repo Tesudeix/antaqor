@@ -34,10 +34,34 @@ async function loadDashboard() {
     const res = await fetch('/api/admin/stats', { headers });
     const stats = await res.json();
     document.getElementById('statsGrid').innerHTML = `
-      <div class="admin-card"><h3>Бүтээгдэхүүн</h3><div class="big-num">${stats.totalProducts || 0}</div></div>
-      <div class="admin-card"><h3>Захиалга</h3><div class="big-num">${stats.totalOrders || 0}</div></div>
-      <div class="admin-card"><h3>Орлого</h3><div class="big-num">${formatPrice(stats.totalRevenue || 0)}</div></div>
-      <div class="admin-card"><h3>Хүлээгдэж буй</h3><div class="big-num">${stats.pendingOrders || 0}</div></div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Бүтээгдэхүүн</span>
+          <div class="stat-card-icon blue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>
+        </div>
+        <div class="big-num">${stats.totalProducts || 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Нийт захиалга</span>
+          <div class="stat-card-icon purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+        </div>
+        <div class="big-num">${stats.totalOrders || 0}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Нийт орлого</span>
+          <div class="stat-card-icon green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        </div>
+        <div class="big-num">${formatPrice(stats.totalRevenue || 0)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Хүлээгдэж буй</span>
+          <div class="stat-card-icon orange"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        </div>
+        <div class="big-num">${stats.pendingOrders || 0}</div>
+      </div>
     `;
 
     const ordersRes = await fetch('/api/admin/orders?limit=5', { headers });
@@ -53,18 +77,27 @@ async function loadProducts() {
     const data = await res.json();
     const products = data.products || data || [];
     const el = document.getElementById('productsTable');
-    if (!products.length) { el.innerHTML = '<p style="color:var(--text-muted)">Бүтээгдэхүүн байхгүй</p>'; return; }
+    if (!products.length) {
+      el.innerHTML = '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><p>Бүтээгдэхүүн нэмнэ үү</p></div>';
+      return;
+    }
     el.innerHTML = `<table class="admin-table">
-      <thead><tr><th>Нэр</th><th>Ангилал</th><th>Үнэ</th><th>Нөөц</th><th></th></tr></thead>
+      <thead><tr><th>Бүтээгдэхүүн</th><th>Ангилал</th><th>Үнэ</th><th>Нөөц</th><th>Онцлох</th><th style="width:120px;"></th></tr></thead>
       <tbody>${products.map(p => `
         <tr>
-          <td>${p.name}</td>
-          <td>${p.category}</td>
-          <td>${formatPrice(p.price)}</td>
-          <td>${p.stock}</td>
+          <td style="font-weight:600;">${p.name}</td>
+          <td><span style="padding:3px 10px;border-radius:100px;font-size:12px;font-weight:500;background:var(--surface);color:var(--text-secondary);">${p.category}</span></td>
+          <td style="font-weight:600;">${formatPrice(p.price)}</td>
+          <td>${p.stock > 10
+            ? `<span style="color:var(--success);">${p.stock}</span>`
+            : p.stock > 0
+              ? `<span style="color:var(--warning);">${p.stock}</span>`
+              : `<span style="color:var(--danger);">0</span>`
+          }</td>
+          <td>${p.featured ? '<span style="color:var(--accent);">&#9733;</span>' : '<span style="color:var(--border);">&#9734;</span>'}</td>
           <td>
-            <button onclick="editProduct('${p._id}')" style="color:var(--accent);font-size:13px;padding:4px 8px;">Засах</button>
-            <button onclick="deleteProduct('${p._id}')" style="color:var(--danger);font-size:13px;padding:4px 8px;">Устгах</button>
+            <button onclick="editProduct('${p._id}')" class="table-action edit">Засах</button>
+            <button onclick="deleteProduct('${p._id}')" class="table-action delete">Устгах</button>
           </td>
         </tr>
       `).join('')}</tbody>
@@ -96,7 +129,7 @@ async function editProduct(id) {
 }
 
 async function deleteProduct(id) {
-  if (!confirm('Устгах уу?')) return;
+  if (!confirm('Энэ бүтээгдэхүүнийг устгах уу?')) return;
   try {
     await fetch(`/api/admin/products/${id}`, { method: 'DELETE', headers });
     loadProducts();
@@ -113,6 +146,11 @@ function openProductModal() {
 function closeProductModal() {
   document.getElementById('productModal').classList.remove('open');
 }
+
+// Close modal on overlay click
+document.getElementById('productModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('productModal')) closeProductModal();
+});
 
 document.getElementById('productForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -136,6 +174,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     if (!res.ok) { const d = await res.json(); alert(d.error || 'Алдаа'); return; }
     closeProductModal();
     loadProducts();
+    loadDashboard();
   } catch { alert('Алдаа гарлаа'); }
 });
 
@@ -148,20 +187,33 @@ async function loadOrders() {
   } catch {}
 }
 
+const statusLabels = {
+  pending: 'Хүлээгдэж буй',
+  confirmed: 'Баталгаажсан',
+  processing: 'Бэлтгэж буй',
+  delivering: 'Хүргэж буй',
+  delivered: 'Хүргэгдсэн',
+  cancelled: 'Цуцлагдсан'
+};
+
 function renderOrdersTable(orders, el, showActions = false) {
-  if (!orders.length) { el.innerHTML = '<p style="color:var(--text-muted)">Захиалга байхгүй</p>'; return; }
+  if (!orders.length) {
+    el.innerHTML = '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>Захиалга байхгүй</p></div>';
+    return;
+  }
   el.innerHTML = `<table class="admin-table">
-    <thead><tr><th>Дугаар</th><th>Нэр</th><th>Дүн</th><th>Төлөв</th>${showActions ? '<th></th>' : ''}</tr></thead>
+    <thead><tr><th>Дугаар</th><th>Захиалагч</th><th>Утас</th><th>Дүн</th><th>Төлөв</th>${showActions ? '<th>Өөрчлөх</th>' : ''}</tr></thead>
     <tbody>${orders.map(o => `
       <tr>
-        <td style="font-weight:600;">${o.orderNumber}</td>
+        <td style="font-weight:600;font-family:monospace;">${o.orderNumber}</td>
         <td>${o.customer?.name || '-'}</td>
-        <td>${formatPrice(o.total)}</td>
-        <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+        <td style="color:var(--text-secondary);">${o.customer?.phone || '-'}</td>
+        <td style="font-weight:600;">${formatPrice(o.total)}</td>
+        <td><span class="status-badge status-${o.status}">${statusLabels[o.status] || o.status}</span></td>
         ${showActions ? `<td>
-          <select onchange="updateOrderStatus('${o._id}', this.value)" style="padding:6px 10px;font-size:12px;">
-            ${['pending','confirmed','processing','delivering','delivered','cancelled'].map(s =>
-              `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`
+          <select class="status-select" onchange="updateOrderStatus('${o._id}', this.value)">
+            ${Object.entries(statusLabels).map(([k, v]) =>
+              `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v}</option>`
             ).join('')}
           </select>
         </td>` : ''}

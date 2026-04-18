@@ -62,11 +62,11 @@ function formatPrice(n) {
   return n.toLocaleString() + '₮';
 }
 
-// ─── Nav scroll ───
+// ─── Nav scroll shadow ───
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('nav');
   if (nav) {
-    nav.classList.toggle('scrolled', window.scrollY > 50);
+    nav.classList.toggle('scrolled', window.scrollY > 10);
   }
 });
 
