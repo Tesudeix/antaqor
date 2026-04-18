@@ -18,22 +18,24 @@ function ResetPasswordForm() {
     setReady(true);
   }, []);
 
-  // Wait for client hydration before checking token
   if (!ready) {
     return (
       <div className="flex justify-center py-8">
-        <div className="h-3 w-3 animate-pulse bg-[#FFFF01]" />
+        <div className="h-3 w-3 animate-pulse rounded-full bg-[#FFFF01]" />
       </div>
     );
   }
 
   if (!token) {
     return (
-      <div className="text-center">
-        <div className="mb-4 text-[20px] font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
+      <div className="text-center py-4">
+        <p className="mb-4 text-[14px] text-[#A3A3A3]">
           Холбоос хүчингүй байна
-        </div>
-        <Link href="/auth/forgot-password" className="btn-blood inline-block">
+        </p>
+        <Link
+          href="/auth/forgot-password"
+          className="inline-block rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110"
+        >
           Дахин хүсэлт илгээх
         </Link>
       </div>
@@ -79,36 +81,39 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <h1 className="mb-2 text-[28px] font-bold tracking-[1px] text-[#ede8df]">
+      <h1 className="mb-1 text-[22px] font-bold text-[#FAFAFA]">
         Шинэ нууц үг
       </h1>
-      <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">
-        ШИНЭ НУУЦ ҮГ ТОХИРУУЛАХ
+      <p className="mb-6 text-[12px] text-[#6B6B6B]">
+        Шинэ нууц үгээ оруулна уу
       </p>
 
       {success ? (
         <div>
-          <div className="mb-6 border-l-2 border-green-500 bg-[rgba(34,197,94,0.08)] px-4 py-3 text-[12px] text-green-500">
-            <div className="font-medium">Нууц үг амжилттай солигдлоо</div>
-            <div className="mt-1 text-[11px] text-[rgba(34,197,94,0.7)]">
+          <div className="mb-5 rounded-[4px] bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] px-4 py-3 text-[12px] text-green-400">
+            <p className="font-medium">Нууц үг амжилттай солигдлоо</p>
+            <p className="mt-1 text-[11px] text-green-400/60">
               Шинэ нууц үгээрээ нэвтэрнэ үү.
-            </div>
+            </p>
           </div>
-          <Link href="/auth/signin" className="btn-blood w-full inline-block text-center">
+          <Link
+            href="/auth/signin"
+            className="block w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-center text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110"
+          >
             Нэвтрэх
           </Link>
         </div>
       ) : (
         <>
           {error && (
-            <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
+            <div className="mb-5 rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.15)] px-4 py-3 text-[12px] text-[#FFFF01]">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                 Шинэ нууц үг
               </label>
               <input
@@ -117,14 +122,13 @@ function ResetPasswordForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="input-dark"
-                placeholder="••••••••"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                placeholder="6+ тэмдэгт"
               />
-              <p className="mt-1 text-[10px] text-[#5a5550]">Хамгийн багадаа 6 тэмдэгт</p>
             </div>
 
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                 Нууц үг давтах
               </label>
               <input
@@ -133,7 +137,7 @@ function ResetPasswordForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="input-dark"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
                 placeholder="••••••••"
               />
             </div>
@@ -141,7 +145,7 @@ function ResetPasswordForm() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-blood w-full"
+              className="w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Хадгалж байна..." : "Нууц үг солих"}
             </button>
@@ -155,9 +159,9 @@ function ResetPasswordForm() {
 export default function ResetPassword() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="card p-8 md:p-10">
-          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse bg-[#FFFF01]" /></div>}>
+      <div className="w-full max-w-[400px]">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-8">
+          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse rounded-full bg-[#FFFF01]" /></div>}>
             <ResetPasswordForm />
           </Suspense>
         </div>

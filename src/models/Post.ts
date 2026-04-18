@@ -7,6 +7,7 @@ export interface IPost extends Document {
   image: string;
   visibility: "free" | "members";
   category: "мэдээлэл" | "ялалт";
+  taskId?: mongoose.Types.ObjectId;
   likes: mongoose.Types.ObjectId[];
   reactions: Map<string, mongoose.Types.ObjectId[]>;
   commentsCount: number;
@@ -40,6 +41,10 @@ const PostSchema = new Schema<IPost>(
       type: String,
       enum: ["мэдээлэл", "ялалт"],
       default: "мэдээлэл",
+    },
+    taskId: {
+      type: Schema.Types.ObjectId,
+      ref: "Task",
     },
     likes: [
       {

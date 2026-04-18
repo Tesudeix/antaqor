@@ -37,38 +37,41 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="card p-8 md:p-10">
-          <h1 className="mb-2 text-[28px] font-bold tracking-[1px] text-[#ede8df]">
+      <div className="w-full max-w-[400px]">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#FAFAFA]">
             Нууц үг сэргээх
           </h1>
-          <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">
-            БҮРТГЭЛТЭЙ ИМЭЙЛ ХАЯГАА ОРУУЛНА УУ
+          <p className="mb-6 text-[12px] text-[#6B6B6B]">
+            Бүртгэлтэй имэйлээ оруулна уу
           </p>
 
           {success ? (
             <div>
-              <div className="mb-6 border-l-2 border-green-500 bg-[rgba(34,197,94,0.08)] px-4 py-3 text-[12px] text-green-500">
-                <div className="font-medium">Имэйл илгээгдлээ</div>
-                <div className="mt-1 text-[11px] text-[rgba(34,197,94,0.7)]">
-                  Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдсэн. Имэйлээ шалгана уу.
-                </div>
+              <div className="mb-5 rounded-[4px] bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] px-4 py-3 text-[12px] text-green-400">
+                <p className="font-medium">Имэйл илгээгдлээ</p>
+                <p className="mt-1 text-[11px] text-green-400/60">
+                  Имэйлээ шалгаад нууц үг сэргээх холбоос дээр дарна уу.
+                </p>
               </div>
-              <Link href="/auth/signin" className="btn-ghost w-full inline-block text-center">
+              <Link
+                href="/auth/signin"
+                className="block w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-transparent py-2.5 text-center text-[13px] font-medium text-[#A3A3A3] transition hover:text-[#FAFAFA] hover:border-[rgba(255,255,255,0.15)]"
+              >
                 Нэвтрэх хуудас руу буцах
               </Link>
             </div>
           ) : (
             <>
               {error && (
-                <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
+                <div className="mb-5 rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.15)] px-4 py-3 text-[12px] text-[#FFFF01]">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+                  <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                     Имэйл хаяг
                   </label>
                   <input
@@ -76,7 +79,7 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="input-dark"
+                    className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -84,15 +87,15 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-blood w-full"
+                  className="w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110 disabled:opacity-50"
                 >
                   {loading ? "Илгээж байна..." : "Холбоос илгээх"}
                 </button>
               </form>
 
-              <p className="mt-8 text-center text-[11px] text-[#5a5550]">
+              <p className="mt-6 text-center text-[12px] text-[#6B6B6B]">
                 Нууц үгээ санаж байна уу?{" "}
-                <Link href="/auth/signin" className="text-[#FFFF01] hover:text-[#B3B300]">
+                <Link href="/auth/signin" className="text-[#FFFF01] transition hover:brightness-110">
                   Нэвтрэх
                 </Link>
               </p>

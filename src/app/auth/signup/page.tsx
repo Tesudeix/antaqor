@@ -51,24 +51,24 @@ export default function SignUp() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="card p-8 md:p-10">
-          <h1 className="mb-2 text-[28px] font-bold tracking-[1px] text-[#ede8df]">
-            Кланд нэгдэх
+      <div className="w-full max-w-[400px]">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#FAFAFA]">
+            Бүртгүүлэх
           </h1>
-          <p className="mb-8 text-[11px] tracking-[0.3px] text-[#5a5550]">
-            ДИЖИТАЛ ҮНДЭСТНИЙ ГИШҮҮН БОЛ
+          <p className="mb-6 text-[12px] text-[#6B6B6B]">
+            Antaqor-д нэгдэх
           </p>
 
           {error && (
-            <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
+            <div className="mb-5 rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.15)] px-4 py-3 text-[12px] text-[#FFFF01]">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                 Нэр
               </label>
               <input
@@ -77,14 +77,14 @@ export default function SignUp() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 minLength={2}
-                className="input-dark"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
                 placeholder="Таны нэр"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
-                Утасны дугаар
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
+                Утас
               </label>
               <input
                 type="tel"
@@ -92,13 +92,13 @@ export default function SignUp() {
                 onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                 required
                 maxLength={8}
-                className="input-dark"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
                 placeholder="9911 2233"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                 Имэйл
               </label>
               <input
@@ -106,13 +106,13 @@ export default function SignUp() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="input-dark"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
                 Нууц үг
               </label>
               <input
@@ -121,23 +121,23 @@ export default function SignUp() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="input-dark"
-                placeholder="••••••••"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                placeholder="6+ тэмдэгт"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="btn-blood w-full"
+              className="w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Бүртгэж байна..." : "Бүртгүүлэх"}
             </button>
           </form>
 
-          <p className="mt-8 text-center text-[11px] text-[#5a5550]">
+          <p className="mt-6 text-center text-[12px] text-[#6B6B6B]">
             Бүртгэлтэй юу?{" "}
-            <Link href="/auth/signin" className="text-[#FFFF01] hover:text-[#B3B300]">
+            <Link href="/auth/signin" className="text-[#FFFF01] transition hover:brightness-110">
               Нэвтрэх
             </Link>
           </p>

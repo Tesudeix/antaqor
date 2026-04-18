@@ -61,6 +61,12 @@ export default function AdminDashboard() {
   const [annSaving, setAnnSaving] = useState(false);
   const [annMsg, setAnnMsg] = useState<string|null>(null);
 
+  // Tasks state
+  const [tasks, setTasks] = useState<{_id:string;title:string;description:string;xpReward:number;status:string;assignedTo?:{_id:string;name:string}|null;createdAt:string}[]>([]);
+  const [taskForm, setTaskForm] = useState({title:"",description:"",xpReward:"500"});
+  const [taskSaving, setTaskSaving] = useState(false);
+  const [taskMsg, setTaskMsg] = useState<string|null>(null);
+
   const error = searchParams.get("error");
   const justConnected = searchParams.get("connected");
 
@@ -102,6 +108,14 @@ export default function AdminDashboard() {
         if (annRes.ok) {
           const annData = await annRes.json();
           setAnnouncements(annData.announcements || []);
+        }
+      } catch {}
+      // Load tasks
+      try {
+        const taskRes = await fetch("/api/tasks");
+        if (taskRes.ok) {
+          const taskData = await taskRes.json();
+          setTasks(taskData.tasks || []);
         }
       } catch {}
     } catch {
@@ -222,6 +236,49 @@ export default function AdminDashboard() {
   const startAnnEdit = (a: typeof announcements[0]) => {
     setAnnEditing(a._id);
     setAnnForm({ title: a.title, content: a.content, image: a.image || "", tag: a.tag, pinned: a.pinned });
+  };
+
+  const handleTaskCreate = async () => {
+    if (!taskForm.title.trim() || taskSaving) return;
+    setTaskSaving(true); setTaskMsg(null);
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: taskForm.title.trim(),
+          description: taskForm.description.trim(),
+          xpReward: parseInt(taskForm.xpReward) || 500,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setTasks(prev => [data.task, ...prev]);
+      setTaskForm({title:"",description:"",xpReward:"500"});
+      setTaskMsg("Даалгавар нэмэгдлээ!");
+      setTimeout(() => setTaskMsg(null), 3000);
+    } catch (err) {
+      setTaskMsg(`Алдаа: ${err instanceof Error ? err.message : "Failed"}`);
+    } finally { setTaskSaving(false); }
+  };
+
+  const handleTaskAction = async (id: string, action: string) => {
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (res.ok) setTasks(prev => prev.map(t => t._id === id ? data.task : t));
+    } catch {}
+  };
+
+  const handleTaskDelete = async (id: string) => {
+    try {
+      await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+      setTasks(prev => prev.filter(t => t._id !== id));
+    } catch {}
   };
 
   const getInsightValue = (name: string): number => {
@@ -503,6 +560,88 @@ export default function AdminDashboard() {
               {igMsg}
             </p>
           )}
+        </div>
+
+        {/* Tasks Management */}
+        <div className="card mt-4 p-5">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01] mb-4">ДААЛГАВАР УДИРДЛАГА</div>
+
+          {/* Create task form */}
+          <div className="space-y-3 mb-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input
+                value={taskForm.title}
+                onChange={(e) => setTaskForm(f => ({...f, title: e.target.value}))}
+                placeholder="Даалгаврын нэр (жиш: AI tool хийж тест хийх)"
+                className="input-dark"
+                maxLength={200}
+              />
+              <input
+                value={taskForm.xpReward}
+                onChange={(e) => setTaskForm(f => ({...f, xpReward: e.target.value}))}
+                placeholder="XP (200-5000)"
+                className="input-dark"
+                type="number"
+                min={200}
+                max={5000}
+              />
+            </div>
+            <input
+              value={taskForm.description}
+              onChange={(e) => setTaskForm(f => ({...f, description: e.target.value}))}
+              placeholder="Тайлбар (заавал биш)"
+              className="input-dark"
+              maxLength={2000}
+            />
+            <div className="flex items-center gap-2">
+              <button onClick={handleTaskCreate} disabled={!taskForm.title.trim() || taskSaving} className="btn-blood">
+                {taskSaving ? "Нэмж байна..." : "+ Даалгавар нэмэх"}
+              </button>
+              {taskMsg && <span className={`text-[11px] ${taskMsg.startsWith("Алдаа") ? "text-red-400" : "text-green-400"}`}>{taskMsg}</span>}
+            </div>
+          </div>
+
+          {/* Tasks list */}
+          <div className="space-y-2">
+            {tasks.map((t, i) => {
+              const statusColors: Record<string, string> = {
+                open: "text-green-400",
+                submitted: "text-yellow-400",
+                accepted: "text-[#FFFF01]",
+                rejected: "text-red-400",
+              };
+              const statusLabels: Record<string, string> = {
+                open: "НЭЭЛТТЭЙ",
+                submitted: "ХҮЛЭЭЖ БУЙ",
+                accepted: "БАТАЛСАН",
+                rejected: "ТАТГАЛЗСАН",
+              };
+              return (
+                <div key={t._id} className="flex items-center justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[12px] font-bold text-[#FFFF01]">#{i + 1}</span>
+                      <span className="text-[13px] font-bold text-[#e8e6e1] truncate">{t.title}</span>
+                      <span className="rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#FFFF01]">+{t.xpReward} XP</span>
+                      <span className={`text-[9px] font-bold ${statusColors[t.status] || "text-[#5a5550]"}`}>{statusLabels[t.status] || t.status}</span>
+                    </div>
+                    {t.description && <div className="text-[11px] text-[#5a5550] line-clamp-1">{t.description}</div>}
+                    {t.assignedTo && <div className="text-[10px] text-[#5a5550]">→ {t.assignedTo.name}</div>}
+                  </div>
+                  <div className="flex shrink-0 gap-1.5">
+                    {t.status === "submitted" && (
+                      <>
+                        <button onClick={() => handleTaskAction(t._id, "accept")} className="text-[10px] text-green-400 hover:underline">Батлах</button>
+                        <button onClick={() => handleTaskAction(t._id, "reject")} className="text-[10px] text-red-400 hover:underline">Татгалзах</button>
+                      </>
+                    )}
+                    <button onClick={() => handleTaskDelete(t._id)} className="text-[10px] text-red-400 hover:underline">Устгах</button>
+                  </div>
+                </div>
+              );
+            })}
+            {tasks.length === 0 && <p className="text-[11px] text-[#5a5550]">Даалгавар байхгүй</p>}
+          </div>
         </div>
 
         {/* Announcements Management */}

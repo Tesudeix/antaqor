@@ -1,40 +1,315 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useMembership } from "@/lib/useMembership";
+import { motion, AnimatePresence } from "framer-motion";
 
+// ─── Types ───
 interface Course {
   _id: string;
   title: string;
   description: string;
   thumbnail: string;
   lessonsCount: number;
+  completedLessons?: number;
   createdAt: string;
 }
 
+type StatusFilter = "all" | "new" | "active" | "done";
+type CoverStyle = "grid" | "orbit" | "pulse" | "wave";
+
+// ─── Abstract SVG Cover Art ───
+function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
+  const hue = (index * 47 + 15) % 360;
+  const goldOpacity = 0.15;
+
+  switch (style) {
+    case "grid":
+      return (
+        <svg viewBox="0 0 280 140" className="h-full w-full">
+          <rect width="280" height="140" fill="#0A0A0A" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <line key={`v${i}`} x1={35 * (i + 1)} y1="0" x2={35 * (i + 1)} y2="140" stroke={`rgba(255,255,1,${goldOpacity})`} strokeWidth="0.5" />
+          ))}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <line key={`h${i}`} x1="0" y1={35 * (i + 1)} x2="280" y2={35 * (i + 1)} stroke={`rgba(255,255,1,${goldOpacity})`} strokeWidth="0.5" />
+          ))}
+          <circle cx={140 + Math.sin(index) * 40} cy={70 + Math.cos(index) * 20} r="24" fill="none" stroke="rgba(255,255,1,0.3)" strokeWidth="1" />
+          <circle cx={140 + Math.sin(index) * 40} cy={70 + Math.cos(index) * 20} r="4" fill="#FFFF01" opacity="0.6" />
+        </svg>
+      );
+    case "orbit":
+      return (
+        <svg viewBox="0 0 280 140" className="h-full w-full">
+          <rect width="280" height="140" fill="#0A0A0A" />
+          <circle cx="140" cy="70" r="50" fill="none" stroke={`rgba(255,255,1,${goldOpacity})`} strokeWidth="0.5" />
+          <circle cx="140" cy="70" r="35" fill="none" stroke={`rgba(255,255,1,${goldOpacity + 0.05})`} strokeWidth="0.5" />
+          <circle cx="140" cy="70" r="20" fill="none" stroke={`rgba(255,255,1,${goldOpacity + 0.1})`} strokeWidth="0.5" />
+          <circle cx={140 + 50 * Math.cos(index * 0.8)} cy={70 + 50 * Math.sin(index * 0.8)} r="3" fill="#FFFF01" opacity="0.8" />
+          <circle cx={140 + 35 * Math.cos(index * 1.3 + 1)} cy={70 + 35 * Math.sin(index * 1.3 + 1)} r="2" fill="#0F81CA" opacity="0.7" />
+          <circle cx="140" cy="70" r="5" fill="#FFFF01" opacity="0.3" />
+        </svg>
+      );
+    case "pulse":
+      return (
+        <svg viewBox="0 0 280 140" className="h-full w-full">
+          <rect width="280" height="140" fill="#0A0A0A" />
+          <polyline
+            points={Array.from({ length: 28 }).map((_, i) => {
+              const x = i * 10;
+              const y = 70 + Math.sin((i + index) * 0.6) * 30 + Math.sin((i + index) * 1.5) * 10;
+              return `${x},${y}`;
+            }).join(" ")}
+            fill="none"
+            stroke="#FFFF01"
+            strokeWidth="1.5"
+            opacity="0.4"
+          />
+          <polyline
+            points={Array.from({ length: 28 }).map((_, i) => {
+              const x = i * 10;
+              const y = 70 + Math.cos((i + index) * 0.4) * 20;
+              return `${x},${y}`;
+            }).join(" ")}
+            fill="none"
+            stroke="#0F81CA"
+            strokeWidth="0.5"
+            opacity="0.3"
+          />
+        </svg>
+      );
+    case "wave":
+      return (
+        <svg viewBox="0 0 280 140" className="h-full w-full">
+          <rect width="280" height="140" fill="#0A0A0A" />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <path
+              key={i}
+              d={`M0,${50 + i * 15} Q70,${30 + i * 15 + Math.sin(index + i) * 15} 140,${50 + i * 15} T280,${50 + i * 15}`}
+              fill="none"
+              stroke={i === 2 ? "rgba(255,255,1,0.35)" : `rgba(255,255,1,${0.08 + i * 0.03})`}
+              strokeWidth={i === 2 ? "1.5" : "0.5"}
+            />
+          ))}
+        </svg>
+      );
+  }
+}
+
+// ─── Progress Ring ───
+function ProgressRing({ percent, size = 44 }: { percent: number; size?: number }) {
+  const stroke = 3;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="block">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="rgba(10,10,10,0.8)"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#FFFF01"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="progress-ring-circle"
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#FAFAFA]">
+        {percent}%
+      </span>
+    </div>
+  );
+}
+
+// ─── Status Badge ───
+function StatusBadge({ status }: { status: "new" | "active" | "done" }) {
+  const config = {
+    new: { label: "ШИНЭ", bg: "rgba(15,129,202,0.2)", text: "#0F81CA" },
+    active: { label: "ҮРГЭЛЖИЛЖ БУЙ", bg: "rgba(255,255,1,0.15)", text: "#FFFF01" },
+    done: { label: "ДУУССАН", bg: "rgba(34,197,94,0.15)", text: "#22c55e" },
+  };
+  const c = config[status];
+  return (
+    <span
+      className="rounded-[4px] px-2 py-0.5 text-[9px] font-bold tracking-[0.06em] backdrop-blur-sm"
+      style={{ background: c.bg, color: c.text }}
+    >
+      {c.label}
+    </span>
+  );
+}
+
+// ─── Cover styles per index ───
+const COVER_STYLES: CoverStyle[] = ["grid", "orbit", "pulse", "wave"];
+
+// ─── Course Card ───
+function CourseCard({
+  course,
+  index,
+  admin,
+  onDelete,
+}: {
+  course: Course;
+  index: number;
+  admin: boolean;
+  onDelete: (id: string) => void;
+}) {
+  const completed = course.completedLessons || 0;
+  const total = course.lessonsCount || 0;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const status: "new" | "active" | "done" =
+    percent === 100 ? "done" : percent > 0 ? "active" : "new";
+  const coverStyle = COVER_STYLES[index % COVER_STYLES.length];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.04 }}
+    >
+      <Link
+        href={`/classroom/course/${course._id}`}
+        className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] transition-all duration-200 hover:-translate-y-[3px] hover:border-[rgba(255,255,1,0.4)] hover:shadow-[0_0_24px_rgba(255,255,1,0.08)]"
+        style={{ minHeight: 280 }}
+      >
+        {/* Cover art */}
+        <div className="relative h-[140px] shrink-0 overflow-hidden">
+          <CourseCover style={coverStyle} index={index} />
+          {/* Status badge - top left */}
+          <div className="absolute left-3 top-3">
+            <StatusBadge status={status} />
+          </div>
+          {/* Progress ring - top right */}
+          {total > 0 && (
+            <div className="absolute right-3 top-3" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label={`Явц: ${percent}%`}>
+              <ProgressRing percent={percent} />
+            </div>
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="text-[18px] font-medium leading-snug text-[#FAFAFA] transition-colors duration-200 group-hover:text-[#FFFF01]">
+            {course.title}
+          </h3>
+          {course.description && (
+            <p className="mt-2 text-[13px] leading-relaxed text-[#6B6B6B] line-clamp-2">
+              {course.description}
+            </p>
+          )}
+          <div className="mt-auto flex items-center justify-between pt-4">
+            <span className="text-[12px] text-[#6B6B6B]">
+              {total} хичээл
+            </span>
+            <span className="text-[12px] font-bold text-[#FFFF01] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              Нээх →
+            </span>
+          </div>
+        </div>
+
+        {/* Admin delete */}
+        {admin && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(course._id); }}
+            className="absolute right-3 bottom-3 hidden rounded-[4px] p-2 text-[#6B6B6B] transition-colors duration-200 hover:text-red-400 group-hover:block"
+            aria-label="Курс устгах"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </Link>
+    </motion.div>
+  );
+}
+
+// ─── Ghost Add Card ───
+function GhostAddCard({ onClick }: { onClick: () => void }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut", delay: 0.15 }}
+      className="flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-[rgba(255,255,1,0.3)] bg-transparent transition-all duration-200 hover:border-[#FFFF01] hover:bg-[rgba(255,255,1,0.03)] hover:shadow-[0_0_24px_rgba(255,255,1,0.08)]"
+      style={{ minHeight: 280 }}
+      aria-label="Шинэ курс нэмэх"
+    >
+      <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-[rgba(255,255,1,0.3)] text-[#FFFF01] transition-all duration-200">
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+      </div>
+      <span className="mt-3 text-[13px] font-medium text-[#6B6B6B]">Курс нэмэх</span>
+    </motion.button>
+  );
+}
+
+// ─── Empty State ───
+function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="col-span-full flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-[rgba(255,255,1,0.2)] px-8 py-16 text-center"
+    >
+      <svg className="mb-4 h-10 w-10 text-[#6B6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <p className="text-[15px] font-medium text-[#A3A3A3]">
+        {hasFilters ? "Шүүлтэд тохирох курс олдсонгүй" : "Эхний курсаа үүсгэж, аянаа эхлүүл"}
+      </p>
+      {hasFilters && (
+        <button
+          onClick={onClear}
+          className="mt-4 rounded-[4px] bg-[#FFFF01] px-5 py-2 text-[13px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
+        >
+          Шүүлт арилгах
+        </button>
+      )}
+    </motion.div>
+  );
+}
+
+// ─── Main Page ───
 export default function ClassroomPage() {
   const { data: session } = useSession();
   const { loading: memberLoading, isMember, isAdmin: admin } = useMembership();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   // Admin: new course
   const [showNewCourse, setShowNewCourse] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseDesc, setNewCourseDesc] = useState("");
-  const [newCourseThumbnail, setNewCourseThumbnail] = useState("");
   const [creating, setCreating] = useState(false);
-  const [thumbUploading, setThumbUploading] = useState(false);
 
   useEffect(() => {
-    if (!memberLoading && isMember) {
+    if (!memberLoading && session) {
       fetchCourses();
     } else if (!memberLoading) {
       setLoading(false);
     }
-  }, [memberLoading, isMember]);
+  }, [memberLoading, session]);
 
   const fetchCourses = async () => {
     try {
@@ -53,12 +328,11 @@ export default function ClassroomPage() {
       const res = await fetch("/api/classroom/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, thumbnail: newCourseThumbnail, order: courses.length }),
+        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, order: courses.length }),
       });
       if (res.ok) {
         setNewCourseTitle("");
         setNewCourseDesc("");
-        setNewCourseThumbnail("");
         setShowNewCourse(false);
         fetchCourses();
       }
@@ -73,187 +347,217 @@ export default function ClassroomPage() {
     fetchCourses();
   };
 
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setThumbUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (res.ok) setNewCourseThumbnail(data.url);
-    } catch {
-      alert("Зураг оруулахад алдаа гарлаа");
-    } finally {
-      setThumbUploading(false);
-    }
-  };
+  // Client-side filtering
+  const filteredCourses = useMemo(() => {
+    return courses.filter((c) => {
+      // Search
+      if (search) {
+        const q = search.toLowerCase();
+        if (!c.title.toLowerCase().includes(q) && !c.description?.toLowerCase().includes(q)) return false;
+      }
+      // Status
+      if (statusFilter !== "all") {
+        const completed = c.completedLessons || 0;
+        const total = c.lessonsCount || 0;
+        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const status = percent === 100 ? "done" : percent > 0 ? "active" : "new";
+        if (status !== statusFilter) return false;
+      }
+      return true;
+    });
+  }, [courses, search, statusFilter]);
 
+  // Stats
+  const totalLessons = courses.reduce((s, c) => s + (c.lessonsCount || 0), 0);
+  const totalCompleted = courses.reduce((s, c) => s + (c.completedLessons || 0), 0);
+  const overallProgress = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+
+  // ─── Loading ───
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFFF01]" />
+        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
       </div>
     );
   }
 
+  // ─── Not signed in ───
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] bg-[#0a0a0a]">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414]">
           <svg className="h-7 w-7 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
-        <h1 className="mb-2 text-2xl font-black text-[#0a0a0a]">Classroom</h1>
-        <p className="mb-6 text-[14px] text-[rgba(0,0,0,0.4)]">Хичээлд хандахын тулд нэвтэрнэ үү</p>
-        <Link href="/auth/signin" className="rounded-[4px] bg-[#0a0a0a] px-8 py-3 text-[13px] font-bold text-[#FFFF01] transition hover:scale-105">
+        <h1 className="mb-2 text-[24px] font-bold text-[#FAFAFA]">Хичээлийн танхим</h1>
+        <p className="mb-6 text-[14px] text-[#6B6B6B]">Хичээлд хандахын тулд нэвтэрнэ үү</p>
+        <Link href="/auth/signin" className="rounded-[4px] bg-[#FFFF01] px-8 py-3 text-[13px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]">
           Нэвтрэх
         </Link>
       </div>
     );
   }
 
-  if (!isMember) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] bg-[#0a0a0a]">
-          <svg className="h-7 w-7 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <h1 className="mb-2 text-2xl font-black text-[#0a0a0a]">Classroom</h1>
-        <p className="mb-6 max-w-xs text-[14px] leading-relaxed text-[rgba(0,0,0,0.4)]">
-          Зөвхөн Кланы гишүүдэд зориулагдсан
-        </p>
-        <Link href="/clan" className="rounded-[4px] bg-[#0a0a0a] px-8 py-3 text-[13px] font-bold text-[#FFFF01] transition hover:scale-105">
-          Кланд нэгдэх
-        </Link>
-      </div>
-    );
-  }
+  const filters: { key: StatusFilter; label: string }[] = [
+    { key: "all", label: "Бүгд" },
+    { key: "active", label: "Үргэлжилж буй" },
+    { key: "new", label: "Шинэ" },
+    { key: "done", label: "Дууссан" },
+  ];
 
   return (
-    <div className="mx-auto max-w-4xl">
-      {/* Header */}
-      <div className="mb-8 flex items-end justify-between">
+    <div className="mx-auto max-w-[1200px]">
+      {/* ─── Hero Section ─── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-black text-[#0a0a0a] lg:text-4xl">Classroom</h1>
-          <p className="mt-2 text-[14px] text-[rgba(0,0,0,0.4)]">
-            {courses.length} курс
-          </p>
+          <span className="meta-label text-[#6B6B6B]">Classroom</span>
+          <h1 className="mt-1 text-[28px] font-medium tracking-[-0.02em] text-[#FAFAFA] sm:text-[38px]">
+            Хичээлийн танхим
+          </h1>
         </div>
+        {/* Stat strip */}
+        <div className="flex items-center gap-6">
+          {[
+            { label: "Курс", value: courses.length },
+            { label: "Хичээл", value: totalLessons },
+            { label: "Явц", value: `${overallProgress}%` },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="text-[20px] font-bold text-[#FAFAFA]">{stat.value}</div>
+              <div className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#6B6B6B]">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ─── Toolbar ─── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
+        className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center"
+      >
+        {/* Search */}
+        <div className="relative flex-1">
+          <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Курс хайх..."
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] py-2.5 pl-10 pr-4 text-[14px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]"
+          />
+        </div>
+
+        {/* Filter chips */}
+        <div className="flex items-center gap-1.5">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setStatusFilter(f.key)}
+              className={`rounded-[4px] px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
+                statusFilter === f.key
+                  ? "bg-[#FFFF01] text-[#0A0A0A]"
+                  : "border border-[rgba(255,255,255,0.06)] bg-[#141414] text-[#6B6B6B] hover:text-[#A3A3A3]"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* New course CTA */}
         {admin && (
           <button
             onClick={() => setShowNewCourse(!showNewCourse)}
-            className="rounded-[4px] bg-[#0a0a0a] px-5 py-2.5 text-[12px] font-bold text-[#FFFF01] transition hover:scale-105"
+            className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[13px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
           >
-            {showNewCourse ? "Цуцлах" : "+ Курс"}
+            {showNewCourse ? "Цуцлах" : "+ Шинэ курс"}
           </button>
         )}
-      </div>
+      </motion.div>
 
-      {/* Admin: new course form */}
-      {admin && showNewCourse && (
-        <div className="mb-8 rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-[rgba(0,0,0,0.03)] p-6 space-y-4">
-          <input value={newCourseTitle} onChange={(e) => setNewCourseTitle(e.target.value)} placeholder="Курсийн нэр" className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a]" />
-          <textarea value={newCourseDesc} onChange={(e) => setNewCourseDesc(e.target.value)} placeholder="Тайлбар (заавал биш)" rows={2} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a] resize-none" />
-          <div className="flex items-center gap-3">
-            <label className={`cursor-pointer rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-2.5 text-[12px] font-medium text-[rgba(0,0,0,0.4)] transition hover:border-[#0a0a0a] hover:text-[#0a0a0a] ${thumbUploading ? "pointer-events-none opacity-50" : ""}`}>
-              {thumbUploading ? "..." : newCourseThumbnail ? "Солих" : "Thumbnail"}
-              <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" disabled={thumbUploading} />
-            </label>
-            {newCourseThumbnail && (
-              <img src={newCourseThumbnail} alt="" className="h-14 w-10 rounded-[4px] object-cover border border-[rgba(0,0,0,0.1)]" />
-            )}
-            <div className="flex-1" />
-            <button onClick={handleCreateCourse} disabled={creating || !newCourseTitle.trim()} className="rounded-[4px] bg-[#0a0a0a] px-6 py-2.5 text-[12px] font-bold text-[#FFFF01] transition hover:scale-105 disabled:opacity-50">
-              {creating ? "..." : "Үүсгэх"}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ─── Admin: New course form ─── */}
+      <AnimatePresence>
+        {admin && showNewCourse && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="mb-6 overflow-hidden"
+          >
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-6 space-y-4">
+              <input
+                value={newCourseTitle}
+                onChange={(e) => setNewCourseTitle(e.target.value)}
+                placeholder="Курсийн нэр"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]"
+              />
+              <textarea
+                value={newCourseDesc}
+                onChange={(e) => setNewCourseDesc(e.target.value)}
+                placeholder="Тайлбар (заавал биш)"
+                rows={2}
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)] resize-none"
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleCreateCourse}
+                  disabled={creating || !newCourseTitle.trim()}
+                  className="rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[13px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,1,0.25)] disabled:opacity-50"
+                >
+                  {creating ? "..." : "Үүсгэх"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Course list — blog-style cards */}
+      {/* ─── Course Grid ─── */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="h-2 w-2 animate-pulse rounded-full bg-[#0a0a0a]" />
-        </div>
-      ) : courses.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-[4px] border border-[rgba(0,0,0,0.08)] py-20">
-          <svg className="mb-4 h-10 w-10 text-[rgba(0,0,0,0.15)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          <p className="text-[15px] text-[rgba(0,0,0,0.3)]">Курс байхгүй байна</p>
+          <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
         </div>
       ) : (
-        <div className="space-y-4">
-          {courses.map((course) => (
-            <Link
-              key={course._id}
-              href={`/classroom/course/${course._id}`}
-              className="group flex gap-5 rounded-[4px] bg-[#0a0a0a] p-5 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.2)] sm:p-6"
-            >
-              {/* Thumbnail */}
-              {course.thumbnail ? (
-                <div className="hidden shrink-0 overflow-hidden rounded-[4px] sm:block">
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="h-24 w-20 object-cover transition-transform duration-300 group-hover:scale-105 lg:h-28 lg:w-24"
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+          <AnimatePresence mode="popLayout">
+            {filteredCourses.length === 0 && !admin ? (
+              <EmptyState
+                hasFilters={search !== "" || statusFilter !== "all"}
+                onClear={() => { setSearch(""); setStatusFilter("all"); }}
+              />
+            ) : (
+              <>
+                {filteredCourses.map((course, i) => (
+                  <CourseCard
+                    key={course._id}
+                    course={course}
+                    index={i}
+                    admin={admin}
+                    onDelete={handleDeleteCourse}
                   />
-                </div>
-              ) : (
-                <div className="hidden h-24 w-20 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(255,255,1,0.06)] sm:flex lg:h-28 lg:w-24">
-                  <svg className="h-8 w-8 text-[rgba(255,255,1,0.2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              )}
-
-              {/* Content */}
-              <div className="min-w-0 flex-1">
-                <h2 className="text-[17px] font-bold text-white group-hover:text-[#FFFF01] transition-colors leading-snug lg:text-[19px]">
-                  {course.title}
-                </h2>
-                {course.description && (
-                  <p className="mt-2 text-[13px] leading-relaxed text-[rgba(255,255,255,0.4)] line-clamp-2 lg:text-[14px]">
-                    {course.description}
-                  </p>
+                ))}
+                {/* Ghost add card */}
+                {admin && <GhostAddCard onClick={() => setShowNewCourse(true)} />}
+                {filteredCourses.length === 0 && admin && (
+                  <EmptyState
+                    hasFilters={search !== "" || statusFilter !== "all"}
+                    onClear={() => { setSearch(""); setStatusFilter("all"); }}
+                  />
                 )}
-                <div className="mt-3 flex items-center gap-3 text-[12px] text-[rgba(255,255,255,0.25)]">
-                  <span className="flex items-center gap-1">
-                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {course.lessonsCount} хичээл
-                  </span>
-                </div>
-              </div>
-
-              {/* Arrow */}
-              <div className="hidden items-center sm:flex">
-                <svg className="h-5 w-5 text-[rgba(255,255,255,0.15)] transition group-hover:text-[#FFFF01] group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-
-              {/* Admin delete */}
-              {admin && (
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteCourse(course._id); }}
-                  className="hidden shrink-0 items-center justify-center rounded-[4px] p-2 text-[rgba(255,255,255,0.2)] transition hover:text-red-400 group-hover:flex"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </Link>
-          ))}
+              </>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </div>

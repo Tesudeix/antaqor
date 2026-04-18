@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import Task from "@/models/Task";
 import { broadcastNotification } from "@/lib/notifications";
 import { awardXP } from "@/lib/xp";
 
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, image, visibility, category } = await req.json();
+    const { content, image, visibility, category, taskId } = await req.json();
 
     const hasContent = content && content.trim().length > 0;
     const hasImage = image && image.trim().length > 0;
@@ -90,15 +91,40 @@ export async function POST(req: NextRequest) {
 
     const postCategory = (category === "мэдээлэл" || category === "ялалт") ? category : "мэдээлэл";
 
-    const post = await Post.create({
+    const postData: Record<string, unknown> = {
       author: userId,
       content: hasContent ? content.trim() : "",
       image: hasImage ? image.trim() : "",
       visibility: postVisibility,
       category: postCategory,
-    });
+    };
+
+    // Link to task if provided
+    let linkedTask = null;
+    if (taskId) {
+      const task = await Task.findById(taskId);
+      if (task && task.status === "open") {
+        postData.taskId = taskId;
+        linkedTask = task;
+      }
+    }
+
+    const post = await Post.create(postData);
 
     const populated = await post.populate("author", "name avatar");
+
+    // Base XP for creating post
+    let totalXP = 50;
+
+    // If task linked, complete the task and award task XP
+    if (linkedTask) {
+      linkedTask.assignedTo = userId as any;
+      linkedTask.status = "submitted";
+      linkedTask.submissionNote = `Post: /posts/${post._id}`;
+      await linkedTask.save();
+      totalXP += linkedTask.xpReward;
+      awardXP(userId, "COMPLETE_TASK", linkedTask.xpReward, linkedTask._id.toString()).catch(() => {});
+    }
 
     awardXP(userId, "CREATE_POST", 50, post._id.toString()).catch(() => {});
 

@@ -4,18 +4,17 @@ import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import BottomBar from "@/components/BottomBar";
 import InstallPrompt from "@/components/InstallPrompt";
-import SubscriptionBanner from "@/components/SubscriptionBanner";
 
 export const metadata: Metadata = {
   title: {
-    default: "Antaqor",
-    template: "%s | Antaqor",
+    default: "ANTAQOR — Cyber Empire",
+    template: "%s | ANTAQOR",
   },
   description:
     "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
   keywords: [
     "Antaqor",
-    "Дижитал Үндэстэн",
+    "Cyber Empire",
     "AI",
     "Монгол бүтээгчид",
     "нийгэмлэг",
@@ -29,26 +28,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "mn_MN",
     url: "https://antaqor.com",
-    siteName: "Antaqor",
-    title: "Antaqor",
+    siteName: "ANTAQOR",
+    title: "ANTAQOR — Cyber Empire",
     description:
       "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Antaqor",
-    description:
-      "Дижитал Үндэстний нийгэмлэг.",
+    title: "ANTAQOR — Cyber Empire",
+    description: "Дижитал Үндэстний нийгэмлэг.",
     creator: "@antaqor",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Antaqor",
+    title: "ANTAQOR",
   },
 };
 
@@ -63,16 +58,16 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#FFFF01" />
+        <meta name="theme-color" content="#0A0A0A" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body>
+      <body className="bg-[#0A0A0A] text-[#FAFAFA]">
         <Providers>
-          <SubscriptionBanner />
           <Navbar />
-          <main className="w-full px-4 pb-24 pt-8 sm:px-6 md:px-8 md:pb-12 lg:px-12">
+          <main className="min-h-screen w-full px-4 pb-28 pt-6 sm:px-6 md:px-8 md:pb-12 lg:px-12">
             {children}
           </main>
           <BottomBar />

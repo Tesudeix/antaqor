@@ -5,6 +5,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { isAdminEmail } from "@/lib/adminClient";
 import { formatDistanceToNow } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ReactionData {
   count: number;
@@ -27,19 +28,16 @@ interface LessonData {
   course: { _id: string; title: string };
 }
 
-const REACTION_KEYS = ["fire", "heart", "clap", "rocket", "think", "hundred", "haha"];
+// Only 3 reactions for lesson player
+const REACTION_KEYS = ["fire", "rocket", "think"];
 
 const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
   const color = active ? "#FFFF01" : "currentColor";
   const props = { className: "h-[16px] w-[16px]", fill: "none", stroke: color, viewBox: "0 0 24 24", strokeWidth: active ? 2 : 1.5 };
   switch (type) {
     case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(255,255,1,0.2)" : "none"} /></svg>);
-    case "heart": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" fill={active ? "rgba(255,255,1,0.2)" : "none"} /></svg>);
-    case "clap": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" /></svg>);
     case "rocket": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>);
     case "think": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>);
-    case "hundred": return (<svg {...props} fill={active ? "rgba(255,255,1,0.2)" : "none"}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>);
-    case "haha": return (<svg {...props}><circle cx="12" cy="12" r="9" fill={active ? "rgba(255,255,1,0.15)" : "none"} /><path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>);
     default: return null;
   }
 };
@@ -75,6 +73,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const [userLevel, setUserLevel] = useState(1);
   const [reactions, setReactions] = useState<Record<string, ReactionData>>({});
   const [reactingEmoji, setReactingEmoji] = useState<string | null>(null);
+  const [showTranscript, setShowTranscript] = useState(false);
 
   const admin = isAdminEmail(session?.user?.email);
   const userId = session ? (session.user as { id: string }).id : null;
@@ -193,7 +192,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#0a0a0a]" />
+        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
       </div>
     );
   }
@@ -201,8 +200,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="text-[15px] text-[rgba(0,0,0,0.4)]">Хичээл олдсонгүй</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#0a0a0a] transition hover:underline">← Буцах</Link>
+        <p className="text-[15px] text-[#6B6B6B]">Хичээл олдсонгүй</p>
+        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -210,14 +209,14 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if ((lesson.requiredLevel || 0) > userLevel && !admin) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] bg-[#0a0a0a]">
-          <svg className="h-7 w-7 text-[rgba(255,255,255,0.3)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414]">
+          <svg className="h-7 w-7 text-[#6B6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="text-[16px] font-bold text-[#0a0a0a]">LV.{lesson.requiredLevel} шаардлагатай</p>
-        <p className="mt-1.5 text-[14px] text-[rgba(0,0,0,0.4)]">Таны түвшин: LV.{userLevel}</p>
-        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#0a0a0a] transition hover:underline">← Буцах</Link>
+        <p className="text-[16px] font-bold text-[#FAFAFA]">LV.{lesson.requiredLevel} шаардлагатай</p>
+        <p className="mt-1.5 text-[14px] text-[#6B6B6B]">Таны түвшин: LV.{userLevel}</p>
+        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -225,95 +224,36 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
   const embedUrl = getEmbedUrl(lesson.videoUrl);
   const isUploadedVideo = lesson.videoType === "upload" || lesson.videoUrl.startsWith("/uploads/");
-  const totalReactions = Object.values(reactions).reduce((sum, r) => sum + r.count, 0);
 
   return (
-    <div className="mx-auto max-w-3xl">
-      {/* Back link */}
-      <Link
-        href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-        className="mb-8 inline-flex items-center gap-2 text-[13px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:text-[#0a0a0a]"
-      >
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-        </svg>
-        {lesson.course?.title || "Classroom"}
-      </Link>
-
-      {/* Title + meta — blog article style */}
-      {!editing && (
-        <header className="mb-8">
-          <h1 className="text-[28px] font-black leading-tight text-[#0a0a0a] sm:text-[36px] lg:text-[40px]">{lesson.title}</h1>
-          {lesson.description && (
-            <p className="mt-3 text-[16px] leading-relaxed text-[rgba(0,0,0,0.45)] lg:text-[18px]">{lesson.description}</p>
-          )}
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-[13px] text-[rgba(0,0,0,0.3)]">
-            <span>{formatDistanceToNow(lesson.createdAt)}</span>
-            <span className="h-1 w-1 rounded-full bg-[rgba(0,0,0,0.15)]" />
-            <span>{lesson.completedBy.length} дуусгасан</span>
-            {totalReactions > 0 && (
-              <>
-                <span className="h-1 w-1 rounded-full bg-[rgba(0,0,0,0.15)]" />
-                <span>{totalReactions} reaction</span>
-              </>
-            )}
-          </div>
-
-          {/* Actions row */}
-          <div className="mt-6 flex items-center gap-3">
-            {session && (
-              <button
-                onClick={toggleComplete}
-                className={`flex items-center gap-2 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
-                  isCompleted
-                    ? "bg-[#00e676] text-black"
-                    : "bg-[#0a0a0a] text-[#FFFF01] hover:scale-105"
-                }`}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                {isCompleted ? "Дууссан" : "Дуусгах"}
-              </button>
-            )}
-            {admin && (
-              <>
-                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-4 py-2 text-[12px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:border-[#0a0a0a] hover:text-[#0a0a0a]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-4 py-2 text-[12px] font-semibold text-red-500/50 transition hover:border-red-400 hover:text-red-500">Устгах</button>
-              </>
-            )}
-          </div>
-        </header>
-      )}
-
-      {/* Edit form */}
-      {editing && (
-        <div className="mb-8 space-y-4">
-          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[18px] font-bold text-[#0a0a0a] outline-none transition focus:border-[#0a0a0a]" />
-          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a] resize-none" placeholder="Тайлбар" />
-          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[15px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a] resize-none" placeholder="Хичээлийн агуулга (текст)" />
-          <div className="flex items-center gap-3">
-            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[14px] text-[#0a0a0a] placeholder-[rgba(0,0,0,0.3)] outline-none transition focus:border-[#0a0a0a]" placeholder="Видео URL" />
-            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(0,0,0,0.1)] bg-white px-4 py-3 text-[12px] font-medium text-[rgba(0,0,0,0.4)] transition hover:border-[#0a0a0a] hover:text-[#0a0a0a] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-              {uploading ? `${uploadProgress}%` : "Файл"}
-              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
-            </label>
-          </div>
-          {uploading && (
-            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.05)]">
-              <div className="h-full rounded-full bg-[#0a0a0a] transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
-            </div>
-          )}
-          <div className="flex gap-3">
-            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#0a0a0a] px-6 py-2.5 text-[12px] font-bold text-[#FFFF01] transition hover:scale-105 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(0,0,0,0.1)] px-5 py-2.5 text-[12px] font-semibold text-[rgba(0,0,0,0.4)] transition hover:text-[#0a0a0a]">Цуцлах</button>
-          </div>
+    <div className="mx-auto max-w-[900px]">
+      {/* Back + nav */}
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+          </svg>
+          {lesson.course?.title || "Хичээлийн танхим"}
+        </Link>
+        {/* Lesson nav (prev/next) always visible */}
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-[#6B6B6B]">
+            {formatDistanceToNow(lesson.createdAt)}
+          </span>
         </div>
-      )}
+      </div>
 
-      {/* Video — full width, prominent */}
+      {/* ─── Video — dominant ─── */}
       {lesson.videoUrl && !editing && (
-        <div className="mb-8 overflow-hidden rounded-[4px] bg-[#0a0a0a]">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]"
+        >
           {embedUrl ? (
             <div className="relative aspect-video w-full">
               <iframe
@@ -328,66 +268,139 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
               <source src={lesson.videoUrl} />
             </video>
           ) : (
-            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#FFFF01] transition hover:underline">
+            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">
               Видео нээх →
             </a>
           )}
-        </div>
+        </motion.div>
       )}
 
-      {/* Reactions bar */}
-      {!editing && session && (
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          {REACTION_KEYS.map((key) => {
-            const data = reactions[key];
-            const count = data?.count || 0;
-            const reacted = data?.reacted || false;
-            return (
+      {/* ─── Title + Actions ─── */}
+      {!editing && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
+          className="mb-6"
+        >
+          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#FAFAFA] sm:text-[32px]">{lesson.title}</h1>
+          {lesson.description && (
+            <p className="mt-3 text-[16px] leading-relaxed text-[#A3A3A3]">{lesson.description}</p>
+          )}
+
+          {/* Actions row */}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            {session && (
               <button
-                key={key}
-                onClick={() => handleReaction(key)}
-                disabled={reactingEmoji === key}
-                className={`inline-flex items-center gap-1.5 rounded-[4px] px-3 py-2 transition-all duration-200 ${
-                  reacted
-                    ? "bg-[#0a0a0a] border border-[rgba(255,255,1,0.3)]"
-                    : "bg-[rgba(0,0,0,0.04)] border border-transparent hover:bg-[rgba(0,0,0,0.08)]"
-                } ${reactingEmoji === key ? "scale-110" : "active:scale-95"}`}
+                onClick={toggleComplete}
+                className={`flex items-center gap-2 rounded-[4px] px-5 py-2.5 text-[13px] font-bold transition-all duration-200 ${
+                  isCompleted
+                    ? "bg-[rgba(255,255,1,0.1)] border border-[rgba(255,255,1,0.3)] text-[#FFFF01]"
+                    : "bg-[#FFFF01] text-[#0A0A0A] hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
+                }`}
               >
-                <ReactionIcon type={key} active={reacted} />
-                {count > 0 && (
-                  <span className={`text-[11px] font-bold tabular-nums ${reacted ? "text-[#FFFF01]" : "text-[rgba(0,0,0,0.35)]"}`}>
-                    {count}
-                  </span>
-                )}
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {isCompleted ? "Дууссан" : "Дуусгах"}
               </button>
-            );
-          })}
-        </div>
+            )}
+
+            {/* Transcript toggle */}
+            {lesson.content && (
+              <button
+                onClick={() => setShowTranscript(!showTranscript)}
+                className={`rounded-[4px] border px-4 py-2.5 text-[12px] font-medium transition-all duration-200 ${
+                  showTranscript
+                    ? "border-[rgba(15,129,202,0.4)] bg-[rgba(15,129,202,0.1)] text-[#0F81CA]"
+                    : "border-[rgba(255,255,255,0.06)] text-[#6B6B6B] hover:text-[#FAFAFA]"
+                }`}
+              >
+                Тэмдэглэл
+              </button>
+            )}
+
+            {/* Reactions — minimized inline */}
+            {session && (
+              <div className="flex items-center gap-1 ml-auto">
+                {REACTION_KEYS.map((key) => {
+                  const data = reactions[key];
+                  const count = data?.count || 0;
+                  const reacted = data?.reacted || false;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => handleReaction(key)}
+                      disabled={reactingEmoji === key}
+                      className={`inline-flex items-center gap-1 rounded-[4px] px-2 py-1.5 transition-all duration-200 ${
+                        reacted
+                          ? "bg-[rgba(255,255,1,0.1)]"
+                          : "text-[#6B6B6B] hover:bg-[rgba(255,255,255,0.04)]"
+                      }`}
+                    >
+                      <ReactionIcon type={key} active={reacted} />
+                      {count > 0 && (
+                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#FFFF01]" : "text-[#6B6B6B]"}`}>{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {admin && (
+              <div className="flex items-center gap-2">
+                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-4 py-2 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]">Засах</button>
+                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
+              </div>
+            )}
+          </div>
+        </motion.div>
       )}
 
-      {/* Reactions display for non-logged-in */}
-      {!editing && !session && totalReactions > 0 && (
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          {REACTION_KEYS.filter((key) => (reactions[key]?.count || 0) > 0).map((key) => (
-            <div key={key} className="inline-flex items-center gap-1.5 rounded-[4px] bg-[rgba(0,0,0,0.04)] px-3 py-2">
-              <ReactionIcon type={key} active={false} />
-              <span className="text-[11px] font-bold text-[rgba(0,0,0,0.35)]">{reactions[key].count}</span>
+      {/* ─── Edit form ─── */}
+      {editing && (
+        <div className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-6 space-y-4">
+          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#FAFAFA] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]" />
+          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)] resize-none" placeholder="Тайлбар" />
+          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
+          <div className="flex items-center gap-3">
+            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]" placeholder="Видео URL" />
+            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+              {uploading ? `${uploadProgress}%` : "Файл"}
+              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
+            </label>
+          </div>
+          {uploading && (
+            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
+              <div className="h-full rounded-full bg-[#FFFF01] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
             </div>
-          ))}
+          )}
+          <div className="flex gap-3">
+            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
+            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-5 py-2.5 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]">Цуцлах</button>
+          </div>
         </div>
       )}
 
-      {/* Text content — blog article body */}
-      {lesson.content && !editing && (
-        <article className="mb-8">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="h-[2px] w-6 bg-[#0a0a0a]" />
-            <span className="text-[11px] font-bold tracking-[2px] uppercase text-[rgba(0,0,0,0.3)]">Хичээлийн тэмдэглэл</span>
+      {/* ─── Transcript Panel (toggleable) ─── */}
+      {lesson.content && !editing && showTranscript && (
+        <motion.article
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="mb-8 overflow-hidden"
+        >
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <div className="h-[2px] w-6 bg-[#FFFF01]" />
+              <span className="meta-label">Хичээлийн тэмдэглэл</span>
+            </div>
+            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#A3A3A3]">
+              {lesson.content}
+            </div>
           </div>
-          <div className="whitespace-pre-wrap text-[15px] leading-[2] text-[rgba(0,0,0,0.65)] lg:text-[16px]">
-            {lesson.content}
-          </div>
-        </article>
+        </motion.article>
       )}
     </div>
   );

@@ -2,8 +2,16 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PaywallGate from "@/components/PaywallGate";
+
+interface TaskData {
+  _id: string;
+  title: string;
+  description: string;
+  xpReward: number;
+  status: string;
+}
 
 export default function NewPost() {
   return (
@@ -24,7 +32,22 @@ function NewPostContent() {
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [category, setCategory] = useState<"мэдээлэл" | "ялалт">("мэдээлэл");
+  const [tasks, setTasks] = useState<TaskData[]>([]);
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Fetch open tasks
+  useEffect(() => {
+    fetch("/api/tasks")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.tasks) {
+          const openTasks = d.tasks.filter((t: TaskData) => t.status === "open");
+          setTasks(openTasks);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -87,14 +110,17 @@ function NewPostContent() {
     setLoading(true);
 
     try {
+      const body: Record<string, string | null> = {
+        content: content.trim(),
+        image: imageUrl,
+        category,
+      };
+      if (selectedTask) body.taskId = selectedTask;
+
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: content.trim(),
-          image: imageUrl,
-          category,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -110,33 +136,82 @@ function NewPostContent() {
 
   if (!session) return null;
 
+  const selTask = tasks.find((t) => t._id === selectedTask);
+
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 text-4xl tracking-[2px] text-[#ede8df]">
+      <h1 className="mb-2 text-[22px] font-bold text-[#FAFAFA]">
         Пост үүсгэх
       </h1>
-      <p className="mb-8 text-[11px] tracking-[2px] text-[#5a5550]">
-        ДИЖИТАЛ ҮНДЭСТЭНТЭЙ ХУВААЛЦААРАЙ
+      <p className="mb-6 text-[13px] text-[#6B6B6B]">
+        Дижитал үндэстэнтэй хуваалцаарай
       </p>
 
       {error && (
-        <div className="mb-6 border-l-2 border-[#FFFF01] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#FFFF01]">
+        <div className="mb-4 rounded-[4px] border border-red-900/50 bg-red-950/30 px-4 py-3 text-[12px] text-red-400">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="card p-5 md:p-6">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+          {/* Task selector */}
+          {tasks.length > 0 && (
+            <div className="mb-4 border-b border-[rgba(255,255,255,0.06)] pb-4">
+              <div className="mb-2 flex items-center gap-2">
+                <svg className="h-4 w-4 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span className="text-[11px] font-bold uppercase tracking-wide text-[#FFFF01]">Даалгавар сонгох</span>
+                <span className="text-[10px] text-[#6B6B6B]">· XP авах</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {tasks.map((task, i) => (
+                  <button
+                    key={task._id}
+                    type="button"
+                    onClick={() => setSelectedTask(selectedTask === task._id ? null : task._id)}
+                    className={`rounded-[4px] px-3 py-2 text-left transition ${
+                      selectedTask === task._id
+                        ? "border border-[rgba(255,255,1,0.4)] bg-[rgba(255,255,1,0.08)]"
+                        : "border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] hover:border-[rgba(255,255,255,0.15)]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[12px] font-bold ${selectedTask === task._id ? "text-[#FFFF01]" : "text-[#A3A3A3]"}`}>
+                        #{i + 1}
+                      </span>
+                      <span className={`text-[12px] font-semibold ${selectedTask === task._id ? "text-[#FAFAFA]" : "text-[#A3A3A3]"}`}>
+                        {task.title}
+                      </span>
+                      <span className="rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#FFFF01]">
+                        +{task.xpReward} XP
+                      </span>
+                    </div>
+                    {task.description && (
+                      <p className="mt-0.5 text-[10px] text-[#6B6B6B] line-clamp-1">{task.description}</p>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {selTask && (
+                <div className="mt-2 rounded-[4px] bg-[rgba(255,255,1,0.04)] border border-[rgba(255,255,1,0.1)] px-3 py-2 text-[11px] text-[#A3A3A3]">
+                  Энэ постыг <span className="font-bold text-[#FFFF01]">#{tasks.findIndex((t) => t._id === selectedTask) + 1} {selTask.title}</span> даалгавартай холбож <span className="font-bold text-[#FFFF01]">+{selTask.xpReward} XP</span> авна
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Category selector */}
-          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(240,236,227,0.06)] pb-4">
-            <span className="text-[10px] uppercase tracking-[1px] text-[#5a5550]">Ангилал:</span>
+          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(255,255,255,0.06)] pb-4">
+            <span className="text-[10px] uppercase tracking-[1px] text-[#6B6B6B]">Ангилал:</span>
             <button
               type="button"
               onClick={() => setCategory("мэдээлэл")}
               className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "мэдээлэл"
                   ? "bg-[rgba(255,255,1,0.1)] text-[#FFFF01] border border-[rgba(255,255,1,0.3)]"
-                  : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
+                  : "text-[#6B6B6B] border border-[rgba(255,255,255,0.06)] hover:text-[#A3A3A3]"
               }`}
             >
               Мэдээлэл
@@ -147,7 +222,7 @@ function NewPostContent() {
               className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                 category === "ялалт"
                   ? "bg-[rgba(255,255,1,0.1)] text-[#FFFF01] border border-[rgba(255,255,1,0.3)]"
-                  : "text-[#5a5550] border border-[#1c1c1c] hover:text-[#c8c8c0]"
+                  : "text-[#6B6B6B] border border-[rgba(255,255,255,0.06)] hover:text-[#A3A3A3]"
               }`}
             >
               Ялалт
@@ -160,11 +235,11 @@ function NewPostContent() {
             placeholder="Та юу бодож байна? (зурагтай бол заавал биш)"
             rows={4}
             maxLength={2000}
-            className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#ede8df] placeholder-[#5a5550] focus:outline-none"
+            className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#FAFAFA] placeholder-[#6B6B6B] focus:outline-none"
           />
 
           {imagePreview && (
-            <div className="relative mt-4 overflow-hidden border border-[#1c1c1c]">
+            <div className="relative mt-4 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)]">
               <img
                 src={imagePreview}
                 alt="Урьдчилан харах"
@@ -172,20 +247,15 @@ function NewPostContent() {
                 style={{ maxHeight: "480px" }}
               />
               {uploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-[rgba(3,3,3,0.7)]">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="h-3 w-3 animate-pulse bg-[#FFFF01]" />
-                    <span className="text-[10px] uppercase tracking-[0.5px] text-[#c8c8c0]">
-                      Оновчилж байна...
-                    </span>
-                  </div>
+                <div className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.7)]">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFFF01]" />
                 </div>
               )}
               {!uploading && (
                 <button
                   type="button"
                   onClick={removeImage}
-                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-[rgba(3,3,3,0.8)] text-[#c8c8c0] transition hover:bg-[#FFFF01] hover:text-white"
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(0,0,0,0.7)] text-white transition hover:bg-red-500"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -201,19 +271,19 @@ function NewPostContent() {
               onDragLeave={() => setDragOver(false)}
               onDrop={onDrop}
               onClick={() => fileRef.current?.click()}
-              className={`mt-4 flex cursor-pointer flex-col items-center gap-2 border border-dashed py-8 transition ${
+              className={`mt-4 flex cursor-pointer flex-col items-center gap-2 rounded-[4px] border border-dashed py-8 transition ${
                 dragOver
-                  ? "border-[#FFFF01] bg-[rgba(0,100,145,0.05)]"
-                  : "border-[#1c1c1c] hover:border-[rgba(240,236,227,0.15)]"
+                  ? "border-[#FFFF01] bg-[rgba(255,255,1,0.03)]"
+                  : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
               }`}
             >
-              <svg className="h-6 w-6 text-[#5a5550]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6 text-[#6B6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span className="text-[11px] tracking-[2px] text-[#5a5550]">
-                {dragOver ? "ЗУРГАА ЭНД ТАВИНА УУ" : "ЗУРАГ ДАРАХ ЭСВЭЛ ЧИРЭХ"}
+              <span className="text-[11px] text-[#6B6B6B]">
+                {dragOver ? "Зургаа энд тавина уу" : "Зураг дарах эсвэл чирэх"}
               </span>
-              <span className="text-[9px] text-[#3a3835]">
+              <span className="text-[9px] text-[#6B6B6B]">
                 JPEG, PNG, WebP, GIF · Хамгийн ихдээ 10MB
               </span>
             </div>
@@ -227,26 +297,34 @@ function NewPostContent() {
             className="hidden"
           />
 
-          <div className="flex items-center justify-between border-t border-[rgba(240,236,227,0.06)] pt-4 mt-4">
+          <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.06)] pt-4 mt-4">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] tracking-[2px] text-[#5a5550]">
+              <span className="text-[10px] text-[#6B6B6B]">
                 {content.length}/2000
               </span>
               {imageUrl && (
-                <span className="flex items-center gap-1 text-[10px] tracking-[2px] text-[#FFFF01]">
+                <span className="flex items-center gap-1 text-[10px] text-[#FFFF01]">
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   Зураг бэлэн
                 </span>
               )}
+              {selectedTask && (
+                <span className="flex items-center gap-1 text-[10px] text-[#FFFF01]">
+                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Даалгавар
+                </span>
+              )}
             </div>
             <button
               type="submit"
               disabled={!canPost}
-              className="btn-blood !py-2 !px-6 !text-[10px]"
+              className="rounded-[4px] bg-[#FFFF01] px-6 py-2 text-[12px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)] disabled:opacity-40"
             >
-              {loading ? "Нийтэлж байна..." : "Нийтлэх"}
+              {loading ? "Нийтлэж байна..." : selectedTask ? `Нийтлэх (+${selTask?.xpReward || 0} XP)` : "Нийтлэх"}
             </button>
           </div>
         </div>
