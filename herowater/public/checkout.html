@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Захиалга — Herowater</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <a href="/" class="nav-logo">HEROWATER</a>
+    <div class="nav-links">
+      <a href="/products.html">Бүтээгдэхүүн</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/contact.html">Холбоо барих</a>
+    </div>
+    <div class="nav-right">
+      <a href="/cart.html" class="nav-cart">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cartBadge"></span>
+      </a>
+    </div>
+  </nav>
+
+  <div style="height: 80px;"></div>
+
+  <section class="section" style="max-width:700px;">
+    <a href="/cart.html" style="font-size:13px;color:var(--text-muted);display:inline-block;margin-bottom:40px;">← Сагс руу буцах</a>
+    <p class="section-label">Захиалга</p>
+    <h1 class="section-title">Мэдээлэл бөглөх</h1>
+
+    <form id="checkoutForm" style="margin-top:40px;">
+      <div class="form-group">
+        <label class="form-label">Нэр *</label>
+        <input type="text" id="custName" required placeholder="Таны нэр">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Утас *</label>
+        <input type="tel" id="custPhone" required placeholder="99001122">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Имэйл</label>
+        <input type="email" id="custEmail" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Хүргэлтийн хаяг *</label>
+        <textarea id="custAddress" required rows="3" placeholder="Дүүрэг, хороо, байр, тоот"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Нэмэлт тэмдэглэл</label>
+        <textarea id="custNote" rows="2" placeholder="Хүргэлтийн цаг, орцны код гэх мэт"></textarea>
+      </div>
+
+      <div class="checkout-summary" id="checkoutSummary"></div>
+
+      <div class="form-group">
+        <label class="form-label">Төлбөрийн хэлбэр</label>
+        <select id="paymentMethod">
+          <option value="bank">Банкны шилжүүлэг</option>
+          <option value="qpay">QPay</option>
+          <option value="cash">Бэлнээр</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:24px;" id="submitBtn">Захиалга баталгаажуулах</button>
+      <div id="checkoutError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;"></div>
+    </form>
+
+    <div id="checkoutSuccess" style="display:none;text-align:center;padding:80px 0;">
+      <h2 style="margin-bottom:16px;">Захиалга амжилттай!</h2>
+      <p style="color:var(--text-secondary);margin-bottom:8px;">Таны захиалгын дугаар:</p>
+      <p style="font-size:24px;font-weight:700;margin-bottom:32px;" id="orderNumber"></p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:32px;">Бид тантай удахгүй холбогдох болно.</p>
+      <a href="/" class="btn btn-ghost">Нүүр хуудас</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">© 2026 Herowater. Бүх эрх хуулиар хамгаалагдсан.</div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

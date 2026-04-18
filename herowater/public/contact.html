@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Холбоо барих — Herowater</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <a href="/" class="nav-logo">HEROWATER</a>
+    <div class="nav-links">
+      <a href="/products.html">Бүтээгдэхүүн</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/contact.html">Холбоо барих</a>
+    </div>
+    <div class="nav-right">
+      <a href="/cart.html" class="nav-cart">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cartBadge"></span>
+      </a>
+    </div>
+  </nav>
+
+  <div style="height:80px;"></div>
+
+  <section class="section" style="max-width:700px;">
+    <p class="section-label">Холбоо барих</p>
+    <h1 class="section-title">Бидэнтэй холбогдох</h1>
+    <p class="section-desc" style="margin-bottom:48px;">Асуулт, санал хүсэлтээ бидэнд илгээнэ үү.</p>
+
+    <form id="contactForm">
+      <div class="form-group">
+        <label class="form-label">Нэр *</label>
+        <input type="text" id="contactName" required placeholder="Таны нэр">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Имэйл *</label>
+        <input type="email" id="contactEmail" required placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Утас</label>
+        <input type="tel" id="contactPhone" placeholder="99001122">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Мессеж *</label>
+        <textarea id="contactMessage" required rows="5" placeholder="Таны мессеж..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" id="contactBtn">Илгээх</button>
+      <div id="contactStatus" style="margin-top:12px;font-size:13px;display:none;"></div>
+    </form>
+
+    <div style="margin-top:80px;padding-top:40px;border-top:1px solid var(--border);">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;">
+        <div>
+          <h4 style="font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Утас</h4>
+          <p style="font-size:14px;color:var(--text-secondary);">+976 9999 0000</p>
+        </div>
+        <div>
+          <h4 style="font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Имэйл</h4>
+          <p style="font-size:14px;color:var(--text-secondary);">info@herowater.mn</p>
+        </div>
+        <div>
+          <h4 style="font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">Хаяг</h4>
+          <p style="font-size:14px;color:var(--text-secondary);">Улаанбаатар хот, Сүхбаатар дүүрэг</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">© 2026 Herowater. Бүх эрх хуулиар хамгаалагдсан.</div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('contactBtn');
+      const status = document.getElementById('contactStatus');
+      btn.disabled = true;
+      btn.textContent = 'Илгээж байна...';
+      status.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('contactName').value.trim(),
+            email: document.getElementById('contactEmail').value.trim(),
+            phone: document.getElementById('contactPhone').value.trim(),
+            message: document.getElementById('contactMessage').value.trim(),
+          }),
+        });
+        if (!res.ok) throw new Error();
+        status.textContent = 'Мессеж амжилттай илгээгдлээ!';
+        status.style.color = 'var(--success)';
+        status.style.display = 'block';
+        document.getElementById('contactForm').reset();
+      } catch {
+        status.textContent = 'Алдаа гарлаа. Дахин оролдоно уу.';
+        status.style.color = 'var(--danger)';
+        status.style.display = 'block';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Илгээх';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нэвтрэх — Herowater Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <a href="/" class="nav-logo">HEROWATER</a>
+  </nav>
+
+  <div style="height:80px;"></div>
+
+  <section class="section" style="max-width:400px;">
+    <h1 class="section-title" style="text-align:center;">Нэвтрэх</h1>
+    <form id="loginForm" style="margin-top:40px;">
+      <div class="form-group">
+        <label class="form-label">Имэйл</label>
+        <input type="email" id="loginEmail" required placeholder="admin@herowater.mn">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Нууц үг</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;" id="loginBtn">Нэвтрэх</button>
+      <div id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;"></div>
+    </form>
+  </section>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+      errorEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Нэвтэрч байна...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('loginEmail').value.trim(),
+            password: document.getElementById('loginPassword').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Алдаа');
+        localStorage.setItem('herowater_token', data.token);
+        location.href = '/admin.html';
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Нэвтрэх';
+      }
+    });
+  </script>
+</body>
+</html>

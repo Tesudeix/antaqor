@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бүтээгдэхүүн — Herowater</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <a href="/" class="nav-logo">HEROWATER</a>
+    <div class="nav-links">
+      <a href="/products.html">Бүтээгдэхүүн</a>
+      <a href="/about.html">Тухай</a>
+      <a href="/contact.html">Холбоо барих</a>
+    </div>
+    <div class="nav-right">
+      <a href="/cart.html" class="nav-cart">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cartBadge"></span>
+      </a>
+    </div>
+  </nav>
+
+  <div style="height: 80px;"></div>
+
+  <section class="section" id="productDetail" style="display:none;">
+    <a href="/products.html" style="font-size:13px;color:var(--text-muted);display:inline-block;margin-bottom:40px;">← Бүтээгдэхүүн</a>
+    <div class="product-detail">
+      <div class="product-detail-img" id="productImg"></div>
+      <div class="product-detail-info">
+        <p class="section-label" id="productCategory"></p>
+        <h1 class="section-title" id="productName"></h1>
+        <p class="product-detail-desc" id="productDesc"></p>
+        <div class="product-detail-volume" id="productVolume"></div>
+        <div class="product-detail-price" id="productPrice"></div>
+        <div class="product-detail-actions">
+          <div class="qty-control">
+            <button class="qty-btn" id="qtyMinus">−</button>
+            <span class="qty-num" id="qtyNum">1</span>
+            <button class="qty-btn" id="qtyPlus">+</button>
+          </div>
+          <button class="btn btn-primary" id="addToCartBtn">Сагсанд нэмэх</button>
+        </div>
+        <div class="product-detail-stock" id="productStock"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="loading" style="text-align:center;padding:200px 20px;color:var(--text-muted);">Уншиж байна...</div>
+
+  <footer class="footer">
+    <div class="footer-bottom">© 2026 Herowater. Бүх эрх хуулиар хамгаалагдсан.</div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/product-detail.js"></script>
+</body>
+</html>
