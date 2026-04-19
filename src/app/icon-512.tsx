@@ -20,7 +20,7 @@ export default function Icon512() {
           style={{
             fontSize: 350,
             fontWeight: 900,
-            color: "#FFFF01",
+            color: "#EF2C58",
             fontFamily: "Arial Black, sans-serif",
             lineHeight: 1,
           }}

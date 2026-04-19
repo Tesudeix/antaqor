@@ -48,10 +48,14 @@ export default function BottomBar() {
           ),
         },
         {
-          href: "/services",
-          label: "Үйлчилгээ",
+          href: "/classroom",
+          label: "Хичээл",
           badge: 0,
-          icon: servicesIcon,
+          icon: (
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          ),
         },
         {
           href: "/chat",
@@ -98,10 +102,14 @@ export default function BottomBar() {
           ),
         },
         {
-          href: "/services",
-          label: "Үйлчилгээ",
+          href: "/classroom",
+          label: "Хичээл",
           badge: 0,
-          icon: servicesIcon,
+          icon: (
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          ),
         },
         {
           href: "/announcements",
@@ -126,7 +134,7 @@ export default function BottomBar() {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.06)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,0,0,0.08)] bg-[rgba(248,248,246,0.95)] backdrop-blur-xl md:hidden">
       <div className="flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1">
         {links.map((link) => {
           const active = isActive(link.href);
@@ -135,20 +143,20 @@ export default function BottomBar() {
               key={link.label}
               href={link.href}
               className={`relative flex flex-col items-center gap-0.5 px-2 py-2 transition-colors duration-200 ${
-                active ? "text-[#FFFF01]" : "text-[#6B6B6B]"
+                active ? "text-[#EF2C58]" : "text-[#888888]"
               }`}
             >
               <div className="relative">
                 {link.icon}
                 {link.badge > 0 && (
-                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FFFF01] px-1 text-[8px] font-bold text-[#0A0A0A]">
+                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#EF2C58] px-1 text-[8px] font-bold text-[#F8F8F6]">
                     {link.badge > 99 ? "99+" : link.badge}
                   </span>
                 )}
               </div>
               <span className="text-[9px] font-semibold tracking-wide">{link.label}</span>
               {active && (
-                <div className="absolute -top-px left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#FFFF01]" />
+                <div className="absolute -top-px left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#EF2C58]" />
               )}
             </Link>
           );

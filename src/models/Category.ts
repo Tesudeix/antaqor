@@ -27,7 +27,7 @@ const CategorySchema = new Schema<ICategory>(
     },
     color: {
       type: String,
-      default: "#FFFF01",
+      default: "#EF2C58",
       trim: true,
     },
     order: {

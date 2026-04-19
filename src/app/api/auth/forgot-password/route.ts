@@ -50,20 +50,20 @@ export async function POST(req: NextRequest) {
       to: user.email,
       subject: "Нууц үг сэргээх — Antaqor",
       html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #0A0A0A; color: #FAFAFA; padding: 40px; border-radius: 4px;">
-          <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #FAFAFA;">
+        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #F8F8F6; color: #1A1A1A; padding: 40px; border-radius: 4px;">
+          <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #1A1A1A;">
             ANTAQOR
           </div>
-          <p style="font-size: 14px; color: #A3A3A3; line-height: 1.8; margin-bottom: 24px;">
-            Сайн байна уу, <strong style="color: #FAFAFA;">${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
+          <p style="font-size: 14px; color: #666666; line-height: 1.8; margin-bottom: 24px;">
+            Сайн байна уу, <strong style="color: #1A1A1A;">${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
           </p>
-          <a href="${resetUrl}" style="display: inline-block; background: #FFFF01; color: #0A0A0A; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
+          <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #F8F8F6; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
             Нууц үг сэргээх
           </a>
-          <p style="font-size: 11px; color: #6B6B6B; margin-top: 24px; line-height: 1.8;">
+          <p style="font-size: 11px; color: #888888; margin-top: 24px; line-height: 1.8;">
             Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
           </p>
-          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 10px; color: #6B6B6B; letter-spacing: 2px;">
+          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 10px; color: #888888; letter-spacing: 2px;">
             ANTAQOR
           </div>
         </div>

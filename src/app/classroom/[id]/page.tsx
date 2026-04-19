@@ -32,10 +32,10 @@ interface LessonData {
 const REACTION_KEYS = ["fire", "rocket", "think"];
 
 const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
-  const color = active ? "#FFFF01" : "currentColor";
+  const color = active ? "#EF2C58" : "currentColor";
   const props = { className: "h-[16px] w-[16px]", fill: "none", stroke: color, viewBox: "0 0 24 24", strokeWidth: active ? 2 : 1.5 };
   switch (type) {
-    case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(255,255,1,0.2)" : "none"} /></svg>);
+    case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(239,44,88,0.2)" : "none"} /></svg>);
     case "rocket": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>);
     case "think": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>);
     default: return null;
@@ -192,7 +192,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
+        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
       </div>
     );
   }
@@ -200,8 +200,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="text-[15px] text-[#6B6B6B]">Хичээл олдсонгүй</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">← Буцах</Link>
+        <p className="text-[15px] text-[#888888]">Хичээл олдсонгүй</p>
+        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -209,14 +209,14 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if ((lesson.requiredLevel || 0) > userLevel && !admin) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414]">
-          <svg className="h-7 w-7 text-[#6B6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]">
+          <svg className="h-7 w-7 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="text-[16px] font-bold text-[#FAFAFA]">LV.{lesson.requiredLevel} шаардлагатай</p>
-        <p className="mt-1.5 text-[14px] text-[#6B6B6B]">Таны түвшин: LV.{userLevel}</p>
-        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">← Буцах</Link>
+        <p className="text-[16px] font-bold text-[#1A1A1A]">LV.{lesson.requiredLevel} шаардлагатай</p>
+        <p className="mt-1.5 text-[14px] text-[#888888]">Таны түвшин: LV.{userLevel}</p>
+        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
   }
@@ -231,7 +231,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       <div className="mb-6 flex items-center justify-between">
         <Link
           href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]"
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -240,7 +240,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         </Link>
         {/* Lesson nav (prev/next) always visible */}
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#6B6B6B]">
+          <span className="text-[11px] text-[#888888]">
             {formatDistanceToNow(lesson.createdAt)}
           </span>
         </div>
@@ -252,7 +252,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]"
+          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6]"
         >
           {embedUrl ? (
             <div className="relative aspect-video w-full">
@@ -268,7 +268,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
               <source src={lesson.videoUrl} />
             </video>
           ) : (
-            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#FFFF01] transition-colors duration-200 hover:underline">
+            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">
               Видео нээх →
             </a>
           )}
@@ -283,9 +283,9 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
           className="mb-6"
         >
-          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#FAFAFA] sm:text-[32px]">{lesson.title}</h1>
+          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#1A1A1A] sm:text-[32px]">{lesson.title}</h1>
           {lesson.description && (
-            <p className="mt-3 text-[16px] leading-relaxed text-[#A3A3A3]">{lesson.description}</p>
+            <p className="mt-3 text-[16px] leading-relaxed text-[#666666]">{lesson.description}</p>
           )}
 
           {/* Actions row */}
@@ -295,8 +295,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 onClick={toggleComplete}
                 className={`flex items-center gap-2 rounded-[4px] px-5 py-2.5 text-[13px] font-bold transition-all duration-200 ${
                   isCompleted
-                    ? "bg-[rgba(255,255,1,0.1)] border border-[rgba(255,255,1,0.3)] text-[#FFFF01]"
-                    : "bg-[#FFFF01] text-[#0A0A0A] hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
+                    ? "bg-[rgba(239,44,88,0.1)] border border-[rgba(239,44,88,0.3)] text-[#EF2C58]"
+                    : "bg-[#EF2C58] text-[#F8F8F6] hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
                 }`}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,7 +313,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 className={`rounded-[4px] border px-4 py-2.5 text-[12px] font-medium transition-all duration-200 ${
                   showTranscript
                     ? "border-[rgba(15,129,202,0.4)] bg-[rgba(15,129,202,0.1)] text-[#0F81CA]"
-                    : "border-[rgba(255,255,255,0.06)] text-[#6B6B6B] hover:text-[#FAFAFA]"
+                    : "border-[rgba(0,0,0,0.08)] text-[#888888] hover:text-[#1A1A1A]"
                 }`}
               >
                 Тэмдэглэл
@@ -334,13 +334,13 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                       disabled={reactingEmoji === key}
                       className={`inline-flex items-center gap-1 rounded-[4px] px-2 py-1.5 transition-all duration-200 ${
                         reacted
-                          ? "bg-[rgba(255,255,1,0.1)]"
-                          : "text-[#6B6B6B] hover:bg-[rgba(255,255,255,0.04)]"
+                          ? "bg-[rgba(239,44,88,0.1)]"
+                          : "text-[#888888] hover:bg-[rgba(255,255,255,0.04)]"
                       }`}
                     >
                       <ReactionIcon type={key} active={reacted} />
                       {count > 0 && (
-                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#FFFF01]" : "text-[#6B6B6B]"}`}>{count}</span>
+                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#EF2C58]" : "text-[#888888]"}`}>{count}</span>
                       )}
                     </button>
                   );
@@ -350,8 +350,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
             {admin && (
               <div className="flex items-center gap-2">
-                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-4 py-2 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
+                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-4 py-2 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]">Засах</button>
+                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
               </div>
             )}
           </div>
@@ -360,25 +360,25 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
       {/* ─── Edit form ─── */}
       {editing && (
-        <div className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-6 space-y-4">
-          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#FAFAFA] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]" />
-          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)] resize-none" placeholder="Тайлбар" />
-          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
+        <div className="mb-8 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6 space-y-4">
+          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[18px] font-bold text-[#1A1A1A] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
+          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
+          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
           <div className="flex items-center gap-3">
-            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#FAFAFA] placeholder-[#6B6B6B] outline-none transition-colors duration-200 focus:border-[rgba(255,255,1,0.4)]" placeholder="Видео URL" />
-            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[14px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" placeholder="Видео URL" />
+            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
               {uploading ? `${uploadProgress}%` : "Файл"}
               <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
             </label>
           </div>
           {uploading && (
-            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
-              <div className="h-full rounded-full bg-[#FFFF01] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
+              <div className="h-full rounded-full bg-[#EF2C58] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
           <div className="flex gap-3">
-            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] px-5 py-2.5 text-[12px] font-medium text-[#6B6B6B] transition-colors duration-200 hover:text-[#FAFAFA]">Цуцлах</button>
+            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
+            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]">Цуцлах</button>
           </div>
         </div>
       )}
@@ -391,12 +391,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="mb-8 overflow-hidden"
         >
-          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-6">
+          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6">
             <div className="mb-4 flex items-center gap-2">
-              <div className="h-[2px] w-6 bg-[#FFFF01]" />
+              <div className="h-[2px] w-6 bg-[#EF2C58]" />
               <span className="meta-label">Хичээлийн тэмдэглэл</span>
             </div>
-            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#A3A3A3]">
+            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#666666]">
               {lesson.content}
             </div>
           </div>

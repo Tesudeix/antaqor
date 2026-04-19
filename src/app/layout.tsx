@@ -61,10 +61,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#0A0A0A" />
+        <meta name="theme-color" content="#F8F8F6" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className="bg-[#0A0A0A] text-[#FAFAFA]">
+      <body className="bg-[#F8F8F6] text-[#1A1A1A]">
         <Providers>
           <Navbar />
           <main className="min-h-screen w-full px-4 pb-28 pt-6 sm:px-6 md:px-8 md:pb-12 lg:px-12">

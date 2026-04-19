@@ -156,13 +156,13 @@ export default function AdminInfluencersPage() {
     } catch {}
   };
 
-  const ic = "w-full rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#e8e6e1] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#3a3835]";
-  const sc = "rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#e8e6e1] outline-none focus:border-[rgba(255,255,1,0.4)]";
+  const ic = "w-full rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#3a3835]";
+  const sc = "rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none focus:border-[rgba(239,44,88,0.4)]";
 
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
       </div>
     );
   }
@@ -172,11 +172,11 @@ export default function AdminInfluencersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl tracking-[2px]">
-            INFLUENCER <span className="text-[#FFFF01]">УДИРДЛАГА</span>
+            INFLUENCER <span className="text-[#EF2C58]">УДИРДЛАГА</span>
           </h1>
           <p className="mt-1 text-[11px] text-[#5a5550]">{influencers.length} инфлүүнсер бүртгэгдсэн</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]">
           + Нэмэх
         </button>
       </div>
@@ -190,7 +190,7 @@ export default function AdminInfluencersPage() {
       {/* Form */}
       {showForm && (
         <div className="rounded-[4px] border border-[#1c1c1c] bg-[#111] p-5 space-y-4">
-          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01]">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58]">
             {editing ? "Засварлах" : "Шинэ инфлүүнсер"}
           </div>
 
@@ -247,11 +247,11 @@ export default function AdminInfluencersPage() {
             </select>
             <input type="number" value={form.order} onChange={(e) => setForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))} placeholder="Order" className={`${ic} w-20`} />
             <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
-              <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#FFFF01]" />
+              <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#EF2C58]" />
               Featured
             </label>
             <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
-              <input type="checkbox" checked={form.verified} onChange={(e) => setForm((f) => ({ ...f, verified: e.target.checked }))} className="accent-[#FFFF01]" />
+              <input type="checkbox" checked={form.verified} onChange={(e) => setForm((f) => ({ ...f, verified: e.target.checked }))} className="accent-[#EF2C58]" />
               Verified
             </label>
           </div>
@@ -260,7 +260,7 @@ export default function AdminInfluencersPage() {
           <input value={form.portfolio} onChange={(e) => setForm((f) => ({ ...f, portfolio: e.target.value }))} placeholder="Portfolio URLs (таслалаар)" className={ic} />
 
           <div className="flex items-center gap-2 pt-1">
-            <button onClick={handleSave} disabled={!form.name.trim() || !form.slug.trim() || saving} className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)] disabled:opacity-40">
+            <button onClick={handleSave} disabled={!form.name.trim() || !form.slug.trim() || saving} className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-40">
               {saving ? "Хадгалж байна..." : editing ? "Шинэчлэх" : "Нэмэх"}
             </button>
             <button onClick={resetForm} className="rounded-[4px] border border-[#1c1c1c] px-4 py-2.5 text-[12px] text-[#5a5550] transition hover:text-[#c8c8c0]">
@@ -279,31 +279,31 @@ export default function AdminInfluencersPage() {
               {inf.avatar ? (
                 <img src={inf.avatar} alt={inf.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1c1c1c] text-[14px] font-black text-[#FFFF01]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1c1c1c] text-[14px] font-black text-[#EF2C58]">
                   {inf.name.charAt(0)}
                 </div>
               )}
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-bold text-[#e8e6e1]">{inf.name}</span>
+                  <span className="text-[14px] font-bold text-[#1A1A1A]">{inf.name}</span>
                   {inf.verified && (
-                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFFF01]">
-                      <svg className="h-2.5 w-2.5 text-[#0A0A0A]" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /></svg>
+                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#EF2C58]">
+                      <svg className="h-2.5 w-2.5 text-[#F8F8F6]" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /></svg>
                     </div>
                   )}
-                  {inf.featured && <span className="rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#FFFF01]">TOP</span>}
+                  {inf.featured && <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#EF2C58]">TOP</span>}
                   <span className={`text-[10px] font-bold ${st?.color || "text-[#5a5550]"}`}>{st?.label}</span>
                 </div>
                 <div className="flex items-center gap-3 mt-0.5">
                   <span className="text-[11px] text-[#5a5550]">{inf.category}</span>
-                  <span className="text-[11px] font-bold text-[#FFFF01]">{formatNum(inf.stats?.followers || 0)} дагагч</span>
+                  <span className="text-[11px] font-bold text-[#EF2C58]">{formatNum(inf.stats?.followers || 0)} дагагч</span>
                   {inf.stats?.engagement > 0 && <span className="text-[11px] text-[#5a5550]">ER: {inf.stats.engagement}%</span>}
                 </div>
               </div>
 
               <div className="flex shrink-0 gap-2">
-                <button onClick={() => startEdit(inf)} className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-[#FFFF01] transition hover:border-[rgba(255,255,1,0.3)]">
+                <button onClick={() => startEdit(inf)} className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]">
                   Засах
                 </button>
                 <button onClick={() => handleDelete(inf._id)} className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50">

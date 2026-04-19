@@ -19,10 +19,10 @@ export default function OGImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline" }}>
-          <span style={{ fontSize: 120, fontWeight: 900, color: "#e8e6e1", fontFamily: "Arial Black, sans-serif" }}>
+          <span style={{ fontSize: 120, fontWeight: 900, color: "#1A1A1A", fontFamily: "Arial Black, sans-serif" }}>
             ANTA
           </span>
-          <span style={{ fontSize: 120, fontWeight: 900, color: "#FFFF01", fontFamily: "Arial Black, sans-serif" }}>
+          <span style={{ fontSize: 120, fontWeight: 900, color: "#EF2C58", fontFamily: "Arial Black, sans-serif" }}>
             QOR
           </span>
         </div>

@@ -34,10 +34,10 @@ export default function BrandbooksPage() {
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-[4px] text-[#C8943A]">
           Antaqor
         </p>
-        <h1 className="text-[28px] font-bold leading-tight text-[#e8e6e1]">
+        <h1 className="text-[28px] font-bold leading-tight text-[#1A1A1A]">
           Brand Books
         </h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-[#6b6b78]">
+        <p className="mt-2 text-[14px] leading-relaxed text-[#888888]">
           Antaqor-ын бүтээгдэхүүн, брэндүүдийн дизайн удирдамж
         </p>
       </div>
@@ -48,7 +48,7 @@ export default function BrandbooksPage() {
           <Link
             key={book.slug}
             href={`/brandbooks/${book.slug}`}
-            className="group relative overflow-hidden rounded-[4px] border border-[#1a1a22] bg-[#0c0c10] p-6 transition hover:border-[#2a2a34] hover:bg-[#0e0e14]"
+            className="group relative overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6 transition hover:border-[#2a2a34] hover:bg-[#0e0e14]"
           >
             {/* Background accent */}
             <div
@@ -67,7 +67,7 @@ export default function BrandbooksPage() {
                     >
                       {book.name}
                     </h2>
-                    <p className="text-[11px] uppercase tracking-[2px] text-[#6b6b78]">
+                    <p className="text-[11px] uppercase tracking-[2px] text-[#888888]">
                       {book.nameMn}
                     </p>
                   </div>
@@ -78,10 +78,10 @@ export default function BrandbooksPage() {
               </div>
 
               <div className="flex flex-col items-end gap-1">
-                <span className="rounded-[4px] bg-[#1a1a22] px-2 py-0.5 text-[10px] font-medium text-[#6b6b78]">
+                <span className="rounded-[4px] bg-[rgba(0,0,0,0.08)] px-2 py-0.5 text-[10px] font-medium text-[#888888]">
                   {book.version}
                 </span>
-                <span className="text-[10px] text-[#3a3a48]">{book.year}</span>
+                <span className="text-[10px] text-[#AAAAAA]">{book.year}</span>
               </div>
             </div>
 
@@ -100,7 +100,7 @@ export default function BrandbooksPage() {
               ].map((ch) => (
                 <span
                   key={ch}
-                  className="rounded-[4px] bg-[#14141a] px-2 py-0.5 text-[10px] text-[#3a3a48]"
+                  className="rounded-[4px] bg-[#14141a] px-2 py-0.5 text-[10px] text-[#AAAAAA]"
                 >
                   {ch}
                 </span>
@@ -108,7 +108,7 @@ export default function BrandbooksPage() {
             </div>
 
             {/* Arrow */}
-            <div className="mt-4 text-right text-[12px] text-[#3a3a48] transition group-hover:text-[#6b6b78]">
+            <div className="mt-4 text-right text-[12px] text-[#AAAAAA] transition group-hover:text-[#888888]">
               Дэлгэрэнгүй &rarr;
             </div>
           </Link>

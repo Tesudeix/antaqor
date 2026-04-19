@@ -94,14 +94,14 @@ function StatsBar() {
         { label: "Идэвхтэй", value: stats.paidMembers, icon: "M13 10V3L4 14h7v7l9-11h-7z" },
         { label: "Зорилго", value: stats.goal, icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" },
       ].map((s) => (
-        <div key={s.label} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4 text-center">
-          <svg className="mx-auto mb-2 h-5 w-5 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div key={s.label} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4 text-center">
+          <svg className="mx-auto mb-2 h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={s.icon} />
           </svg>
-          <div className="text-[22px] font-bold text-[#FAFAFA]">
+          <div className="text-[22px] font-bold text-[#1A1A1A]">
             <AnimatedNumber value={s.value} />
           </div>
-          <div className="mt-0.5 text-[10px] font-medium text-[#6B6B6B]">{s.label}</div>
+          <div className="mt-0.5 text-[10px] font-medium text-[#888888]">{s.label}</div>
         </div>
       ))}
     </div>
@@ -125,10 +125,10 @@ function ShowcaseGallery() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#FFFF01]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#FAFAFA]">БҮТЭЭЛҮҮД</span>
+          <div className="h-[2px] w-4 bg-[#EF2C58]" />
+          <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A1A1A]">БҮТЭЭЛҮҮД</span>
         </div>
-        <Link href="/auth/signup" className="text-[11px] font-bold text-[#6B6B6B] transition hover:text-[#FFFF01]">
+        <Link href="/auth/signup" className="text-[11px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
           Бүгдийг үзэх
         </Link>
       </div>
@@ -137,7 +137,7 @@ function ShowcaseGallery() {
           <Link
             key={post._id}
             href="/auth/signup"
-            className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#141414]"
+            className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#FFFFFF]"
           >
             <Image
               src={post.image}
@@ -150,12 +150,12 @@ function ShowcaseGallery() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
             {/* Author */}
             <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 p-2.5 opacity-0 transition group-hover:opacity-100">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFFF01] text-[8px] font-bold text-[#0A0A0A]">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58] text-[8px] font-bold text-[#F8F8F6]">
                 {post.author?.name?.charAt(0) || "?"}
               </div>
               <span className="text-[10px] font-bold text-white">{post.author?.name}</span>
               {post.author?.level && post.author.level > 0 && (
-                <span className="rounded-[4px] bg-[rgba(255,255,1,0.2)] px-1 py-0.5 text-[8px] font-bold text-[#FFFF01]">
+                <span className="rounded-[4px] bg-[rgba(239,44,88,0.2)] px-1 py-0.5 text-[8px] font-bold text-[#EF2C58]">
                   LV.{post.author.level}
                 </span>
               )}
@@ -187,13 +187,13 @@ function Leaderboard() {
 
   if (users.length === 0) return null;
 
-  const medals = ["#FFFF01", "#C0C0C0", "#CD7F32"];
+  const medals = ["#EF2C58", "#C0C0C0", "#CD7F32"];
 
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
-        <div className="h-[2px] w-4 bg-[#FFFF01]" />
-        <span className="text-[12px] font-bold tracking-[0.1em] text-[#FAFAFA]">ТЭРГҮҮЛЭГЧИД</span>
+        <div className="h-[2px] w-4 bg-[#EF2C58]" />
+        <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A1A1A]">ТЭРГҮҮЛЭГЧИД</span>
       </div>
       <div className="space-y-1.5">
         {users.slice(0, 5).map((user, i) => (
@@ -201,8 +201,8 @@ function Leaderboard() {
             key={user._id}
             className={`flex items-center gap-3 rounded-[4px] px-4 py-3 transition ${
               i === 0
-                ? "border border-[rgba(255,255,1,0.15)] bg-[rgba(255,255,1,0.04)]"
-                : "border border-[rgba(255,255,255,0.06)] bg-[#141414]"
+                ? "border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.04)]"
+                : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]"
             }`}
           >
             {/* Rank */}
@@ -210,7 +210,7 @@ function Leaderboard() {
               className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black"
               style={{
                 backgroundColor: i < 3 ? `${medals[i]}20` : "rgba(255,255,255,0.04)",
-                color: i < 3 ? medals[i] : "#6B6B6B",
+                color: i < 3 ? medals[i] : "#888888",
               }}
             >
               {i + 1}
@@ -220,21 +220,21 @@ function Leaderboard() {
             {user.avatar ? (
               <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0A0A0A] text-[11px] font-bold text-[#FFFF01]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F8F8F6] text-[11px] font-bold text-[#EF2C58]">
                 {user.name.charAt(0)}
               </div>
             )}
 
             {/* Name + Level */}
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[13px] font-bold text-[#FAFAFA]">{user.name}</div>
-              <div className="text-[10px] text-[#6B6B6B]">Level {user.level}</div>
+              <div className="truncate text-[13px] font-bold text-[#1A1A1A]">{user.name}</div>
+              <div className="text-[10px] text-[#888888]">Level {user.level}</div>
             </div>
 
             {/* XP */}
             <div className="text-right">
-              <div className="text-[14px] font-bold text-[#FFFF01]">{user.xp.toLocaleString()}</div>
-              <div className="text-[9px] text-[#6B6B6B]">XP</div>
+              <div className="text-[14px] font-bold text-[#EF2C58]">{user.xp.toLocaleString()}</div>
+              <div className="text-[9px] text-[#888888]">XP</div>
             </div>
           </div>
         ))}
@@ -247,10 +247,10 @@ function Leaderboard() {
 function SocialProof({ stats }: { stats: StatsData | null }) {
   if (!stats || stats.paidMembers === 0) return null;
   return (
-    <div className="flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,1,0.1)] bg-[rgba(255,255,1,0.03)] px-4 py-2.5">
+    <div className="flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.1)] bg-[rgba(239,44,88,0.03)] px-4 py-2.5">
       <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-      <span className="text-[12px] text-[#A3A3A3]">
-        <span className="font-bold text-[#FAFAFA]">{stats.paidMembers}</span> хүн одоо идэвхтэй
+      <span className="text-[12px] text-[#666666]">
+        <span className="font-bold text-[#1A1A1A]">{stats.paidMembers}</span> хүн одоо идэвхтэй
       </span>
     </div>
   );
@@ -279,15 +279,15 @@ function ValueProps() {
   return (
     <div className="space-y-2">
       {props.map((p) => (
-        <div key={p.title} className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(255,255,1,0.08)]">
-            <svg className="h-4.5 w-4.5 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div key={p.title} className="flex items-start gap-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.08)]">
+            <svg className="h-4.5 w-4.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={p.icon} />
             </svg>
           </div>
           <div>
-            <div className="text-[13px] font-bold text-[#FAFAFA]">{p.title}</div>
-            <div className="mt-0.5 text-[12px] text-[#6B6B6B]">{p.desc}</div>
+            <div className="text-[13px] font-bold text-[#1A1A1A]">{p.title}</div>
+            <div className="mt-0.5 text-[12px] text-[#888888]">{p.desc}</div>
           </div>
         </div>
       ))}
@@ -316,10 +316,10 @@ function HeroLanding() {
 
       {/* Tagline */}
       <div className="text-center">
-        <h2 className="text-[18px] font-bold leading-tight text-[#FAFAFA]">
+        <h2 className="text-[18px] font-bold leading-tight text-[#1A1A1A]">
           AI-г эзэмшиж, орлогоо өсгө
         </h2>
-        <p className="mt-1.5 text-[13px] text-[#6B6B6B]">
+        <p className="mt-1.5 text-[13px] text-[#888888]">
           Монголын хамгийн идэвхтэй AI бүтээгчдийн нийгэмлэг
         </p>
       </div>
@@ -327,7 +327,7 @@ function HeroLanding() {
       {/* CTA — urgent */}
       <Link
         href="/auth/signup"
-        className="group relative block w-full overflow-hidden rounded-[4px] bg-[#FFFF01] py-4 text-center text-[14px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_40px_rgba(255,255,1,0.35)]"
+        className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[14px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_40px_rgba(239,44,88,0.35)]"
       >
         <span className="relative z-10">Үнэгүй эхлэх</span>
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -346,20 +346,20 @@ function HeroLanding() {
       <Leaderboard />
 
       {/* Final CTA */}
-      <div className="rounded-[4px] border border-[rgba(255,255,1,0.15)] bg-[rgba(255,255,1,0.03)] p-6 text-center">
-        <h3 className="text-[16px] font-bold text-[#FAFAFA]">Бэлэн үү?</h3>
-        <p className="mt-1 text-[12px] text-[#6B6B6B]">
+      <div className="rounded-[4px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.03)] p-6 text-center">
+        <h3 className="text-[16px] font-bold text-[#1A1A1A]">Бэлэн үү?</h3>
+        <p className="mt-1 text-[12px] text-[#888888]">
           Өнөөдрөөс AI-н ирээдүйд хөрөнгө оруулаарай
         </p>
         <Link
           href="/auth/signup"
-          className="mt-4 inline-block rounded-[4px] bg-[#FFFF01] px-8 py-3 text-[13px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_32px_rgba(255,255,1,0.3)]"
+          className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]"
         >
           Нэгдэх
         </Link>
-        <p className="mt-3 text-[11px] text-[#6B6B6B]">
+        <p className="mt-3 text-[11px] text-[#888888]">
           Гишүүн үү?{" "}
-          <Link href="/auth/signin" className="font-bold text-[#FFFF01] hover:underline">
+          <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
             Нэвтрэх
           </Link>
         </p>
@@ -373,7 +373,7 @@ function HeroLanding() {
           { href: "https://www.youtube.com/@antaqor", label: "YouTube", d: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
           { href: "https://www.tiktok.com/@antaqor", label: "TikTok", d: "M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13a8.28 8.28 0 005.58 2.16v-3.44a4.85 4.85 0 01-3.77-1.26V6.69h3.77z" },
         ].map((s) => (
-          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#141414] text-[#6B6B6B] transition hover:text-[#FFFF01]" aria-label={s.label}>
+          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#FFFFFF] text-[#888888] transition hover:text-[#EF2C58]" aria-label={s.label}>
             <svg className="h-[14px] w-[14px]" fill="currentColor" viewBox="0 0 24 24"><path d={s.d} /></svg>
           </a>
         ))}
@@ -445,7 +445,7 @@ export default function Home() {
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
+        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
       </div>
     );
   }
@@ -460,7 +460,7 @@ export default function Home() {
     <div className="mx-auto max-w-3xl">
       {/* Feed header */}
       <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
+        <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-1">
           {([
             { key: "all" as CategoryFilter, label: "Бүгд" },
             { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл" },
@@ -471,15 +471,15 @@ export default function Home() {
               onClick={() => switchCategory(tab.key)}
               className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
                 category === tab.key
-                  ? "bg-[#FFFF01] text-[#0A0A0A]"
-                  : "text-[#6B6B6B] hover:text-[#A3A3A3]"
+                  ? "bg-[#EF2C58] text-[#F8F8F6]"
+                  : "text-[#888888] hover:text-[#666666]"
               }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <Link href="/posts/new" className="rounded-[4px] bg-[#FFFF01] px-5 py-2 text-[12px] font-bold text-[#0A0A0A] transition-all duration-200 hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]">
+        <Link href="/posts/new" className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]">
           + Пост
         </Link>
       </div>
@@ -487,12 +487,12 @@ export default function Home() {
       {/* Posts */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#FFFF01]" />
+          <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
         </div>
       ) : posts.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-[15px] text-[#6B6B6B]">Одоогоор нийтлэл байхгүй</p>
-          <Link href="/posts/new" className="mt-6 inline-block rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[13px] font-bold text-[#0A0A0A]">
+          <p className="text-[15px] text-[#888888]">Одоогоор нийтлэл байхгүй</p>
+          <Link href="/posts/new" className="mt-6 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-[#F8F8F6]">
             Пост үүсгэх
           </Link>
         </div>
@@ -503,7 +503,7 @@ export default function Home() {
           ))}
           {hasMore && (
             <div className="flex justify-center py-8">
-              <button onClick={loadMore} className="text-[13px] font-bold text-[#6B6B6B] transition hover:text-[#FFFF01]">
+              <button onClick={loadMore} className="text-[13px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
                 Цааш үзэх
               </button>
             </div>

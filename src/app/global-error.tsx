@@ -27,7 +27,7 @@ export default function GlobalError({
               fontFamily: "Bebas Neue, sans-serif",
               fontSize: "72px",
               letterSpacing: "6px",
-              color: "#FFFF01",
+              color: "#EF2C58",
             }}
           >
             ERROR
@@ -39,7 +39,7 @@ export default function GlobalError({
             <button
               onClick={() => reset()}
               style={{
-                background: "#FFFF01",
+                background: "#EF2C58",
                 color: "#ede8df",
                 border: "none",
                 padding: "10px 24px",

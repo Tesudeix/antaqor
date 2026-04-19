@@ -146,13 +146,13 @@ export default function AdminServicesPage() {
     } catch {}
   };
 
-  const inputClass = "w-full rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#e8e6e1] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#3a3835]";
-  const selectClass = "rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#e8e6e1] outline-none transition focus:border-[rgba(255,255,1,0.4)]";
+  const inputClass = "w-full rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#3a3835]";
+  const selectClass = "rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)]";
 
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default function AdminServicesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl tracking-[2px]">
-            ҮЙЛЧИЛГЭЭ <span className="text-[#FFFF01]">УДИРДЛАГА</span>
+            ҮЙЛЧИЛГЭЭ <span className="text-[#EF2C58]">УДИРДЛАГА</span>
           </h1>
           <p className="mt-1 text-[11px] text-[#5a5550]">
             {services.length} үйлчилгээ бүртгэгдсэн
@@ -170,7 +170,7 @@ export default function AdminServicesPage() {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
+          className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
         >
           + Нэмэх
         </button>
@@ -185,7 +185,7 @@ export default function AdminServicesPage() {
       {/* Form */}
       {showForm && (
         <div className="rounded-[4px] border border-[#1c1c1c] bg-[#111] p-5 space-y-3">
-          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01] mb-2">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] mb-2">
             {editing ? "Засварлах" : "Шинэ үйлчилгээ"}
           </div>
 
@@ -282,7 +282,7 @@ export default function AdminServicesPage() {
                 type="checkbox"
                 checked={form.featured}
                 onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-                className="accent-[#FFFF01]"
+                className="accent-[#EF2C58]"
               />
               Featured
             </label>
@@ -299,7 +299,7 @@ export default function AdminServicesPage() {
             <button
               onClick={handleSave}
               disabled={!form.name.trim() || !form.slug.trim() || saving}
-              className="rounded-[4px] bg-[#FFFF01] px-5 py-2.5 text-[12px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)] disabled:opacity-40"
+              className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-40"
             >
               {saving ? "Хадгалж байна..." : editing ? "Шинэчлэх" : "Нэмэх"}
             </button>
@@ -320,16 +320,16 @@ export default function AdminServicesPage() {
           return (
             <div key={s._id} className="flex items-center gap-4 rounded-[4px] border border-[#1c1c1c] bg-[#111] p-4">
               {/* Icon */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[#1c1c1c] text-[14px] font-black text-[#FFFF01]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[#1c1c1c] text-[14px] font-black text-[#EF2C58]">
                 {s.name.charAt(0)}
               </div>
 
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-bold text-[#e8e6e1]">{s.name}</span>
+                  <span className="text-[14px] font-bold text-[#1A1A1A]">{s.name}</span>
                   {s.featured && (
-                    <span className="rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#FFFF01]">
+                    <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#EF2C58]">
                       FEATURED
                     </span>
                   )}
@@ -348,7 +348,7 @@ export default function AdminServicesPage() {
               <div className="flex shrink-0 gap-2">
                 <button
                   onClick={() => startEdit(s)}
-                  className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-[#FFFF01] transition hover:border-[rgba(255,255,1,0.3)]"
+                  className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]"
                 >
                   Засах
                 </button>

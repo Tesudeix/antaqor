@@ -13,11 +13,11 @@ interface AnnouncementData {
 }
 
 const TAG_STYLES: Record<string, { bg: string; text: string }> = {
-  "мэдэгдэл": { bg: "bg-[rgba(255,255,1,0.12)]", text: "text-[#FFFF01]" },
+  "мэдэгдэл": { bg: "bg-[rgba(239,44,88,0.12)]", text: "text-[#EF2C58]" },
   "шинэчлэл": { bg: "bg-[rgba(34,197,94,0.12)]", text: "text-green-400" },
   "AI": { bg: "bg-[rgba(99,102,241,0.12)]", text: "text-indigo-400" },
   "эвент": { bg: "bg-[rgba(249,115,22,0.12)]", text: "text-orange-400" },
-  "бусад": { bg: "bg-[rgba(255,255,255,0.06)]", text: "text-[#6B6B6B]" },
+  "бусад": { bg: "bg-[rgba(0,0,0,0.08)]", text: "text-[#888888]" },
 };
 
 function timeAgo(dateStr: string) {
@@ -50,7 +50,7 @@ export default function AnnouncementsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFFF01]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
       </div>
     );
   }
@@ -60,12 +60,12 @@ export default function AnnouncementsPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2.5">
-          <svg className="h-5 w-5 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
           </svg>
-          <h1 className="text-[22px] font-bold text-[#FAFAFA]">Мэдэгдэл</h1>
+          <h1 className="text-[22px] font-bold text-[#1A1A1A]">Мэдэгдэл</h1>
         </div>
-        <p className="mt-1 text-[13px] text-[#6B6B6B]">
+        <p className="mt-1 text-[13px] text-[#888888]">
           Antaqor-ын мэдэгдэл, шинэчлэл, эвентүүд
         </p>
       </div>
@@ -83,8 +83,8 @@ export default function AnnouncementsPage() {
                 key={a._id}
                 className={`rounded-[4px] border transition ${
                   a.pinned
-                    ? "border-[rgba(255,255,1,0.15)] bg-[#141414] shadow-[0_0_20px_rgba(255,255,1,0.04)]"
-                    : "border-[rgba(255,255,255,0.06)] bg-[#141414]"
+                    ? "border-[rgba(239,44,88,0.15)] bg-[#FFFFFF] shadow-[0_0_20px_rgba(239,44,88,0.04)]"
+                    : "border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]"
                 }`}
               >
                 {/* Image */}
@@ -102,7 +102,7 @@ export default function AnnouncementsPage() {
                   {/* Tag + Time row */}
                   <div className="mb-2.5 flex items-center gap-2">
                     {a.pinned && (
-                      <span className="flex items-center gap-1 rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#FFFF01]">
+                      <span className="flex items-center gap-1 rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">
                         <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
                         </svg>
@@ -112,18 +112,18 @@ export default function AnnouncementsPage() {
                     <span className={`rounded-[4px] px-1.5 py-0.5 text-[9px] font-bold ${style.bg} ${style.text}`}>
                       {a.tag.toUpperCase()}
                     </span>
-                    <span className="text-[10px] font-semibold text-[#6B6B6B]">
+                    <span className="text-[10px] font-semibold text-[#888888]">
                       {timeAgo(a.createdAt)}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-[15px] font-bold leading-snug text-[#FAFAFA]">
+                  <h3 className="text-[15px] font-bold leading-snug text-[#1A1A1A]">
                     {a.title}
                   </h3>
 
                   {/* Content */}
-                  <p className="mt-2 text-[13px] leading-relaxed text-[#A3A3A3]">
+                  <p className="mt-2 text-[13px] leading-relaxed text-[#666666]">
                     {needsTruncate && !isExpanded
                       ? a.content.slice(0, 200) + "..."
                       : a.content}
@@ -132,7 +132,7 @@ export default function AnnouncementsPage() {
                   {needsTruncate && (
                     <button
                       onClick={() => setExpanded(isExpanded ? null : a._id)}
-                      className="mt-2 text-[12px] font-bold text-[#FFFF01] transition hover:text-[#e6e600]"
+                      className="mt-2 text-[12px] font-bold text-[#EF2C58] transition hover:text-[#D4264E]"
                     >
                       {isExpanded ? "Хураах" : "Дэлгэрэнгүй"}
                     </button>
@@ -144,10 +144,10 @@ export default function AnnouncementsPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <svg className="mx-auto mb-4 h-12 w-12 text-[#6B6B6B] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto mb-4 h-12 w-12 text-[#888888] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
           </svg>
-          <p className="text-[14px] text-[#6B6B6B]">Одоогоор мэдэгдэл байхгүй</p>
+          <p className="text-[14px] text-[#888888]">Одоогоор мэдэгдэл байхгүй</p>
         </div>
       )}
     </div>

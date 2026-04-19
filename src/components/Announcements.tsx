@@ -13,7 +13,7 @@ interface AnnouncementData {
 }
 
 const TAG_STYLES: Record<string, { bg: string; text: string }> = {
-  "мэдэгдэл": { bg: "bg-[rgba(255,255,1,0.15)]", text: "text-[#8a8a00]" },
+  "мэдэгдэл": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#8a8a00]" },
   "шинэчлэл": { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-green-600" },
   "AI": { bg: "bg-[rgba(99,102,241,0.1)]", text: "text-indigo-500" },
   "эвент": { bg: "bg-[rgba(249,115,22,0.1)]", text: "text-orange-500" },
@@ -105,7 +105,7 @@ export default function Announcements() {
                 <div className="mb-2 flex items-center gap-2">
                   {a.pinned && (
                     <span className={`flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[9px] font-black ${
-                      a.pinned ? "bg-[rgba(255,255,1,0.2)] text-[#FFFF01]" : ""
+                      a.pinned ? "bg-[rgba(239,44,88,0.2)] text-[#EF2C58]" : ""
                     }`}>
                       <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
@@ -148,7 +148,7 @@ export default function Announcements() {
                     onClick={() => setExpanded(isExpanded ? null : a._id)}
                     className={`mt-1.5 text-[11px] font-bold transition ${
                       a.pinned
-                        ? "text-[#FFFF01] hover:text-[#e6e600]"
+                        ? "text-[#EF2C58] hover:text-[#D4264E]"
                         : "text-[#0a0a0a] hover:underline"
                     }`}
                   >

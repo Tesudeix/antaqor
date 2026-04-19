@@ -21,7 +21,7 @@ function ResetPasswordForm() {
   if (!ready) {
     return (
       <div className="flex justify-center py-8">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-[#FFFF01]" />
+        <div className="h-3 w-3 animate-pulse rounded-full bg-[#EF2C58]" />
       </div>
     );
   }
@@ -29,12 +29,12 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="text-center py-4">
-        <p className="mb-4 text-[14px] text-[#A3A3A3]">
+        <p className="mb-4 text-[14px] text-[#666666]">
           Холбоос хүчингүй байна
         </p>
         <Link
           href="/auth/forgot-password"
-          className="inline-block rounded-[4px] bg-[#FFFF01] px-6 py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110"
+          className="inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-[#F8F8F6] transition hover:brightness-110"
         >
           Дахин хүсэлт илгээх
         </Link>
@@ -81,10 +81,10 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <h1 className="mb-1 text-[22px] font-bold text-[#FAFAFA]">
+      <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
         Шинэ нууц үг
       </h1>
-      <p className="mb-6 text-[12px] text-[#6B6B6B]">
+      <p className="mb-6 text-[12px] text-[#888888]">
         Шинэ нууц үгээ оруулна уу
       </p>
 
@@ -98,7 +98,7 @@ function ResetPasswordForm() {
           </div>
           <Link
             href="/auth/signin"
-            className="block w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-center text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110"
+            className="block w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-center text-[13px] font-bold text-[#F8F8F6] transition hover:brightness-110"
           >
             Нэвтрэх
           </Link>
@@ -106,14 +106,14 @@ function ResetPasswordForm() {
       ) : (
         <>
           {error && (
-            <div className="mb-5 rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.15)] px-4 py-3 text-[12px] text-[#FFFF01]">
+            <div className="mb-5 rounded-[4px] bg-[rgba(239,44,88,0.06)] border border-[rgba(239,44,88,0.15)] px-4 py-3 text-[12px] text-[#EF2C58]">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
                 Шинэ нууц үг
               </label>
               <input
@@ -122,13 +122,13 @@ function ResetPasswordForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
                 placeholder="6+ тэмдэгт"
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
                 Нууц үг давтах
               </label>
               <input
@@ -137,7 +137,7 @@ function ResetPasswordForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
                 placeholder="••••••••"
               />
             </div>
@@ -145,7 +145,7 @@ function ResetPasswordForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-[13px] font-bold text-[#F8F8F6] transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Хадгалж байна..." : "Нууц үг солих"}
             </button>
@@ -160,8 +160,8 @@ export default function ResetPassword() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-8">
-          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse rounded-full bg-[#FFFF01]" /></div>}>
+        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
+          <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse rounded-full bg-[#EF2C58]" /></div>}>
             <ResetPasswordForm />
           </Suspense>
         </div>

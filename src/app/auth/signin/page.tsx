@@ -54,19 +54,19 @@ export default function SignIn() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-8">
-          <h1 className="mb-1 text-[22px] font-bold text-[#FAFAFA]">
+        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
             Нэвтрэх
           </h1>
-          <p className="mb-6 text-[12px] text-[#6B6B6B]">
+          <p className="mb-6 text-[12px] text-[#888888]">
             Бүртгэлтэй хаягаараа нэвтэрнэ үү
           </p>
 
           {error && (
-            <div className="mb-5 rounded-[4px] bg-[rgba(255,255,1,0.06)] border border-[rgba(255,255,1,0.15)] px-4 py-3 text-[12px] text-[#FFFF01]">
+            <div className="mb-5 rounded-[4px] bg-[rgba(239,44,88,0.06)] border border-[rgba(239,44,88,0.15)] px-4 py-3 text-[12px] text-[#EF2C58]">
               {error}
               {cooldown > 0 && (
-                <span className="ml-2 text-[11px] text-[#6B6B6B]">
+                <span className="ml-2 text-[11px] text-[#888888]">
                   ({Math.floor(cooldown / 60)}:{String(cooldown % 60).padStart(2, "0")})
                 </span>
               )}
@@ -75,7 +75,7 @@ export default function SignIn() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#A3A3A3]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
                 Имэйл эсвэл хэрэглэгчийн нэр
               </label>
               <input
@@ -83,19 +83,19 @@ export default function SignIn() {
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
                 required
-                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-[12px] font-medium text-[#A3A3A3]">
+                <label className="text-[12px] font-medium text-[#666666]">
                   Нууц үг
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-[11px] text-[#FFFF01] transition hover:brightness-110"
+                  className="text-[11px] text-[#EF2C58] transition hover:brightness-110"
                 >
                   Мартсан?
                 </Link>
@@ -105,7 +105,7 @@ export default function SignIn() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#FAFAFA] outline-none transition focus:border-[rgba(255,255,1,0.4)] placeholder:text-[#6B6B6B]"
+                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
                 placeholder="••••••••"
               />
             </div>
@@ -113,15 +113,15 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={loading || cooldown > 0}
-              className="w-full rounded-[4px] bg-[#FFFF01] py-2.5 text-[13px] font-bold text-[#0A0A0A] transition hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-[13px] font-bold text-[#F8F8F6] transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Нэвтэрж байна..." : cooldown > 0 ? `Түр хүлээнэ үү (${cooldown}с)` : "Нэвтрэх"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-[12px] text-[#6B6B6B]">
+          <p className="mt-6 text-center text-[12px] text-[#888888]">
             Бүртгэлгүй юу?{" "}
-            <Link href="/auth/signup" className="text-[#FFFF01] transition hover:brightness-110">
+            <Link href="/auth/signup" className="text-[#EF2C58] transition hover:brightness-110">
               Бүртгүүлэх
             </Link>
           </p>

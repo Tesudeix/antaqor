@@ -90,7 +90,7 @@ export default function InfluencersPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFFF01]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
       </div>
     );
   }
@@ -100,12 +100,12 @@ export default function InfluencersPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2.5">
-          <svg className="h-5 w-5 text-[#FFFF01]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
           </svg>
-          <h1 className="text-[22px] font-bold text-[#FAFAFA]">Influencer</h1>
+          <h1 className="text-[22px] font-bold text-[#1A1A1A]">Influencer</h1>
         </div>
-        <p className="mt-1 text-[13px] text-[#6B6B6B]">
+        <p className="mt-1 text-[13px] text-[#888888]">
           Брэндээ сурталчлах топ инфлүүнсерүүдийг сонгоорой
         </p>
       </div>
@@ -116,8 +116,8 @@ export default function InfluencersPage() {
           onClick={() => setActiveCategory("all")}
           className={`shrink-0 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
             activeCategory === "all"
-              ? "bg-[#FFFF01] text-[#0A0A0A]"
-              : "border border-[rgba(255,255,255,0.06)] bg-[#141414] text-[#6B6B6B] hover:text-[#FAFAFA]"
+              ? "bg-[#EF2C58] text-[#F8F8F6]"
+              : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888888] hover:text-[#1A1A1A]"
           }`}
         >
           Бүгд
@@ -128,8 +128,8 @@ export default function InfluencersPage() {
             onClick={() => setActiveCategory(cat)}
             className={`shrink-0 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
               activeCategory === cat
-                ? "bg-[#FFFF01] text-[#0A0A0A]"
-                : "border border-[rgba(255,255,255,0.06)] bg-[#141414] text-[#6B6B6B] hover:text-[#FAFAFA]"
+                ? "bg-[#EF2C58] text-[#F8F8F6]"
+                : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888888] hover:text-[#1A1A1A]"
             }`}
           >
             {cat}
@@ -144,63 +144,63 @@ export default function InfluencersPage() {
             <button
               key={inf._id}
               onClick={() => setSelected(inf)}
-              className="group block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] text-left transition hover:border-[rgba(255,255,1,0.2)] hover:shadow-[0_0_24px_rgba(255,255,1,0.06)]"
+              className="group block overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-left transition hover:border-[rgba(239,44,88,0.2)] hover:shadow-[0_0_24px_rgba(239,44,88,0.06)]"
             >
               {/* Cover / Avatar area */}
-              <div className="relative aspect-[3/2] bg-gradient-to-br from-[#1a1a1a] to-[#0A0A0A]">
+              <div className="relative aspect-[3/2] bg-gradient-to-br from-[#EEEEEC] to-[#F8F8F6]">
                 {inf.coverImage ? (
                   <img src={inf.coverImage} alt={inf.name} className="h-full w-full object-cover" />
                 ) : inf.avatar ? (
                   <div className="flex h-full items-center justify-center">
-                    <img src={inf.avatar} alt={inf.name} className="h-20 w-20 rounded-full object-cover border-2 border-[rgba(255,255,1,0.2)]" />
+                    <img src={inf.avatar} alt={inf.name} className="h-20 w-20 rounded-full object-cover border-2 border-[rgba(239,44,88,0.2)]" />
                   </div>
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(255,255,1,0.08)] text-[24px] font-black text-[#FFFF01]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(239,44,88,0.08)] text-[24px] font-black text-[#EF2C58]">
                       {inf.name.charAt(0)}
                     </div>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FFFFFF] via-transparent to-transparent" />
 
                 {/* Badges */}
                 <div className="absolute right-2 top-2 flex items-center gap-1">
                   {inf.verified && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFFF01]">
-                      <svg className="h-3 w-3 text-[#0A0A0A]" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58]">
+                      <svg className="h-3 w-3 text-[#F8F8F6]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                       </svg>
                     </div>
                   )}
                   {inf.featured && (
-                    <span className="rounded-[4px] bg-[#FFFF01] px-1.5 py-0.5 text-[8px] font-black text-[#0A0A0A]">TOP</span>
+                    <span className="rounded-[4px] bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black text-[#F8F8F6]">TOP</span>
                   )}
                 </div>
               </div>
 
               {/* Info */}
               <div className="p-3.5">
-                <h3 className="truncate text-[14px] font-bold text-[#FAFAFA] transition group-hover:text-[#FFFF01]">
+                <h3 className="truncate text-[14px] font-bold text-[#1A1A1A] transition group-hover:text-[#EF2C58]">
                   {inf.name}
                 </h3>
-                <p className="mt-0.5 text-[11px] text-[#6B6B6B]">{inf.category}</p>
+                <p className="mt-0.5 text-[11px] text-[#888888]">{inf.category}</p>
 
                 {/* Stats row */}
                 <div className="mt-2.5 flex items-center gap-3">
                   <div className="text-center">
-                    <div className="text-[14px] font-bold text-[#FFFF01]">{formatNum(inf.stats.followers)}</div>
-                    <div className="text-[9px] text-[#6B6B6B]">Дагагч</div>
+                    <div className="text-[14px] font-bold text-[#EF2C58]">{formatNum(inf.stats.followers)}</div>
+                    <div className="text-[9px] text-[#888888]">Дагагч</div>
                   </div>
                   {inf.stats.engagement > 0 && (
                     <div className="text-center">
-                      <div className="text-[14px] font-bold text-[#FAFAFA]">{inf.stats.engagement}%</div>
-                      <div className="text-[9px] text-[#6B6B6B]">ER</div>
+                      <div className="text-[14px] font-bold text-[#1A1A1A]">{inf.stats.engagement}%</div>
+                      <div className="text-[9px] text-[#888888]">ER</div>
                     </div>
                   )}
                   {inf.stats.avgViews > 0 && (
                     <div className="text-center">
-                      <div className="text-[14px] font-bold text-[#FAFAFA]">{formatNum(inf.stats.avgViews)}</div>
-                      <div className="text-[9px] text-[#6B6B6B]">Үзэлт</div>
+                      <div className="text-[14px] font-bold text-[#1A1A1A]">{formatNum(inf.stats.avgViews)}</div>
+                      <div className="text-[9px] text-[#888888]">Үзэлт</div>
                     </div>
                   )}
                 </div>
@@ -225,10 +225,10 @@ export default function InfluencersPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <svg className="mx-auto mb-4 h-12 w-12 text-[#6B6B6B] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto mb-4 h-12 w-12 text-[#888888] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
           </svg>
-          <p className="text-[14px] text-[#6B6B6B]">Инфлүүнсер удахгүй нэмэгдэнэ</p>
+          <p className="text-[14px] text-[#888888]">Инфлүүнсер удахгүй нэмэгдэнэ</p>
         </div>
       )}
 
@@ -236,15 +236,15 @@ export default function InfluencersPage() {
       {selected && (
         <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="relative w-full max-w-[440px] mx-4 mb-4 sm:mb-0 max-h-[85vh] overflow-y-auto rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] animate-[slideUp_0.3s_ease-out]">
+          <div className="relative w-full max-w-[440px] mx-4 mb-4 sm:mb-0 max-h-[85vh] overflow-y-auto rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] animate-[slideUp_0.3s_ease-out]">
             {/* Cover */}
-            <div className="relative aspect-[2.5/1] bg-gradient-to-br from-[#1a1a1a] to-[#0A0A0A]">
+            <div className="relative aspect-[2.5/1] bg-gradient-to-br from-[#EEEEEC] to-[#F8F8F6]">
               {selected.coverImage ? (
                 <img src={selected.coverImage} alt="" className="h-full w-full object-cover" />
               ) : (
-                <div className="h-full w-full bg-gradient-to-br from-[#1a1a1a] to-[#0A0A0A]" />
+                <div className="h-full w-full bg-gradient-to-br from-[#EEEEEC] to-[#F8F8F6]" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#141414] to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FFFFFF] to-transparent" />
               <button
                 onClick={() => setSelected(null)}
                 className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] text-white backdrop-blur-sm"
@@ -259,30 +259,30 @@ export default function InfluencersPage() {
               {/* Avatar + Name */}
               <div className="flex items-end gap-3 -mt-8 relative z-10">
                 {selected.avatar ? (
-                  <img src={selected.avatar} alt={selected.name} className="h-16 w-16 rounded-full border-3 border-[#141414] object-cover" />
+                  <img src={selected.avatar} alt={selected.name} className="h-16 w-16 rounded-full border-3 border-[#FFFFFF] object-cover" />
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border-3 border-[#141414] bg-[#0A0A0A] text-[22px] font-black text-[#FFFF01]">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border-3 border-[#FFFFFF] bg-[#F8F8F6] text-[22px] font-black text-[#EF2C58]">
                     {selected.name.charAt(0)}
                   </div>
                 )}
                 <div className="pb-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-[18px] font-bold text-[#FAFAFA]">{selected.name}</h2>
+                    <h2 className="text-[18px] font-bold text-[#1A1A1A]">{selected.name}</h2>
                     {selected.verified && (
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFFF01]">
-                        <svg className="h-3 w-3 text-[#0A0A0A]" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58]">
+                        <svg className="h-3 w-3 text-[#F8F8F6]" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                         </svg>
                       </div>
                     )}
                   </div>
-                  <p className="text-[12px] text-[#6B6B6B]">{selected.category}</p>
+                  <p className="text-[12px] text-[#888888]">{selected.category}</p>
                 </div>
               </div>
 
               {/* Bio */}
               {selected.bio && (
-                <p className="mt-4 text-[13px] leading-relaxed text-[#A3A3A3]">{selected.bio}</p>
+                <p className="mt-4 text-[13px] leading-relaxed text-[#666666]">{selected.bio}</p>
               )}
 
               {/* Stats grid */}
@@ -293,9 +293,9 @@ export default function InfluencersPage() {
                   { label: "Үзэлт", value: selected.stats.avgViews ? formatNum(selected.stats.avgViews) : "-" },
                   { label: "Like", value: selected.stats.avgLikes ? formatNum(selected.stats.avgLikes) : "-" },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-[4px] bg-[#0A0A0A] p-3 text-center">
-                    <div className="text-[16px] font-bold text-[#FFFF01]">{s.value}</div>
-                    <div className="mt-0.5 text-[9px] text-[#6B6B6B]">{s.label}</div>
+                  <div key={s.label} className="rounded-[4px] bg-[#F8F8F6] p-3 text-center">
+                    <div className="text-[16px] font-bold text-[#EF2C58]">{s.value}</div>
+                    <div className="mt-0.5 text-[9px] text-[#888888]">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -303,7 +303,7 @@ export default function InfluencersPage() {
               {/* Pricing */}
               {(selected.pricing.story > 0 || selected.pricing.post > 0 || selected.pricing.reel > 0 || selected.pricing.campaign > 0) && (
                 <div className="mt-4">
-                  <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#6B6B6B]">Үнийн санал</div>
+                  <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#888888]">Үнийн санал</div>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { label: "Story", value: selected.pricing.story },
@@ -313,9 +313,9 @@ export default function InfluencersPage() {
                     ]
                       .filter((p) => p.value > 0)
                       .map((p) => (
-                        <div key={p.label} className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5">
-                          <span className="text-[12px] text-[#A3A3A3]">{p.label}</span>
-                          <span className="text-[13px] font-bold text-[#FAFAFA]">{formatPrice(p.value)}</span>
+                        <div key={p.label} className="flex items-center justify-between rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5">
+                          <span className="text-[12px] text-[#666666]">{p.label}</span>
+                          <span className="text-[13px] font-bold text-[#1A1A1A]">{formatPrice(p.value)}</span>
                         </div>
                       ))}
                   </div>
@@ -347,7 +347,7 @@ export default function InfluencersPage() {
               {selected.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {selected.tags.map((tag) => (
-                    <span key={tag} className="rounded-[4px] bg-[rgba(255,255,255,0.04)] px-2 py-0.5 text-[10px] text-[#6B6B6B]">
+                    <span key={tag} className="rounded-[4px] bg-[rgba(255,255,255,0.04)] px-2 py-0.5 text-[10px] text-[#888888]">
                       #{tag}
                     </span>
                   ))}
@@ -357,7 +357,7 @@ export default function InfluencersPage() {
               {/* CTA */}
               <a
                 href={`mailto:antaqor@gmail.com?subject=Influencer Collaboration: ${selected.name}&body=Сайн байна уу, ${selected.name}-тай хамтран ажиллах хүсэлтэй байна.`}
-                className="mt-5 block w-full rounded-[4px] bg-[#FFFF01] py-3 text-center text-[13px] font-bold text-[#0A0A0A] transition hover:shadow-[0_0_24px_rgba(255,255,1,0.25)]"
+                className="mt-5 block w-full rounded-[4px] bg-[#EF2C58] py-3 text-center text-[13px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
               >
                 Хамтрах хүсэлт илгээх
               </a>
@@ -368,13 +368,13 @@ export default function InfluencersPage() {
 
       {/* CTA for becoming influencer */}
       <div className="mt-8 rounded-[4px] border border-dashed border-[rgba(255,255,255,0.1)] p-6 text-center">
-        <p className="text-[13px] font-bold text-[#FAFAFA]">Инфлүүнсер болох уу?</p>
-        <p className="mt-1 text-[12px] text-[#6B6B6B]">
+        <p className="text-[13px] font-bold text-[#1A1A1A]">Инфлүүнсер болох уу?</p>
+        <p className="mt-1 text-[12px] text-[#888888]">
           Antaqor платформд бүртгүүлж, брэндүүдтэй хамтран ажиллаарай
         </p>
         <a
           href="mailto:antaqor@gmail.com?subject=Influencer Registration"
-          className="mt-4 inline-block rounded-[4px] border border-[rgba(255,255,1,0.3)] bg-[rgba(255,255,1,0.06)] px-6 py-2.5 text-[12px] font-bold text-[#FFFF01] transition hover:bg-[rgba(255,255,1,0.12)]"
+          className="mt-4 inline-block rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-6 py-2.5 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
         >
           Бүртгүүлэх
         </a>

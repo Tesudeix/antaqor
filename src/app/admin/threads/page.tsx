@@ -127,7 +127,7 @@ export default function ThreadsManagementPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
       </div>
     );
   }
@@ -136,7 +136,7 @@ export default function ThreadsManagementPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          THREADS <span className="text-[#FFFF01]">POSTS</span>
+          THREADS <span className="text-[#EF2C58]">POSTS</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           CREATE, VIEW, AND MANAGE YOUR THREADS
@@ -218,7 +218,7 @@ export default function ThreadsManagementPage() {
                 <div className="flex shrink-0 items-center gap-2 opacity-0 transition group-hover:opacity-100">
                   <Link
                     href={`/admin/threads/${post.id}`}
-                    className="flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#FFFF01] hover:text-[#FFFF01]"
+                    className="flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#EF2C58] hover:text-[#EF2C58]"
                     title="View replies"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -292,7 +292,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
       </div>
     );
   }
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          ADMIN <span className="text-[#FFFF01]">DASHBOARD</span>
+          ADMIN <span className="text-[#EF2C58]">DASHBOARD</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           НИЙГЭМЛЭГИЙН УДИРДЛАГЫН ХЯНАЛТЫН САМБАР
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
             </div>
             <div className="card p-5">
               <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#FFFF01]">
+              <div className="mt-2 text-3xl tracking-[2px] text-[#EF2C58]">
                 {stats.totalMembers.toLocaleString()}
               </div>
             </div>
@@ -354,8 +354,8 @@ export default function AdminDashboard() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="card p-5">
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">AI Түвшин</span>
-                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#FFFF01]">
+                <span className="text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">AI Түвшин</span>
+                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#EF2C58]">
                   Бүгдийг харах →
                 </Link>
               </div>
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
                     <div key={level} className="flex items-center gap-3">
                       <span className="w-24 text-[11px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
                       <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                        <div className="h-full bg-[#FFFF01] transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                     </div>
@@ -376,12 +376,12 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="card p-5">
-              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Түгээмэл сонирхол</div>
+              <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Түгээмэл сонирхол</div>
               <div className="flex flex-wrap gap-2">
                 {stats.interestCounts.length > 0 ? (
                   stats.interestCounts.map((ic) => (
                     <span key={ic._id} className="border border-[#1c1c1c] px-3 py-1.5 text-[10px] text-[#c8c8c0]">
-                      {ic._id.replace(/_/g, " ")} <span className="text-[#FFFF01]">{ic.count}</span>
+                      {ic._id.replace(/_/g, " ")} <span className="text-[#EF2C58]">{ic.count}</span>
                     </span>
                   ))
                 ) : (
@@ -398,8 +398,8 @@ export default function AdminDashboard() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="card p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Түвшний тархалт</span>
-              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#FFFF01]">
+              <span className="text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Түвшний тархалт</span>
+              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#EF2C58]">
                 Даалгаврууд →
               </Link>
             </div>
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
                   <div key={tier.min} className="flex items-center gap-3">
                     <span className="w-32 text-[11px] text-[#c8c8c0]">{tier.label}</span>
                     <div className="h-[4px] flex-1 bg-[#1c1c1c]">
-                      <div className="h-full bg-[#FFFF01] transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
                   </div>
@@ -427,7 +427,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="card p-5">
-            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#FFFF01]">Шилдэг XP</div>
+            <div className="mb-4 text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Шилдэг XP</div>
             <div className="space-y-2">
               {(stats.topXPUsers || []).map((u, i) => (
                 <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-3 py-1 transition hover:bg-[rgba(240,236,227,0.03)]">
@@ -441,7 +441,7 @@ export default function AdminDashboard() {
                   )}
                   <span className="flex-1 text-[12px] text-[#c8c8c0]">{u.name}</span>
                   <span className="text-[10px] text-[#5a5550]">LV.{u.level || 1}</span>
-                  <span className="w-16 text-right text-[11px] font-bold text-[#FFFF01]">{(u.xp || 0).toLocaleString()}</span>
+                  <span className="w-16 text-right text-[11px] font-bold text-[#EF2C58]">{(u.xp || 0).toLocaleString()}</span>
                 </Link>
               ))}
               {(!stats.topXPUsers || stats.topXPUsers.length === 0) && (
@@ -482,7 +482,7 @@ export default function AdminDashboard() {
                   {profile.threads_profile_picture_url ? (
                     <img src={profile.threads_profile_picture_url} alt={profile.username} className="h-12 w-12 border border-[#1c1c1c] object-cover" />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#FFFF01]">
+                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#EF2C58]">
                       {profile.name?.charAt(0) || "?"}
                     </div>
                   )}
@@ -504,7 +504,7 @@ export default function AdminDashboard() {
             ].map((stat) => (
               <div key={stat.key} className="card p-5">
                 <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">{stat.label}</div>
-                <div className="mt-2 text-3xl tracking-[2px] text-[#FFFF01]">
+                <div className="mt-2 text-3xl tracking-[2px] text-[#EF2C58]">
                   {getInsightValue(stat.key).toLocaleString()}
                 </div>
               </div>
@@ -519,7 +519,7 @@ export default function AdminDashboard() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-2 w-2 rounded-full bg-green-400" />
-                <span className="text-[13px] font-semibold text-[#e8e6e1]">
+                <span className="text-[13px] font-semibold text-[#1A1A1A]">
                   Холбогдсон {igStatus.username ? `(@${igStatus.username})` : ""}
                 </span>
               </div>
@@ -564,7 +564,7 @@ export default function AdminDashboard() {
 
         {/* Tasks Management */}
         <div className="card mt-4 p-5">
-          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01] mb-4">ДААЛГАВАР УДИРДЛАГА</div>
+          <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] mb-4">ДААЛГАВАР УДИРДЛАГА</div>
 
           {/* Create task form */}
           <div className="space-y-3 mb-4">
@@ -607,7 +607,7 @@ export default function AdminDashboard() {
               const statusColors: Record<string, string> = {
                 open: "text-green-400",
                 submitted: "text-yellow-400",
-                accepted: "text-[#FFFF01]",
+                accepted: "text-[#EF2C58]",
                 rejected: "text-red-400",
               };
               const statusLabels: Record<string, string> = {
@@ -620,9 +620,9 @@ export default function AdminDashboard() {
                 <div key={t._id} className="flex items-center justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[12px] font-bold text-[#FFFF01]">#{i + 1}</span>
-                      <span className="text-[13px] font-bold text-[#e8e6e1] truncate">{t.title}</span>
-                      <span className="rounded-[4px] bg-[rgba(255,255,1,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#FFFF01]">+{t.xpReward} XP</span>
+                      <span className="text-[12px] font-bold text-[#EF2C58]">#{i + 1}</span>
+                      <span className="text-[13px] font-bold text-[#1A1A1A] truncate">{t.title}</span>
+                      <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">+{t.xpReward} XP</span>
                       <span className={`text-[9px] font-bold ${statusColors[t.status] || "text-[#5a5550]"}`}>{statusLabels[t.status] || t.status}</span>
                     </div>
                     {t.description && <div className="text-[11px] text-[#5a5550] line-clamp-1">{t.description}</div>}
@@ -646,7 +646,7 @@ export default function AdminDashboard() {
 
         {/* Announcements Management */}
         <div className="card mt-4 p-5">
-          <div className="text-[10px] uppercase tracking-[2px] text-[#FFFF01] mb-4">МЭДЭГДЭЛ УДИРДЛАГА</div>
+          <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] mb-4">МЭДЭГДЭЛ УДИРДЛАГА</div>
 
           {/* Form */}
           <div className="space-y-3 mb-4">
@@ -685,7 +685,7 @@ export default function AdminDashboard() {
                   type="checkbox"
                   checked={annForm.pinned}
                   onChange={(e) => setAnnForm(f => ({...f, pinned: e.target.checked}))}
-                  className="accent-[#FFFF01]"
+                  className="accent-[#EF2C58]"
                 />
                 Pinned
               </label>
@@ -709,14 +709,14 @@ export default function AdminDashboard() {
               <div key={a._id} className="flex items-start justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    {a.pinned && <span className="text-[9px] font-bold text-[#FFFF01]">PIN</span>}
+                    {a.pinned && <span className="text-[9px] font-bold text-[#EF2C58]">PIN</span>}
                     <span className="text-[9px] font-bold text-[#5a5550] uppercase">{a.tag}</span>
                   </div>
-                  <div className="text-[13px] font-bold text-[#e8e6e1] truncate">{a.title}</div>
+                  <div className="text-[13px] font-bold text-[#1A1A1A] truncate">{a.title}</div>
                   <div className="text-[11px] text-[#5a5550] line-clamp-1">{a.content}</div>
                 </div>
                 <div className="flex shrink-0 gap-1.5">
-                  <button onClick={() => startAnnEdit(a)} className="text-[10px] text-[#FFFF01] hover:underline">Засах</button>
+                  <button onClick={() => startAnnEdit(a)} className="text-[10px] text-[#EF2C58] hover:underline">Засах</button>
                   <button onClick={() => handleAnnDelete(a._id)} className="text-[10px] text-red-400 hover:underline">Устгах</button>
                 </div>
               </div>

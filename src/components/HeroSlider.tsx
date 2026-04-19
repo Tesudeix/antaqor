@@ -143,7 +143,7 @@ export default function HeroSlider() {
                   sizes="(max-width: 640px) 100vw, 640px"
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(10,10,10,0.85)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(248,248,246,0.85)]" />
             </div>
           ))}
         </div>
@@ -156,7 +156,7 @@ export default function HeroSlider() {
           >
             ANTAQOR
           </h1>
-          <p className="mt-1 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#FFFF01]">
+          <p className="mt-1 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#EF2C58]">
             Cyber Empire
           </p>
         </div>
@@ -168,11 +168,11 @@ export default function HeroSlider() {
           aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
         >
           {isPlaying ? (
-            <svg className="h-4 w-4 text-[#FFFF01]" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
             </svg>
           ) : (
-            <svg className="h-4 w-4 text-[#FFFF01]" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>
           )}
@@ -184,7 +184,7 @@ export default function HeroSlider() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-[3px] rounded-full bg-[#FFFF01]"
+                className="w-[3px] rounded-full bg-[#EF2C58]"
                 style={{
                   animation: `musicBar 0.${3 + i}s ease-in-out infinite alternate`,
                   height: `${8 + i * 2}px`,
@@ -212,7 +212,7 @@ export default function HeroSlider() {
                 }}
                 className={`h-[6px] rounded-full transition-all duration-300 ${
                   i === current
-                    ? "w-[18px] bg-[#FFFF01]"
+                    ? "w-[18px] bg-[#EF2C58]"
                     : "w-[6px] bg-[rgba(255,255,255,0.35)]"
                 }`}
               />

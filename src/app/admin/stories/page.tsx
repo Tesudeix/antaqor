@@ -107,7 +107,7 @@ export default function AdminStories() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#FFFF01] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
       </div>
     );
   }
@@ -116,7 +116,7 @@ export default function AdminStories() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-[2px] md:text-3xl">
-          STORY <span className="text-[#FFFF01]">MANAGER</span>
+          STORY <span className="text-[#EF2C58]">MANAGER</span>
         </h1>
         <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
           ТҮҮХ НЭМЭХ, ЗАСАХ, УСТГАХ
@@ -125,7 +125,7 @@ export default function AdminStories() {
 
       {/* Add/Edit form */}
       <div className="card p-6">
-        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#FFFF01]">
+        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#EF2C58]">
           {editingId ? "Түүх засах" : "Шинэ түүх нэмэх"}
         </div>
         <div className="space-y-4">
@@ -253,7 +253,7 @@ export default function AdminStories() {
                   <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#c8c8c0] transition">
                     Засах
                   </button>
-                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#FFFF01] transition">
+                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#EF2C58] transition">
                     {story.published ? "Нуух" : "Нийтлэх"}
                   </button>
                   <button onClick={() => handleDelete(story._id)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-red-500 transition">
