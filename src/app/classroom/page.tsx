@@ -181,6 +181,7 @@ function CourseCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.04 }}
+      className="relative"
     >
       <Link
         href={`/classroom/course/${course._id}`}
@@ -222,19 +223,19 @@ function CourseCard({
           </div>
         </div>
 
-        {/* Admin delete */}
-        {admin && (
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(course._id); }}
-            className="absolute right-3 bottom-3 hidden rounded-[4px] p-2 text-[#888888] transition-colors duration-200 hover:text-red-400 group-hover:block"
-            aria-label="Курс устгах"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
       </Link>
+      {/* Admin delete — outside the Link to avoid navigation conflicts */}
+      {admin && (
+        <button
+          onClick={() => onDelete(course._id)}
+          className="absolute right-3 bottom-3 z-20 rounded-[4px] bg-white/80 p-2 text-[#888888] shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-red-50 hover:text-red-500"
+          aria-label="Курс устгах"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      )}
     </motion.div>
   );
 }

@@ -125,7 +125,7 @@ export default function ThreadDetailPage() {
       <div className="mb-4 flex items-center gap-4">
         <Link
           href="/admin/threads"
-          className="flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#EF2C58] hover:text-[#EF2C58]"
+          className="flex h-8 w-8 items-center justify-center border border-[#E8E8E6] text-[#999999] transition hover:border-[#EF2C58] hover:text-[#EF2C58]"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -135,13 +135,13 @@ export default function ThreadDetailPage() {
           <h1 className="text-2xl tracking-[1px]">
             THREAD <span className="text-[#EF2C58]">CONVERSATION</span>
           </h1>
-          <p className="text-[10px] tracking-[2px] text-[#3a3835]">
+          <p className="text-[10px] tracking-[2px] text-[#999999]">
             ID: {id}
           </p>
         </div>
         <button
           onClick={loadReplies}
-          className="ml-auto flex h-8 w-8 items-center justify-center border border-[#1c1c1c] text-[#5a5550] transition hover:border-[#c8c8c0] hover:text-[#c8c8c0]"
+          className="ml-auto flex h-8 w-8 items-center justify-center border border-[#E8E8E6] text-[#999999] transition hover:border-[#444444] hover:text-[#444444]"
           title="Refresh"
         >
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,9 +163,9 @@ export default function ThreadDetailPage() {
       )}
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto border border-[#1c1c1c] bg-[#0a0a0a] p-4">
+      <div className="flex-1 overflow-y-auto border border-[#E8E8E6] bg-[#F8F8F6] p-4">
         {replies.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-[12px] text-[#3a3835]">
+          <div className="flex h-full items-center justify-center text-[12px] text-[#999999]">
             No replies yet. Start the conversation!
           </div>
         ) : (
@@ -182,18 +182,18 @@ export default function ThreadDetailPage() {
                     className={`group relative max-w-[80%] ${
                       isOwn
                         ? "bg-[rgba(0,100,145,0.15)] border border-[rgba(0,100,145,0.2)]"
-                        : "bg-[#0f0f0f] border border-[#1c1c1c]"
+                        : "bg-[#F2F2F0] border border-[#E8E8E6]"
                     } ${isHidden ? "opacity-40" : ""} p-4`}
                   >
                     <div className="mb-1 flex items-center gap-2">
                       <span
                         className={`text-[10px] font-bold uppercase tracking-[2px] ${
-                          isOwn ? "text-[#EF2C58]" : "text-[#c8c8c0]"
+                          isOwn ? "text-[#EF2C58]" : "text-[#444444]"
                         }`}
                       >
                         @{reply.username || "unknown"}
                       </span>
-                      <span className="text-[9px] text-[#3a3835]">
+                      <span className="text-[9px] text-[#999999]">
                         {formatTime(reply.timestamp)}
                       </span>
                       {isHidden && (
@@ -202,7 +202,7 @@ export default function ThreadDetailPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[13px] leading-relaxed text-[#ede8df] whitespace-pre-wrap break-words">
+                    <p className="text-[13px] leading-relaxed text-[#1A1A1A] whitespace-pre-wrap break-words">
                       {reply.text || "[Media]"}
                     </p>
 
@@ -213,7 +213,7 @@ export default function ThreadDetailPage() {
                           href={reply.permalink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[9px] uppercase tracking-[1px] text-[#3a3835] transition hover:text-[#c8c8c0]"
+                          className="text-[9px] uppercase tracking-[1px] text-[#999999] transition hover:text-[#444444]"
                         >
                           View
                         </a>
@@ -222,7 +222,7 @@ export default function ThreadDetailPage() {
                         <button
                           onClick={() => handleToggleHide(reply.id, isHidden)}
                           disabled={managingId === reply.id}
-                          className="text-[9px] uppercase tracking-[1px] text-[#3a3835] transition hover:text-yellow-500"
+                          className="text-[9px] uppercase tracking-[1px] text-[#999999] transition hover:text-yellow-500"
                         >
                           {managingId === reply.id
                             ? "..."
@@ -264,7 +264,7 @@ export default function ThreadDetailPage() {
           {replying ? "..." : "Reply"}
         </button>
       </div>
-      <p className="mt-1 text-[9px] text-[#3a3835]">
+      <p className="mt-1 text-[9px] text-[#999999]">
         {replyText.length}/500 &middot; Cmd+Enter to send
       </p>
     </div>

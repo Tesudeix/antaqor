@@ -12,7 +12,7 @@ export default function Error({
         <div className="text-[48px] font-bold tracking-[2px] text-[#EF2C58]">
           ERROR
         </div>
-        <p className="mt-4 text-[12px] text-[#5a5550]">
+        <p className="mt-4 text-[12px] text-[#999999]">
           Something went wrong. Please try again.
         </p>
         <div className="mt-6 flex gap-3 justify-center">

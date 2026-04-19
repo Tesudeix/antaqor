@@ -15,7 +15,7 @@ export default function OGImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#060608",
+          background: "#F8F8F6",
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline" }}>

@@ -60,7 +60,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
         <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
           Пост олдсонгүй
         </p>
-        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#EF2C58] hover:text-[#B3B300]">
+        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#EF2C58] hover:text-[#D4264E]">
           ← МЭДЭЭ РҮҮ БУЦАХ
         </Link>
       </div>
@@ -69,7 +69,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#EF2C58]">
+      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#999999] transition hover:text-[#EF2C58]">
         ← Мэдээ рүү буцах
       </Link>
       <PostCard post={post} onDelete={handleDelete} />

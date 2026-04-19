@@ -12,8 +12,8 @@ export default function GlobalError({
         style={{
           margin: 0,
           padding: 0,
-          backgroundColor: "#030303",
-          color: "#ede8df",
+          backgroundColor: "#F8F8F6",
+          color: "#1A1A1A",
           fontFamily: "system-ui, sans-serif",
           display: "flex",
           alignItems: "center",
@@ -32,7 +32,7 @@ export default function GlobalError({
           >
             ERROR
           </div>
-          <p style={{ color: "#5a5550", fontSize: "13px", marginTop: "16px" }}>
+          <p style={{ color: "#999999", fontSize: "13px", marginTop: "16px" }}>
             Something went wrong. Please try again.
           </p>
           <div style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "center" }}>
@@ -40,7 +40,7 @@ export default function GlobalError({
               onClick={() => reset()}
               style={{
                 background: "#EF2C58",
-                color: "#ede8df",
+                color: "#1A1A1A",
                 border: "none",
                 padding: "10px 24px",
                 fontSize: "11px",
@@ -55,8 +55,8 @@ export default function GlobalError({
               onClick={() => (window.location.href = "/")}
               style={{
                 background: "transparent",
-                color: "#5a5550",
-                border: "1px solid #1c1c1c",
+                color: "#999999",
+                border: "1px solid #E8E8E6",
                 padding: "10px 24px",
                 fontSize: "11px",
                 letterSpacing: "3px",

@@ -75,13 +75,13 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
   if (inline) {
     return (
       <div className="hidden items-center gap-2 md:flex">
-        <span className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">Зорилго</span>
+        <span className="text-[9px] uppercase tracking-[3px] text-[#999999]">Зорилго</span>
         <span className="text-sm tracking-[2px] text-[#EF2C58]">
           <AnimatedNumber value={conquerors} />
-          <span className="text-[#5a5550]">/{stats.goal.toLocaleString()}</span>
+          <span className="text-[#999999]">/{stats.goal.toLocaleString()}</span>
         </span>
-        <span className="text-[9px] uppercase tracking-[2px] text-[#5a5550]">AI Байлдагч</span>
-        <div className="h-[2px] w-16 overflow-hidden bg-[#1c1c1c]">
+        <span className="text-[9px] uppercase tracking-[2px] text-[#999999]">AI Байлдагч</span>
+        <div className="h-[2px] w-16 overflow-hidden bg-[#E8E8E6]">
           <div
             className="h-full bg-[#EF2C58] transition-all duration-1000"
             style={{ width: `${pct}%` }}
@@ -95,10 +95,10 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
     <div className="mt-10 w-full max-w-xl">
       <div className="mb-3 flex items-end justify-between">
         <div>
-          <div className="text-[10px] uppercase tracking-[4px] text-[#5a5550]">
+          <div className="text-[10px] uppercase tracking-[4px] text-[#999999]">
             Эрхэм зорилго · Явц
           </div>
-          <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#ede8df]">
+          <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#1A1A1A]">
             <span className="text-[#EF2C58]">10,000</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
@@ -106,13 +106,13 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
           <div className="text-[clamp(32px,5vw,52px)] leading-none tracking-[-1px] text-[#EF2C58]">
             <AnimatedNumber value={conquerors} />
           </div>
-          <div className="text-[9px] uppercase tracking-[3px] text-[#5a5550]">
+          <div className="text-[9px] uppercase tracking-[3px] text-[#999999]">
             нэгдсэн
           </div>
         </div>
       </div>
 
-      <div className="relative h-[3px] w-full overflow-hidden bg-[#1c1c1c]">
+      <div className="relative h-[3px] w-full overflow-hidden bg-[#E8E8E6]">
         <div
           className="h-full bg-[#EF2C58] transition-all duration-1000 ease-out"
           style={{ width: `${pct}%` }}
@@ -126,10 +126,10 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
       <div className="mt-3 flex items-center justify-between">
         <div className="flex gap-6">
           <div>
-            <span className="text-lg tracking-[2px] text-[#ede8df]">
+            <span className="text-lg tracking-[2px] text-[#1A1A1A]">
               <AnimatedNumber value={stats.paidMembers} />
             </span>
-            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5a5550]">
+            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#999999]">
               Кланы гишүүд
             </span>
           </div>
@@ -137,7 +137,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             <span className="text-lg tracking-[2px] text-[rgba(240,236,227,0.3)]">
               <AnimatedNumber value={remaining > 0 ? remaining : 0} />
             </span>
-            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5a5550]">
+            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#999999]">
               Үлдсэн
             </span>
           </div>
@@ -154,7 +154,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
           <div className="h-[1px] flex-1 bg-[rgba(240,236,227,0.05)]" />
           <Link
             href="/auth/signup"
-            className="text-[9px] uppercase tracking-[3px] text-[#EF2C58] transition hover:text-[#B3B300]"
+            className="text-[9px] uppercase tracking-[3px] text-[#EF2C58] transition hover:text-[#D4264E]"
           >
             Тэдний нэг бол →
           </Link>

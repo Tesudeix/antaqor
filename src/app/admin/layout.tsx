@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent mx-auto" />
-          <p className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+          <p className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">
             Хандалт шалгаж байна
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className="mb-6 text-4xl tracking-[6px] text-[#EF2C58]">
             ХАНДАЛТ ХОРИГЛОГДСОН
           </div>
-          <p className="mb-6 text-[12px] leading-relaxed text-[#5a5550]">
+          <p className="mb-6 text-[12px] leading-relaxed text-[#999999]">
             Энэ хэсэг зөвхөн админд зориулагдсан.
           </p>
           <Link href="/" className="btn-blood inline-block">
@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center bg-[#EF2C58] md:hidden"
         aria-label="Админ цэс"
       >
-        <svg className="h-5 w-5 text-[#ede8df]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {sidebarOpen ? (
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
           ) : (
@@ -78,12 +78,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </button>
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-56 transform border-r border-[#1c1c1c] bg-[#0a0a0a] pt-20 transition-transform md:relative md:inset-auto md:z-auto md:translate-x-0 md:pt-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-56 transform border-r border-[#E8E8E6] bg-[#FFFFFF] pt-20 transition-transform md:relative md:inset-auto md:z-auto md:translate-x-0 md:pt-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col">
-          <div className="border-b border-[#1c1c1c] px-5 py-6">
+          <div className="border-b border-[#E8E8E6] px-5 py-6">
             <div className="text-[9px] uppercase tracking-[1px] text-[#EF2C58]">
               Удирдлагын төв
             </div>
@@ -102,7 +102,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   className={`mb-1 flex items-center gap-3 px-3 py-3 text-[11px] uppercase tracking-[2px] transition-all ${
                     active
                       ? "bg-[rgba(0,100,145,0.1)] text-[#EF2C58] border-l-2 border-[#EF2C58]"
-                      : "text-[#5a5550] hover:bg-[rgba(240,236,227,0.03)] hover:text-[#c8c8c0]"
+                      : "text-[#999999] hover:bg-[rgba(240,236,227,0.03)] hover:text-[#444444]"
                   }`}
                 >
                   <svg
@@ -124,10 +124,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <div className="border-t border-[#1c1c1c] px-5 py-4">
+          <div className="border-t border-[#E8E8E6] px-5 py-4">
             <Link
               href="/"
-              className="flex items-center gap-2 text-[10px] uppercase tracking-[2px] text-[#3a3835] transition hover:text-[#c8c8c0]"
+              className="flex items-center gap-2 text-[10px] uppercase tracking-[2px] text-[#999999] transition hover:text-[#1A1A1A]"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 17l-5-5m0 0l5-5m-5 5h12" />

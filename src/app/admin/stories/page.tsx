@@ -118,7 +118,7 @@ export default function AdminStories() {
         <h1 className="text-2xl font-bold tracking-[2px] md:text-3xl">
           STORY <span className="text-[#EF2C58]">MANAGER</span>
         </h1>
-        <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
+        <p className="mt-2 text-[11px] tracking-[2px] text-[#999999]">
           ТҮҮХ НЭМЭХ, ЗАСАХ, УСТГАХ
         </p>
       </div>
@@ -146,7 +146,7 @@ export default function AdminStories() {
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#5a5550]">Огноо (timeline)</label>
+              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#999999]">Огноо (timeline)</label>
               <input
                 type="date"
                 value={date}
@@ -155,7 +155,7 @@ export default function AdminStories() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#5a5550]">Ангилал</label>
+              <label className="mb-1 block text-[9px] uppercase tracking-[2px] text-[#999999]">Ангилал</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -188,7 +188,7 @@ export default function AdminStories() {
                 Болих
               </button>
             )}
-            <span className="ml-auto text-[11px] text-[#3a3835]">
+            <span className="ml-auto text-[11px] text-[#999999]">
               {content.length}/10000
             </span>
           </div>
@@ -197,7 +197,7 @@ export default function AdminStories() {
 
       {/* Stories list */}
       <div>
-        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#5a5550]">
+        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#999999]">
           Нийт түүхүүд ({stories.length})
         </div>
         {stories.length === 0 ? (
@@ -205,7 +205,7 @@ export default function AdminStories() {
             <p className="text-xl font-bold tracking-[1px] text-[rgba(240,236,227,0.3)]">
               Түүх байхгүй
             </p>
-            <p className="mt-2 text-[12px] text-[#5a5550]">
+            <p className="mt-2 text-[12px] text-[#999999]">
               Дээрх формоор шинэ түүх нэмнэ үү.
             </p>
           </div>
@@ -228,16 +228,16 @@ export default function AdminStories() {
                         className={`shrink-0 text-[8px] uppercase tracking-[1px] px-2 py-0.5 ${
                           story.published
                             ? "bg-green-950/50 text-green-500 border border-green-900/50"
-                            : "bg-[#1a1a2e] text-[#5a5550] border border-[#1a1a2e]"
+                            : "bg-[#F0F0EE] text-[#999999] border border-[#F0F0EE]"
                         }`}
                       >
                         {story.published ? "Нийтлэгдсэн" : "Ноорог"}
                       </span>
                     </div>
-                    <p className="mt-2 text-[12px] leading-relaxed text-[#5a5550] line-clamp-3">
+                    <p className="mt-2 text-[12px] leading-relaxed text-[#999999] line-clamp-3">
                       {story.content}
                     </p>
-                    <div className="mt-2 flex gap-3 text-[10px] text-[#3a3835]">
+                    <div className="mt-2 flex gap-3 text-[10px] text-[#999999]">
                       <span>{story.date ? new Date(story.date).toLocaleDateString("mn-MN") : "—"}</span>
                     </div>
                   </div>
@@ -245,18 +245,18 @@ export default function AdminStories() {
                     <img
                       src={story.image}
                       alt=""
-                      className="h-16 w-16 shrink-0 border border-[#1a1a2e] object-cover"
+                      className="h-16 w-16 shrink-0 border border-[#F0F0EE] object-cover"
                     />
                   )}
                 </div>
-                <div className="mt-3 flex gap-2 border-t border-[#1a1a2e] pt-3">
-                  <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#c8c8c0] transition">
+                <div className="mt-3 flex gap-2 border-t border-[#F0F0EE] pt-3">
+                  <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-[#444444] transition">
                     Засах
                   </button>
-                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-[#EF2C58] transition">
+                  <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-[#EF2C58] transition">
                     {story.published ? "Нуух" : "Нийтлэх"}
                   </button>
-                  <button onClick={() => handleDelete(story._id)} className="text-[9px] uppercase tracking-[1px] text-[#5a5550] hover:text-red-500 transition">
+                  <button onClick={() => handleDelete(story._id)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-red-500 transition">
                     Устгах
                   </button>
                 </div>

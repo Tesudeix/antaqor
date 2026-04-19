@@ -72,7 +72,7 @@ export default function BrandbooksPage() {
                     </p>
                   </div>
                 </div>
-                <p className="mt-3 text-[14px] italic text-[#9E9EA8]">
+                <p className="mt-3 text-[14px] italic text-[#888888]">
                   {book.tagline}
                 </p>
               </div>

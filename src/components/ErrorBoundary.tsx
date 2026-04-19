@@ -32,7 +32,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             <div className="text-6xl tracking-[4px] text-[#EF2C58]">
               ERROR
             </div>
-            <p className="mt-4 text-[12px] text-[#5a5550]">
+            <p className="mt-4 text-[12px] text-[#999999]">
               Something went wrong. Try refreshing.
             </p>
             <button

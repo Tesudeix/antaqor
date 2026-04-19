@@ -28,7 +28,7 @@ const STATUS_COLORS: Record<string, string> = {
   open: "text-green-400 border-green-900",
   submitted: "text-yellow-400 border-yellow-900",
   accepted: "text-[#EF2C58] border-[#EF2C58]",
-  rejected: "text-[#5a5550] border-[#5a5550]",
+  rejected: "text-[#999999] border-[#999999]",
 };
 
 export default function TasksPage() {
@@ -105,7 +105,7 @@ export default function TasksPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 text-4xl tracking-[2px] text-[#ede8df]">Даалгаврууд</h1>
+        <h1 className="mb-4 text-4xl tracking-[2px] text-[#1A1A1A]">Даалгаврууд</h1>
         <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Нэвтэрч орно уу.</p>
         <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
@@ -128,10 +128,10 @@ export default function TasksPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[24px] font-bold tracking-[1px] text-[#ede8df]">
+          <h1 className="text-[24px] font-bold tracking-[1px] text-[#1A1A1A]">
             ДААЛГАВРУУД
           </h1>
-          <p className="mt-1 text-[11px] tracking-[1px] text-[#5a5550]">
+          <p className="mt-1 text-[11px] tracking-[1px] text-[#999999]">
             Даалгавар гүйцэтгэж XP цуглуул
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function TasksPage() {
                 className="input-dark resize-none"
               />
               <div className="flex items-center gap-2">
-                <label className="text-[10px] text-[#5a5550]">XP шагнал:</label>
+                <label className="text-[10px] text-[#999999]">XP шагнал:</label>
                 <input
                   type="number"
                   min={200}
@@ -179,7 +179,7 @@ export default function TasksPage() {
           ) : (
             <button
               onClick={() => setShowCreate(true)}
-              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5a5550] transition hover:border-[#EF2C58] hover:text-[#EF2C58]"
+              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#999999] transition hover:border-[#EF2C58] hover:text-[#EF2C58]"
             >
               + Даалгавар үүсгэх
             </button>
@@ -196,11 +196,11 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#ede8df]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
-                    <div className="mt-2 text-[10px] text-[#5a5550]">
+                    <div className="mt-2 text-[10px] text-[#999999]">
                       Гүйцэтгэсэн: {task.assignedTo?.name || "—"}
                     </div>
                     {task.submissionNote && (
@@ -236,7 +236,7 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#ede8df]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
@@ -270,7 +270,7 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#ede8df]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
@@ -304,7 +304,7 @@ export default function TasksPage() {
       )}
 
       {tasks.length === 0 && (
-        <p className="py-12 text-center text-[12px] text-[#5a5550]">Даалгавар байхгүй байна.</p>
+        <p className="py-12 text-center text-[12px] text-[#999999]">Даалгавар байхгүй байна.</p>
       )}
     </div>
   );

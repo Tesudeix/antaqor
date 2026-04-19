@@ -304,7 +304,7 @@ export default function AdminDashboard() {
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
           ADMIN <span className="text-[#EF2C58]">DASHBOARD</span>
         </h1>
-        <p className="mt-2 text-[11px] tracking-[2px] text-[#5a5550]">
+        <p className="mt-2 text-[11px] tracking-[2px] text-[#999999]">
           НИЙГЭМЛЭГИЙН УДИРДЛАГЫН ХЯНАЛТЫН САМБАР
         </p>
       </div>
@@ -325,26 +325,26 @@ export default function AdminDashboard() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="card p-5">
-              <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Нийт хэрэглэгч</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#ede8df]">
+              <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999]">Нийт хэрэглэгч</div>
+              <div className="mt-2 text-3xl tracking-[2px] text-[#1A1A1A]">
                 {stats.totalUsers.toLocaleString()}
               </div>
             </div>
             <div className="card p-5">
-              <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
+              <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999]">Кланы гишүүд</div>
               <div className="mt-2 text-3xl tracking-[2px] text-[#EF2C58]">
                 {stats.totalMembers.toLocaleString()}
               </div>
             </div>
             <div className="card p-5">
-              <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Нийтлэлүүд</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#B3B300]">
+              <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999]">Нийтлэлүүд</div>
+              <div className="mt-2 text-3xl tracking-[2px] text-[#D4264E]">
                 {stats.totalPosts.toLocaleString()}
               </div>
             </div>
             <div className="card p-5">
-              <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">Шинэ (7 хоног)</div>
-              <div className="mt-2 text-3xl tracking-[2px] text-[#c8c8c0]">
+              <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999]">Шинэ (7 хоног)</div>
+              <div className="mt-2 text-3xl tracking-[2px] text-[#444444]">
                 {stats.recentSignups.toLocaleString()}
               </div>
             </div>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
             <div className="card p-5">
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">AI Түвшин</span>
-                <Link href="/admin/members" className="text-[9px] text-[#5a5550] hover:text-[#EF2C58]">
+                <Link href="/admin/members" className="text-[9px] text-[#999999] hover:text-[#EF2C58]">
                   Бүгдийг харах →
                 </Link>
               </div>
@@ -365,11 +365,11 @@ export default function AdminDashboard() {
                   const pct = stats.totalUsers > 0 ? (count / stats.totalUsers) * 100 : 0;
                   return (
                     <div key={level} className="flex items-center gap-3">
-                      <span className="w-24 text-[11px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
-                      <div className="h-[4px] flex-1 bg-[#1c1c1c]">
+                      <span className="w-24 text-[11px] text-[#444444]">{AI_LEVEL_LABELS[level]}</span>
+                      <div className="h-[4px] flex-1 bg-[#E8E8E6]">
                         <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
+                      <span className="w-10 text-right text-[11px] text-[#999999]">{count}</span>
                     </div>
                   );
                 })}
@@ -380,12 +380,12 @@ export default function AdminDashboard() {
               <div className="flex flex-wrap gap-2">
                 {stats.interestCounts.length > 0 ? (
                   stats.interestCounts.map((ic) => (
-                    <span key={ic._id} className="border border-[#1c1c1c] px-3 py-1.5 text-[10px] text-[#c8c8c0]">
+                    <span key={ic._id} className="border border-[#E8E8E6] px-3 py-1.5 text-[10px] text-[#444444]">
                       {ic._id.replace(/_/g, " ")} <span className="text-[#EF2C58]">{ic.count}</span>
                     </span>
                   ))
                 ) : (
-                  <span className="text-[11px] text-[#5a5550]">Мэдээлэл байхгүй</span>
+                  <span className="text-[11px] text-[#999999]">Мэдээлэл байхгүй</span>
                 )}
               </div>
             </div>
@@ -399,7 +399,7 @@ export default function AdminDashboard() {
           <div className="card p-5">
             <div className="mb-4 flex items-center justify-between">
               <span className="text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Түвшний тархалт</span>
-              <Link href="/tasks" className="text-[9px] text-[#5a5550] hover:text-[#EF2C58]">
+              <Link href="/tasks" className="text-[9px] text-[#999999] hover:text-[#EF2C58]">
                 Даалгаврууд →
               </Link>
             </div>
@@ -416,11 +416,11 @@ export default function AdminDashboard() {
                 const pct = stats.totalUsers > 0 ? (count / stats.totalUsers) * 100 : 0;
                 return (
                   <div key={tier.min} className="flex items-center gap-3">
-                    <span className="w-32 text-[11px] text-[#c8c8c0]">{tier.label}</span>
-                    <div className="h-[4px] flex-1 bg-[#1c1c1c]">
+                    <span className="w-32 text-[11px] text-[#444444]">{tier.label}</span>
+                    <div className="h-[4px] flex-1 bg-[#E8E8E6]">
                       <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="w-10 text-right text-[11px] text-[#5a5550]">{count}</span>
+                    <span className="w-10 text-right text-[11px] text-[#999999]">{count}</span>
                   </div>
                 );
               })}
@@ -431,21 +431,21 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               {(stats.topXPUsers || []).map((u, i) => (
                 <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-3 py-1 transition hover:bg-[rgba(240,236,227,0.03)]">
-                  <span className="w-5 text-right text-[10px] font-bold text-[#5a5550]">{i + 1}</span>
+                  <span className="w-5 text-right text-[10px] font-bold text-[#999999]">{i + 1}</span>
                   {u.avatar ? (
                     <img src={u.avatar} alt="" className="h-6 w-6 object-cover" />
                   ) : (
-                    <div className="flex h-6 w-6 items-center justify-center bg-[#1c1c1c] text-[9px] font-bold text-[#c8c8c0]">
+                    <div className="flex h-6 w-6 items-center justify-center bg-[#E8E8E6] text-[9px] font-bold text-[#444444]">
                       {u.name?.charAt(0)?.toUpperCase()}
                     </div>
                   )}
-                  <span className="flex-1 text-[12px] text-[#c8c8c0]">{u.name}</span>
-                  <span className="text-[10px] text-[#5a5550]">LV.{u.level || 1}</span>
+                  <span className="flex-1 text-[12px] text-[#444444]">{u.name}</span>
+                  <span className="text-[10px] text-[#999999]">LV.{u.level || 1}</span>
                   <span className="w-16 text-right text-[11px] font-bold text-[#EF2C58]">{(u.xp || 0).toLocaleString()}</span>
                 </Link>
               ))}
               {(!stats.topXPUsers || stats.topXPUsers.length === 0) && (
-                <p className="text-[11px] text-[#5a5550]">Мэдээлэл байхгүй</p>
+                <p className="text-[11px] text-[#999999]">Мэдээлэл байхгүй</p>
               )}
             </div>
           </div>
@@ -454,20 +454,20 @@ export default function AdminDashboard() {
 
       {/* Threads Section */}
       <div>
-        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#5a5550]">
+        <div className="mb-4 text-[10px] uppercase tracking-[2px] text-[#999999]">
           THREADS INTEGRATION
         </div>
         {!threadsConnected ? (
           <div className="card p-8 text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[#1c1c1c]">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-[#5a5550]">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-[#E8E8E6]">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-[#999999]">
                 <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.028-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.803 0-1.539.214-2.185.636l-1.994-.653c.457-1.32 1.181-2.36 2.153-3.096C10.04 6.43 11.13 6 12.354 6h.062c1.732.012 3.107.558 4.087 1.622.957 1.043 1.461 2.555 1.497 4.495l.13.02c1.144.194 2.148.703 2.908 1.477 1.023 1.052 1.555 2.508 1.555 4.221 0 .166-.005.331-.015.494-.137 2.28-1.163 4.07-2.969 5.176C17.987 23.474 15.354 24 12.186 24z"/>
               </svg>
             </div>
             <h2 className="mb-3 text-2xl tracking-[1px]">
               CONNECT THREADS
             </h2>
-            <p className="mb-6 text-[12px] leading-relaxed text-[#5a5550]">
+            <p className="mb-6 text-[12px] leading-relaxed text-[#999999]">
               Threads бүртгэлээ холбож нийтлэл удирдаарай.
             </p>
             <a href="/api/admin/threads/auth" className="btn-blood inline-block">
@@ -480,15 +480,15 @@ export default function AdminDashboard() {
               <div className="card p-5">
                 <div className="flex items-center gap-4">
                   {profile.threads_profile_picture_url ? (
-                    <img src={profile.threads_profile_picture_url} alt={profile.username} className="h-12 w-12 border border-[#1c1c1c] object-cover" />
+                    <img src={profile.threads_profile_picture_url} alt={profile.username} className="h-12 w-12 border border-[#E8E8E6] object-cover" />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center border border-[#1c1c1c] bg-[#0a0a0a] text-xl text-[#EF2C58]">
+                    <div className="flex h-12 w-12 items-center justify-center border border-[#E8E8E6] bg-[#F8F8F6] text-xl text-[#EF2C58]">
                       {profile.name?.charAt(0) || "?"}
                     </div>
                   )}
                   <div>
                     <div className="text-lg tracking-[2px]">{profile.name}</div>
-                    <div className="text-[11px] text-[#5a5550]">@{profile.username}</div>
+                    <div className="text-[11px] text-[#999999]">@{profile.username}</div>
                     <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[2px] text-green-500">
                       <span className="h-1.5 w-1.5 bg-green-500" /> Холбогдсон
                     </span>
@@ -503,7 +503,7 @@ export default function AdminDashboard() {
               { key: "replies", label: "Replies (28d)" },
             ].map((stat) => (
               <div key={stat.key} className="card p-5">
-                <div className="text-[9px] uppercase tracking-[0.5px] text-[#5a5550]">{stat.label}</div>
+                <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999]">{stat.label}</div>
                 <div className="mt-2 text-3xl tracking-[2px] text-[#EF2C58]">
                   {getInsightValue(stat.key).toLocaleString()}
                 </div>
@@ -514,7 +514,7 @@ export default function AdminDashboard() {
 
         {/* Instagram Integration */}
         <div className="card p-5">
-          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550] mb-3">Instagram интеграц</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999] mb-3">Instagram интеграц</div>
           {igStatus?.hasToken ? (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -523,7 +523,7 @@ export default function AdminDashboard() {
                   Холбогдсон {igStatus.username ? `(@${igStatus.username})` : ""}
                 </span>
               </div>
-              <p className="text-[11px] text-[#5a5550] mb-3">
+              <p className="text-[11px] text-[#999999] mb-3">
                 Token: {igStatus.tokenPreview || "***"}
               </p>
               <div className="flex gap-2">
@@ -537,10 +537,10 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div>
-              <p className="text-[12px] text-[#5a5550] mb-2 leading-relaxed">
+              <p className="text-[12px] text-[#999999] mb-2 leading-relaxed">
                 Instagram Graph API token оруулна уу. Reels болон постууд нүүр хуудсанд харагдана.
               </p>
-              <p className="text-[11px] text-[#3a3835] mb-3">
+              <p className="text-[11px] text-[#999999] mb-3">
                 Meta Developer → App → Instagram Basic Display → Generate Token
               </p>
               <input
@@ -617,16 +617,16 @@ export default function AdminDashboard() {
                 rejected: "ТАТГАЛЗСАН",
               };
               return (
-                <div key={t._id} className="flex items-center justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
+                <div key={t._id} className="flex items-center justify-between gap-3 rounded-[4px] bg-[#E8E8E6] p-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-[12px] font-bold text-[#EF2C58]">#{i + 1}</span>
                       <span className="text-[13px] font-bold text-[#1A1A1A] truncate">{t.title}</span>
                       <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">+{t.xpReward} XP</span>
-                      <span className={`text-[9px] font-bold ${statusColors[t.status] || "text-[#5a5550]"}`}>{statusLabels[t.status] || t.status}</span>
+                      <span className={`text-[9px] font-bold ${statusColors[t.status] || "text-[#999999]"}`}>{statusLabels[t.status] || t.status}</span>
                     </div>
-                    {t.description && <div className="text-[11px] text-[#5a5550] line-clamp-1">{t.description}</div>}
-                    {t.assignedTo && <div className="text-[10px] text-[#5a5550]">→ {t.assignedTo.name}</div>}
+                    {t.description && <div className="text-[11px] text-[#999999] line-clamp-1">{t.description}</div>}
+                    {t.assignedTo && <div className="text-[10px] text-[#999999]">→ {t.assignedTo.name}</div>}
                   </div>
                   <div className="flex shrink-0 gap-1.5">
                     {t.status === "submitted" && (
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
                 </div>
               );
             })}
-            {tasks.length === 0 && <p className="text-[11px] text-[#5a5550]">Даалгавар байхгүй</p>}
+            {tasks.length === 0 && <p className="text-[11px] text-[#999999]">Даалгавар байхгүй</p>}
           </div>
         </div>
 
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
                   <option key={t} value={t}>{t.toUpperCase()}</option>
                 ))}
               </select>
-              <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
+              <label className="flex items-center gap-1.5 text-[11px] text-[#444444] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={annForm.pinned}
@@ -706,14 +706,14 @@ export default function AdminDashboard() {
           {/* List */}
           <div className="space-y-2">
             {announcements.map(a => (
-              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[4px] bg-[#1c1c1c] p-3">
+              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[4px] bg-[#E8E8E6] p-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     {a.pinned && <span className="text-[9px] font-bold text-[#EF2C58]">PIN</span>}
-                    <span className="text-[9px] font-bold text-[#5a5550] uppercase">{a.tag}</span>
+                    <span className="text-[9px] font-bold text-[#999999] uppercase">{a.tag}</span>
                   </div>
                   <div className="text-[13px] font-bold text-[#1A1A1A] truncate">{a.title}</div>
-                  <div className="text-[11px] text-[#5a5550] line-clamp-1">{a.content}</div>
+                  <div className="text-[11px] text-[#999999] line-clamp-1">{a.content}</div>
                 </div>
                 <div className="flex shrink-0 gap-1.5">
                   <button onClick={() => startAnnEdit(a)} className="text-[10px] text-[#EF2C58] hover:underline">Засах</button>
@@ -721,13 +721,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
-            {announcements.length === 0 && <p className="text-[11px] text-[#5a5550]">Мэдэгдэл байхгүй</p>}
+            {announcements.length === 0 && <p className="text-[11px] text-[#999999]">Мэдэгдэл байхгүй</p>}
           </div>
         </div>
 
         {threadsConnected && (
           <div className="card mt-4 p-5">
-            <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550] mb-3">Шууд нийтлэх</div>
+            <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999] mb-3">Шууд нийтлэх</div>
             <textarea
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
@@ -736,7 +736,7 @@ export default function AdminDashboard() {
               maxLength={500}
             />
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-[11px] text-[#3a3835]">{postText.length}/500</span>
+              <span className="text-[11px] text-[#999999]">{postText.length}/500</span>
               <div className="flex items-center gap-3">
                 {postResult && (
                   <span className={`text-[11px] ${postResult.startsWith("Алдаа") ? "text-red-400" : "text-green-400"}`}>

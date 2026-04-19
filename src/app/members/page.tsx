@@ -154,7 +154,7 @@ export default function MembersPage() {
               })}
             </div>
           </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#060608]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F8F8F6]" />
         </div>
       </div>
     );
@@ -285,7 +285,7 @@ function MemberRow({ member, index }: { member: Member; index: number }) {
             src={member.avatar}
             alt={member.name}
             className={`h-11 w-11 rounded-[4px] object-cover sm:h-12 sm:w-12 ${
-              admin ? "ring-2 ring-[#EF2C58] ring-offset-1 ring-offset-[#060608]" : ""
+              admin ? "ring-2 ring-[#EF2C58] ring-offset-1 ring-offset-[#F8F8F6]" : ""
             }`}
           />
         ) : (

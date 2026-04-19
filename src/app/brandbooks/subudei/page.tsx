@@ -4,25 +4,25 @@ import Link from "next/link";
 
 /* ── Color palette data ── */
 const primaryColors = [
-  { name: "Void Black", hex: "#F8F8F6", text: "#E8E5DF" },
+  { name: "Void Black", hex: "#F8F8F6", text: "#F2F2F0" },
   { name: "Empire Gold", hex: "#C8943A", text: "#F8F8F6" },
-  { name: "Bone", hex: "#E8E5DF", text: "#F8F8F6" },
-  { name: "Snow", hex: "#F5F3EF", text: "#F8F8F6" },
-  { name: "Sky Blue", hex: "#3D6E8A", text: "#E8E5DF" },
+  { name: "Bone", hex: "#F2F2F0", text: "#F8F8F6" },
+  { name: "Snow", hex: "#F8F8F6", text: "#F8F8F6" },
+  { name: "Sky Blue", hex: "#3D6E8A", text: "#F2F2F0" },
 ];
 
 const secondaryColors = [
-  { name: "Steel", hex: "#141418", text: "#9E9EA8" },
-  { name: "Iron", hex: "#1E1E24", text: "#9E9EA8" },
+  { name: "Steel", hex: "#141418", text: "#888888" },
+  { name: "Iron", hex: "#1E1E24", text: "#888888" },
   { name: "Gold Light", hex: "#D9AB55", text: "#4A3520" },
-  { name: "Gold Dark", hex: "#A67C2E", text: "#E8E5DF" },
+  { name: "Gold Dark", hex: "#A67C2E", text: "#F2F2F0" },
   { name: "Deep Blue", hex: "#1E3A4D", text: "#5E8FA8" },
 ];
 
 const earthColors = [
   { name: "Earth Warm", hex: "#4A3520", text: "#D9AB55" },
-  { name: "Earth Mid", hex: "#6B4E30", text: "#E8E5DF" },
-  { name: "Earth Light", hex: "#8C6E45", text: "#E8E5DF" },
+  { name: "Earth Mid", hex: "#6B4E30", text: "#F2F2F0" },
+  { name: "Earth Light", hex: "#8C6E45", text: "#F2F2F0" },
   { name: "Frost", hex: "#5E8FA8", text: "#F8F8F6" },
 ];
 
@@ -69,7 +69,7 @@ function SectionHeader({ num, eyebrow, title }: { num: string; eyebrow: string; 
         <span className="inline-block h-px w-6 bg-[#A67C2E]" />
         {eyebrow}
       </p>
-      <h2 className="text-[22px] font-normal leading-snug text-[#F5F3EF] md:text-[28px]">
+      <h2 className="text-[22px] font-normal leading-snug text-[#F8F8F6] md:text-[28px]">
         {title}
       </h2>
     </div>
@@ -95,7 +95,7 @@ export default function SubudeiBrandBook() {
         <p className="mb-6 text-[10px] font-semibold uppercase tracking-[5px] text-[#C8943A]">
           Брэнд Ном · v2.0
         </p>
-        <h1 className="text-[clamp(40px,10vw,72px)] font-bold uppercase leading-[0.92] tracking-[0.12em] text-[#F5F3EF]"
+        <h1 className="text-[clamp(40px,10vw,72px)] font-bold uppercase leading-[0.92] tracking-[0.12em] text-[#F8F8F6]"
             style={{ fontFamily: "'Oswald', sans-serif" }}>
           СҮБЭЭДЭЙ
         </h1>
@@ -103,7 +103,7 @@ export default function SubudeiBrandBook() {
            style={{ fontFamily: "'Oswald', sans-serif" }}>
           Brand Book
         </p>
-        <p className="mt-6 text-[clamp(14px,2vw,18px)] italic text-[#9E9EA8]"
+        <p className="mt-6 text-[clamp(14px,2vw,18px)] italic text-[#888888]"
            style={{ fontFamily: "serif" }}>
           Нүүдлийн ухаалаг орон зай
         </p>
@@ -133,7 +133,7 @@ export default function SubudeiBrandBook() {
           ].map((item) => (
             <div
               key={item.num}
-              className="flex items-center gap-3 rounded-[4px] px-3 py-2 text-[13px] text-[#888888] transition hover:bg-[#14141a] hover:text-[#E8E5DF]"
+              className="flex items-center gap-3 rounded-[4px] px-3 py-2 text-[13px] text-[#888888] transition hover:bg-[#14141a] hover:text-[#F2F2F0]"
             >
               <span className="w-6 text-right text-[11px] text-[#AAAAAA]" style={{ fontFamily: "monospace" }}>
                 {item.num}
@@ -147,12 +147,12 @@ export default function SubudeiBrandBook() {
       {/* ═══ 01 ORIGIN ═══ */}
       <section className="mb-4">
         <SectionHeader num="01" eyebrow="Брэндийн Эх Үүсвэр" title="Сүбээдэй — Түүхэн дурсгал. Орчин цагийн чөлөөт амьдрал." />
-        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#888888]">
           Сүбээдэй Баатар — Монголын эзэнт гүрний хамгийн алдартай жанжин. Тэрээр газар нутгийн хил хязгааргүйгээр аян дайн хийж, түүхэнд тэмдэглэгдсэн хамгийн олон газар нутгийг хурдан хугацаанд хамарсан цэргийн удирдагч байв.{" "}
           <strong className="font-medium text-[#C8943A]">Хурд. Уян хатан байдал. Стратеги.</strong>{" "}
           — Эдгээр нь Сүбээдэй Баатрын мөн чанар бөгөөд бидний брэндийн суурь философи юм.
         </p>
-        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#888888]">
           Сүбээдэй зөөврийн сууц нь орчин цагийн нүүдэлчний хэрэгцээнд нийцсэн, шуурхай угсарч, тээвэрлэх боломжтой, бат бөх чанартай модульчлагдсан сууцны шийдэл юм. Бид Монголын газар нутгийн нөхцөл байдал, уур амьсгалд тохирсон ухаалаг орон зай бүтээнэ.
         </p>
 
@@ -176,7 +176,7 @@ export default function SubudeiBrandBook() {
       {/* ═══ 02 LOGO ═══ */}
       <section className="mb-4">
         <SectionHeader num="02" eyebrow="Лого Систем" title="Морьт харваач ба орчин цагийн бүтэц — нэг дүрс, нэг зорилго" />
-        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#888888]">
           Лого нь морьт харваач — Монголын түүхэн уламжлалын дүрс бөгөөд хурд, чадвар, чөлөөт байдлыг илэрхийлнэ. Wordmark нь Oswald үсгийн хэвээр, бүтэцлэг, цэвэр, орчин цагийн. Хоёр элемент хамтдаа ажиллахад түүх ба ирээдүй нийлнэ.
         </p>
 
@@ -190,7 +190,7 @@ export default function SubudeiBrandBook() {
               <p className="mt-1 text-[8px] uppercase tracking-[3px] text-[#888888]">Dark Background</p>
             </div>
           </div>
-          <div className="flex aspect-[3/2] items-center justify-center rounded-[4px] bg-[#F5F3EF] border border-[rgba(0,0,0,0.08)]">
+          <div className="flex aspect-[3/2] items-center justify-center rounded-[4px] bg-[#F8F8F6] border border-[rgba(0,0,0,0.08)]">
             <div className="text-center">
               <p className="text-[24px] font-bold uppercase tracking-[6px] text-[#A67C2E]" style={{ fontFamily: "'Oswald', sans-serif" }}>
                 СҮБЭЭДЭЙ
@@ -216,7 +216,7 @@ export default function SubudeiBrandBook() {
       {/* ═══ 03 COLOR ═══ */}
       <section className="mb-4">
         <SectionHeader num="03" eyebrow="Өнгөний Систем" title="Газар, алт, тэнгэр — Монголын байгальд суурилсан палитр" />
-        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#888888]">
           Өнгөний систем нь Монголын байгалиас сэдэвлэсэн: хар газар, алтан нар, цэнхэр тэнгэр. Void Black + Empire Gold = үндсэн хослол (80% хэрэглээ).
         </p>
 
@@ -271,7 +271,7 @@ export default function SubudeiBrandBook() {
       {/* ═══ 04 TYPOGRAPHY ═══ */}
       <section className="mb-4">
         <SectionHeader num="04" eyebrow="Үсгийн Хэв Маяг" title="Хүч чадал ба нарийн нямбай — хоёр туйл, нэг систем" />
-        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-8 text-[14px] font-light leading-[1.9] text-[#888888]">
           Oswald — хүчирхэг display үсэг. Cormorant Garamond — editorial. Raleway — бие текст. PT Serif — кирилл уншигдах текст. JetBrains Mono — техникийн мэдээлэл.
         </p>
 
@@ -280,7 +280,7 @@ export default function SubudeiBrandBook() {
             <div key={t.label} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
               <p className="mb-2 text-[9px] font-semibold uppercase tracking-[3px] text-[#C8943A]">{t.label}</p>
               <p
-                className="mb-2 text-[#F5F3EF]"
+                className="mb-2 text-[#F8F8F6]"
                 style={{
                   fontFamily: t.font,
                   fontWeight: t.weight,
@@ -308,7 +308,7 @@ export default function SubudeiBrandBook() {
           {values.map((v) => (
             <div key={v.num} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
               <span className="text-[10px] text-[#AAAAAA]" style={{ fontFamily: "monospace" }}>{v.num}</span>
-              <h3 className="mt-2 text-[16px] font-semibold text-[#F5F3EF]">{v.title}</h3>
+              <h3 className="mt-2 text-[16px] font-semibold text-[#F8F8F6]">{v.title}</h3>
               <p className="mt-2 text-[13px] leading-relaxed text-[#888888]">{v.desc}</p>
             </div>
           ))}
@@ -323,7 +323,7 @@ export default function SubudeiBrandBook() {
 
         {/* Primary tagline */}
         <div className="mb-2 flex flex-col items-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-6 py-12 text-center">
-          <p className="text-[clamp(24px,5vw,44px)] font-light text-[#F5F3EF]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <p className="text-[clamp(24px,5vw,44px)] font-light text-[#F8F8F6]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Хаана ч <span className="font-semibold text-[#C8943A]">гэртээ</span>
           </p>
           <p className="mt-3 text-[10px] uppercase tracking-[3px] text-[#AAAAAA]">— Үндсэн уриа —</p>
@@ -331,13 +331,13 @@ export default function SubudeiBrandBook() {
 
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="flex flex-col items-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-6 py-10 text-center">
-            <p className="text-[clamp(18px,3.5vw,28px)] font-light text-[#F5F3EF]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <p className="text-[clamp(18px,3.5vw,28px)] font-light text-[#F8F8F6]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Нүүдлийн <span className="font-semibold text-[#C8943A]">ухаалаг</span> орон зай
             </p>
             <p className="mt-3 text-[10px] uppercase tracking-[3px] text-[#AAAAAA]">— Маркетинг —</p>
           </div>
           <div className="flex flex-col items-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-6 py-10 text-center">
-            <p className="text-[clamp(18px,3.5vw,28px)] font-light text-[#F5F3EF]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <p className="text-[clamp(18px,3.5vw,28px)] font-light text-[#F8F8F6]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Бат бөхөөр <span className="font-semibold text-[#C8943A]">бүтээ</span>, хурдан <span className="font-semibold text-[#C8943A]">зөөгдө</span>
             </p>
             <p className="mt-3 text-[10px] uppercase tracking-[3px] text-[#AAAAAA]">— Бүтээгдэхүүн —</p>
@@ -350,7 +350,7 @@ export default function SubudeiBrandBook() {
       {/* ═══ 07 VOICE ═══ */}
       <section className="mb-4">
         <SectionHeader num="07" eyebrow="Харилцааны Хэв Маяг" title="Дуу хоолой — итгэлтэй, шулуун, халуун дулаан" />
-        <p className="mb-6 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-6 text-[14px] font-light leading-[1.9] text-[#888888]">
           Сүбээдэй брэнд нь хэрэглэгчтэй итгэлтэй, шулуун, дулаахан харилцана. Бид хэт албан ёсны, хэт бизнес хэлийг хэрэглэхгүй. Мөн хэт залуучуудын сленг, тоглоомын хэлийг ч хэрэглэхгүй. Бидний дуу хоолой — ахлах ах, эгч шиг.
         </p>
 
@@ -377,7 +377,7 @@ export default function SubudeiBrandBook() {
       {/* ═══ 08 PHOTOGRAPHY ═══ */}
       <section className="mb-4">
         <SectionHeader num="08" eyebrow="Зураг, Визуал" title="Бүтээгдэхүүний визуал — бодит, хүчтэй, Монголын газар нутаг" />
-        <p className="mb-6 text-[14px] font-light leading-[1.9] text-[#9E9EA8]">
+        <p className="mb-6 text-[14px] font-light leading-[1.9] text-[#888888]">
           Зургийн стил нь бодит, байгалийн гэрэлтэй, Монголын газар нутгийг харуулсан байх ёстой. Студийн зураг биш — бодит орчинд, бодит хүмүүстэй, бодит хэрэглээг харуулна.
         </p>
 
@@ -389,7 +389,7 @@ export default function SubudeiBrandBook() {
             { title: "Гэрэлтүүлэг", desc: "Golden hour, байгалийн гэрэл, dramatic shadow" },
           ].map((item) => (
             <div key={item.title} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
-              <h3 className="mb-2 text-[14px] font-semibold text-[#F5F3EF]">{item.title}</h3>
+              <h3 className="mb-2 text-[14px] font-semibold text-[#F8F8F6]">{item.title}</h3>
               <p className="text-[13px] leading-relaxed text-[#888888]">{item.desc}</p>
             </div>
           ))}
@@ -405,7 +405,7 @@ export default function SubudeiBrandBook() {
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {applications.map((app) => (
             <div key={app.title} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
-              <h3 className="mb-2 text-[14px] font-semibold text-[#F5F3EF]">{app.title}</h3>
+              <h3 className="mb-2 text-[14px] font-semibold text-[#F8F8F6]">{app.title}</h3>
               <p className="text-[13px] leading-relaxed text-[#888888]">{app.desc}</p>
             </div>
           ))}

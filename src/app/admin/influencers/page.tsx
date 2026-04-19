@@ -156,8 +156,8 @@ export default function AdminInfluencersPage() {
     } catch {}
   };
 
-  const ic = "w-full rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#3a3835]";
-  const sc = "rounded-[4px] border border-[#1c1c1c] bg-[#0a0a0a] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none focus:border-[rgba(239,44,88,0.4)]";
+  const ic = "w-full rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]";
+  const sc = "rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none focus:border-[rgba(239,44,88,0.4)]";
 
   if (loading) {
     return (
@@ -174,7 +174,7 @@ export default function AdminInfluencersPage() {
           <h1 className="text-2xl tracking-[2px]">
             INFLUENCER <span className="text-[#EF2C58]">УДИРДЛАГА</span>
           </h1>
-          <p className="mt-1 text-[11px] text-[#5a5550]">{influencers.length} инфлүүнсер бүртгэгдсэн</p>
+          <p className="mt-1 text-[11px] text-[#999999]">{influencers.length} инфлүүнсер бүртгэгдсэн</p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]">
           + Нэмэх
@@ -189,13 +189,13 @@ export default function AdminInfluencersPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-[4px] border border-[#1c1c1c] bg-[#111] p-5 space-y-4">
+        <div className="rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] p-5 space-y-4">
           <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58]">
             {editing ? "Засварлах" : "Шинэ инфлүүнсер"}
           </div>
 
           {/* Basic info */}
-          <div className="text-[9px] uppercase tracking-wide text-[#5a5550]">Үндсэн мэдээлэл</div>
+          <div className="text-[9px] uppercase tracking-wide text-[#999999]">Үндсэн мэдээлэл</div>
           <div className="grid gap-3 sm:grid-cols-2">
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Нэр" className={ic} />
             <input value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} placeholder="Slug (жиш: munkh_influencer)" className={ic} />
@@ -211,7 +211,7 @@ export default function AdminInfluencersPage() {
           </div>
 
           {/* Socials */}
-          <div className="text-[9px] uppercase tracking-wide text-[#5a5550] mt-2">Сошиал хаягууд</div>
+          <div className="text-[9px] uppercase tracking-wide text-[#999999] mt-2">Сошиал хаягууд</div>
           <div className="grid gap-3 sm:grid-cols-2">
             <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} placeholder="Instagram URL" className={ic} />
             <input value={form.tiktok} onChange={(e) => setForm((f) => ({ ...f, tiktok: e.target.value }))} placeholder="TikTok URL" className={ic} />
@@ -220,7 +220,7 @@ export default function AdminInfluencersPage() {
           </div>
 
           {/* Stats */}
-          <div className="text-[9px] uppercase tracking-wide text-[#5a5550] mt-2">Статистик</div>
+          <div className="text-[9px] uppercase tracking-wide text-[#999999] mt-2">Статистик</div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <input value={form.followers} onChange={(e) => setForm((f) => ({ ...f, followers: e.target.value }))} placeholder="Дагагч" className={ic} type="number" />
             <input value={form.engagement} onChange={(e) => setForm((f) => ({ ...f, engagement: e.target.value }))} placeholder="ER %" className={ic} />
@@ -229,7 +229,7 @@ export default function AdminInfluencersPage() {
           </div>
 
           {/* Pricing */}
-          <div className="text-[9px] uppercase tracking-wide text-[#5a5550] mt-2">Үнийн санал (₮)</div>
+          <div className="text-[9px] uppercase tracking-wide text-[#999999] mt-2">Үнийн санал (₮)</div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <input value={form.pStory} onChange={(e) => setForm((f) => ({ ...f, pStory: e.target.value }))} placeholder="Story" className={ic} type="number" />
             <input value={form.pPost} onChange={(e) => setForm((f) => ({ ...f, pPost: e.target.value }))} placeholder="Post" className={ic} type="number" />
@@ -246,11 +246,11 @@ export default function AdminInfluencersPage() {
               {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
             <input type="number" value={form.order} onChange={(e) => setForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))} placeholder="Order" className={`${ic} w-20`} />
-            <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
+            <label className="flex items-center gap-1.5 text-[11px] text-[#444444] cursor-pointer">
               <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#EF2C58]" />
               Featured
             </label>
-            <label className="flex items-center gap-1.5 text-[11px] text-[#c8c8c0] cursor-pointer">
+            <label className="flex items-center gap-1.5 text-[11px] text-[#444444] cursor-pointer">
               <input type="checkbox" checked={form.verified} onChange={(e) => setForm((f) => ({ ...f, verified: e.target.checked }))} className="accent-[#EF2C58]" />
               Verified
             </label>
@@ -263,7 +263,7 @@ export default function AdminInfluencersPage() {
             <button onClick={handleSave} disabled={!form.name.trim() || !form.slug.trim() || saving} className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-40">
               {saving ? "Хадгалж байна..." : editing ? "Шинэчлэх" : "Нэмэх"}
             </button>
-            <button onClick={resetForm} className="rounded-[4px] border border-[#1c1c1c] px-4 py-2.5 text-[12px] text-[#5a5550] transition hover:text-[#c8c8c0]">
+            <button onClick={resetForm} className="rounded-[4px] border border-[#E8E8E6] px-4 py-2.5 text-[12px] text-[#999999] transition hover:text-[#444444]">
               Болих
             </button>
           </div>
@@ -275,11 +275,11 @@ export default function AdminInfluencersPage() {
         {influencers.map((inf) => {
           const st = STATUSES.find((s) => s.value === inf.status);
           return (
-            <div key={inf._id} className="flex items-center gap-4 rounded-[4px] border border-[#1c1c1c] bg-[#111] p-4">
+            <div key={inf._id} className="flex items-center gap-4 rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] p-4">
               {inf.avatar ? (
                 <img src={inf.avatar} alt={inf.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1c1c1c] text-[14px] font-black text-[#EF2C58]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E8E8E6] text-[14px] font-black text-[#EF2C58]">
                   {inf.name.charAt(0)}
                 </div>
               )}
@@ -293,20 +293,20 @@ export default function AdminInfluencersPage() {
                     </div>
                   )}
                   {inf.featured && <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#EF2C58]">TOP</span>}
-                  <span className={`text-[10px] font-bold ${st?.color || "text-[#5a5550]"}`}>{st?.label}</span>
+                  <span className={`text-[10px] font-bold ${st?.color || "text-[#999999]"}`}>{st?.label}</span>
                 </div>
                 <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-[11px] text-[#5a5550]">{inf.category}</span>
+                  <span className="text-[11px] text-[#999999]">{inf.category}</span>
                   <span className="text-[11px] font-bold text-[#EF2C58]">{formatNum(inf.stats?.followers || 0)} дагагч</span>
-                  {inf.stats?.engagement > 0 && <span className="text-[11px] text-[#5a5550]">ER: {inf.stats.engagement}%</span>}
+                  {inf.stats?.engagement > 0 && <span className="text-[11px] text-[#999999]">ER: {inf.stats.engagement}%</span>}
                 </div>
               </div>
 
               <div className="flex shrink-0 gap-2">
-                <button onClick={() => startEdit(inf)} className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]">
+                <button onClick={() => startEdit(inf)} className="rounded-[4px] border border-[#E8E8E6] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]">
                   Засах
                 </button>
-                <button onClick={() => handleDelete(inf._id)} className="rounded-[4px] border border-[#1c1c1c] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50">
+                <button onClick={() => handleDelete(inf._id)} className="rounded-[4px] border border-[#E8E8E6] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50">
                   Устгах
                 </button>
               </div>
@@ -314,7 +314,7 @@ export default function AdminInfluencersPage() {
           );
         })}
         {influencers.length === 0 && (
-          <p className="py-10 text-center text-[13px] text-[#5a5550]">Инфлүүнсер бүртгэгдээгүй</p>
+          <p className="py-10 text-center text-[13px] text-[#999999]">Инфлүүнсер бүртгэгдээгүй</p>
         )}
       </div>
     </div>

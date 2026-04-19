@@ -213,7 +213,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   {uploading ? (
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
                   ) : (
-                    <svg className="h-5 w-5 text-[#eeeee8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[#F8F8F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -236,13 +236,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -250,7 +250,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full rounded-[4px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#EF2C58] resize-none"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-2">
@@ -263,7 +263,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   </button>
                   <button
                     onClick={() => setEditing(false)}
-                    className="rounded-[4px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:text-[#eeeee8]"
+                    className="rounded-[4px] border border-[#E8E8E6] px-4 py-2 text-[12px] font-medium text-[#888888] transition hover:text-[#F8F8F6]"
                   >
                     Цуцлах
                   </button>
@@ -273,7 +273,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               <>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h1 className="text-xl font-bold text-[#eeeee8]">
+                    <h1 className="text-xl font-bold text-[#F8F8F6]">
                       {user.name}
                     </h1>
                     {(() => {
@@ -288,7 +288,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             <span className="text-[11px] font-bold text-[#EF2C58]">
                               LV.{level}
                             </span>
-                            <span className="text-[11px] text-[#6a6a72]">
+                            <span className="text-[11px] text-[#888888]">
                               {title.titleMN}
                             </span>
                           </div>
@@ -316,13 +316,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     <div className="flex shrink-0 gap-2">
                       <button
                         onClick={() => setEditing(true)}
-                        className="rounded-[4px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#EF2C58] hover:text-[#eeeee8]"
+                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-[#888888] transition hover:border-[#EF2C58] hover:text-[#F8F8F6]"
                       >
                         Засах
                       </button>
                       <button
                         onClick={() => signOut()}
-                        className="rounded-[4px] border border-[#2a2a2e] px-3.5 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400"
+                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400"
                       >
                         Гарах
                       </button>
@@ -331,7 +331,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
 
                 {user.bio && (
-                  <p className="mt-3 text-[13px] leading-[1.7] text-[#6a6a72]">
+                  <p className="mt-3 text-[13px] leading-[1.7] text-[#888888]">
                     {user.bio}
                   </p>
                 )}
@@ -366,7 +366,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
       {/* Posts section */}
       <div className="mb-3 flex items-center gap-2 px-1">
-        <span className="text-[12px] font-semibold text-[#6a6a72]">Нийтлэлүүд</span>
+        <span className="text-[12px] font-semibold text-[#888888]">Нийтлэлүүд</span>
         <span className="text-[12px] text-[#AAAAAA]">{posts.length}</span>
       </div>
 

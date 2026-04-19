@@ -147,10 +147,10 @@ export default function AdminMembersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl tracking-[1px] text-[#ede8df]">
+        <h1 className="text-3xl tracking-[1px] text-[#1A1A1A]">
           Гишүүд удирдах
         </h1>
-        <p className="mt-1 text-[11px] tracking-[2px] text-[#5a5550]">
+        <p className="mt-1 text-[11px] tracking-[2px] text-[#999999]">
           НИЙГЭМЛЭГИЙН ГИШҮҮД & СТАТИСТИК
         </p>
       </div>
@@ -158,7 +158,7 @@ export default function AdminMembersPage() {
       {message && (
         <div className="mb-6 border-l-2 border-[#EF2C58] bg-[rgba(0,100,145,0.08)] px-4 py-3 text-[12px] text-[#EF2C58]">
           {message}
-          <button onClick={() => setMessage("")} className="ml-3 text-[10px] text-[#5a5550] hover:text-[#EF2C58]">
+          <button onClick={() => setMessage("")} className="ml-3 text-[10px] text-[#999999] hover:text-[#EF2C58]">
             ✕
           </button>
         </div>
@@ -167,20 +167,20 @@ export default function AdminMembersPage() {
       {/* Overview Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Нийт хэрэглэгч</div>
-          <div className="mt-1 text-2xl tracking-[2px] text-[#ede8df]">{totalUsers}</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Нийт хэрэглэгч</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[#1A1A1A]">{totalUsers}</div>
         </div>
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Кланы гишүүд</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Кланы гишүүд</div>
           <div className="mt-1 text-2xl tracking-[2px] text-[#EF2C58]">{totalMembers}</div>
         </div>
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Гишүүн бус</div>
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Гишүүн бус</div>
           <div className="mt-1 text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">{totalUsers - totalMembers}</div>
         </div>
         <div className="card p-4">
-          <div className="text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">Хөрвүүлэлт</div>
-          <div className="mt-1 text-2xl tracking-[2px] text-[#B3B300]">
+          <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Хөрвүүлэлт</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[#D4264E]">
             {totalUsers > 0 ? Math.round((totalMembers / totalUsers) * 100) : 0}%
           </div>
         </div>
@@ -196,11 +196,11 @@ export default function AdminMembersPage() {
               const pct = totalUsers > 0 ? (count / totalUsers) * 100 : 0;
               return (
                 <div key={level} className="flex items-center gap-3">
-                  <span className="w-24 text-[10px] text-[#c8c8c0]">{AI_LEVEL_LABELS[level]}</span>
-                  <div className="h-[3px] flex-1 bg-[#1c1c1c]">
+                  <span className="w-24 text-[10px] text-[#444444]">{AI_LEVEL_LABELS[level]}</span>
+                  <div className="h-[3px] flex-1 bg-[#E8E8E6]">
                     <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                   </div>
-                  <span className="w-8 text-right text-[10px] text-[#5a5550]">{count}</span>
+                  <span className="w-8 text-right text-[10px] text-[#999999]">{count}</span>
                 </div>
               );
             })}
@@ -210,12 +210,12 @@ export default function AdminMembersPage() {
           <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Түгээмэл сонирхол</div>
           <div className="flex flex-wrap gap-1.5">
             {interestCounts.map((ic) => (
-              <span key={ic._id} className="border border-[#1c1c1c] px-2 py-1 text-[9px] text-[#c8c8c0]">
+              <span key={ic._id} className="border border-[#E8E8E6] px-2 py-1 text-[9px] text-[#444444]">
                 {INTEREST_LABELS[ic._id] || ic._id} ({ic.count})
               </span>
             ))}
             {interestCounts.length === 0 && (
-              <span className="text-[10px] text-[#5a5550]">Мэдээлэл байхгүй</span>
+              <span className="text-[10px] text-[#999999]">Мэдээлэл байхгүй</span>
             )}
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function AdminMembersPage() {
               className={`px-3 py-2 text-[9px] uppercase tracking-[2px] transition ${
                 filter === f.value
                   ? "bg-[rgba(0,100,145,0.1)] text-[#EF2C58]"
-                  : "text-[#5a5550] hover:text-[#c8c8c0]"
+                  : "text-[#999999] hover:text-[#444444]"
               }`}
             >
               {f.label}
@@ -263,7 +263,7 @@ export default function AdminMembersPage() {
         </div>
       ) : users.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-[12px] text-[#5a5550]">Хэрэглэгч олдсонгүй</p>
+          <p className="text-[12px] text-[#999999]">Хэрэглэгч олдсонгүй</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -287,13 +287,13 @@ export default function AdminMembersPage() {
                 >
                   <div className="flex items-center gap-3">
                     {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="h-10 w-10 object-cover ring-1 ring-[#1c1c1c]" />
+                      <img src={user.avatar} alt={user.name} className="h-10 w-10 object-cover ring-1 ring-[#E8E8E6]" />
                     ) : (
-                      <div className="flex h-10 w-10 items-center justify-center bg-[#1c1c1c] text-[10px] font-bold text-[#c8c8c0]">{initials}</div>
+                      <div className="flex h-10 w-10 items-center justify-center bg-[#E8E8E6] text-[10px] font-bold text-[#444444]">{initials}</div>
                     )}
                     <div className="min-w-0">
-                      <p className="text-[13px] font-bold text-[#ede8df]">{user.name}</p>
-                      <p className="text-[10px] text-[#5a5550]">
+                      <p className="text-[13px] font-bold text-[#1A1A1A]">{user.name}</p>
+                      <p className="text-[10px] text-[#999999]">
                         {user.email}
                         {user.phone && <span className="ml-2">· {user.phone}</span>}
                       </p>
@@ -302,19 +302,19 @@ export default function AdminMembersPage() {
 
                   <div className="flex flex-wrap items-center gap-2">
                     {user.aiExperience && (
-                      <span className="px-2 py-0.5 text-[8px] uppercase tracking-[1px] border border-[#1c1c1c] text-[#c8c8c0]">
+                      <span className="px-2 py-0.5 text-[8px] uppercase tracking-[1px] border border-[#E8E8E6] text-[#444444]">
                         {AI_LEVEL_LABELS[user.aiExperience]}
                       </span>
                     )}
                     {user.age && (
-                      <span className="text-[9px] text-[#5a5550]">{user.age} нас</span>
+                      <span className="text-[9px] text-[#999999]">{user.age} нас</span>
                     )}
 
                     {member ? (
                       <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(0,100,145,0.1)] text-[#EF2C58]">
                         Гишүүн
                         {remaining !== null && remaining > 0 && (
-                          <span className="ml-1 text-[#5a5550]">({remaining}д)</span>
+                          <span className="ml-1 text-[#999999]">({remaining}д)</span>
                         )}
                       </span>
                     ) : expired ? (
@@ -322,7 +322,7 @@ export default function AdminMembersPage() {
                         Дууссан
                       </span>
                     ) : (
-                      <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(240,236,227,0.03)] text-[#5a5550]">
+                      <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(240,236,227,0.03)] text-[#999999]">
                         Гишүүн бус
                       </span>
                     )}
@@ -331,7 +331,7 @@ export default function AdminMembersPage() {
                       <button
                         onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
                         disabled={actionLoading === user._id}
-                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#EF2C58] text-[#ede8df] transition hover:bg-[#B3B300] disabled:opacity-50"
+                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#EF2C58] text-[#1A1A1A] transition hover:bg-[#D4264E] disabled:opacity-50"
                       >
                         {actionLoading === user._id ? "..." : "Эрх олгох"}
                       </button>
@@ -340,7 +340,7 @@ export default function AdminMembersPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
                           disabled={actionLoading === user._id}
-                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#EF2C58] disabled:opacity-50"
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#999999] transition hover:text-[#EF2C58] disabled:opacity-50"
                         >
                           Сунгах
                         </button>
@@ -352,7 +352,7 @@ export default function AdminMembersPage() {
                             }
                           }}
                           disabled={actionLoading === user._id}
-                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#5a5550] transition hover:text-[#EF2C58] disabled:opacity-50"
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] text-[#999999] transition hover:text-[#EF2C58] disabled:opacity-50"
                         >
                           Цуцлах
                         </button>
@@ -363,35 +363,35 @@ export default function AdminMembersPage() {
 
                 {/* Expanded details */}
                 {expanded && (
-                  <div className="border-t border-[#1c1c1c] px-4 py-3">
+                  <div className="border-t border-[#E8E8E6] px-4 py-3">
                     <div className="grid grid-cols-2 gap-3 text-[10px] sm:grid-cols-4">
                       <div>
-                        <span className="text-[#5a5550]">Бүртгүүлсэн</span>
-                        <p className="mt-0.5 text-[#c8c8c0]">{formatDate(user.createdAt)}</p>
+                        <span className="text-[#999999]">Бүртгүүлсэн</span>
+                        <p className="mt-0.5 text-[#444444]">{formatDate(user.createdAt)}</p>
                       </div>
                       {user.clan && (
                         <>
                           <div>
-                            <span className="text-[#5a5550]">Клан нэгдсэн</span>
-                            <p className="mt-0.5 text-[#c8c8c0]">{formatDate(user.clanJoinedAt)}</p>
+                            <span className="text-[#999999]">Клан нэгдсэн</span>
+                            <p className="mt-0.5 text-[#444444]">{formatDate(user.clanJoinedAt)}</p>
                           </div>
                           <div>
-                            <span className="text-[#5a5550]">Дуусах</span>
-                            <p className="mt-0.5 text-[#c8c8c0]">{formatDate(user.subscriptionExpiresAt)}</p>
+                            <span className="text-[#999999]">Дуусах</span>
+                            <p className="mt-0.5 text-[#444444]">{formatDate(user.subscriptionExpiresAt)}</p>
                           </div>
                         </>
                       )}
                       {user.aiExperience && (
                         <div>
-                          <span className="text-[#5a5550]">AI Түвшин</span>
-                          <p className="mt-0.5 text-[#c8c8c0]">{AI_LEVEL_LABELS[user.aiExperience]}</p>
+                          <span className="text-[#999999]">AI Түвшин</span>
+                          <p className="mt-0.5 text-[#444444]">{AI_LEVEL_LABELS[user.aiExperience]}</p>
                         </div>
                       )}
                     </div>
                     {user.interests && user.interests.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1">
                         {user.interests.map((i) => (
-                          <span key={i} className="border border-[#1c1c1c] px-2 py-0.5 text-[8px] uppercase tracking-[0.5px] text-[#5a5550]">
+                          <span key={i} className="border border-[#E8E8E6] px-2 py-0.5 text-[8px] uppercase tracking-[0.5px] text-[#999999]">
                             {INTEREST_LABELS[i] || i}
                           </span>
                         ))}
@@ -412,15 +412,15 @@ export default function AdminMembersPage() {
       {grantModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="card mx-4 w-full max-w-md p-6">
-            <h2 className="mb-4 text-2xl tracking-[1px] text-[#ede8df]">
+            <h2 className="mb-4 text-2xl tracking-[1px] text-[#1A1A1A]">
               {isMember(grantModal) ? "Гишүүнчлэл сунгах" : "Гишүүнчлэл олгох"}
             </h2>
             <p className="mb-4 text-[12px] text-[rgba(240,236,227,0.5)]">
-              <strong className="text-[#ede8df]">{grantModal.name}</strong> ({grantModal.email})
+              <strong className="text-[#1A1A1A]">{grantModal.name}</strong> ({grantModal.email})
             </p>
 
             <div className="mb-4">
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#5a5550]">
+              <label className="mb-2 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">
                 Хоногийн тоо
               </label>
               <div className="flex gap-2">
@@ -430,8 +430,8 @@ export default function AdminMembersPage() {
                     onClick={() => setGrantDays(d)}
                     className={`px-3 py-2 text-[10px] transition ${
                       grantDays === d
-                        ? "bg-[#EF2C58] text-[#ede8df]"
-                        : "bg-[#1c1c1c] text-[#5a5550] hover:text-[#c8c8c0]"
+                        ? "bg-[#EF2C58] text-[#1A1A1A]"
+                        : "bg-[#E8E8E6] text-[#999999] hover:text-[#444444]"
                     }`}
                   >
                     {d}

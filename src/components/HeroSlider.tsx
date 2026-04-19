@@ -3,13 +3,18 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 
-const STATIC_SLIDES: { url: string; type: "image" | "video" }[] = [
-  { url: "/hero-video.webm", type: "video" },
+const FALLBACK_SLIDES: { url: string; type: "image" | "video" }[] = [
   { url: "/hero-1.jpg", type: "image" },
   { url: "/hero-2.jpg", type: "image" },
 ];
 
+interface Slide {
+  url: string;
+  type: "image" | "video";
+}
+
 export default function HeroSlider() {
+  const [slides, setSlides] = useState<Slide[]>(FALLBACK_SLIDES);
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -17,7 +22,17 @@ export default function HeroSlider() {
   const touchStartX = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const slides = STATIC_SLIDES;
+  // Fetch slides from admin API
+  useEffect(() => {
+    fetch("/api/hero/slides")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.slides && d.slides.length > 0) {
+          setSlides(d.slides);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Auto-play music on first user interaction
   useEffect(() => {
@@ -31,14 +46,10 @@ export default function HeroSlider() {
       }
     };
 
-    // Try autoplay immediately
     const timer = setTimeout(tryPlay, 500);
 
-    // Fallback: play on first user interaction
     const handleInteraction = () => {
-      if (!hasInteracted) {
-        tryPlay();
-      }
+      if (!hasInteracted) tryPlay();
     };
 
     document.addEventListener("click", handleInteraction, { once: true });
@@ -104,23 +115,18 @@ export default function HeroSlider() {
 
   return (
     <div className="w-full">
-      {/* Audio element */}
       <audio ref={audioRef} src="/fire-again.mp3" loop preload="auto" />
 
-      {/* Slider */}
       <div
-        className="hero-slider relative w-full overflow-hidden rounded-[4px]"
+        className="relative w-full overflow-hidden rounded-[8px] bg-[#FFFFFF] shadow-[0_2px_16px_rgba(0,0,0,0.06)]"
         style={{ aspectRatio: "3/4" }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Slides track */}
+        {/* Slides */}
         <div
           className="flex h-full transition-transform duration-[550ms]"
-          style={{
-            transform: `translateX(-${current * 100}%)`,
-            willChange: "transform",
-          }}
+          style={{ transform: `translateX(-${current * 100}%)`, willChange: "transform" }}
         >
           {slides.map((slide, i) => (
             <div key={i} className="relative h-full w-full flex-shrink-0">
@@ -143,7 +149,7 @@ export default function HeroSlider() {
                   sizes="(max-width: 640px) 100vw, 640px"
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(248,248,246,0.85)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(0,0,0,0.5)]" />
             </div>
           ))}
         </div>
@@ -152,19 +158,21 @@ export default function HeroSlider() {
         <div className="absolute bottom-6 left-5 right-5 z-10">
           <h1
             className="text-[36px] font-bold tracking-[0.12em] text-white sm:text-[48px]"
-            style={{ textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
+            style={{ textShadow: "0 2px 20px rgba(0,0,0,0.4)" }}
           >
             ANTAQOR
           </h1>
-          <p className="mt-1 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#EF2C58]">
+          <p className="mt-1 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#EF2C58]"
+            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.3)" }}
+          >
             Cyber Empire
           </p>
         </div>
 
-        {/* Music toggle button */}
+        {/* Music toggle */}
         <button
           onClick={toggleMusic}
-          className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] backdrop-blur-sm transition hover:bg-[rgba(0,0,0,0.8)]"
+          className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm transition hover:bg-white"
           aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
         >
           {isPlaying ? (
@@ -178,7 +186,7 @@ export default function HeroSlider() {
           )}
         </button>
 
-        {/* Music visualizer bars when playing */}
+        {/* Music visualizer */}
         {isPlaying && (
           <div className="absolute left-12 top-4.5 z-10 flex items-end gap-[2px]">
             {[1, 2, 3, 4].map((i) => (
@@ -194,26 +202,17 @@ export default function HeroSlider() {
           </div>
         )}
 
-        {/* Shimmer effect */}
-        <div className="hero-shimmer pointer-events-none absolute inset-0 z-20" />
-
-        {/* Gold glow border pulse */}
-        <div className="hero-glow pointer-events-none absolute inset-0 z-20 rounded-[4px]" />
-
         {/* Dots */}
         {slides.length > 1 && (
           <div className="absolute bottom-6 right-5 z-10 flex items-center gap-[5px]">
             {slides.map((_, i) => (
               <button
                 key={i}
-                onClick={() => {
-                  goTo(i);
-                  resetTimer();
-                }}
+                onClick={() => { goTo(i); resetTimer(); }}
                 className={`h-[6px] rounded-full transition-all duration-300 ${
                   i === current
                     ? "w-[18px] bg-[#EF2C58]"
-                    : "w-[6px] bg-[rgba(255,255,255,0.35)]"
+                    : "w-[6px] bg-white/40"
                 }`}
               />
             ))}
@@ -222,7 +221,7 @@ export default function HeroSlider() {
 
         {/* Counter */}
         {slides.length > 1 && (
-          <div className="absolute right-3 top-3 z-10 rounded-full bg-[rgba(0,0,0,0.6)] px-[10px] py-[3px] text-[10px] font-extrabold text-[rgba(255,255,255,0.6)] backdrop-blur-sm">
+          <div className="absolute right-3 top-3 z-10 rounded-full bg-white/80 px-[10px] py-[3px] text-[10px] font-extrabold text-[#666666] shadow-sm backdrop-blur-sm">
             {current + 1} / {slides.length}
           </div>
         )}

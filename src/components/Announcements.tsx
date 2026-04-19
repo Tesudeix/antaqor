@@ -66,10 +66,10 @@ export default function Announcements() {
   return (
     <div className="py-2">
       <div className="mb-3 flex items-center gap-2 px-1">
-        <svg className="h-4 w-4 text-[#0a0a0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-4 w-4 text-[#F8F8F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
         </svg>
-        <span className="text-[12px] font-black tracking-wide text-[#0a0a0a]">Мэдэгдэл</span>
+        <span className="text-[12px] font-black tracking-wide text-[#F8F8F6]">Мэдэгдэл</span>
         <span className="text-[10px] font-semibold text-[rgba(0,0,0,0.25)]">·</span>
         <span className="text-[10px] font-semibold text-[rgba(0,0,0,0.25)]">{items.length}</span>
       </div>
@@ -85,8 +85,8 @@ export default function Announcements() {
               key={a._id}
               className={`rounded-[4px] transition ${
                 a.pinned
-                  ? "bg-[#0a0a0a] text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
-                  : "bg-[rgba(0,0,0,0.04)] text-[#0a0a0a]"
+                  ? "bg-[#F8F8F6] text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
+                  : "bg-[rgba(0,0,0,0.04)] text-[#F8F8F6]"
               }`}
             >
               {/* Image */}
@@ -129,7 +129,7 @@ export default function Announcements() {
 
                 {/* Title */}
                 <h3 className={`text-[14px] font-black leading-snug ${
-                  a.pinned ? "text-white" : "text-[#0a0a0a]"
+                  a.pinned ? "text-white" : "text-[#F8F8F6]"
                 }`}>
                   {a.title}
                 </h3>
@@ -149,7 +149,7 @@ export default function Announcements() {
                     className={`mt-1.5 text-[11px] font-bold transition ${
                       a.pinned
                         ? "text-[#EF2C58] hover:text-[#D4264E]"
-                        : "text-[#0a0a0a] hover:underline"
+                        : "text-[#F8F8F6] hover:underline"
                     }`}
                   >
                     {isExpanded ? "Хураах" : "Дэлгэрэнгүй"}
