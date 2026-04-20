@@ -66,23 +66,23 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl rounded-xl bg-[#0A0A0A] px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-3xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-white">Үйлчилгээ</h1>
-        <p className="mt-1 text-[13px] text-[#666]">
+        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Үйлчилгээ</h1>
+        <p className="mt-1 text-[13px] text-[#888888]">
           Antaqor экосистемийн бүтээгдэхүүн, үйлчилгээнүүд
         </p>
       </div>
 
       {/* Category filter */}
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+      <div className="mb-6 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => setActiveCategory("all")}
           className={`shrink-0 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
             activeCategory === "all"
               ? "bg-[#EF2C58] text-white"
-              : "border border-[rgba(255,255,255,0.1)] bg-[#111] text-[#888] hover:text-white"
+              : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888888] hover:text-[#1A1A1A]"
           }`}
         >
           Бүгд
@@ -94,13 +94,32 @@ export default function ServicesPage() {
             className={`shrink-0 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
               activeCategory === cat
                 ? "bg-[#EF2C58] text-white"
-                : "border border-[rgba(255,255,255,0.1)] bg-[#111] text-[#888] hover:text-white"
+                : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888888] hover:text-[#1A1A1A]"
             }`}
           >
             {cat}
           </button>
         ))}
       </div>
+
+      {/* YouTube MP3 Tool Card */}
+      <Link
+        href="/tools/youtube-mp3"
+        className="mb-6 flex items-center gap-4 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4 transition hover:border-[rgba(239,44,88,0.2)] hover:shadow-sm"
+      >
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-[#EF2C58]">
+          <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[13px] font-bold text-[#1A1A1A]">YouTube → MP3</h2>
+          <p className="text-[11px] text-[#888888]">YouTube видеог MP3 аудио болгож татах</p>
+        </div>
+        <svg className="h-4 w-4 shrink-0 text-[#888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
 
       {/* 2-column grid */}
       {filtered.length > 0 ? (
@@ -115,42 +134,42 @@ export default function ServicesPage() {
                 href={isComingSoon ? undefined : service.url}
                 target={!isComingSoon && !service.url.startsWith("https://antaqor.com") ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className={`group block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#111] transition ${
+                className={`group block overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] transition ${
                   isComingSoon
                     ? "cursor-default opacity-50"
-                    : "hover:border-[rgba(239,44,88,0.3)] hover:shadow-[0_0_24px_rgba(239,44,88,0.1)]"
+                    : "hover:border-[rgba(239,44,88,0.2)] hover:shadow-[0_0_24px_rgba(239,44,88,0.06)]"
                 }`}
               >
                 {/* Cover / Placeholder */}
                 {service.coverImage ? (
-                  <div className="relative aspect-[2/1] bg-[#0A0A0A]">
+                  <div className="relative aspect-[2/1] bg-[#F8F8F6]">
                     <Image src={service.coverImage} alt={service.name} fill className="object-cover" sizes="(max-width: 768px) 50vw, 384px" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#FFFFFF] via-transparent to-transparent" />
                     {service.featured && (
-                      <div className="absolute right-2 top-2 rounded-[4px] bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black text-[#F8F8F6]">
+                      <div className="absolute right-2 top-2 rounded-[4px] bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black text-white">
                         FEATURED
                       </div>
                     )}
                     {isComingSoon && (
-                      <div className="absolute right-2 top-2 rounded-[4px] bg-[rgba(255,255,255,0.1)] px-1.5 py-0.5 text-[8px] font-bold text-[#888888]">
+                      <div className="absolute right-2 top-2 rounded-[4px] bg-[rgba(0,0,0,0.06)] px-1.5 py-0.5 text-[8px] font-bold text-[#888888]">
                         ТҮДГЭЛЗСЭН
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="relative aspect-[2/1] bg-gradient-to-br from-[#1A1A1A] to-[#111]">
+                  <div className="relative aspect-[2/1] bg-gradient-to-br from-[#EEEEEC] to-[#F8F8F6]">
                     <div className="absolute inset-0 flex items-center justify-center opacity-10">
                       <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d={CATEGORY_ICONS[service.category] || DEFAULT_ICON} />
                       </svg>
                     </div>
                     {service.featured && (
-                      <div className="absolute right-2 top-2 rounded-[4px] bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black text-[#F8F8F6]">
+                      <div className="absolute right-2 top-2 rounded-[4px] bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black text-white">
                         FEATURED
                       </div>
                     )}
                     {isComingSoon && (
-                      <div className="absolute right-2 top-2 rounded-[4px] bg-[rgba(255,255,255,0.1)] px-1.5 py-0.5 text-[8px] font-bold text-[#888888]">
+                      <div className="absolute right-2 top-2 rounded-[4px] bg-[rgba(0,0,0,0.06)] px-1.5 py-0.5 text-[8px] font-bold text-[#888888]">
                         ТҮДГЭЛЗСЭН
                       </div>
                     )}
@@ -174,7 +193,7 @@ export default function ServicesPage() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <h2 className="truncate text-[13px] font-bold text-white transition group-hover:text-[#EF2C58]">
+                        <h2 className="truncate text-[13px] font-bold text-[#1A1A1A] transition group-hover:text-[#EF2C58]">
                           {service.name}
                         </h2>
                         {service.status === "active" && (
@@ -191,7 +210,7 @@ export default function ServicesPage() {
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {service.domain && (
-                        <span className="text-[10px] font-medium text-[#888]">{service.domain}</span>
+                        <span className="text-[10px] font-medium text-[#666666]">{service.domain}</span>
                       )}
                       {service.stats?.rating && service.stats.rating > 0 && (
                         <span className="flex items-center gap-0.5 text-[10px] text-[#EF2C58]">
@@ -200,7 +219,7 @@ export default function ServicesPage() {
                         </span>
                       )}
                     </div>
-                    <span className="rounded-[4px] bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 text-[9px] font-medium text-[#888888]">
+                    <span className="rounded-[4px] bg-[#F8F8F6] px-1.5 py-0.5 text-[9px] font-medium text-[#888888]">
                       {service.category}
                     </span>
                   </div>
@@ -218,34 +237,15 @@ export default function ServicesPage() {
         </div>
       )}
 
-      {/* YouTube MP3 Tool CTA */}
-      <div className="mt-8 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#111] p-6 text-center">
-        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#EF2C58]">
-          <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-          </svg>
-        </div>
-        <p className="text-[14px] font-bold text-white">YouTube → MP3</p>
-        <p className="mt-1 text-[12px] text-[#666]">
-          YouTube видеог MP3 аудио болгож татах
-        </p>
-        <Link
-          href="/tools/youtube-mp3"
-          className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-white transition hover:brightness-110"
-        >
-          Хэрэгсэл нээх
-        </Link>
-      </div>
-
       {/* Bottom CTA */}
-      <div className="mt-4 rounded-xl border border-dashed border-[rgba(255,255,255,0.1)] p-6 text-center">
-        <p className="text-[13px] font-bold text-white">Бизнесээ Antaqor-т нэгтгэх үү?</p>
-        <p className="mt-1 text-[12px] text-[#666]">
+      <div className="mt-8 rounded-[4px] border border-dashed border-[rgba(0,0,0,0.08)] p-6 text-center">
+        <p className="text-[13px] font-bold text-[#1A1A1A]">Бизнесээ Antaqor-т нэгтгэх үү?</p>
+        <p className="mt-1 text-[12px] text-[#888888]">
           Antaqor экосистемд нэгдэж, мянга мянган хэрэглэгчдэд хүрээрэй
         </p>
         <a
           href="mailto:antaqor@gmail.com?subject=Partnership"
-          className="mt-4 inline-block rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.1)] px-6 py-2.5 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)]"
+          className="mt-4 inline-block rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-6 py-2.5 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
         >
           Хамтрах
         </a>

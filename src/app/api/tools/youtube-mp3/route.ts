@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "URL шаардлагатай" }, { status: 400 });
     }
 
-    // Validate YouTube URL
+    // Validate YouTube URL and extract video ID
     const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)([\w-]+)/;
     const match = url.match(ytRegex);
     if (!match) {
@@ -18,7 +18,21 @@ export async function POST(req: NextRequest) {
     const videoId = match[5];
     const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 
-    // Try cobalt API v10
+    // Get video title from oembed (always works, no API key needed)
+    let title = "YouTube Audio";
+    try {
+      const oembedRes = await fetch(
+        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+      );
+      if (oembedRes.ok) {
+        const oembed = await oembedRes.json();
+        title = oembed.title || title;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Try cobalt API (v10 format)
     try {
       const cobaltRes = await fetch("https://api.cobalt.tools/", {
         method: "POST",
@@ -36,44 +50,60 @@ export async function POST(req: NextRequest) {
       if (cobaltRes.ok) {
         const data = await cobaltRes.json();
         if (data.url) {
-          return NextResponse.json({
-            title: data.filename || `YouTube Audio`,
-            thumbnail,
-            duration: "",
-            downloadUrl: data.url,
-          });
+          return NextResponse.json({ title, thumbnail, duration: "", downloadUrl: data.url });
         }
       }
     } catch {
-      // cobalt failed, try fallback
+      // cobalt failed
     }
 
-    // Fallback: use yt-dlp style API via a different service
+    // Fallback: use y2mate-style API
     try {
-      const fallbackRes = await fetch(`https://yt-download.org/api/button/mp3/${videoId}`);
-      if (fallbackRes.ok) {
-        const html = await fallbackRes.text();
-        const linkMatch = html.match(/href="(https?:\/\/[^"]+\.mp3[^"]*)"/);
-        if (linkMatch) {
-          return NextResponse.json({
-            title: `YouTube Audio`,
-            thumbnail,
-            duration: "",
-            downloadUrl: linkMatch[1],
-          });
+      const analyzeRes = await fetch(`https://co.wuk.sh/api/json`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          isAudioOnly: true,
+          aFormat: "mp3",
+        }),
+      });
+
+      if (analyzeRes.ok) {
+        const data = await analyzeRes.json();
+        if (data.url) {
+          return NextResponse.json({ title, thumbnail, duration: "", downloadUrl: data.url });
         }
       }
     } catch {
       // fallback also failed
     }
 
-    // Final fallback: redirect to a converter site
+    // Final fallback: use loader.to embed
+    try {
+      const loaderRes = await fetch(
+        `https://ab.cococococ.com/ajax/download.php?copyright=0&format=mp3&url=https://www.youtube.com/watch?v=${videoId}&api=dfcb6d76f2f6a9894gjkege8a4ab232222`
+      );
+      if (loaderRes.ok) {
+        const data = await loaderRes.json();
+        if (data.success && data.download_url) {
+          return NextResponse.json({ title, thumbnail, duration: "", downloadUrl: data.download_url });
+        }
+      }
+    } catch {
+      // all APIs failed
+    }
+
+    // If all APIs fail, return a direct link to a web converter
     return NextResponse.json({
-      title: `YouTube Audio`,
+      title,
       thumbnail,
       duration: "",
-      downloadUrl: `https://cnvmp3.com/download.php?id=${videoId}`,
-      note: "redirect",
+      downloadUrl: `https://www.y2mate.com/youtube-mp3/${videoId}`,
+      redirect: true,
     });
   } catch (err) {
     console.error("YouTube MP3 error:", err);
