@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import PostCard from "@/components/PostCard";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
@@ -108,9 +109,10 @@ function StatsBar() {
   );
 }
 
-// ─── Showcase Gallery ───
+// ─── Showcase Gallery (mobile-fixed) ───
 function ShowcaseGallery() {
   const [posts, setPosts] = useState<ShowcasePost[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/showcase?limit=6")
@@ -132,53 +134,60 @@ function ShowcaseGallery() {
           Бүгдийг үзэх
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+
+      {/* Mobile: horizontal scroll | Desktop: grid */}
+      <div
+        ref={scrollRef}
+        className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:overflow-x-visible sm:pb-0"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {posts.map((post) => {
           const isVideo = /\.(mp4|webm|mov)($|\?)/i.test(post.image);
           return (
-          <Link
-            key={post._id}
-            href="/auth/signup"
-            className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#FFFFFF]"
-          >
-            {isVideo ? (
-              <video
-                src={post.image}
-                muted
-                autoPlay
-                loop
-                playsInline
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            ) : (
-              <img
-                src={post.image}
-                alt={post.content?.slice(0, 30) || "Showcase"}
-                className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
-              />
-            )}
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
-            {/* Author */}
-            <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 p-2.5 opacity-0 transition group-hover:opacity-100">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58] text-[8px] font-bold text-[#F8F8F6]">
-                {post.author?.name?.charAt(0) || "?"}
-              </div>
-              <span className="text-[10px] font-bold text-white">{post.author?.name}</span>
-              {post.author?.level && post.author.level > 0 && (
-                <span className="rounded-[4px] bg-[rgba(239,44,88,0.2)] px-1 py-0.5 text-[8px] font-bold text-[#EF2C58]">
-                  LV.{post.author.level}
-                </span>
+            <Link
+              key={post._id}
+              href="/auth/signup"
+              className="group relative aspect-square shrink-0 w-[45vw] snap-start overflow-hidden rounded-[4px] bg-[#F0F0EE] sm:w-auto"
+            >
+              {isVideo ? (
+                <video
+                  src={post.image}
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <img
+                  src={post.image}
+                  alt={post.content?.slice(0, 30) || "Showcase"}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
               )}
-            </div>
-            {/* Like count */}
-            {post.likes?.length > 0 && (
-              <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[rgba(0,0,0,0.6)] px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
-                <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-                {post.likes.length}
+              {/* Gradient overlay — always visible on mobile for context */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:from-black/80 sm:opacity-0 sm:transition sm:group-hover:opacity-100" />
+              {/* Author — always visible on mobile */}
+              <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 p-2.5 sm:opacity-0 sm:transition sm:group-hover:opacity-100">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58] text-[8px] font-bold text-[#F8F8F6]">
+                  {post.author?.name?.charAt(0) || "?"}
+                </div>
+                <span className="text-[10px] font-bold text-white">{post.author?.name}</span>
+                {post.author?.level && post.author.level > 0 && (
+                  <span className="rounded-[4px] bg-[rgba(239,44,88,0.2)] px-1 py-0.5 text-[8px] font-bold text-[#EF2C58]">
+                    LV.{post.author.level}
+                  </span>
+                )}
               </div>
-            )}
-          </Link>
+              {/* Like count */}
+              {post.likes?.length > 0 && (
+                <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[rgba(0,0,0,0.6)] px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
+                  <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+                  {post.likes.length}
+                </div>
+              )}
+            </Link>
           );
         })}
       </div>
@@ -217,7 +226,6 @@ function Leaderboard() {
                 : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]"
             }`}
           >
-            {/* Rank */}
             <div
               className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black"
               style={{
@@ -227,8 +235,6 @@ function Leaderboard() {
             >
               {i + 1}
             </div>
-
-            {/* Avatar */}
             {user.avatar ? (
               <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
             ) : (
@@ -236,14 +242,10 @@ function Leaderboard() {
                 {user.name.charAt(0)}
               </div>
             )}
-
-            {/* Name + Level */}
             <div className="min-w-0 flex-1">
               <div className="truncate text-[13px] font-bold text-[#1A1A1A]">{user.name}</div>
               <div className="text-[10px] text-[#888888]">Level {user.level}</div>
             </div>
-
-            {/* XP */}
             <div className="text-right">
               <div className="text-[14px] font-bold text-[#EF2C58]">{user.xp.toLocaleString()}</div>
               <div className="text-[9px] text-[#888888]">XP</div>
@@ -290,8 +292,15 @@ function ValueProps() {
 
   return (
     <div className="space-y-2">
-      {props.map((p) => (
-        <div key={p.title} className="flex items-start gap-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4">
+      {props.map((p, i) => (
+        <motion.div
+          key={p.title}
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: i * 0.1 }}
+          viewport={{ once: true }}
+          className="flex items-start gap-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4"
+        >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.08)]">
             <svg className="h-4.5 w-4.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={p.icon} />
@@ -301,7 +310,7 @@ function ValueProps() {
             <div className="text-[13px] font-bold text-[#1A1A1A]">{p.title}</div>
             <div className="mt-0.5 text-[12px] text-[#888888]">{p.desc}</div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -320,13 +329,9 @@ function HeroLanding() {
 
   return (
     <div className="mx-auto max-w-lg space-y-5">
-      {/* Hero Slider — full width, video capable */}
       <HeroSlider />
-
-      {/* Social proof */}
       <SocialProof stats={stats} />
 
-      {/* Tagline */}
       <div className="text-center">
         <h2 className="text-[18px] font-bold leading-tight text-[#1A1A1A]">
           AI-г эзэмшиж, орлогоо өсгө
@@ -336,7 +341,6 @@ function HeroLanding() {
         </p>
       </div>
 
-      {/* CTA — urgent */}
       <Link
         href="/auth/signup"
         className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[14px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_40px_rgba(239,44,88,0.35)]"
@@ -345,16 +349,9 @@ function HeroLanding() {
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
       </Link>
 
-      {/* Stats */}
       <StatsBar />
-
-      {/* Value props */}
       <ValueProps />
-
-      {/* Showcase */}
       <ShowcaseGallery />
-
-      {/* Leaderboard */}
       <Leaderboard />
 
       {/* Final CTA */}
@@ -462,15 +459,12 @@ export default function Home() {
     );
   }
 
-  // ─── Non-member: Sales landing page ───
   if (!isMember && !isAdmin) {
     return <HeroLanding />;
   }
 
-  // ─── Member feed ───
   return (
     <div className="mx-auto max-w-3xl">
-      {/* Feed header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-1">
           {([
@@ -496,7 +490,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Posts */}
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />

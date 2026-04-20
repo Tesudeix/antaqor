@@ -4,31 +4,23 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface QuizAnswer {
-  q1: string; // prompt engineering experience
-  q2: string; // AI tools used
-  q3: string; // goal
+  q1: string;
+  q2: string;
+  q3: string;
 }
 
 function calculateLevel(answers: QuizAnswer): { level: string; label: string; description: string } {
   let score = 0;
-
-  // Q1: Prompt engineering experience
-  if (answers.q1 === "none") score += 0;
-  else if (answers.q1 === "basic") score += 1;
+  if (answers.q1 === "basic") score += 1;
   else if (answers.q1 === "intermediate") score += 2;
   else if (answers.q1 === "advanced") score += 3;
-
-  // Q2: AI tools used
-  if (answers.q2 === "none") score += 0;
-  else if (answers.q2 === "chatgpt") score += 1;
+  if (answers.q2 === "chatgpt") score += 1;
   else if (answers.q2 === "multiple") score += 2;
   else if (answers.q2 === "api") score += 3;
-
-  // Q3: Goal
-  if (answers.q3 === "learn") score += 0;
-  else if (answers.q3 === "use") score += 1;
+  if (answers.q3 === "use") score += 1;
   else if (answers.q3 === "build") score += 2;
   else if (answers.q3 === "business") score += 3;
 
@@ -41,8 +33,45 @@ function calculateLevel(answers: QuizAnswer): { level: string; label: string; de
   }
 }
 
+const quizQuestions = [
+  {
+    id: "q1",
+    label: "Промпт инженеринг туршлага",
+    icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
+    options: [
+      { value: "none", label: "Мэдэхгүй / Анх удаа", emoji: "🌱" },
+      { value: "basic", label: "ChatGPT-д энгийн асуулт бичих", emoji: "💬" },
+      { value: "intermediate", label: "System prompt, chain-of-thought", emoji: "⚡" },
+      { value: "advanced", label: "Few-shot, RAG, function calling", emoji: "🚀" },
+    ],
+  },
+  {
+    id: "q2",
+    label: "AI хэрэгслийн мэдлэг",
+    icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z",
+    options: [
+      { value: "none", label: "Ямар ч AI ашиглаагүй", emoji: "📦" },
+      { value: "chatgpt", label: "Зөвхөн ChatGPT", emoji: "🤖" },
+      { value: "multiple", label: "Claude, Midjourney, Cursor гэх мэт", emoji: "🧰" },
+      { value: "api", label: "API ашиглаж апп бүтээсэн", emoji: "👨‍💻" },
+    ],
+  },
+  {
+    id: "q3",
+    label: "Зорилго",
+    icon: "M13 10V3L4 14h7v7l9-11h-7z",
+    options: [
+      { value: "learn", label: "AI-г ойлгохыг хүсэж байна", emoji: "📚" },
+      { value: "use", label: "Ажилдаа AI ашиглах", emoji: "💼" },
+      { value: "build", label: "AI-р бүтээгдэхүүн бүтээх", emoji: "🔧" },
+      { value: "business", label: "AI бизнес эхлүүлэх", emoji: "💰" },
+    ],
+  },
+];
+
 export default function SignUp() {
   const router = useRouter();
+  const [currentQ, setCurrentQ] = useState(0);
   const [step, setStep] = useState<"quiz" | "result" | "register">("quiz");
   const [quizAnswers, setQuizAnswers] = useState<QuizAnswer>({ q1: "", q2: "", q3: "" });
   const [aiLevel, setAiLevel] = useState<{ level: string; label: string; description: string } | null>(null);
@@ -54,12 +83,19 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const quizComplete = quizAnswers.q1 && quizAnswers.q2 && quizAnswers.q3;
-
-  const handleQuizSubmit = () => {
-    const result = calculateLevel(quizAnswers);
-    setAiLevel(result);
-    setStep("result");
+  const handleAnswer = (qId: string, value: string) => {
+    setQuizAnswers((p) => ({ ...p, [qId]: value }));
+    // Auto-advance after a brief delay
+    setTimeout(() => {
+      if (currentQ < quizQuestions.length - 1) {
+        setCurrentQ((c) => c + 1);
+      } else {
+        const answers = { ...quizAnswers, [qId]: value };
+        const result = calculateLevel(answers);
+        setAiLevel(result);
+        setStep("result");
+      }
+    }, 300);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,117 +133,117 @@ export default function SignUp() {
     }
   };
 
-  const optionClass = (selected: boolean) =>
-    `w-full rounded-[4px] border px-4 py-3 text-left text-[13px] transition ${
-      selected
-        ? "border-[#EF2C58] bg-[rgba(239,44,88,0.06)] text-[#1A1A1A] font-semibold"
-        : "border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] text-[#666666] hover:border-[rgba(0,0,0,0.15)]"
-    }`;
-
   // ─── Quiz Step ───
   if (step === "quiz") {
+    const q = quizQuestions[currentQ];
+    const currentAnswer = quizAnswers[q.id as keyof QuizAnswer];
+    const progress = ((currentQ + (currentAnswer ? 1 : 0)) / quizQuestions.length) * 100;
+
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="w-full max-w-[440px]">
-          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
-            <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#EF2C58]">
-              AI Training Ground
-            </div>
-            <h1 className="mb-2 text-[22px] font-bold text-[#1A1A1A]">
-              Чадварын түвшнээ мэдэх
-            </h1>
-            <p className="mb-6 text-[12px] text-[#888888]">
-              Танд тохирох сургалт, challenge-г тодорхойлъё
-            </p>
-
-            <div className="space-y-6">
-              {/* Q1: Prompt Engineering */}
-              <div>
-                <label className="mb-2 block text-[13px] font-semibold text-[#1A1A1A]">
-                  1. Промпт инженеринг (Prompt Engineering) туршлага
-                </label>
-                <div className="space-y-2">
-                  {[
-                    { value: "none", label: "Мэдэхгүй / Анх удаа сонсож байна" },
-                    { value: "basic", label: "ChatGPT-д энгийн асуулт бичих чаддаг" },
-                    { value: "intermediate", label: "Системийн промпт, role-play, chain-of-thought ашигладаг" },
-                    { value: "advanced", label: "Дэвшилтэт техникүүд (few-shot, RAG, function calling) ашигладаг" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setQuizAnswers((p) => ({ ...p, q1: opt.value }))}
-                      className={optionClass(quizAnswers.q1 === opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Q2: AI Tools */}
-              <div>
-                <label className="mb-2 block text-[13px] font-semibold text-[#1A1A1A]">
-                  2. AI хэрэгслийн мэдлэг
-                </label>
-                <div className="space-y-2">
-                  {[
-                    { value: "none", label: "Ямар ч AI хэрэгсэл ашиглаагүй" },
-                    { value: "chatgpt", label: "Зөвхөн ChatGPT ашиглаж үзсэн" },
-                    { value: "multiple", label: "Олон AI (Claude, Midjourney, Cursor гэх мэт) ашигладаг" },
-                    { value: "api", label: "API ашиглаж апп бүтээсэн / автоматжуулалт хийсэн" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setQuizAnswers((p) => ({ ...p, q2: opt.value }))}
-                      className={optionClass(quizAnswers.q2 === opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Q3: Goal */}
-              <div>
-                <label className="mb-2 block text-[13px] font-semibold text-[#1A1A1A]">
-                  3. Зорилго
-                </label>
-                <div className="space-y-2">
-                  {[
-                    { value: "learn", label: "AI гэж юу болохыг ойлгохыг хүсэж байна" },
-                    { value: "use", label: "Ажилдаа AI ашиглаж бүтээмжээ нэмэгдүүлэх" },
-                    { value: "build", label: "AI-р бүтээгдэхүүн/хэрэгсэл бүтээх" },
-                    { value: "business", label: "AI бизнес эхлүүлэх / орлого олох" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setQuizAnswers((p) => ({ ...p, q3: opt.value }))}
-                      className={optionClass(quizAnswers.q3 === opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
+            {/* Progress bar */}
+            <div className="h-[3px] bg-[#F0F0EE]">
+              <motion.div
+                className="h-full bg-[#EF2C58]"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
             </div>
 
-            <button
-              onClick={handleQuizSubmit}
-              disabled={!quizComplete}
-              className="mt-6 w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-[13px] font-bold text-white transition hover:brightness-110 disabled:opacity-40"
-            >
-              Үр дүнг харах
-            </button>
+            <div className="p-8">
+              {/* Header */}
+              <div className="mb-1 flex items-center gap-2">
+                <motion.div
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(239,44,88,0.08)]"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <svg className="h-3.5 w-3.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={q.icon} />
+                  </svg>
+                </motion.div>
+                <span className="text-[10px] font-bold uppercase tracking-[1px] text-[#999]">
+                  {currentQ + 1} / {quizQuestions.length}
+                </span>
+              </div>
 
-            <p className="mt-4 text-center text-[12px] text-[#888888]">
-              Бүртгэлтэй юу?{" "}
-              <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
-                Нэвтрэх
-              </Link>
-            </p>
+              <motion.h1
+                key={currentQ}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mb-6 text-[20px] font-bold text-[#1A1A1A]"
+              >
+                {q.label}
+              </motion.h1>
+
+              {/* Options */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQ}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-2"
+                >
+                  {q.options.map((opt, i) => {
+                    const selected = currentAnswer === opt.value;
+                    return (
+                      <motion.button
+                        key={opt.value}
+                        type="button"
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.06 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleAnswer(q.id, opt.value)}
+                        className={`flex w-full items-center gap-3 rounded-[4px] border px-4 py-3.5 text-left text-[13px] transition ${
+                          selected
+                            ? "border-[#EF2C58] bg-[rgba(239,44,88,0.06)] text-[#1A1A1A] font-semibold shadow-[0_0_0_1px_rgba(239,44,88,0.2)]"
+                            : "border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] text-[#666666] hover:border-[rgba(0,0,0,0.15)] hover:bg-[#F4F4F2]"
+                        }`}
+                      >
+                        <span className="text-[16px]">{opt.emoji}</span>
+                        <span>{opt.label}</span>
+                        {selected && (
+                          <motion.svg
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="ml-auto h-4 w-4 text-[#EF2C58]"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                          </motion.svg>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Back button */}
+              {currentQ > 0 && (
+                <button
+                  onClick={() => setCurrentQ((c) => c - 1)}
+                  className="mt-4 text-[12px] text-[#888] transition hover:text-[#1A1A1A]"
+                >
+                  ← Буцах
+                </button>
+              )}
+
+              <p className="mt-6 text-center text-[12px] text-[#888888]">
+                Бүртгэлтэй юу?{" "}
+                <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
+                  Нэвтрэх
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -216,57 +252,70 @@ export default function SignUp() {
 
   // ─── Result Step ───
   if (step === "result" && aiLevel) {
-    const levelColors = {
-      beginner: { bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.3)", text: "#16a34a" },
-      intermediate: { bg: "rgba(239,44,88,0.06)", border: "rgba(239,44,88,0.3)", text: "#EF2C58" },
-      advanced: { bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.3)", text: "#8b5cf6" },
+    const levelConfig = {
+      beginner: { bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.3)", text: "#16a34a", emoji: "🌱", paths: ["AI-н үндсэн ойлголт, хэрэглээний дадлага", "ChatGPT, Claude ашиглах арга техник", "Эхлэгчдийн challenge, бодит даалгавар"] },
+      intermediate: { bg: "rgba(239,44,88,0.06)", border: "rgba(239,44,88,0.3)", text: "#EF2C58", emoji: "⚡", paths: ["Промпт инженерингийн дэвшилтэт техник", "AI автоматжуулалт, бизнес workflow", "Өрсөлдөөнт challenge, багийн төсөл"] },
+      advanced: { bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.3)", text: "#8b5cf6", emoji: "🚀", paths: ["API интеграци, AI бүтээгдэхүүн бүтээх", "RAG, Agent, Function calling дадлага", "AI бизнес challenge, SaaS өрсөлдөөн"] },
     };
-    const colors = levelColors[aiLevel.level as keyof typeof levelColors] || levelColors.beginner;
+    const config = levelConfig[aiLevel.level as keyof typeof levelConfig] || levelConfig.beginner;
 
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="w-full max-w-[440px]">
-          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8 text-center">
-            <div className="mb-4 text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888]">
-              Таны AI боловсролын түвшин
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8 text-center"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2, type: "spring", stiffness: 200 }}
+              className="mb-3 text-[48px]"
+            >
+              {config.emoji}
+            </motion.div>
+
+            <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888]">
+              Таны AI түвшин
             </div>
 
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
               className="mx-auto mb-4 inline-block rounded-[4px] px-6 py-3 text-[20px] font-bold"
-              style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
+              style={{ backgroundColor: config.bg, border: `1px solid ${config.border}`, color: config.text }}
             >
               {aiLevel.label}
-            </div>
+            </motion.div>
 
-            <p className="mb-6 text-[13px] text-[#666666]">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mb-6 text-[13px] text-[#666666]"
+            >
               {aiLevel.description}
-            </p>
+            </motion.p>
 
             <div className="mb-6 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 text-left">
-              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888] mb-2">
+              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888] mb-3">
                 Таны сургалтын зам
               </div>
-              {aiLevel.level === "beginner" && (
-                <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
-                  <li>• AI-н үндсэн ойлголт, хэрэглээний дадлага</li>
-                  <li>• ChatGPT, Claude ашиглах арга техник</li>
-                  <li>• Эхлэгчдийн challenge, бодит даалгавар</li>
-                </ul>
-              )}
-              {aiLevel.level === "intermediate" && (
-                <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
-                  <li>• Промпт инженерингийн дэвшилтэт техник</li>
-                  <li>• AI автоматжуулалт, бизнес workflow</li>
-                  <li>• Өрсөлдөөнт challenge, багийн төсөл</li>
-                </ul>
-              )}
-              {aiLevel.level === "advanced" && (
-                <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
-                  <li>• API интеграци, AI бүтээгдэхүүн бүтээх</li>
-                  <li>• RAG, Agent, Function calling дадлага</li>
-                  <li>• AI бизнес challenge, SaaS өрсөлдөөн</li>
-                </ul>
-              )}
+              {config.paths.map((path, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                  className="flex items-center gap-2 py-1.5 text-[13px] text-[#1A1A1A]"
+                >
+                  <div className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: config.text }} />
+                  {path}
+                </motion.div>
+              ))}
             </div>
 
             <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 mb-6">
@@ -274,20 +323,22 @@ export default function SignUp() {
               <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · сургалт + challenge + нийгэмлэг</div>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setStep("register")}
               className="w-full rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:brightness-110"
             >
               Одоо эхлэх — 29,000₮/сар
-            </button>
+            </motion.button>
 
             <button
-              onClick={() => { setStep("quiz"); setAiLevel(null); }}
+              onClick={() => { setStep("quiz"); setCurrentQ(0); setAiLevel(null); setQuizAnswers({ q1: "", q2: "", q3: "" }); }}
               className="mt-3 text-[12px] text-[#888888] transition hover:text-[#1A1A1A]"
             >
               Дахин шалгах
             </button>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
@@ -297,7 +348,12 @@ export default function SignUp() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8"
+        >
           {aiLevel && (
             <div
               className="mb-4 inline-block rounded-[4px] px-3 py-1 text-[11px] font-bold"
@@ -323,72 +379,36 @@ export default function SignUp() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
-                Нэр
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                minLength={2}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
-                placeholder="Таны нэр"
-              />
-            </div>
+            {[
+              { label: "Нэр", type: "text", value: name, set: setName, placeholder: "Таны нэр", min: 2 },
+              { label: "Утас", type: "tel", value: phone, set: (v: string) => setPhone(v.replace(/[^0-9]/g, "")), placeholder: "9911 2233", max: 8 },
+              { label: "Имэйл", type: "email", value: email, set: setEmail, placeholder: "you@example.com" },
+              { label: "Нууц үг", type: "password", value: password, set: setPassword, placeholder: "6+ тэмдэгт", min: 6 },
+            ].map((f) => (
+              <div key={f.label}>
+                <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">{f.label}</label>
+                <input
+                  type={f.type}
+                  value={f.value}
+                  onChange={(e) => f.set(e.target.value)}
+                  required
+                  minLength={f.min}
+                  maxLength={f.max}
+                  className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                  placeholder={f.placeholder}
+                />
+              </div>
+            ))}
 
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
-                Утас
-              </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                required
-                maxLength={8}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
-                placeholder="9911 2233"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
-                Имэйл
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
-                placeholder="you@example.com"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
-                Нууц үг
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
-                placeholder="6+ тэмдэгт"
-              />
-            </div>
-
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
               className="w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-[13px] font-bold text-white transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Бүртгэж байна..." : "Бүртгүүлэх"}
-            </button>
+            </motion.button>
           </form>
 
           <p className="mt-6 text-center text-[12px] text-[#888888]">
@@ -397,7 +417,7 @@ export default function SignUp() {
               Нэвтрэх
             </Link>
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

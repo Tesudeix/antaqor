@@ -144,3 +144,12 @@ h2 { letter-spacing: -0.01em; }
   from { height: 4px; }
   to { height: 14px; }
 }
+
+/* ─── Scrollbar hide utility ─── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

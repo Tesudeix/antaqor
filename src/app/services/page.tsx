@@ -36,39 +36,18 @@ function getAccentColor(name: string): string {
   return colors[idx];
 }
 
-interface InfluencerData {
-  _id: string;
-  name: string;
-  slug: string;
-  avatar: string;
-  category: string;
-  stats: { followers: number; engagement: number };
-  verified: boolean;
-  featured: boolean;
-}
-
-function formatNum(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
-  return n.toString();
-}
-
 export default function ServicesPage() {
   const [services, setServices] = useState<ServiceData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [influencers, setInfluencers] = useState<InfluencerData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/services").then((r) => r.json()),
-      fetch("/api/influencers").then((r) => r.json()),
-    ])
-      .then(([sData, iData]) => {
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((sData) => {
         if (sData.services) setServices(sData.services);
         if (sData.categories) setCategories(sData.categories);
-        if (iData.influencers) setInfluencers(iData.influencers);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -236,51 +215,6 @@ export default function ServicesPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d={DEFAULT_ICON} />
           </svg>
           <p className="text-[14px] text-[#888888]">Үйлчилгээ удахгүй нэмэгдэнэ</p>
-        </div>
-      )}
-
-      {/* Influencers section */}
-      {influencers.length > 0 && (
-        <div className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-              </svg>
-              <h2 className="text-[18px] font-bold text-[#1A1A1A]">Influencer</h2>
-            </div>
-            <Link href="/influencers" className="text-[12px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
-              Бүгдийг үзэх →
-            </Link>
-          </div>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {influencers.slice(0, 8).map((inf) => (
-              <Link
-                key={inf._id}
-                href="/influencers"
-                className="group flex flex-col items-center gap-2 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-3 transition hover:border-[rgba(239,44,88,0.2)]"
-              >
-                {inf.avatar ? (
-                  <img src={inf.avatar} alt={inf.name} className="h-12 w-12 rounded-full object-cover border border-[rgba(0,0,0,0.08)]" />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F8F8F6] text-[16px] font-black text-[#EF2C58]">
-                    {inf.name.charAt(0)}
-                  </div>
-                )}
-                <div className="text-center min-w-0 w-full">
-                  <div className="flex items-center justify-center gap-1">
-                    <span className="truncate text-[11px] font-bold text-[#1A1A1A] group-hover:text-[#EF2C58] transition">{inf.name}</span>
-                    {inf.verified && (
-                      <svg className="h-3 w-3 shrink-0 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-[#EF2C58] font-bold">{formatNum(inf.stats.followers)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
       )}
 

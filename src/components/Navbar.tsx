@@ -15,7 +15,6 @@ export default function Navbar() {
     { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
     { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") },
     { href: "/announcements", label: "Мэдэгдэл", check: (p: string) => p.startsWith("/announcements") },
-    { href: "/influencers", label: "Influencer", check: (p: string) => p.startsWith("/influencers") },
     { href: "/members", label: "Гишүүд", check: (p: string) => p.startsWith("/members") },
   ];
 
