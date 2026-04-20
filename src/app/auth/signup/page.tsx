@@ -319,8 +319,11 @@ export default function SignUp() {
             </div>
 
             <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 mb-6">
-              <div className="text-[24px] font-bold text-[#EF2C58]">29,000₮</div>
-              <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · сургалт + challenge + нийгэмлэг</div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-[24px] font-bold text-[#EF2C58]">49,000₮</span>
+                <span className="text-[13px] text-[#888]">-оос</span>
+              </div>
+              <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · 3 түвшний сонголт</div>
             </div>
 
             <motion.button
@@ -329,7 +332,7 @@ export default function SignUp() {
               onClick={() => setStep("register")}
               className="w-full rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:brightness-110"
             >
-              Одоо эхлэх — 29,000₮/сар
+              Одоо эхлэх
             </motion.button>
 
             <button

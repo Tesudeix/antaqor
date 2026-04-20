@@ -4,40 +4,77 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const BANK_ACCOUNT = "5926153085";
 const BANK_NAME = "Хаан банк";
 const BANK_RECIPIENT = "Баянбилэг Дамбадаржаа";
 
-interface PricingData {
-  paidMembers: number;
-  currentPrice: number;
-  nextPrice: number;
-  increment: number;
-}
-
 function formatMNT(n: number) {
   return n.toLocaleString("mn-MN");
 }
 
-const BENEFITS = [
-  { icon: "book", text: "AI сургалт, хичээл, бодит кейс судалгаа" },
-  { icon: "users", text: "Бүтээгчдийн хүрээлэл, хамтын суралцах орчин" },
-  { icon: "trophy", text: "Challenge, өрсөлдөөн, шагналтай даалгавар" },
-  { icon: "zap", text: "Менторшип, feedback, карьер зөвлөгөө" },
-  { icon: "tool", text: "AI хэрэгсэл бүтээх чадвар, практик дадлага" },
+// ─── Tier Data ───
+const TIERS = [
+  {
+    id: "entry",
+    name: "Entry",
+    price: 49000,
+    period: "/сар",
+    tagline: "AI суралцаж эхлэх",
+    popular: false,
+    features: [
+      { text: "Community хандалт", included: true },
+      { text: "Бичлэгтэй хичээлүүд (бүгд)", included: true },
+      { text: "Challenge, даалгаврууд", included: true },
+      { text: "Гишүүдийн форум", included: true },
+      { text: "Live session", included: false },
+      { text: "Шууд зөвлөгөө", included: false },
+      { text: "Төслийн review", included: false },
+    ],
+    cta: "Эхлэх",
+    color: "#888888",
+  },
+  {
+    id: "core",
+    name: "Core",
+    price: 149000,
+    period: "/сар",
+    tagline: "Бодит ахиц гаргах",
+    popular: true,
+    features: [
+      { text: "Entry-н бүх боломж", included: true },
+      { text: "Live session (7 хоног бүр)", included: true },
+      { text: "Шууд холбогдох эрх", included: true },
+      { text: "Менторшип, feedback", included: true },
+      { text: "Давуу эрхтэй challenge", included: true },
+      { text: "Карьер зөвлөгөө", included: true },
+      { text: "Inner Circle хандалт", included: false },
+    ],
+    cta: "Core болох",
+    color: "#EF2C58",
+  },
+  {
+    id: "inner",
+    name: "Inner Circle",
+    price: 990000,
+    period: "/жил",
+    tagline: "20 хүний жижиг бүлэг",
+    popular: false,
+    limit: 20,
+    features: [
+      { text: "Core-н бүх боломж", included: true },
+      { text: "Шууд 1:1 зөвлөгөө", included: true },
+      { text: "Төслийн review & feedback", included: true },
+      { text: "Хаалттай бүлгийн уулзалт", included: true },
+      { text: "Бизнес стратеги зөвлөгөө", included: true },
+      { text: "Эрт хандалт — шинэ контент", included: true },
+      { text: "Lifetime network", included: true },
+    ],
+    cta: "Хүсэлт илгээх",
+    color: "#8B5CF6",
+  },
 ];
-
-function BenefitIcon({ icon }: { icon: string }) {
-  switch (icon) {
-    case "book": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />;
-    case "users": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />;
-    case "trophy": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />;
-    case "zap": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />;
-    case "tool": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />;
-    default: return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />;
-  }
-}
 
 export default function ClanPage() {
   const { data: session } = useSession();
@@ -48,17 +85,12 @@ export default function ClanPage() {
   const [paymentSubmitted, setPaymentSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [pricing, setPricing] = useState<PricingData | null>(null);
+  const [selectedTier, setSelectedTier] = useState<string>("core");
 
   useEffect(() => {
     checkMembership();
-    fetch("/api/pricing")
-      .then((r) => r.json())
-      .then((d) => { if (typeof d.currentPrice === "number") setPricing(d); })
-      .catch(() => {});
   }, [session]);
 
-  // Auto-show payment if redirected after signup
   useEffect(() => {
     if (session && !isMember && !loading) {
       const params = new URLSearchParams(window.location.search);
@@ -78,8 +110,8 @@ export default function ClanPage() {
     }
   };
 
-  const displayPrice = pricing ? formatMNT(pricing.currentPrice) : "29,000";
-  const rawPrice = pricing ? String(pricing.currentPrice) : "29000";
+  const tier = TIERS.find((t) => t.id === selectedTier) || TIERS[1];
+  const displayPrice = formatMNT(tier.price);
 
   const handleJoin = async () => {
     if (!session) return;
@@ -91,11 +123,7 @@ export default function ClanPage() {
         setUserEmail(data.email || session.user?.email || "");
         setShowPayment(true);
       }
-    } catch {
-      // ignore
-    } finally {
-      setSubmitting(false);
-    }
+    } catch {} finally { setSubmitting(false); }
   };
 
   const handleConfirmPayment = async () => {
@@ -110,11 +138,7 @@ export default function ClanPage() {
       if (data.status === "submitted" || data.status === "paid") {
         setPaymentSubmitted(true);
       }
-    } catch {
-      // ignore
-    } finally {
-      setSubmitting(false);
-    }
+    } catch {} finally { setSubmitting(false); }
   };
 
   const copyToClipboard = (text: string, field: string) => {
@@ -148,7 +172,7 @@ export default function ClanPage() {
           <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Гүйлгээний утга</div>
           <div className="mt-0.5 text-[14px] font-semibold text-[#EF2C58]">{userEmail}</div>
         </div>
-        <Link href="/" className="btn-primary mt-6 text-[13px]">Нүүр хуудас</Link>
+        <Link href="/" className="mt-6 rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white">Нүүр хуудас</Link>
       </div>
     );
   }
@@ -158,7 +182,7 @@ export default function ClanPage() {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#EF2C58]">
-          <svg className="h-7 w-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -178,153 +202,238 @@ export default function ClanPage() {
     );
   }
 
-  // Not logged in
-  if (!session) {
+  // Show payment flow
+  if (showPayment && session) {
     return (
-      <div className="-mx-5">
-        <div className="px-5 py-8">
-          <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">AI Training Ground</div>
-          <h1 className="text-[26px] font-bold text-[#1A1A1A]">Чадвараа хөгжүүл, хамтдаа өс</h1>
-          <p className="mt-2 max-w-md text-[13px] leading-relaxed text-[#888888]">
-            AI чадвар эзэмшиж, бодит төсөл дээр дадлагажиж, ижил зорилготой бүтээгчидтэй хамт өрсөлдөж суралц.
+      <div className="mx-auto max-w-md">
+        <div className="pb-4 pt-2">
+          <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">Сүүлийн алхам</div>
+          <h1 className="text-[22px] font-bold text-[#1A1A1A]">Төлбөр төлж гишүүн болох</h1>
+          <p className="mt-1 text-[13px] text-[#888888]">
+            {tier.name} — <span className="font-bold text-[#EF2C58]">₮{displayPrice}{tier.period}</span>
           </p>
         </div>
 
-        {/* Price card */}
-        <div className="mx-5 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
-          <div className="bg-[#EF2C58] px-5 py-5">
-            <div className="text-[10px] uppercase tracking-[1px] text-black/50">Сарын гишүүнчлэл</div>
-            <div className="mt-1 text-[32px] font-bold leading-none text-black">
-              ₮{displayPrice}
-            </div>
-            <div className="mt-2 text-[11px] font-medium text-black/60">
-              /сар · хүссэн үедээ цуцлах боломжтой
-            </div>
+        {/* QPay QR */}
+        <div className="mb-4 flex justify-center">
+          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-white p-3">
+            <Image src="/qpay.png" alt="QPay QR" width={200} height={200} className="h-[200px] w-[200px] object-contain" />
           </div>
-          <div className="space-y-0 divide-y divide-[rgba(0,0,0,0.08)] px-5">
-            {BENEFITS.map((b) => (
-              <div key={b.text} className="flex items-center gap-3 py-3">
-                <svg className="h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <BenefitIcon icon={b.icon} />
-                </svg>
-                <span className="text-[13px] text-[#666666]">{b.text}</span>
-              </div>
-            ))}
-          </div>
-          <div className="p-5">
-            <Link href="/auth/signup" className="flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:bg-[#D4264E]">
-              Бүртгүүлж эхлэх
-            </Link>
-            <p className="mt-3 text-center text-[12px] text-[#AAAAAA]">
-              Бүртгэлтэй юу? <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
-            </p>
+        </div>
+        <p className="mb-4 text-center text-[12px] font-medium text-[#888888]">QPay / Банкны апп-аар QR уншуулах</p>
+
+        {/* Transfer info */}
+        <div className="divide-y divide-[rgba(0,0,0,0.08)] rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
+          <PayRow label="Банк" value={BANK_NAME} copyText={BANK_NAME} field="bank" copied={copied} onCopy={copyToClipboard} />
+          <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
+          <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} />
+          <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={String(tier.price)} field="amount" copied={copied} onCopy={copyToClipboard} mono />
+          <div className="flex items-center justify-between border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.03)] px-4 py-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
+              <div className="mt-0.5 text-[14px] font-bold text-[#EF2C58]">{userEmail}</div>
+            </div>
+            <CopyBtn text={userEmail} field="ref" copied={copied} onCopy={copyToClipboard} accent />
           </div>
         </div>
 
-        {/* Social proof */}
-        {pricing && pricing.paidMembers > 0 && (
-          <div className="mx-5 mt-4 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4 text-center">
-            <div className="text-[20px] font-bold text-[#1A1A1A]">{pricing.paidMembers}+</div>
-            <div className="text-[11px] text-[#888888]">гишүүн аль хэдийн суралцаж байна</div>
-          </div>
-        )}
+        <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-4 py-2.5">
+          <p className="text-[11px] text-[#888888]">
+            Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ заавал бичнэ үү.
+          </p>
+        </div>
+
+        <button
+          onClick={handleConfirmPayment}
+          disabled={submitting}
+          className="mt-5 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
+        >
+          {submitting ? "Шалгаж байна..." : "Төлбөр шилжүүлсэн"}
+        </button>
       </div>
     );
   }
 
-  // Logged in, not member — show payment
+  // ─── Pricing Page — Three Tiers ───
   return (
-    <div className="-mx-5">
-      <div className="px-5 pb-4 pt-2">
-        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">Сүүлийн алхам</div>
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Төлбөр төлж гишүүн болох</h1>
-        <p className="mt-1 text-[13px] text-[#888888]">
-          Сарын гишүүнчлэл — <span className="font-bold text-[#EF2C58]">₮{displayPrice}</span>
-        </p>
+    <div className="mx-auto max-w-4xl py-4">
+      {/* Header */}
+      <div className="mb-8 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]"
+        >
+          Гишүүнчлэл
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-[26px] font-bold text-[#1A1A1A]"
+        >
+          Өөрт тохирох түвшнээ сонго
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mt-2 text-[13px] text-[#888888]"
+        >
+          AI чадвар эзэмшиж, бодит төсөл дээр дадлагаж, хамтдаа өсөж суралц
+        </motion.p>
       </div>
 
-      {!showPayment ? (
-        /* Benefits + Join button */
-        <div className="mx-5 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
-          <div className="space-y-0 divide-y divide-[rgba(0,0,0,0.08)]">
-            {BENEFITS.map((b) => (
-              <div key={b.text} className="flex items-center gap-3 py-3">
-                <svg className="h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <BenefitIcon icon={b.icon} />
-                </svg>
-                <span className="text-[13px] text-[#666666]">{b.text}</span>
+      {/* Tier Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {TIERS.map((t, i) => {
+          const isSelected = selectedTier === t.id;
+          const isPopular = t.popular;
+
+          return (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.1 }}
+              onClick={() => setSelectedTier(t.id)}
+              className={`relative cursor-pointer rounded-[4px] border bg-[#FFFFFF] p-5 transition-all duration-200 ${
+                isSelected
+                  ? `border-[${t.color}] shadow-[0_0_0_1px_${t.color}] ring-1`
+                  : "border-[rgba(0,0,0,0.08)] hover:border-[rgba(0,0,0,0.15)]"
+              }`}
+              style={isSelected ? { borderColor: t.color, boxShadow: `0 0 0 1px ${t.color}20, 0 4px 24px ${t.color}10` } : {}}
+            >
+              {/* Popular badge */}
+              {isPopular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#EF2C58] px-3 py-1 text-[9px] font-bold uppercase tracking-[1px] text-white">
+                  Хамгийн их сонголт
+                </div>
+              )}
+
+              {/* Limit badge */}
+              {t.limit && (
+                <div className="absolute -top-3 right-4 rounded-full bg-[#8B5CF6] px-2.5 py-1 text-[9px] font-bold text-white">
+                  {t.limit} хүн
+                </div>
+              )}
+
+              {/* Header */}
+              <div className="mb-4 pt-1">
+                <div className="text-[11px] font-bold uppercase tracking-[1px]" style={{ color: t.color }}>
+                  {t.name}
+                </div>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-[32px] font-bold text-[#1A1A1A]">₮{formatMNT(t.price)}</span>
+                  <span className="text-[13px] text-[#888888]">{t.period}</span>
+                </div>
+                <div className="mt-1 text-[12px] text-[#888888]">{t.tagline}</div>
               </div>
-            ))}
-          </div>
-          <button
-            onClick={handleJoin}
-            disabled={submitting}
-            className="mt-4 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
-          >
-            {submitting ? "..." : `Төлбөр шилжүүлэх — ₮${displayPrice}/сар`}
-          </button>
-        </div>
-      ) : (
-        /* Payment details */
-        <div className="px-5">
-          {/* QPay QR */}
-          <div className="mb-4 flex justify-center">
-            <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-white p-3">
-              <Image src="/qpay.png" alt="QPay QR" width={200} height={200} className="h-[200px] w-[200px] object-contain" />
-            </div>
-          </div>
-          <p className="mb-4 text-center text-[12px] font-medium text-[#888888]">QPay / Банкны апп-аар QR уншуулах</p>
 
-          {/* Transfer info */}
-          <div className="divide-y divide-[rgba(0,0,0,0.08)] rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
-            <PayRow label="Банк" value={BANK_NAME} copyText={BANK_NAME} field="bank" copied={copied} onCopy={copyToClipboard} />
-            <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
-            <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} />
-            <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={rawPrice} field="amount" copied={copied} onCopy={copyToClipboard} mono />
-            <div className="flex items-center justify-between border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.03)] px-4 py-3">
-              <div>
-                <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
-                <div className="mt-0.5 text-[14px] font-bold text-[#EF2C58]">{userEmail}</div>
+              {/* Divider */}
+              <div className="mb-4 h-[1px]" style={{ background: `linear-gradient(90deg, ${t.color}30, transparent)` }} />
+
+              {/* Features */}
+              <div className="space-y-2.5">
+                {t.features.map((f) => (
+                  <div key={f.text} className="flex items-start gap-2.5">
+                    {f.included ? (
+                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: t.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#DDD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span className={`text-[12px] ${f.included ? "text-[#444]" : "text-[#CCC]"}`}>
+                      {f.text}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <CopyBtn text={userEmail} field="ref" copied={copied} onCopy={copyToClipboard} accent />
-            </div>
-          </div>
 
-          <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-4 py-2.5">
-            <p className="text-[11px] text-[#888888]">
-              Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ заавал бичнэ үү.
-            </p>
-          </div>
+              {/* CTA */}
+              {session ? (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSelectedTier(t.id); handleJoin(); }}
+                  disabled={submitting}
+                  className="mt-5 flex w-full items-center justify-center rounded-[4px] py-3 text-[13px] font-bold transition disabled:opacity-50"
+                  style={
+                    isPopular
+                      ? { background: t.color, color: "#fff" }
+                      : { background: "transparent", border: `1px solid ${t.color}40`, color: t.color }
+                  }
+                >
+                  {submitting && isSelected ? "..." : t.cta}
+                </button>
+              ) : (
+                <Link
+                  href="/auth/signup"
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-5 flex w-full items-center justify-center rounded-[4px] py-3 text-[13px] font-bold transition"
+                  style={
+                    isPopular
+                      ? { background: t.color, color: "#fff" }
+                      : { background: "transparent", border: `1px solid ${t.color}40`, color: t.color }
+                  }
+                >
+                  {t.cta}
+                </Link>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
 
-          <button
-            onClick={handleConfirmPayment}
-            disabled={submitting}
-            className="mt-5 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
-          >
-            {submitting ? "Шалгаж байна..." : "Төлбөр шилжүүлсэн"}
-          </button>
+      {/* Comparison note */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5"
+      >
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="text-center">
+            <div className="text-[20px] font-bold text-[#888]">Entry</div>
+            <div className="mt-1 text-[12px] text-[#888]">Суралцаж эхлэх</div>
+            <div className="mt-2 text-[11px] text-[#AAA]">Бичлэгтэй хичээл + community хандалт. AI-н үндэс суурийг тавина.</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[20px] font-bold text-[#EF2C58]">Core</div>
+            <div className="mt-1 text-[12px] text-[#EF2C58]">Бодит ахиц, бодит дэмжлэг</div>
+            <div className="mt-2 text-[11px] text-[#AAA]">Live session + шууд холбогдох эрх. Чамтай тодорхой цагт шууд ярьж, зөвлөгөө авна.</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[20px] font-bold text-[#8B5CF6]">Inner Circle</div>
+            <div className="mt-1 text-[12px] text-[#8B5CF6]">Хамгийн дээд түвшин</div>
+            <div className="mt-2 text-[11px] text-[#AAA]">20 хүний жижиг бүлэг. 1:1 зөвлөгөө, төслийн review, бизнес стратеги.</div>
+          </div>
         </div>
-      )}
+      </motion.div>
+
+      {/* FAQ-style footer */}
+      <div className="mt-6 text-center">
+        <p className="text-[12px] text-[#888888]">
+          Асуулт байна уу?{" "}
+          <a href="mailto:antaqor@gmail.com" className="font-bold text-[#EF2C58] hover:underline">antaqor@gmail.com</a>
+        </p>
+        {!session && (
+          <p className="mt-2 text-[12px] text-[#AAA]">
+            Бүртгэлтэй юу?{" "}
+            <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
+          </p>
+        )}
+      </div>
     </div>
   );
 }
 
 function PayRow({
-  label,
-  value,
-  copyText,
-  field,
-  copied,
-  onCopy,
-  mono,
+  label, value, copyText, field, copied, onCopy, mono,
 }: {
-  label: string;
-  value: string;
-  copyText: string;
-  field: string;
-  copied: string | null;
-  onCopy: (t: string, f: string) => void;
-  mono?: boolean;
+  label: string; value: string; copyText: string; field: string;
+  copied: string | null; onCopy: (t: string, f: string) => void; mono?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
@@ -340,17 +449,10 @@ function PayRow({
 }
 
 function CopyBtn({
-  text,
-  field,
-  copied,
-  onCopy,
-  accent,
+  text, field, copied, onCopy, accent,
 }: {
-  text: string;
-  field: string;
-  copied: string | null;
-  onCopy: (t: string, f: string) => void;
-  accent?: boolean;
+  text: string; field: string; copied: string | null;
+  onCopy: (t: string, f: string) => void; accent?: boolean;
 }) {
   const done = copied === field;
   return (
