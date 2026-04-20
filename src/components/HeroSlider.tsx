@@ -16,6 +16,7 @@ interface Slide {
 export default function HeroSlider() {
   const [slides, setSlides] = useState<Slide[]>(FALLBACK_SLIDES);
   const [musicUrl, setMusicUrl] = useState("/fire-again.mp3");
+  const [musicEnabled, setMusicEnabled] = useState(true);
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -37,12 +38,14 @@ export default function HeroSlider() {
       .then((r) => r.json())
       .then((d) => {
         if (d.url) setMusicUrl(d.url);
+        if (d.enabled === false) setMusicEnabled(false);
       })
       .catch(() => {});
   }, []);
 
   // Auto-play music on first user interaction
   useEffect(() => {
+    if (!musicEnabled) return;
     const tryPlay = () => {
       if (audioRef.current && !hasInteracted) {
         audioRef.current.volume = 0.3;
@@ -69,7 +72,7 @@ export default function HeroSlider() {
       document.removeEventListener("touchstart", handleInteraction);
       document.removeEventListener("scroll", handleInteraction);
     };
-  }, [hasInteracted]);
+  }, [hasInteracted, musicEnabled]);
 
   const toggleMusic = useCallback(() => {
     if (!audioRef.current) return;
@@ -122,7 +125,7 @@ export default function HeroSlider() {
 
   return (
     <div className="w-full">
-      <audio ref={audioRef} src={musicUrl} loop preload="auto" />
+      {musicEnabled && <audio ref={audioRef} src={musicUrl} loop preload="auto" />}
 
       <div
         className="relative w-full overflow-hidden rounded-[8px] bg-[#141414] shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
@@ -191,24 +194,26 @@ export default function HeroSlider() {
         </div>
 
         {/* Music toggle */}
-        <button
-          onClick={toggleMusic}
-          className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/60 shadow-sm backdrop-blur-sm transition hover:bg-black/80"
-          aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
-        >
-          {isPlaying ? (
-            <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-            </svg>
-          ) : (
-            <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
-        </button>
+        {musicEnabled && (
+          <button
+            onClick={toggleMusic}
+            className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/60 shadow-sm backdrop-blur-sm transition hover:bg-black/80"
+            aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
+          >
+            {isPlaying ? (
+              <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </button>
+        )}
 
         {/* Music visualizer */}
-        {isPlaying && (
+        {musicEnabled && isPlaying && (
           <div className="absolute left-12 top-4.5 z-10 flex items-end gap-[2px]">
             {[1, 2, 3, 4].map((i) => (
               <div

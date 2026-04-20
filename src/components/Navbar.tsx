@@ -39,7 +39,7 @@ export default function Navbar() {
                 className={`rounded-[4px] px-5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
                   active
                     ? "bg-[#EF2C58] text-white"
-                    : "text-[#666666] hover:text-[#999999]"
+                    : "text-[#AAAAAA] hover:text-[#E8E8E8]"
                 }`}
               >
                 {tab.label}
@@ -68,7 +68,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/auth/signin"
-                className="text-[13px] font-medium text-[#666666] transition-colors duration-200 hover:text-[#E8E8E8]"
+                className="text-[13px] font-medium text-[#AAAAAA] transition-colors duration-200 hover:text-[#E8E8E8]"
               >
                 Нэвтрэх
               </Link>

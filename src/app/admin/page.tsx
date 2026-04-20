@@ -45,6 +45,7 @@ export default function AdminDashboard() {
 
   // Hero Music
   const [heroMusicUrl, setHeroMusicUrl] = useState("/fire-again.mp3");
+  const [heroMusicEnabled, setHeroMusicEnabled] = useState(true);
   const [musicUploading, setMusicUploading] = useState(false);
 
   const flash = (msg: string) => {
@@ -65,7 +66,7 @@ export default function AdminDashboard() {
       if (annRes.ok) { const d = await annRes.json(); setAnnouncements(d.announcements || []); }
       if (taskRes.ok) { const d = await taskRes.json(); setTasks(d.tasks || []); }
       if (heroRes.ok) { const d = await heroRes.json(); setHeroSlides(d.slides || []); }
-      if (musicRes.ok) { const d = await musicRes.json(); setHeroMusicUrl(d.url || "/fire-again.mp3"); }
+      if (musicRes.ok) { const d = await musicRes.json(); setHeroMusicUrl(d.url || "/fire-again.mp3"); setHeroMusicEnabled(d.enabled !== false); }
     } catch {} finally { setLoading(false); }
   }, []);
 
@@ -176,6 +177,19 @@ export default function AdminDashboard() {
       if (res.ok) { setHeroMusicUrl(data.url); flash("Хөгжим солигдлоо"); }
     } catch { flash("Алдаа"); }
     finally { setMusicUploading(false); e.target.value = ""; }
+  };
+
+  const handleMusicToggle = async () => {
+    const newVal = !heroMusicEnabled;
+    setHeroMusicEnabled(newVal);
+    try {
+      await fetch("/api/hero/music", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: newVal }),
+      });
+      flash(newVal ? "Хөгжим асаагдлаа" : "Хөгжим унтраагдлаа");
+    } catch { flash("Алдаа"); }
   };
 
   const handleMusicReset = async () => {
@@ -362,7 +376,15 @@ export default function AdminDashboard() {
 
           {/* Music */}
           <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5">
-            <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#999]">🎵 Арын хөгжим</div>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#999]">🎵 Арын хөгжим</span>
+              <button
+                onClick={handleMusicToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${heroMusicEnabled ? "bg-[#EF2C58]" : "bg-gray-300"}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${heroMusicEnabled ? "translate-x-6" : "translate-x-1"}`} />
+              </button>
+            </div>
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2 rounded-lg bg-[#F8F8F6] px-3 py-2">
                 <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>

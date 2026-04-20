@@ -174,6 +174,81 @@ function LatestTanilts() {
   );
 }
 
+// ─── Бүтээлүүд Showcase Gallery ───
+function ShowcaseGallery() {
+  const [posts, setPosts] = useState<{ _id: string; image: string; content: string; author: { name: string; avatar?: string } | null; likes: string[] }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/showcase?limit=6")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.posts) setPosts(d.posts.filter((p: { author: unknown }) => p.author !== null).slice(0, 6));
+      })
+      .catch(() => {});
+  }, []);
+
+  if (posts.length === 0) return null;
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="h-[2px] w-4 bg-[#22C55E]" />
+          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">БҮТЭЭЛҮҮД</span>
+        </div>
+        <Link href="/auth/signup" className="text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
+          Бүгдийг үзэх →
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {posts.map((post) => (
+          <Link
+            key={post._id}
+            href="/auth/signup"
+            className="group relative aspect-square overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A]"
+          >
+            <img
+              src={post.image}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-2.5">
+              <div className="flex items-center gap-1.5 mb-1">
+                {post.author?.avatar ? (
+                  <img src={post.author.avatar} alt="" className="h-4 w-4 rounded-[4px] object-cover" />
+                ) : (
+                  <div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-[rgba(34,197,94,0.2)] text-[7px] font-bold text-[#22C55E]">
+                    {post.author?.name?.charAt(0) || "?"}
+                  </div>
+                )}
+                <span className="text-[9px] font-semibold text-white/80">{post.author?.name}</span>
+              </div>
+              <p className="line-clamp-1 text-[10px] text-white/60">{post.content}</p>
+            </div>
+            {post.likes?.length > 0 && (
+              <div className="absolute right-2 top-2 flex items-center gap-0.5 rounded-[4px] bg-black/50 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur-sm">
+                <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>
+                {post.likes.length}
+              </div>
+            )}
+          </Link>
+        ))}
+      </div>
+      <Link
+        href="/auth/signup"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[12px] font-bold text-[#666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
+      >
+        Бүтээлүүд үзэхийн тулд Cyber Empire нэгдэх
+        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
+    </div>
+  );
+}
+
 // ─── XP Leaderboard ───
 function Leaderboard() {
   const [users, setUsers] = useState<LeaderUser[]>([]);
@@ -381,6 +456,7 @@ function HeroLanding() {
 
       <StatsBar />
       <ValueProps />
+      <ShowcaseGallery />
       <LatestTanilts />
       <Leaderboard />
 

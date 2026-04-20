@@ -137,7 +137,7 @@ export default function BottomBar() {
               key={link.label}
               href={link.href}
               className={`relative flex flex-col items-center gap-0.5 px-2 py-2 transition-colors duration-200 ${
-                active ? "text-[#EF2C58]" : "text-[#666666]"
+                active ? "text-[#EF2C58]" : "text-[#CCCCCC]"
               }`}
             >
               <div className="relative">

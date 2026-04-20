@@ -10,15 +10,19 @@ import { randomUUID } from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
-// GET - fetch current hero music URL
+// GET - fetch current hero music URL + enabled state
 export async function GET() {
   try {
     await dbConnect();
-    const setting = await SiteSettings.findOne({ key: "heroMusic" }).lean();
-    const url = setting?.value || "/fire-again.mp3";
-    return NextResponse.json({ url });
+    const [musicSetting, enabledSetting] = await Promise.all([
+      SiteSettings.findOne({ key: "heroMusic" }).lean(),
+      SiteSettings.findOne({ key: "heroMusicEnabled" }).lean(),
+    ]);
+    const url = musicSetting?.value || "/fire-again.mp3";
+    const enabled = enabledSetting?.value !== "false";
+    return NextResponse.json({ url, enabled });
   } catch {
-    return NextResponse.json({ url: "/fire-again.mp3" });
+    return NextResponse.json({ url: "/fire-again.mp3", enabled: true });
   }
 }
 
@@ -101,6 +105,31 @@ export async function DELETE(req: NextRequest) {
     );
 
     return NextResponse.json({ url: "/fire-again.mp3" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// PATCH - toggle music on/off (admin only)
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !isAdmin(session.user.email)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const enabled = body.enabled !== false;
+
+    await dbConnect();
+    await SiteSettings.findOneAndUpdate(
+      { key: "heroMusicEnabled" },
+      { value: enabled ? "true" : "false" },
+      { upsert: true }
+    );
+
+    return NextResponse.json({ enabled });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed";
     return NextResponse.json({ error: message }, { status: 500 });
