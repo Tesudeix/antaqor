@@ -22,7 +22,13 @@ const siteSettingsSchema = new mongoose.Schema({
   menuCtaText: { type: String, default: 'Хоол & Ундааны Цэс' },
   menuCtaSub: { type: String, default: '130+ төрлийн хоол, ундаа' },
   statusPills: { type: [String], default: ['11:30 - 02:00', 'VIP Өрөө', 'POOL & PUB'] },
-  siteUrl: { type: String, default: 'https://joybilliard.mn' }
+  siteUrl: { type: String, default: 'https://joybilliard.mn' },
+  heroSlides: [{ type: String }],
+  alliedCompanies: [{
+    name: { type: String, required: true },
+    logo: { type: String, required: true },
+    url: { type: String, default: '' }
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('SiteSettings', siteSettingsSchema);

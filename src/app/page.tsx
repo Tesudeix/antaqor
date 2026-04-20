@@ -26,15 +26,6 @@ interface Post {
   } | null;
 }
 
-interface ShowcasePost {
-  _id: string;
-  image: string;
-  content: string;
-  author: { name: string; avatar?: string; xp?: number; level?: number } | null;
-  likes: string[];
-  createdAt: string;
-}
-
 interface LeaderUser {
   _id: string;
   name: string;
@@ -95,29 +86,30 @@ function StatsBar() {
         { label: "Идэвхтэй", value: stats.paidMembers, icon: "M13 10V3L4 14h7v7l9-11h-7z" },
         { label: "Зорилго", value: stats.goal, icon: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" },
       ].map((s) => (
-        <div key={s.label} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4 text-center">
+        <div key={s.label} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4 text-center">
           <svg className="mx-auto mb-2 h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={s.icon} />
           </svg>
-          <div className="text-[22px] font-bold text-[#1A1A1A]">
+          <div className="text-[22px] font-bold text-[#E8E8E8]">
             <AnimatedNumber value={s.value} />
           </div>
-          <div className="mt-0.5 text-[10px] font-medium text-[#888888]">{s.label}</div>
+          <div className="mt-0.5 text-[10px] font-medium text-[#666666]">{s.label}</div>
         </div>
       ))}
     </div>
   );
 }
 
-// ─── Showcase Gallery (mobile-fixed) ───
-function ShowcaseGallery() {
-  const [posts, setPosts] = useState<ShowcasePost[]>([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
+// ─── Latest Танилцуулга Posts ───
+function LatestTanilts() {
+  const [posts, setPosts] = useState<{ _id: string; content: string; image?: string; author: { name: string; avatar?: string } | null; createdAt: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/showcase?limit=6")
+    fetch("/api/posts?category=танилцуулга&limit=3&visibility=free")
       .then((r) => r.json())
-      .then((d) => { if (d.posts) setPosts(d.posts); })
+      .then((d) => {
+        if (d.posts) setPosts(d.posts.filter((p: { author: unknown }) => p.author !== null).slice(0, 3));
+      })
       .catch(() => {});
   }, []);
 
@@ -125,72 +117,59 @@ function ShowcaseGallery() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A1A1A]">БҮТЭЭЛҮҮД</span>
+          <div className="h-[2px] w-4 bg-[#A855F7]" />
+          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">ТАНИЛЦУУЛГА</span>
         </div>
-        <Link href="/auth/signup" className="text-[11px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
-          Бүгдийг үзэх
+        <Link href="/auth/signup" className="text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
+          Бүгдийг үзэх →
         </Link>
       </div>
-
-      {/* Mobile: horizontal scroll | Desktop: grid */}
-      <div
-        ref={scrollRef}
-        className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-3 sm:overflow-x-visible sm:pb-0"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
-        {posts.map((post) => {
-          const isVideo = /\.(mp4|webm|mov)($|\?)/i.test(post.image);
-          return (
-            <Link
-              key={post._id}
-              href="/auth/signup"
-              className="group relative aspect-square shrink-0 w-[45vw] snap-start overflow-hidden rounded-[4px] bg-[#F0F0EE] sm:w-auto"
-            >
-              {isVideo ? (
-                <video
-                  src={post.image}
-                  muted
-                  autoPlay
-                  loop
-                  playsInline
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              ) : (
+      <div className="space-y-2">
+        {posts.map((post) => (
+          <Link
+            key={post._id}
+            href="/auth/signup"
+            className="group block rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] overflow-hidden transition hover:border-[rgba(239,44,88,0.3)]"
+          >
+            {post.image && (
+              <div className="relative aspect-[16/9] bg-[#1A1A1A]">
                 <img
                   src={post.image}
-                  alt={post.content?.slice(0, 30) || "Showcase"}
+                  alt=""
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  className="h-full w-full object-cover"
                 />
-              )}
-              {/* Gradient overlay — always visible on mobile for context */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:from-black/80 sm:opacity-0 sm:transition sm:group-hover:opacity-100" />
-              {/* Author — always visible on mobile */}
-              <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 p-2.5 sm:opacity-0 sm:transition sm:group-hover:opacity-100">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58] text-[8px] font-bold text-[#F8F8F6]">
-                  {post.author?.name?.charAt(0) || "?"}
-                </div>
-                <span className="text-[10px] font-bold text-white">{post.author?.name}</span>
-                {post.author?.level && post.author.level > 0 && (
-                  <span className="rounded-[4px] bg-[rgba(239,44,88,0.2)] px-1 py-0.5 text-[8px] font-bold text-[#EF2C58]">
-                    LV.{post.author.level}
-                  </span>
-                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
               </div>
-              {/* Like count */}
-              {post.likes?.length > 0 && (
-                <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[rgba(0,0,0,0.6)] px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
-                  <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-                  {post.likes.length}
-                </div>
-              )}
-            </Link>
-          );
-        })}
+            )}
+            <div className="p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                {post.author?.avatar ? (
+                  <img src={post.author.avatar} alt="" className="h-5 w-5 rounded-[4px] object-cover" />
+                ) : (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-[rgba(168,85,247,0.15)] text-[8px] font-bold text-[#A855F7]">
+                    {post.author?.name?.charAt(0) || "?"}
+                  </div>
+                )}
+                <span className="text-[10px] font-semibold text-[#666]">{post.author?.name}</span>
+                <span className="rounded-[4px] bg-[rgba(168,85,247,0.15)] px-1.5 py-0.5 text-[8px] font-bold text-[#A855F7]">ТАНИЛЦУУЛГА</span>
+              </div>
+              <p className="line-clamp-2 text-[12px] text-[#999]">{post.content}</p>
+            </div>
+          </Link>
+        ))}
       </div>
+      <Link
+        href="/auth/signup"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[12px] font-bold text-[#666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
+      >
+        Цааш үзэхийн тулд Cyber Empire нэгдэх
+        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
     </div>
   );
 }
@@ -214,7 +193,7 @@ function Leaderboard() {
     <div>
       <div className="mb-4 flex items-center gap-2">
         <div className="h-[2px] w-4 bg-[#EF2C58]" />
-        <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A1A1A]">ТЭРГҮҮЛЭГЧИД</span>
+        <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">ТЭРГҮҮЛЭГЧИД</span>
       </div>
       <div className="space-y-1.5">
         {users.slice(0, 5).map((user, i) => (
@@ -222,33 +201,33 @@ function Leaderboard() {
             key={user._id}
             className={`flex items-center gap-3 rounded-[4px] px-4 py-3 transition ${
               i === 0
-                ? "border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.04)]"
-                : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]"
+                ? "border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)]"
+                : "border border-[rgba(255,255,255,0.08)] bg-[#141414]"
             }`}
           >
             <div
-              className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black"
+              className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[11px] font-black"
               style={{
                 backgroundColor: i < 3 ? `${medals[i]}20` : "rgba(255,255,255,0.04)",
-                color: i < 3 ? medals[i] : "#888888",
+                color: i < 3 ? medals[i] : "#666666",
               }}
             >
               {i + 1}
             </div>
             {user.avatar ? (
-              <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
+              <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-[4px] object-cover" />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F8F8F6] text-[11px] font-bold text-[#EF2C58]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#1A1A1A] text-[11px] font-bold text-[#EF2C58]">
                 {user.name.charAt(0)}
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[13px] font-bold text-[#1A1A1A]">{user.name}</div>
-              <div className="text-[10px] text-[#888888]">Level {user.level}</div>
+              <div className="truncate text-[13px] font-bold text-[#E8E8E8]">{user.name}</div>
+              <div className="text-[10px] text-[#666666]">Level {user.level}</div>
             </div>
             <div className="text-right">
               <div className="text-[14px] font-bold text-[#EF2C58]">{user.xp.toLocaleString()}</div>
-              <div className="text-[9px] text-[#888888]">XP</div>
+              <div className="text-[9px] text-[#666666]">XP</div>
             </div>
           </div>
         ))}
@@ -261,10 +240,10 @@ function Leaderboard() {
 function SocialProof({ stats }: { stats: StatsData | null }) {
   if (!stats || stats.paidMembers === 0) return null;
   return (
-    <div className="flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.1)] bg-[rgba(239,44,88,0.03)] px-4 py-2.5">
-      <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-      <span className="text-[12px] text-[#666666]">
-        <span className="font-bold text-[#1A1A1A]">{stats.paidMembers}</span> хүн одоо идэвхтэй
+    <div className="flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.06)] px-4 py-2.5">
+      <span className="h-2 w-2 animate-pulse rounded-[4px] bg-green-400" />
+      <span className="text-[12px] text-[#999999]">
+        <span className="font-bold text-[#E8E8E8]">{stats.paidMembers}</span> хүн одоо идэвхтэй
       </span>
     </div>
   );
@@ -299,16 +278,16 @@ function ValueProps() {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: i * 0.1 }}
           viewport={{ once: true }}
-          className="flex items-start gap-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4"
+          className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.08)]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
             <svg className="h-4.5 w-4.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={p.icon} />
             </svg>
           </div>
           <div>
-            <div className="text-[13px] font-bold text-[#1A1A1A]">{p.title}</div>
-            <div className="mt-0.5 text-[12px] text-[#888888]">{p.desc}</div>
+            <div className="text-[13px] font-bold text-[#E8E8E8]">{p.title}</div>
+            <div className="mt-0.5 text-[12px] text-[#666666]">{p.desc}</div>
           </div>
         </motion.div>
       ))}
@@ -334,9 +313,9 @@ function MembersPreview() {
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A1A1A]">ГИШҮҮД</span>
+          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">ГИШҮҮД</span>
         </div>
-        <Link href="/members" className="text-[11px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
+        <Link href="/members" className="text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
           Бүгдийг үзэх
         </Link>
       </div>
@@ -345,18 +324,18 @@ function MembersPreview() {
           <Link
             key={m._id}
             href="/auth/signup"
-            className="flex w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-3 transition hover:border-[rgba(239,44,88,0.2)]"
+            className="flex w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-3 transition hover:border-[rgba(239,44,88,0.3)]"
           >
             {m.avatar ? (
-              <img src={m.avatar} alt={m.name} className="h-10 w-10 rounded-full object-cover" />
+              <img src={m.avatar} alt={m.name} className="h-10 w-10 rounded-[4px] object-cover" />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(239,44,88,0.08)] text-[14px] font-bold text-[#EF2C58]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)] text-[14px] font-bold text-[#EF2C58]">
                 {m.name.charAt(0)}
               </div>
             )}
-            <span className="w-full truncate text-center text-[10px] font-semibold text-[#1A1A1A]">{m.name.split(" ")[0]}</span>
+            <span className="w-full truncate text-center text-[10px] font-semibold text-[#E8E8E8]">{m.name.split(" ")[0]}</span>
             {m.aiLevel && (
-              <span className="rounded-full bg-[#F0F0EE] px-1.5 py-0.5 text-[8px] font-bold text-[#888]">
+              <span className="rounded-[4px] bg-[#1A1A1A] px-1.5 py-0.5 text-[8px] font-bold text-[#666]">
                 {m.aiLevel === "beginner" ? "Эхлэгч" : m.aiLevel === "intermediate" ? "Дунд" : "Ахисан"}
               </span>
             )}
@@ -384,40 +363,40 @@ function HeroLanding() {
       <SocialProof stats={stats} />
 
       <div className="text-center">
-        <h2 className="text-[18px] font-bold leading-tight text-[#1A1A1A]">
+        <h2 className="text-[18px] font-bold leading-tight text-[#E8E8E8]">
           AI-г эзэмшиж, орлогоо өсгө
         </h2>
-        <p className="mt-1.5 text-[13px] text-[#888888]">
+        <p className="mt-1.5 text-[13px] text-[#666666]">
           Монголын хамгийн идэвхтэй AI бүтээгчдийн нийгэмлэг
         </p>
       </div>
 
       <Link
         href="/auth/signup"
-        className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[14px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_40px_rgba(239,44,88,0.35)]"
+        className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[14px] font-bold text-white transition-all duration-200 hover:shadow-[0_0_40px_rgba(239,44,88,0.35)]"
       >
-        <span className="relative z-10">Үнэгүй эхлэх</span>
+        <span className="relative z-10">Cyber Empire нэгдэх</span>
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
       </Link>
 
       <StatsBar />
       <ValueProps />
-      <ShowcaseGallery />
+      <LatestTanilts />
       <Leaderboard />
 
       {/* Final CTA */}
-      <div className="rounded-[4px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.03)] p-6 text-center">
-        <h3 className="text-[16px] font-bold text-[#1A1A1A]">Бэлэн үү?</h3>
-        <p className="mt-1 text-[12px] text-[#888888]">
+      <div className="rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)] p-6 text-center">
+        <h3 className="text-[16px] font-bold text-[#E8E8E8]">Бэлэн үү?</h3>
+        <p className="mt-1 text-[12px] text-[#666666]">
           Өнөөдрөөс AI-н ирээдүйд хөрөнгө оруулаарай
         </p>
         <Link
           href="/auth/signup"
-          className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]"
+          className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]"
         >
           Нэгдэх
         </Link>
-        <p className="mt-3 text-[11px] text-[#888888]">
+        <p className="mt-3 text-[11px] text-[#666666]">
           Гишүүн үү?{" "}
           <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
             Нэвтрэх
@@ -494,7 +473,7 @@ export default function Home() {
   if (memberLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
+        <div className="h-2 w-2 animate-pulse-gold rounded-[4px] bg-[#EF2C58]" />
       </div>
     );
   }
@@ -508,7 +487,7 @@ export default function Home() {
       {/* Post button - mobile fixed, desktop inline */}
       <Link
         href="/posts/new"
-        className="fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#EF2C58] text-white shadow-lg transition hover:shadow-[0_0_24px_rgba(239,44,88,0.4)] md:hidden"
+        className="fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-[4px] bg-[#EF2C58] text-white shadow-lg transition hover:shadow-[0_0_24px_rgba(239,44,88,0.4)] md:hidden"
       >
         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -529,10 +508,10 @@ export default function Home() {
               <button
                 key={tab.key}
                 onClick={() => switchCategory(tab.key)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
+                className={`shrink-0 rounded-[4px] px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
                   category === tab.key
                     ? "bg-[#EF2C58] text-white"
-                    : "bg-[#FFFFFF] border border-[rgba(0,0,0,0.08)] text-[#888888] hover:text-[#666666]"
+                    : "bg-[#141414] border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"
                 }`}
               >
                 {tab.label}
@@ -547,12 +526,12 @@ export default function Home() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
+          <div className="h-2 w-2 animate-pulse-gold rounded-[4px] bg-[#EF2C58]" />
         </div>
       ) : posts.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-[15px] text-[#888888]">Одоогоор нийтлэл байхгүй</p>
-          <Link href="/posts/new" className="mt-6 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-[#F8F8F6]">
+          <p className="text-[15px] text-[#666666]">Одоогоор нийтлэл байхгүй</p>
+          <Link href="/posts/new" className="mt-6 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white">
             Пост үүсгэх
           </Link>
         </div>
@@ -563,7 +542,7 @@ export default function Home() {
           ))}
           {hasMore && (
             <div className="flex justify-center py-8">
-              <button onClick={loadMore} className="text-[13px] font-bold text-[#888888] transition hover:text-[#EF2C58]">
+              <button onClick={loadMore} className="text-[13px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
                 Цааш үзэх
               </button>
             </div>

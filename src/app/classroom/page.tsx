@@ -29,7 +29,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
     case "grid":
       return (
         <svg viewBox="0 0 280 140" className="h-full w-full">
-          <rect width="280" height="140" fill="#F8F8F6" />
+          <rect width="280" height="140" fill="#141414" />
           {Array.from({ length: 8 }).map((_, i) => (
             <line key={`v${i}`} x1={35 * (i + 1)} y1="0" x2={35 * (i + 1)} y2="140" stroke={`rgba(239,44,88,${goldOpacity})`} strokeWidth="0.5" />
           ))}
@@ -43,7 +43,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
     case "orbit":
       return (
         <svg viewBox="0 0 280 140" className="h-full w-full">
-          <rect width="280" height="140" fill="#F8F8F6" />
+          <rect width="280" height="140" fill="#141414" />
           <circle cx="140" cy="70" r="50" fill="none" stroke={`rgba(239,44,88,${goldOpacity})`} strokeWidth="0.5" />
           <circle cx="140" cy="70" r="35" fill="none" stroke={`rgba(239,44,88,${goldOpacity + 0.05})`} strokeWidth="0.5" />
           <circle cx="140" cy="70" r="20" fill="none" stroke={`rgba(239,44,88,${goldOpacity + 0.1})`} strokeWidth="0.5" />
@@ -55,7 +55,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
     case "pulse":
       return (
         <svg viewBox="0 0 280 140" className="h-full w-full">
-          <rect width="280" height="140" fill="#F8F8F6" />
+          <rect width="280" height="140" fill="#141414" />
           <polyline
             points={Array.from({ length: 28 }).map((_, i) => {
               const x = i * 10;
@@ -83,7 +83,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
     case "wave":
       return (
         <svg viewBox="0 0 280 140" className="h-full w-full">
-          <rect width="280" height="140" fill="#F8F8F6" />
+          <rect width="280" height="140" fill="#141414" />
           {Array.from({ length: 5 }).map((_, i) => (
             <path
               key={i}
@@ -112,8 +112,8 @@ function ProgressRing({ percent, size = 44 }: { percent: number; size?: number }
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          fill="rgba(248,248,246,0.8)"
-          stroke="rgba(0,0,0,0.08)"
+          fill="rgba(20,20,20,0.8)"
+          stroke="rgba(255,255,255,0.08)"
           strokeWidth={stroke}
         />
         <circle
@@ -129,7 +129,7 @@ function ProgressRing({ percent, size = 44 }: { percent: number; size?: number }
           className="progress-ring-circle"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#1A1A1A]">
+      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#E8E8E8]">
         {percent}%
       </span>
     </div>
@@ -184,7 +184,7 @@ function CourseCard({
     >
       <Link
         href={`/classroom/course/${course._id}`}
-        className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] transition-all duration-200 hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
+        className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition-all duration-200 hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
         style={{ minHeight: 280 }}
       >
         {/* Cover art or thumbnail */}
@@ -208,16 +208,16 @@ function CourseCard({
 
         {/* Body */}
         <div className="flex flex-1 flex-col p-5">
-          <h3 className="text-[18px] font-medium leading-snug text-[#1A1A1A] transition-colors duration-200 group-hover:text-[#EF2C58]">
+          <h3 className="text-[18px] font-medium leading-snug text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#EF2C58]">
             {course.title}
           </h3>
           {course.description && (
-            <p className="mt-2 text-[13px] leading-relaxed text-[#888888] line-clamp-2">
+            <p className="mt-2 text-[13px] leading-relaxed text-[#666666] line-clamp-2">
               {course.description}
             </p>
           )}
           <div className="mt-auto flex items-center justify-between pt-4">
-            <span className="text-[12px] text-[#888888]">
+            <span className="text-[12px] text-[#666666]">
               {total} хичээл
             </span>
             <span className="text-[12px] font-bold text-[#EF2C58] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -261,7 +261,7 @@ function GhostAddCard({ onClick }: { onClick: () => void }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
       </div>
-      <span className="mt-3 text-[13px] font-medium text-[#888888]">Курс нэмэх</span>
+      <span className="mt-3 text-[13px] font-medium text-[#666666]">Курс нэмэх</span>
     </motion.button>
   );
 }
@@ -275,7 +275,7 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () 
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="col-span-full flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.2)] px-8 py-16 text-center"
     >
-      <svg className="mb-4 h-10 w-10 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="mb-4 h-10 w-10 text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
       </svg>
       <p className="text-[15px] font-medium text-[#666666]">
@@ -408,13 +408,13 @@ export default function ClassroomPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
           <svg className="h-7 w-7 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
-        <h1 className="mb-2 text-[24px] font-bold text-[#1A1A1A]">Хичээлийн танхим</h1>
-        <p className="mb-6 text-[14px] text-[#888888]">Хичээлд хандахын тулд нэвтэрнэ үү</p>
+        <h1 className="mb-2 text-[24px] font-bold text-[#E8E8E8]">Хичээлийн танхим</h1>
+        <p className="mb-6 text-[14px] text-[#666666]">Хичээлд хандахын тулд нэвтэрнэ үү</p>
         <Link href="/auth/signin" className="rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]">
           Нэвтрэх
         </Link>
@@ -439,8 +439,8 @@ export default function ClassroomPage() {
         className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
       >
         <div>
-          <span className="meta-label text-[#888888]">Classroom</span>
-          <h1 className="mt-1 text-[28px] font-medium tracking-[-0.02em] text-[#1A1A1A] sm:text-[38px]">
+          <span className="meta-label text-[#666666]">Classroom</span>
+          <h1 className="mt-1 text-[28px] font-medium tracking-[-0.02em] text-[#E8E8E8] sm:text-[38px]">
             Хичээлийн танхим
           </h1>
         </div>
@@ -452,8 +452,8 @@ export default function ClassroomPage() {
             { label: "Явц", value: `${overallProgress}%` },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-[20px] font-bold text-[#1A1A1A]">{stat.value}</div>
-              <div className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#888888]">{stat.label}</div>
+              <div className="text-[20px] font-bold text-[#E8E8E8]">{stat.value}</div>
+              <div className="text-[11px] font-medium tracking-[0.08em] uppercase text-[#666666]">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -468,7 +468,7 @@ export default function ClassroomPage() {
       >
         {/* Search */}
         <div className="relative flex-1">
-          <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
@@ -476,7 +476,7 @@ export default function ClassroomPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Курс хайх..."
-            className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] py-2.5 pl-10 pr-4 text-[14px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 pl-10 pr-4 text-[14px] text-[#E8E8E8] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
           />
         </div>
 
@@ -489,7 +489,7 @@ export default function ClassroomPage() {
               className={`rounded-[4px] px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
                 statusFilter === f.key
                   ? "bg-[#EF2C58] text-[#F8F8F6]"
-                  : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888888] hover:text-[#666666]"
+                  : "border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#666666] hover:text-[#666666]"
               }`}
             >
               {f.label}
@@ -518,24 +518,24 @@ export default function ClassroomPage() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="mb-6 overflow-hidden"
           >
-            <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6 space-y-4">
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
               <input
                 value={newCourseTitle}
                 onChange={(e) => setNewCourseTitle(e.target.value)}
                 placeholder="Курсийн нэр"
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
               />
               <textarea
                 value={newCourseDesc}
                 onChange={(e) => setNewCourseDesc(e.target.value)}
                 placeholder="Тайлбар (заавал биш)"
                 rows={2}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none"
               />
 
               {/* Thumbnail upload */}
               <div>
-                <label className="mb-1.5 block text-[12px] font-medium text-[#888888]">Зураг (thumbnail)</label>
+                <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">Зураг (thumbnail)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="file"
@@ -545,7 +545,7 @@ export default function ClassroomPage() {
                     className="text-[13px] text-[#666666] file:mr-3 file:rounded-[4px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[12px] file:font-bold file:text-[#F8F8F6] file:cursor-pointer file:transition-all file:duration-200 hover:file:shadow-[0_0_16px_rgba(239,44,88,0.2)]"
                   />
                   {uploading && (
-                    <span className="text-[12px] text-[#888888]">Байршуулж байна...</span>
+                    <span className="text-[12px] text-[#666666]">Байршуулж байна...</span>
                   )}
                 </div>
                 {newCourseThumbnail && (
@@ -553,7 +553,7 @@ export default function ClassroomPage() {
                     <img
                       src={newCourseThumbnail}
                       alt="Preview"
-                      className="h-[100px] w-auto rounded-[4px] border border-[rgba(0,0,0,0.08)] object-cover"
+                      className="h-[100px] w-auto rounded-[4px] border border-[rgba(255,255,255,0.08)] object-cover"
                     />
                     <button
                       onClick={() => setNewCourseThumbnail("")}

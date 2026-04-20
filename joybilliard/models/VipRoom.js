@@ -5,6 +5,7 @@ const vipRoomSchema = new mongoose.Schema({
   badge: { type: String, default: 'VIP' },
   description: { type: String, default: '' },
   image: { type: String, default: '' },
+  video: { type: String, default: '' },
   gallery: [{ type: String }],
   features: [{ type: String }],
   price: { type: String, default: '' },
@@ -12,7 +13,8 @@ const vipRoomSchema = new mongoose.Schema({
   phone: { type: String, default: '' },
   location: { type: String, default: '' },
   locationUrl: { type: String, default: '' },
-  order: { type: Number, default: 0 }
+  order: { type: Number, default: 0 },
+  branch: { type: String, default: 'Салбар 1' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('VipRoom', vipRoomSchema);

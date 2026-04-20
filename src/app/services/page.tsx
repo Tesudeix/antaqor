@@ -71,7 +71,7 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
+        <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#EF2C58]" />
       </div>
     );
   }
@@ -80,8 +80,8 @@ export default function ServicesPage() {
     <div className="mx-auto max-w-4xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Үйлчилгээ</h1>
-        <p className="mt-1 text-[13px] text-[#888888]">
+        <h1 className="text-[22px] font-bold text-[#E8E8E8]">Үйлчилгээ</h1>
+        <p className="mt-1 text-[13px] text-[#666666]">
           Antaqor экосистемийн бүтээгдэхүүн, хэрэгслүүд
         </p>
       </div>
@@ -90,25 +90,25 @@ export default function ServicesPage() {
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
           <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#888]">Хэрэгслүүд</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#666]">Хэрэгслүүд</span>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {TOOLS.map((tool) => (
             <Link
               key={tool.name}
               href={tool.href}
-              className="group flex items-center gap-4 rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#FFFFFF] p-4 transition-all hover:border-[rgba(239,44,88,0.2)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+              className="group flex items-center gap-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4 transition-all hover:border-[rgba(239,44,88,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${tool.color}12` }}>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px]" style={{ backgroundColor: `${tool.color}18` }}>
                 <svg className="h-6 w-6" style={{ color: tool.color }} fill={tool.iconFill ? "currentColor" : "none"} stroke={tool.iconFill ? "none" : "currentColor"} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={tool.icon} />
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-[14px] font-bold text-[#1A1A1A] transition group-hover:text-[#EF2C58]">{tool.name}</h3>
-                <p className="mt-0.5 text-[11px] text-[#888]">{tool.desc}</p>
+                <h3 className="text-[14px] font-bold text-[#E8E8E8] transition group-hover:text-[#EF2C58]">{tool.name}</h3>
+                <p className="mt-0.5 text-[11px] text-[#666]">{tool.desc}</p>
               </div>
-              <svg className="h-4 w-4 shrink-0 text-[#CCC] transition group-hover:translate-x-0.5 group-hover:text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 shrink-0 text-[#444] transition group-hover:translate-x-0.5 group-hover:text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
@@ -120,10 +120,10 @@ export default function ServicesPage() {
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => setActiveCategory("all")}
-          className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition ${
+          className={`shrink-0 rounded-[4px] px-4 py-1.5 text-[12px] font-bold transition ${
             activeCategory === "all"
               ? "bg-[#EF2C58] text-white"
-              : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888] hover:text-[#1A1A1A]"
+              : "border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#666] hover:text-[#999]"
           }`}
         >
           Бүгд
@@ -132,10 +132,10 @@ export default function ServicesPage() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-[12px] font-bold transition ${
+            className={`shrink-0 rounded-[4px] px-4 py-1.5 text-[12px] font-bold transition ${
               activeCategory === cat
                 ? "bg-[#EF2C58] text-white"
-                : "border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] text-[#888] hover:text-[#1A1A1A]"
+                : "border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[#666] hover:text-[#999]"
             }`}
           >
             {cat}
@@ -143,7 +143,7 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      {/* Services grid — responsive */}
+      {/* Services grid */}
       {filtered.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((service) => {
@@ -156,33 +156,33 @@ export default function ServicesPage() {
                 href={isComingSoon ? undefined : service.url}
                 target={!isComingSoon && !service.url.startsWith("https://antaqor.com") ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className={`group block overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#FFFFFF] transition-all ${
+                className={`group block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition-all ${
                   isComingSoon
                     ? "cursor-default opacity-50"
-                    : "hover:border-[rgba(239,44,88,0.15)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+                    : "hover:border-[rgba(239,44,88,0.2)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
                 }`}
               >
                 {/* Cover */}
                 {service.coverImage ? (
-                  <div className="relative aspect-[16/9] bg-[#F8F8F6]">
+                  <div className="relative aspect-[16/9] bg-[#1A1A1A]">
                     <Image src={service.coverImage} alt={service.name} fill className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-transparent to-transparent" />
                     {service.featured && (
-                      <div className="absolute left-3 top-3 rounded-full bg-[#EF2C58] px-2.5 py-0.5 text-[9px] font-bold text-white">FEATURED</div>
+                      <div className="absolute left-3 top-3 rounded-[4px] bg-[#EF2C58] px-2.5 py-0.5 text-[9px] font-bold text-white">FEATURED</div>
                     )}
                     {isComingSoon && (
-                      <div className="absolute left-3 top-3 rounded-full bg-[#F0F0EE] px-2.5 py-0.5 text-[9px] font-bold text-[#888]">ТҮДГЭЛЗСЭН</div>
+                      <div className="absolute left-3 top-3 rounded-[4px] bg-[#1A1A1A] px-2.5 py-0.5 text-[9px] font-bold text-[#666]">ТҮДГЭЛЗСЭН</div>
                     )}
                   </div>
                 ) : (
-                  <div className="relative aspect-[16/9] bg-gradient-to-br from-[#F4F4F2] to-[#F8F8F6]">
+                  <div className="relative aspect-[16/9] bg-gradient-to-br from-[#141414] to-[#1A1A1A]">
                     <div className="absolute inset-0 flex items-center justify-center opacity-[0.07]">
                       <svg className="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d={CATEGORY_ICONS[service.category] || DEFAULT_ICON} />
                       </svg>
                     </div>
                     {service.featured && (
-                      <div className="absolute left-3 top-3 rounded-full bg-[#EF2C58] px-2.5 py-0.5 text-[9px] font-bold text-white">FEATURED</div>
+                      <div className="absolute left-3 top-3 rounded-[4px] bg-[#EF2C58] px-2.5 py-0.5 text-[9px] font-bold text-white">FEATURED</div>
                     )}
                   </div>
                 )}
@@ -191,11 +191,11 @@ export default function ServicesPage() {
                 <div className="p-4">
                   <div className="flex items-start gap-3">
                     <div
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[15px] font-black"
-                      style={{ backgroundColor: `${accent}10`, color: accent }}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] text-[15px] font-black"
+                      style={{ backgroundColor: `${accent}18`, color: accent }}
                     >
                       {service.logo ? (
-                        <Image src={service.logo} alt="" width={40} height={40} className="rounded-xl" />
+                        <Image src={service.logo} alt="" width={40} height={40} className="rounded-[4px]" />
                       ) : (
                         service.name.charAt(0)
                       )}
@@ -203,24 +203,24 @@ export default function ServicesPage() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <h2 className="truncate text-[14px] font-bold text-[#1A1A1A] transition group-hover:text-[#EF2C58]">
+                        <h2 className="truncate text-[14px] font-bold text-[#E8E8E8] transition group-hover:text-[#EF2C58]">
                           {service.name}
                         </h2>
                         {service.status === "active" && (
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-green-400" />
+                          <span className="h-1.5 w-1.5 shrink-0 rounded-[4px] bg-green-400" />
                         )}
                       </div>
-                      <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-[#888]">
+                      <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-[#666]">
                         {service.description}
                       </p>
                     </div>
                   </div>
 
                   {/* Meta */}
-                  <div className="mt-3 flex items-center justify-between border-t border-[rgba(0,0,0,0.04)] pt-3">
+                  <div className="mt-3 flex items-center justify-between border-t border-[rgba(255,255,255,0.06)] pt-3">
                     <div className="flex items-center gap-2">
                       {service.domain && (
-                        <span className="text-[10px] font-medium text-[#999]">{service.domain}</span>
+                        <span className="text-[10px] font-medium text-[#555]">{service.domain}</span>
                       )}
                       {service.stats?.rating && service.stats.rating > 0 && (
                         <span className="flex items-center gap-0.5 text-[10px] font-semibold text-[#EF2C58]">
@@ -229,7 +229,7 @@ export default function ServicesPage() {
                         </span>
                       )}
                     </div>
-                    <span className="rounded-full bg-[#F4F4F2] px-2 py-0.5 text-[9px] font-semibold text-[#888]">
+                    <span className="rounded-[4px] bg-[#1A1A1A] px-2 py-0.5 text-[9px] font-semibold text-[#666]">
                       {service.category}
                     </span>
                   </div>
@@ -240,22 +240,22 @@ export default function ServicesPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <svg className="mx-auto mb-4 h-12 w-12 text-[#DDD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto mb-4 h-12 w-12 text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d={DEFAULT_ICON} />
           </svg>
-          <p className="text-[14px] text-[#888]">Үйлчилгээ удахгүй нэмэгдэнэ</p>
+          <p className="text-[14px] text-[#666]">Үйлчилгээ удахгүй нэмэгдэнэ</p>
         </div>
       )}
 
       {/* CTA */}
-      <div className="mt-10 rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#FFFFFF] p-8 text-center">
-        <p className="text-[15px] font-bold text-[#1A1A1A]">Бизнесээ Antaqor-т нэгтгэх үү?</p>
-        <p className="mt-1 text-[12px] text-[#888]">
+      <div className="mt-10 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8 text-center">
+        <p className="text-[15px] font-bold text-[#E8E8E8]">Бизнесээ Antaqor-т нэгтгэх үү?</p>
+        <p className="mt-1 text-[12px] text-[#666]">
           Экосистемд нэгдэж, мянга мянган хэрэглэгчдэд хүрээрэй
         </p>
         <a
           href="mailto:antaqor@gmail.com?subject=Partnership"
-          className="mt-5 inline-block rounded-full bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_4px_20px_rgba(239,44,88,0.25)]"
+          className="mt-5 inline-block rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_4px_20px_rgba(239,44,88,0.25)]"
         >
           Хамтрах
         </a>

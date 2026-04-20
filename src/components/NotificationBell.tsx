@@ -77,7 +77,7 @@ export default function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={handleOpen}
-        className="relative flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[#444444] transition hover:border-[#EF2C58] hover:text-[#1A1A1A]"
+        className="relative flex h-9 w-9 items-center justify-center border border-[rgba(240,236,227,0.15)] text-[#444444] transition hover:border-[#EF2C58] hover:text-[#E8E8E8]"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -92,7 +92,7 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-[320px] border border-[#E8E8E6] bg-[#F2F2F0] shadow-2xl z-50">
           <div className="border-b border-[#E8E8E6] px-4 py-3">
-            <span className="text-[11px] font-bold uppercase tracking-[3px] text-[#1A1A1A]">
+            <span className="text-[11px] font-bold uppercase tracking-[3px] text-[#E8E8E8]">
               Мэдэгдэл
             </span>
           </div>
@@ -113,7 +113,7 @@ export default function NotificationBell() {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="text-[11px] font-bold text-[#1A1A1A]">{n.title}</p>
+                      <p className="text-[11px] font-bold text-[#E8E8E8]">{n.title}</p>
                       <p className="mt-0.5 text-[11px] text-[#999999]">{n.message}</p>
                     </div>
                     <span className="shrink-0 text-[9px] text-[#999999]">{timeAgo(n.createdAt)}</span>

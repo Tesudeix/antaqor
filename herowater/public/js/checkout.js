@@ -1,20 +1,27 @@
 const DELIVERY_THRESHOLD = 50000;
 const DELIVERY_FEE = 5000;
 
+const BANK_INFO = {
+  bank: 'Худалдаа хөгжил банк',
+  account: '426086874',
+  name: 'Отгондаваа Сэргэлэн',
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const cart = getCart();
   if (!cart.length) { location.href = '/cart.html'; return; }
 
   const subtotal = getCartTotal();
   const delivery = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const total = subtotal + delivery;
 
   const summary = document.getElementById('checkoutSummary');
   summary.innerHTML = `
     <div class="checkout-items">
       ${cart.map(i => `
         <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;">
-          <span>${i.name} × ${i.quantity}</span>
-          <span>${formatPrice(i.price * i.quantity)}</span>
+          <span style="color:var(--text);">${i.name} <span style="color:var(--text-muted);">&times; ${i.quantity}</span></span>
+          <span style="font-weight:600;">${formatPrice(i.price * i.quantity)}</span>
         </div>
       `).join('')}
     </div>
@@ -23,13 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>Дүн</span><span>${formatPrice(subtotal)}</span>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;">
-        <span>Хүргэлт</span><span>${delivery === 0 ? 'Үнэгүй' : formatPrice(delivery)}</span>
+        <span>Хүргэлт</span><span>${delivery === 0 ? '<span style="color:var(--success);font-weight:600;">Үнэгүй</span>' : formatPrice(delivery)}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:8px;">
-        <span>Нийт</span><span>${formatPrice(subtotal + delivery)}</span>
+      <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+        <span>Нийт</span><span style="color:var(--accent);">${formatPrice(total)}</span>
       </div>
     </div>
   `;
+
+  // Show/hide bank info based on payment method
+  const paymentSelect = document.getElementById('paymentMethod');
+  const bankInfoEl = document.getElementById('bankInfo');
+
+  function updateBankInfo() {
+    if (paymentSelect.value === 'bank') {
+      bankInfoEl.style.display = 'block';
+      document.getElementById('bankTotal').textContent = formatPrice(total);
+    } else {
+      bankInfoEl.style.display = 'none';
+    }
+  }
+  paymentSelect.addEventListener('change', updateBankInfo);
+  updateBankInfo();
 
   document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -71,6 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
       saveCart([]);
       document.getElementById('checkoutForm').style.display = 'none';
       document.getElementById('orderNumber').textContent = data.order.orderNumber;
+      document.getElementById('successTotal').textContent = formatPrice(total);
+
+      // Show bank info on success if bank transfer selected
+      if (paymentMethod === 'bank') {
+        document.getElementById('successBankInfo').style.display = 'block';
+        document.getElementById('successBankTotal').textContent = formatPrice(total);
+      }
+
       document.getElementById('checkoutSuccess').style.display = 'block';
     } catch (err) {
       errorEl.textContent = err.message;

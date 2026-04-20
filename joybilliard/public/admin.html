@@ -325,17 +325,13 @@ body {
 
 /* Save bar */
 .save-bar {
-  position: fixed; bottom: 60px; left: 0; right: 0; z-index: 100;
-  padding: 12px 16px; background: rgba(0,0,0,.94);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  padding: 14px 16px; background: rgba(0,0,0,.96);
   backdrop-filter: blur(20px); border-top: 1px solid var(--border);
   display: flex; justify-content: center; gap: 10px;
-  transform: translateY(calc(100% + 60px)); transition: transform .3s ease;
+  transform: translateY(100%); transition: transform .3s ease;
 }
 .save-bar.visible { transform: translateY(0); }
-@media(min-width:1024px) {
-  .save-bar { bottom: 0; transform: translateY(100%); }
-  .save-bar.visible { transform: translateY(0); }
-}
 .save-btn {
   padding: 13px 36px; font-family: inherit; font-size: .88rem; font-weight: 800;
   border: none; border-radius: 4px; cursor: pointer; transition: all .15s;
@@ -455,6 +451,13 @@ body {
       <div class="section" style="border:1px solid var(--accent);border-radius:4px;padding:16px;margin-top:12px">
         <input type="hidden" id="vipEditId">
         <div class="field"><label class="field-label">Badge (VIP 1, VIP 2...)</label><input class="field-input" id="vipBadge" type="text" placeholder="VIP 1"></div>
+        <div class="field">
+          <label class="field-label">Салбар</label>
+          <select class="field-input" id="vipBranch" style="appearance:auto;cursor:pointer">
+            <option value="Салбар 1">Салбар 1</option>
+            <option value="Салбар 2">Салбар 2</option>
+          </select>
+        </div>
         <div class="field"><label class="field-label">Нэр</label><input class="field-input" id="vipName" type="text" placeholder="Люкс Өрөө"></div>
         <div class="field"><label class="field-label">Тайлбар</label><textarea class="field-input" id="vipDesc" rows="3" placeholder="Өрөөний тайлбар..." style="resize:vertical"></textarea></div>
         <div class="field"><label class="field-label">Үнэ</label><input class="field-input" id="vipPrice" type="text" placeholder="50,000₮"></div>
@@ -475,6 +478,18 @@ body {
           </div>
           <input class="field-input" id="vipImage" type="text" placeholder="/uploads/vip_cover.jpg" style="margin-top:6px">
           <img id="vipImgPreview" src="" style="display:none;width:100%;max-height:160px;object-fit:cover;border-radius:4px;margin-top:8px">
+        </div>
+
+        <!-- Cover Video -->
+        <div class="field">
+          <label class="field-label">Видео (3:4 харьцаа · mp4/webm · max 100MB)</label>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+            <input type="file" id="vipVideoInput" accept="video/mp4,video/webm,video/quicktime" style="display:none" onchange="uploadVipVideo(this)">
+            <button class="upload-btn" onclick="document.getElementById('vipVideoInput').click()" style="padding:6px 12px;font-size:.7rem">Видео сонгох</button>
+            <span id="vipVideoStatus" style="font-size:.65rem;color:rgba(255,255,255,.4)"></span>
+          </div>
+          <input class="field-input" id="vipVideo" type="text" placeholder="/uploads/vip1_video.mp4" style="margin-top:6px">
+          <video id="vipVideoPreview" muted loop playsinline style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:4px;margin-top:8px"></video>
         </div>
 
         <!-- Gallery Images -->
@@ -538,65 +553,36 @@ body {
 
   <div class="tab-panel" id="panel-settings">
     <!-- HERO MEDIA -->
+    <!-- HERO SLIDER (unified — all images in one carousel) -->
     <div class="section">
-      <div class="section-title">Hero медиа</div>
-      <div class="field" style="margin-bottom:16px">
-        <label class="field-label">Төрөл</label>
-        <div style="display:flex;gap:8px;margin-top:6px">
-          <button type="button" class="hero-type-btn selected" id="heroTypeImg" onclick="setHeroType('image')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Зураг
-          </button>
-          <button type="button" class="hero-type-btn" id="heroTypeVid" onclick="setHeroType('video')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Видео
-          </button>
-        </div>
+      <div class="section-title">Hero слайдер</div>
+      <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:12px;line-height:1.5">
+        Нүүр хуудасны carousel зурагнууд. Олон зураг нэмж болно. Эхний зураг нь үндсэн зураг болно.
+      </p>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <input type="file" id="heroSlideInput" accept="image/*" multiple style="display:none" onchange="uploadHeroSlides(this)">
+        <button class="upload-btn" onclick="document.getElementById('heroSlideInput').click()" style="padding:10px 18px;font-size:.78rem">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Зураг нэмэх
+        </button>
+        <span style="font-size:.65rem;color:rgba(255,255,255,.3)" id="heroSlideCount"></span>
+        <span id="heroSlideStatus" style="font-size:.65rem;color:rgba(255,255,255,.4)"></span>
       </div>
-      <div id="heroImagePanel">
-        <div class="upload-area">
-          <div class="img-preview" id="imgPreview"><img id="imgSrc" src="" alt=""></div>
-          <div>
-            <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="uploadImage(this)">
-            <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              Зураг солих
-            </button>
-            <div class="upload-status" id="uploadStatus">Амжилттай!</div>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">Зургийн URL</label>
-          <input class="field-input" id="fProfileImage" type="text" placeholder="/joybilliardprofile.png">
-        </div>
-      </div>
-      <div id="heroVideoPanel" style="display:none">
-        <div class="upload-area">
-          <div class="vid-preview" id="vidPreview">
-            <video id="vidSrc" muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;border-radius:4px"></video>
-          </div>
-          <div>
-            <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime" style="display:none" onchange="uploadVideo(this)">
-            <button class="upload-btn" id="uploadVidBtn" onclick="document.getElementById('videoInput').click()">
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              Видео солих
-            </button>
-            <div class="upload-status" id="uploadVidStatus">Амжилттай!</div>
-            <div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:6px">MP4, WebM, MOV · Max 50MB</div>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">Видео URL</label>
-          <input class="field-input" id="fHeroVideo" type="text" placeholder="/uploads/hero_video.mp4">
-        </div>
-      </div>
+      <div id="heroSlideGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px"></div>
+      <button class="save-btn" id="heroSaveBtn" onclick="saveSettings()" style="display:none;width:100%;margin-top:14px;padding:13px;font-size:.85rem">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Хадгалах
+      </button>
     </div>
+
+    <!-- Hidden fields to keep save/load working -->
+    <input type="hidden" id="fProfileImage" value="/joybilliardprofile.png">
+    <input type="hidden" id="fHeroVideo" value="">
 
     <!-- SITE INFO -->
     <div class="section">
       <div class="section-title">Сайтын мэдээлэл</div>
       <div class="field"><label class="field-label">Нэр</label><input class="field-input" id="fSiteName" type="text" placeholder="JOY BILLIARD & PUB"></div>
-      <div class="field"><label class="field-label">Тайлбар</label><input class="field-input" id="fTagline" type="text" placeholder="Premium Pool Lounge · Since 2015"></div>
+      <div class="field"><label class="field-label">Тайлбар</label><input class="field-input" id="fTagline" type="text" placeholder="Billiard · Karaoke · Darts · Fussball"></div>
       <div class="field"><label class="field-label">Сайтын URL</label><input class="field-input" id="fSiteUrl" type="url" placeholder="https://joybilliard.mn"></div>
     </div>
 
@@ -637,6 +623,42 @@ body {
       <div class="field"><label class="field-label">Цагийн хуваарь</label><input class="field-input" id="fHours" type="text" placeholder="24/7 Нээлттэй"></div>
       <div class="field"><label class="field-label">Имэйл</label><input class="field-input" id="fEmail" type="email" placeholder="info@joybilliard.mn"></div>
     </div>
+
+    <!-- ALLIED COMPANIES -->
+    <div class="section">
+      <div class="section-title">Хамтрагч компаниуд</div>
+      <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:12px;line-height:1.5">
+        Нүүр хуудсанд харагдах хамтрагч компаниудын лого, нэр, линк.
+      </p>
+      <div id="alliesAdminGrid" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+      <div style="border:1px dashed var(--border);border-radius:4px;padding:14px">
+        <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:10px">Шинэ компани нэмэх</div>
+        <div class="field"><label class="field-label">Нэр</label><input class="field-input" id="allyNewName" type="text" placeholder="Компанийн нэр"></div>
+        <div class="field"><label class="field-label">Лого</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="file" id="allyLogoInput" accept="image/*" style="display:none" onchange="previewAllyLogo(this)">
+            <button class="upload-btn" onclick="document.getElementById('allyLogoInput').click()" style="padding:8px 14px;font-size:.72rem">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              Лого сонгох
+            </button>
+            <img id="allyLogoPreview" style="width:40px;height:40px;border-radius:4px;object-fit:contain;display:none;background:rgba(255,255,255,.04)">
+          </div>
+          <input type="hidden" id="allyNewLogo">
+        </div>
+        <div class="field"><label class="field-label">URL (заавал биш)</label><input class="field-input" id="allyNewUrl" type="url" placeholder="https://company.mn"></div>
+        <button class="upload-btn" onclick="addAlly()" style="padding:8px 14px;font-size:.72rem;margin-top:4px">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Нэмэх
+        </button>
+      </div>
+    </div>
+
+    <!-- SETTINGS SAVE BUTTON -->
+    <div style="margin-top:20px;padding-bottom:20px">
+      <button class="save-btn" onclick="saveSettings()" style="width:100%;padding:15px;font-size:.9rem">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Хадгалах
+      </button>
+    </div>
   </div>
 </div>
 
@@ -664,6 +686,7 @@ body {
 const TK = 'joy_admin_token';
 let orig = {};
 let heroType = 'image';
+let heroSlideUrls = [];
 let notifPollTimer = null;
 
 const MAP = {
@@ -1008,6 +1031,14 @@ async function loadSettings() {
     if (el) el.checked = s[k] !== false;
   }
   if (s.heroType) setHeroType(s.heroType);
+  heroSlideUrls = (s.heroSlides || []).slice();
+  // If no slides but profileImage exists, seed it as first slide
+  if (!heroSlideUrls.length && s.profileImage && s.profileImage !== '/joybilliardprofile.png') {
+    heroSlideUrls.push(s.profileImage);
+  }
+  renderHeroSlides();
+  alliedCompanies = (s.alliedCompanies || []).map(c => ({name:c.name,logo:c.logo,url:c.url||''}));
+  renderAlliesAdmin();
   updImg(); updVid(); updToggleStatus();
 }
 
@@ -1016,6 +1047,8 @@ function collect() {
   for (const [k,id] of Object.entries(MAP)) d[k] = document.getElementById(id).value.trim();
   for (const [k,id] of Object.entries(TOGGLES)) d[k] = document.getElementById(id).checked;
   d.heroType = heroType;
+  d.heroSlides = heroSlideUrls;
+  d.alliedCompanies = alliedCompanies;
   return d;
 }
 
@@ -1039,6 +1072,7 @@ async function saveSettings() {
     if (!r.ok) throw 0;
     orig = await r.json();
     document.getElementById('saveBar').classList.remove('visible');
+    hideHeroSave();
     toast('Амжилттай хадгаллаа!');
   } catch { toast('Алдаа гарлаа','error'); }
   btn.disabled = false; btn.textContent = 'Хадгалах';
@@ -1048,8 +1082,13 @@ function cancelChanges() {
   for (const [k,id] of Object.entries(MAP)) document.getElementById(id).value = orig[k]||'';
   for (const [k,id] of Object.entries(TOGGLES)) document.getElementById(id).checked = orig[k] !== false;
   setHeroType(orig.heroType || 'image');
+  heroSlideUrls = (orig.heroSlides || []).slice();
+  renderHeroSlides();
+  alliedCompanies = (orig.alliedCompanies || []).map(c => ({name:c.name,logo:c.logo,url:c.url||''}));
+  renderAlliesAdmin();
   updImg(); updVid(); updToggleStatus();
   document.getElementById('saveBar').classList.remove('visible');
+  hideHeroSave();
 }
 
 function updImg() {
@@ -1096,25 +1135,31 @@ async function uploadImage(input) {
 
 async function uploadVideo(input) {
   const file = input.files[0]; if (!file) return;
-  if (file.size > 50 * 1024 * 1024) { toast('Видео 50MB-аас бага байх ёстой', 'error'); return; }
+  if (file.size > 100 * 1024 * 1024) { toast('Видео 100MB-аас бага байх ёстой', 'error'); return; }
   const btn = document.getElementById('uploadVidBtn');
   const status = document.getElementById('uploadVidStatus');
   const origHtml = btn.innerHTML;
   btn.classList.add('uploading');
   btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Байршуулж байна...';
   try {
-    const data = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error('Файл уншихад алдаа'));
-      reader.readAsDataURL(file);
+    const formData = new FormData();
+    formData.append('video', file);
+    const xhr = new XMLHttpRequest();
+    const d = await new Promise((resolve, reject) => {
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> ' + Math.round(e.loaded/e.total*100) + '%';
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+        else { try { reject(new Error(JSON.parse(xhr.responseText).error)); } catch { reject(new Error('Upload failed')); } }
+      };
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.open('POST', '/api/upload/video');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + gt());
+      xhr.send(formData);
     });
-    const r = await fetch('/api/upload/video', {
-      method:'POST', headers: authHeaders(),
-      body: JSON.stringify({ video: data, filename: file.name })
-    });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.error || 'Upload failed');
     document.getElementById('fHeroVideo').value = d.url;
     updVid();
     document.getElementById('saveBar').classList.add('visible');
@@ -1125,6 +1170,164 @@ async function uploadVideo(input) {
   btn.classList.remove('uploading');
   btn.innerHTML = origHtml;
   input.value = '';
+}
+
+// ── HERO SLIDER ──
+function showHeroSave() {
+  const btn = document.getElementById('heroSaveBtn');
+  if (btn) btn.style.display = '';
+  document.getElementById('saveBar').classList.add('visible');
+}
+function hideHeroSave() {
+  const btn = document.getElementById('heroSaveBtn');
+  if (btn) btn.style.display = 'none';
+}
+function renderHeroSlides() {
+  const grid = document.getElementById('heroSlideGrid');
+  const countEl = document.getElementById('heroSlideCount');
+  if (countEl) countEl.textContent = heroSlideUrls.length ? heroSlideUrls.length + ' зураг' : '';
+  if (!heroSlideUrls.length) {
+    grid.innerHTML = '<div style="color:rgba(255,255,255,.25);font-size:.78rem;padding:20px 0;text-align:center;grid-column:1/-1">Carousel зураг нэмээгүй байна. "Зураг нэмэх" дарж олон зураг нэмнэ үү.</div>';
+    return;
+  }
+  grid.innerHTML = heroSlideUrls.map((url, i) =>
+    '<div style="position:relative;aspect-ratio:3/4;border-radius:4px;overflow:hidden;border:1px solid var(--border)'+(i===0?';border-color:var(--accent)':'')+'">'
+    + '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;display:block">'
+    + '<div style="position:absolute;top:4px;left:6px;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.7);font-size:.55rem;font-weight:800;color:'+(i===0?'var(--accent)':'rgba(255,255,255,.7)')+'">' + (i===0?'☆ 1':(i+1)) + '</div>'
+    + '<button onclick="removeHeroSlide(' + i + ')" style="position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:4px;background:rgba(231,76,60,.85);border:none;color:#fff;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center">&times;</button>'
+    + '<div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:1px">'
+    + (i > 0 ? '<button onclick="moveHeroSlide(' + i + ',-1)" style="flex:1;padding:4px;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:.6rem;cursor:pointer;font-weight:700">&larr;</button>' : '<span style="flex:1"></span>')
+    + (i < heroSlideUrls.length - 1 ? '<button onclick="moveHeroSlide(' + i + ',1)" style="flex:1;padding:4px;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:.6rem;cursor:pointer;font-weight:700">&rarr;</button>' : '<span style="flex:1"></span>')
+    + '</div></div>'
+  ).join('');
+  // Also sync first slide as profileImage for backwards compat
+  const pf = document.getElementById('fProfileImage');
+  if (pf && heroSlideUrls.length) pf.value = heroSlideUrls[0];
+}
+
+function removeHeroSlide(i) {
+  heroSlideUrls.splice(i, 1);
+  renderHeroSlides();
+  autoSaveHeroSlides();
+}
+
+function moveHeroSlide(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= heroSlideUrls.length) return;
+  const tmp = heroSlideUrls[i];
+  heroSlideUrls[i] = heroSlideUrls[j];
+  heroSlideUrls[j] = tmp;
+  renderHeroSlides();
+  autoSaveHeroSlides();
+}
+
+async function autoSaveHeroSlides() {
+  try {
+    const d = collect();
+    const r = await fetch('/api/settings', {
+      method: 'PUT', headers: authHeaders(),
+      body: JSON.stringify(d)
+    });
+    if (!r.ok) throw 0;
+    orig = await r.json();
+    hideHeroSave();
+    document.getElementById('saveBar').classList.remove('visible');
+  } catch { toast('Slider хадгалахад алдаа гарлаа','error'); }
+}
+
+async function uploadHeroSlides(input) {
+  const files = Array.from(input.files); if (!files.length) return;
+  const status = document.getElementById('heroSlideStatus');
+  status.textContent = 'Байршуулж байна... (0/' + files.length + ')';
+  let done = 0;
+  for (const file of files) {
+    try {
+      const data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const r = await fetch('/api/upload', {
+        method: 'POST', headers: authHeaders(),
+        body: JSON.stringify({ image: data, filename: file.name })
+      });
+      const d = await r.json();
+      if (r.ok) { heroSlideUrls.push(d.url); renderHeroSlides(); }
+      done++;
+      status.textContent = 'Байршуулж байна... (' + done + '/' + files.length + ')';
+    } catch {}
+  }
+  status.textContent = done + ' зураг нэмэгдлээ';
+  setTimeout(() => { status.textContent = ''; }, 2500);
+  input.value = '';
+  // Auto-save hero slides to database
+  await autoSaveHeroSlides();
+}
+
+// ── ALLIED COMPANIES ──
+let alliedCompanies = [];
+
+function renderAlliesAdmin() {
+  const grid = document.getElementById('alliesAdminGrid');
+  if (!alliedCompanies.length) {
+    grid.innerHTML = '<div style="color:rgba(255,255,255,.25);font-size:.75rem;padding:12px 0">Хамтрагч компани нэмээгүй байна</div>';
+    return;
+  }
+  grid.innerHTML = alliedCompanies.map((c, i) =>
+    '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:4px">'
+    + '<img src="' + c.logo + '" style="width:40px;height:40px;border-radius:4px;object-fit:contain;background:rgba(255,255,255,.04)">'
+    + '<div style="flex:1;min-width:0">'
+    + '<div style="font-size:.78rem;font-weight:700">' + c.name + '</div>'
+    + (c.url ? '<div style="font-size:.6rem;color:rgba(255,255,255,.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + c.url + '</div>' : '')
+    + '</div>'
+    + '<button onclick="removeAlly(' + i + ')" style="width:28px;height:28px;border-radius:4px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.25);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem">&times;</button>'
+    + '</div>'
+  ).join('');
+}
+
+function removeAlly(i) {
+  alliedCompanies.splice(i, 1);
+  renderAlliesAdmin();
+  document.getElementById('saveBar').classList.add('visible');
+}
+
+async function previewAllyLogo(input) {
+  const file = input.files[0]; if (!file) return;
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const r = await fetch('/api/upload', {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify({ image: data, filename: file.name })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Upload failed');
+    document.getElementById('allyNewLogo').value = d.url;
+    const preview = document.getElementById('allyLogoPreview');
+    preview.src = d.url;
+    preview.style.display = '';
+    toast('Лого байршууллаа!');
+  } catch(e) { toast('Лого байршуулахад алдаа: ' + e.message, 'error'); }
+  input.value = '';
+}
+
+function addAlly() {
+  const name = document.getElementById('allyNewName').value.trim();
+  const logo = document.getElementById('allyNewLogo').value.trim();
+  const url = document.getElementById('allyNewUrl').value.trim();
+  if (!name || !logo) { toast('Нэр болон лого оруулна уу', 'error'); return; }
+  alliedCompanies.push({ name, logo, url });
+  renderAlliesAdmin();
+  document.getElementById('allyNewName').value = '';
+  document.getElementById('allyNewLogo').value = '';
+  document.getElementById('allyNewUrl').value = '';
+  document.getElementById('allyLogoPreview').style.display = 'none';
+  document.getElementById('saveBar').classList.add('visible');
 }
 
 // ── VIP ROOMS ──
@@ -1141,12 +1344,23 @@ async function loadVipRooms() {
       return;
     }
     list.innerHTML = rooms.map(rm => {
-      const img = rm.image ? '<img src="' + rm.image + '" style="width:56px;height:42px;object-fit:cover;border-radius:4px;flex-shrink:0">' : '';
+      let thumb = '';
+      if (rm.video) {
+        thumb = '<div style="position:relative;width:56px;height:75px;flex-shrink:0;border-radius:4px;overflow:hidden;background:#111">'
+          + '<video muted playsinline src="' + rm.video + '" style="width:100%;height:100%;object-fit:cover;display:block"></video>'
+          + '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><svg fill="white" viewBox="0 0 24 24" style="width:16px;height:16px;opacity:.7"><polygon points="5,3 19,12 5,21"/></svg></div>'
+          + '</div>';
+      } else if (rm.image) {
+        thumb = '<img src="' + rm.image + '" style="width:56px;height:75px;object-fit:cover;border-radius:4px;flex-shrink:0">';
+      }
+      const mediaIcons = (rm.video ? '<span style="color:var(--accent);font-size:.55rem">&#9654; Видео</span>' : '')
+        + (rm.gallery && rm.gallery.length ? '<span style="color:rgba(255,255,255,.3);font-size:.55rem">' + rm.gallery.length + ' зураг</span>' : '');
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px">'
-        + img
+        + thumb
         + '<div style="flex:1;min-width:0">'
         + '<div style="font-weight:700;font-size:.85rem">' + rm.name + '</div>'
-        + '<div style="font-size:.65rem;color:rgba(255,255,255,.4)">' + rm.badge + ' · ' + rm.price + ' ' + rm.priceUnit + '</div>'
+        + '<div style="font-size:.65rem;color:rgba(255,255,255,.4)">' + rm.badge + ' · ' + (rm.branch || 'Салбар 1') + ' · ' + rm.price + ' ' + rm.priceUnit + '</div>'
+        + (mediaIcons ? '<div style="display:flex;gap:8px;margin-top:2px">' + mediaIcons + '</div>' : '')
         + '</div>'
         + '<button onclick="editVipRoom(\'' + rm._id + '\')" style="padding:6px 10px;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--accent);font-size:.65rem;font-weight:700;cursor:pointer;font-family:inherit">Засах</button>'
         + '<button onclick="deleteVipRoom(\'' + rm._id + '\')" style="padding:6px 10px;background:transparent;border:1px solid rgba(231,76,60,.3);border-radius:4px;color:var(--red);font-size:.65rem;font-weight:700;cursor:pointer;font-family:inherit">Устгах</button>'
@@ -1159,6 +1373,7 @@ function showVipForm(room) {
   document.getElementById('vipFormWrap').style.display = '';
   document.getElementById('vipEditId').value = room ? room._id : '';
   document.getElementById('vipBadge').value = room ? room.badge : 'VIP';
+  document.getElementById('vipBranch').value = room ? (room.branch || 'Салбар 1') : 'Салбар 1';
   document.getElementById('vipName').value = room ? room.name : '';
   document.getElementById('vipDesc').value = room ? room.description : '';
   document.getElementById('vipPrice').value = room ? room.price : '';
@@ -1172,6 +1387,10 @@ function showVipForm(room) {
   const prev = document.getElementById('vipImgPreview');
   if (room && room.image) { prev.src = room.image; prev.style.display = ''; }
   else { prev.src = ''; prev.style.display = 'none'; }
+  document.getElementById('vipVideo').value = room ? (room.video || '') : '';
+  const vprev = document.getElementById('vipVideoPreview');
+  if (room && room.video) { vprev.src = room.video; vprev.load(); vprev.style.display = ''; }
+  else { vprev.src = ''; vprev.style.display = 'none'; }
   vipGalleryUrls = room ? (room.gallery || []).slice() : [];
   renderVipGallery();
 }
@@ -1216,6 +1435,49 @@ async function uploadVipImage(input, type) {
   input.value = '';
 }
 
+async function uploadVipVideo(input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 100 * 1024 * 1024) { toast('Видео 100MB-аас бага байх ёстой', 'error'); return; }
+  const status = document.getElementById('vipVideoStatus');
+  const btn = input.previousElementSibling || input.parentElement.querySelector('.upload-btn');
+  status.textContent = 'Байршуулж байна... 0%';
+  try {
+    const formData = new FormData();
+    formData.append('video', file);
+    const xhr = new XMLHttpRequest();
+    const result = await new Promise((resolve, reject) => {
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const pct = Math.round(e.loaded / e.total * 100);
+          status.textContent = 'Байршуулж байна... ' + pct + '%';
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          try { reject(new Error(JSON.parse(xhr.responseText).error)); }
+          catch { reject(new Error('Upload failed')); }
+        }
+      };
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.open('POST', '/api/upload/video');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + gt());
+      xhr.send(formData);
+    });
+    document.getElementById('vipVideo').value = result.url;
+    const prev = document.getElementById('vipVideoPreview');
+    prev.src = result.url; prev.load(); prev.style.display = '';
+    status.textContent = 'Амжилттай!';
+    setTimeout(() => { status.textContent = ''; }, 2500);
+    toast('Видео байршуулагдлаа!');
+  } catch(e) {
+    status.textContent = '';
+    toast('Видео байршуулахад алдаа: ' + e.message, 'error');
+  }
+  input.value = '';
+}
+
 async function uploadVipGallery(input) {
   const files = Array.from(input.files); if (!files.length) return;
   const status = document.getElementById('vipGalleryStatus');
@@ -1248,6 +1510,7 @@ async function saveVipRoom() {
   const id = document.getElementById('vipEditId').value;
   const body = {
     badge: document.getElementById('vipBadge').value.trim(),
+    branch: document.getElementById('vipBranch').value,
     name: document.getElementById('vipName').value.trim(),
     description: document.getElementById('vipDesc').value.trim(),
     price: document.getElementById('vipPrice').value.trim(),
@@ -1258,6 +1521,7 @@ async function saveVipRoom() {
     locationUrl: document.getElementById('vipLocationUrl').value.trim(),
     order: parseInt(document.getElementById('vipOrder').value) || 0,
     image: document.getElementById('vipImage').value.trim(),
+    video: document.getElementById('vipVideo').value.trim(),
     gallery: vipGalleryUrls
   };
   if (!body.name) { toast('Нэр оруулна уу', 'error'); return; }

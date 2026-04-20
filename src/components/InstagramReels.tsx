@@ -102,7 +102,7 @@ export default function InstagramReels() {
                 href={reel.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative aspect-[9/16] w-[120px] shrink-0 overflow-hidden rounded-[4px] bg-[#F8F8F6] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] active:scale-[0.97]"
+                className="group relative aspect-[9/16] w-[120px] shrink-0 overflow-hidden rounded-[4px] bg-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] active:scale-[0.97]"
                 onMouseEnter={() => setActiveVideo(reel._id)}
                 onMouseLeave={() => setActiveVideo(null)}
               >
@@ -183,7 +183,7 @@ export default function InstagramReels() {
                 href={post.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#F8F8F6] shadow-[0_1px_4px_rgba(0,0,0,0.08)] transition hover:scale-[1.02] active:scale-[0.97]"
+                className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#0A0A0A] shadow-[0_1px_4px_rgba(0,0,0,0.08)] transition hover:scale-[1.02] active:scale-[0.97]"
               >
                 <img
                   src={post.mediaUrl}

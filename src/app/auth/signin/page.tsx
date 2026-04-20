@@ -54,11 +54,11 @@ export default function SignIn() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
-          <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#E8E8E8]">
             Нэвтрэх
           </h1>
-          <p className="mb-6 text-[12px] text-[#888888]">
+          <p className="mb-6 text-[12px] text-[#999999]">
             Бүртгэлтэй хаягаараа нэвтэрнэ үү
           </p>
 
@@ -66,7 +66,7 @@ export default function SignIn() {
             <div className="mb-5 rounded-[4px] bg-[rgba(239,44,88,0.06)] border border-[rgba(239,44,88,0.15)] px-4 py-3 text-[12px] text-[#EF2C58]">
               {error}
               {cooldown > 0 && (
-                <span className="ml-2 text-[11px] text-[#888888]">
+                <span className="ml-2 text-[11px] text-[#999999]">
                   ({Math.floor(cooldown / 60)}:{String(cooldown % 60).padStart(2, "0")})
                 </span>
               )}
@@ -75,7 +75,7 @@ export default function SignIn() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">
                 Имэйл эсвэл хэрэглэгчийн нэр
               </label>
               <input
@@ -83,14 +83,14 @@ export default function SignIn() {
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
                 required
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-[12px] font-medium text-[#666666]">
+                <label className="text-[12px] font-medium text-[#999999]">
                   Нууц үг
                 </label>
                 <Link
@@ -105,7 +105,7 @@ export default function SignIn() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                 placeholder="••••••••"
               />
             </div>
@@ -119,7 +119,7 @@ export default function SignIn() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-[12px] text-[#888888]">
+          <p className="mt-6 text-center text-[12px] text-[#999999]">
             Бүртгэлгүй юу?{" "}
             <Link href="/auth/signup" className="text-[#EF2C58] transition hover:brightness-110">
               Бүртгүүлэх

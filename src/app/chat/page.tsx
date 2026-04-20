@@ -55,12 +55,12 @@ export default function ChatListPage() {
   if (!session) {
     return (
       <div className="py-20 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#FFFFFF] border border-[rgba(0,0,0,0.08)]">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#141414] border border-[rgba(255,255,255,0.08)]">
           <svg className="h-6 w-6 text-[#AAAAAA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </div>
-        <p className="text-[14px] text-[#888888]">Чат ашиглахын тулд нэвтэрнэ үү</p>
+        <p className="text-[14px] text-[#999999]">Чат ашиглахын тулд нэвтэрнэ үү</p>
         <Link href="/auth/signin" className="btn-primary mt-4 inline-flex text-[12px]">Нэвтрэх</Link>
       </div>
     );
@@ -71,10 +71,10 @@ export default function ChatListPage() {
       {/* Header */}
       <div className="px-5 pb-4 pt-2">
         <div className="flex items-center justify-between">
-          <h1 className="text-[22px] font-bold text-[#1A1A1A]">Мессеж</h1>
+          <h1 className="text-[22px] font-bold text-[#E8E8E8]">Мессеж</h1>
           <Link
             href="/members"
-            className="rounded-[4px] border border-[rgba(0,0,0,0.08)] p-2 text-[#AAAAAA] transition hover:border-[#2a2a35] hover:text-[#888888]"
+            className="rounded-[4px] border border-[rgba(255,255,255,0.08)] p-2 text-[#AAAAAA] transition hover:border-[#2a2a35] hover:text-[#999999]"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -86,19 +86,19 @@ export default function ChatListPage() {
       {/* Conversations */}
       {conversations.length === 0 ? (
         <div className="px-5 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#FFFFFF] border border-[rgba(0,0,0,0.08)]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#141414] border border-[rgba(255,255,255,0.08)]">
             <svg className="h-6 w-6 text-[#AAAAAA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <p className="text-[14px] text-[#888888]">Мессеж байхгүй</p>
+          <p className="text-[14px] text-[#999999]">Мессеж байхгүй</p>
           <p className="mt-1 text-[12px] text-[#AAAAAA]">Гишүүдтэй чатлаж эхлээрэй</p>
           <Link href="/members" className="btn-primary mt-4 inline-flex text-[12px]">
             Гишүүд үзэх
           </Link>
         </div>
       ) : (
-        <div className="divide-y divide-[rgba(0,0,0,0.08)]">
+        <div className="divide-y divide-[rgba(255,255,255,0.06)]">
           {conversations.map((conv) => {
             const other = conv.participants.find((p) => p._id !== userId);
             if (!other) return null;
@@ -114,18 +114,18 @@ export default function ChatListPage() {
               <Link
                 key={conv._id}
                 href={`/chat/${conv._id}`}
-                className="flex items-center gap-3 px-5 py-3.5 transition active:bg-[#FFFFFF]"
+                className="flex items-center gap-3 px-5 py-3.5 transition active:bg-[#141414]"
               >
                 {other.avatar ? (
                   <img src={other.avatar} alt={other.name} className="h-11 w-11 rounded-[4px] object-cover" />
                 ) : (
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.08)] text-[12px] font-bold text-[#888888]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.08)] text-[12px] font-bold text-[#999999]">
                     {initials}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <p className={`truncate text-[14px] font-semibold ${conv.unreadCount > 0 ? "text-[#1A1A1A]" : "text-[#1A1A1A]"}`}>
+                    <p className={`truncate text-[14px] font-semibold ${conv.unreadCount > 0 ? "text-[#E8E8E8]" : "text-[#E8E8E8]"}`}>
                       {other.name}
                     </p>
                     {conv.lastMessageAt && (
@@ -135,7 +135,7 @@ export default function ChatListPage() {
                     )}
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <p className={`truncate text-[12px] ${conv.unreadCount > 0 ? "text-[#888888] font-medium" : "text-[#AAAAAA]"}`}>
+                    <p className={`truncate text-[12px] ${conv.unreadCount > 0 ? "text-[#999999] font-medium" : "text-[#AAAAAA]"}`}>
                       {conv.lastMessage || "Шинэ харилцан яриа"}
                     </p>
                     {conv.unreadCount > 0 && (

@@ -123,7 +123,7 @@ export default function CommentSection({ postId }: { postId: string }) {
                         {initials}
                       </div>
                     )}
-                    <span className="text-[12px] font-bold text-[#1A1A1A]">
+                    <span className="text-[12px] font-bold text-[#E8E8E8]">
                       {comment.author.name}
                     </span>
                   </Link>

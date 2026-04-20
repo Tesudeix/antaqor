@@ -188,7 +188,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mb-8 border-b border-[rgba(0,0,0,0.08)] pb-8">
+      <div className="mb-8 border-b border-[rgba(255,255,255,0.08)] pb-8">
         <div className="flex flex-col items-start gap-5 sm:flex-row">
           {/* Square avatar */}
           <div className="relative group">
@@ -236,13 +236,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -250,7 +250,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#888888] outline-none transition focus:border-[#EF2C58] resize-none"
+                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-2">
@@ -263,7 +263,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   </button>
                   <button
                     onClick={() => setEditing(false)}
-                    className="rounded-[4px] border border-[#E8E8E6] px-4 py-2 text-[12px] font-medium text-[#888888] transition hover:text-[#F8F8F6]"
+                    className="rounded-[4px] border border-[#E8E8E6] px-4 py-2 text-[12px] font-medium text-[#999999] transition hover:text-[#F8F8F6]"
                   >
                     Цуцлах
                   </button>
@@ -288,7 +288,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             <span className="text-[11px] font-bold text-[#EF2C58]">
                               LV.{level}
                             </span>
-                            <span className="text-[11px] text-[#888888]">
+                            <span className="text-[11px] text-[#999999]">
                               {title.titleMN}
                             </span>
                           </div>
@@ -316,7 +316,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     <div className="flex shrink-0 gap-2">
                       <button
                         onClick={() => setEditing(true)}
-                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-[#888888] transition hover:border-[#EF2C58] hover:text-[#F8F8F6]"
+                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-[#999999] transition hover:border-[#EF2C58] hover:text-[#F8F8F6]"
                       >
                         Засах
                       </button>
@@ -331,7 +331,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
 
                 {user.bio && (
-                  <p className="mt-3 text-[13px] leading-[1.7] text-[#888888]">
+                  <p className="mt-3 text-[13px] leading-[1.7] text-[#999999]">
                     {user.bio}
                   </p>
                 )}
@@ -351,7 +351,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     {user.interests.map((i) => (
                       <span
                         key={i}
-                        className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-2 py-0.5 text-[10px] text-[#AAAAAA]"
+                        className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[10px] text-[#AAAAAA]"
                       >
                         {INTEREST_LABELS[i] || i}
                       </span>
@@ -366,7 +366,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
       {/* Posts section */}
       <div className="mb-3 flex items-center gap-2 px-1">
-        <span className="text-[12px] font-semibold text-[#888888]">Нийтлэлүүд</span>
+        <span className="text-[12px] font-semibold text-[#999999]">Нийтлэлүүд</span>
         <span className="text-[12px] text-[#AAAAAA]">{posts.length}</span>
       </div>
 

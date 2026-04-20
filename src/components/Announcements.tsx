@@ -85,7 +85,7 @@ export default function Announcements() {
               key={a._id}
               className={`rounded-[4px] transition ${
                 a.pinned
-                  ? "bg-[#F8F8F6] text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
+                  ? "bg-[#0A0A0A] text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
                   : "bg-[rgba(0,0,0,0.04)] text-[#F8F8F6]"
               }`}
             >

@@ -696,6 +696,48 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
   margin-bottom: 24px;
 }
 
+/* ─── Hero Slider ─── */
+.hero-slider {
+  transition: opacity 0.3s;
+}
+.hero-slider .hero-slider-bg > * {
+  transition: opacity 0.5s;
+}
+.hero-slider .hero-slider-title,
+.hero-slider .hero-slider-subtitle,
+.hero-slider .hero-actions {
+  transition: opacity 0.4s, transform 0.4s;
+}
+.hero-slider:not(.slide-visible) .hero-slider-title,
+.hero-slider:not(.slide-visible) .hero-slider-subtitle,
+.hero-slider:not(.slide-visible) .hero-actions {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.hero-slider.slide-visible .hero-slider-title,
+.hero-slider.slide-visible .hero-slider-subtitle,
+.hero-slider.slide-visible .hero-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+.hero-dot.active {
+  background: #fff;
+  transform: scale(1.2);
+}
+.hero-dot:hover:not(.active) {
+  background: rgba(255,255,255,0.6);
+}
+
 /* ─── Announcement bar ─── */
 .announcement-bar {
   background: var(--accent);

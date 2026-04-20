@@ -164,17 +164,17 @@ export default function ClanPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Баярлалаа!</h1>
-        <p className="mt-2 max-w-sm text-[13px] text-[#888888]">
+        <h1 className="text-[22px] font-bold text-[#E8E8E8]">Баярлалаа!</h1>
+        <p className="mt-2 max-w-sm text-[13px] text-[#666666]">
           Таны төлбөр баталгаажуулалт хүлээгдэж байна. 24 цагийн дотор идэвхжинэ.
         </p>
-        <div className="mt-4 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-5 py-3">
-          <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Гүйлгээний утга</div>
+        <div className="mt-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-5 py-3">
+          <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">Гүйлгээний утга</div>
           <div className="mt-0.5 text-[14px] font-semibold text-[#EF2C58]">{userEmail}</div>
         </div>
-        <div className="mt-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-5 py-3">
-          <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Холбоо барих</div>
-          <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#1A1A1A]">94641031</a>
+        <div className="mt-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-5 py-3">
+          <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">Холбоо барих</div>
+          <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#E8E8E8]">94641031</a>
         </div>
         <Link href="/" className="mt-6 rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white">Нүүр хуудас</Link>
       </div>
@@ -190,15 +190,15 @@ export default function ClanPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Та аль хэдийн гишүүн</h1>
-        <p className="mt-2 max-w-sm text-[13px] text-[#888888]">
+        <h1 className="text-[22px] font-bold text-[#E8E8E8]">Та аль хэдийн гишүүн</h1>
+        <p className="mt-2 max-w-sm text-[13px] text-[#666666]">
           Бүх сургалт, challenge, нийгэмлэгт бүрэн хандалттай.
         </p>
         <div className="mt-6 flex gap-3">
           <Link href="/classroom" className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#D4264E]">
             Хичээл үзэх
           </Link>
-          <Link href="/" className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-5 py-2.5 text-[13px] font-medium text-[#888888] transition hover:text-[#1A1A1A]">
+          <Link href="/" className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[13px] font-medium text-[#666666] transition hover:text-[#E8E8E8]">
             Нүүр
           </Link>
         </div>
@@ -212,27 +212,27 @@ export default function ClanPage() {
       <div className="mx-auto max-w-md">
         <div className="pb-4 pt-2">
           <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">Сүүлийн алхам</div>
-          <h1 className="text-[22px] font-bold text-[#1A1A1A]">Төлбөр төлж гишүүн болох</h1>
-          <p className="mt-1 text-[13px] text-[#888888]">
+          <h1 className="text-[22px] font-bold text-[#E8E8E8]">Төлбөр төлж гишүүн болох</h1>
+          <p className="mt-1 text-[13px] text-[#666666]">
             {tier.name} — <span className="font-bold text-[#EF2C58]">₮{displayPrice}{tier.period}</span>
           </p>
         </div>
 
         {/* QPay QR */}
         <div className="mb-4 flex justify-center">
-          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-white p-3">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-3">
             <Image src="/qpay.png" alt="QPay QR" width={200} height={200} className="h-[200px] w-[200px] object-contain" />
           </div>
         </div>
-        <p className="mb-4 text-center text-[12px] font-medium text-[#888888]">QPay / Банкны апп-аар QR уншуулах</p>
+        <p className="mb-4 text-center text-[12px] font-medium text-[#666666]">QPay / Банкны апп-аар QR уншуулах</p>
 
         {/* Transfer info */}
-        <div className="divide-y divide-[rgba(0,0,0,0.08)] rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
+        <div className="divide-y divide-[rgba(255,255,255,0.06)] rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] overflow-hidden">
           <PayRow label="Банк" value={BANK_NAME} copyText={BANK_NAME} field="bank" copied={copied} onCopy={copyToClipboard} />
           <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
           <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} />
           <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={String(tier.price)} field="amount" copied={copied} onCopy={copyToClipboard} mono />
-          <div className="flex items-center justify-between border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.03)] px-4 py-3">
+          <div className="flex items-center justify-between border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.08)] px-4 py-3">
             <div>
               <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
               <div className="mt-0.5 text-[14px] font-bold text-[#EF2C58]">{userEmail}</div>
@@ -241,16 +241,16 @@ export default function ClanPage() {
           </div>
         </div>
 
-        <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-4 py-2.5">
-          <p className="text-[11px] text-[#888888]">
+        <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.08)] border border-[rgba(239,44,88,0.15)] px-4 py-2.5">
+          <p className="text-[11px] text-[#999999]">
             Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ заавал бичнэ үү.
           </p>
         </div>
 
-        <div className="mt-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-4 py-3 flex items-center justify-between">
+        <div className="mt-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-3 flex items-center justify-between">
           <div>
-            <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Лавлах утас</div>
-            <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#1A1A1A]">94641031</a>
+            <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">Лавлах утас</div>
+            <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#E8E8E8]">94641031</a>
           </div>
           <CopyBtn text="94641031" field="phone" copied={copied} onCopy={copyToClipboard} />
         </div>
@@ -282,7 +282,7 @@ export default function ClanPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-[26px] font-bold text-[#1A1A1A]"
+          className="text-[26px] font-bold text-[#E8E8E8]"
         >
           Өөрт тохирох түвшнээ сонго
         </motion.h1>
@@ -290,7 +290,7 @@ export default function ClanPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mt-2 text-[13px] text-[#888888]"
+          className="mt-2 text-[13px] text-[#666666]"
         >
           AI чадвар эзэмшиж, бодит төсөл дээр дадлагаж, хамтдаа өсөж суралц
         </motion.p>
@@ -309,10 +309,10 @@ export default function ClanPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.1 }}
               onClick={() => setSelectedTier(t.id)}
-              className={`relative cursor-pointer rounded-[4px] border bg-[#FFFFFF] p-5 transition-all duration-200 ${
+              className={`relative cursor-pointer rounded-[4px] border bg-[#141414] p-5 transition-all duration-200 ${
                 isSelected
                   ? `border-[${t.color}] shadow-[0_0_0_1px_${t.color}] ring-1`
-                  : "border-[rgba(0,0,0,0.08)] hover:border-[rgba(0,0,0,0.15)]"
+                  : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)]"
               }`}
               style={isSelected ? { borderColor: t.color, boxShadow: `0 0 0 1px ${t.color}20, 0 4px 24px ${t.color}10` } : {}}
             >
@@ -336,10 +336,10 @@ export default function ClanPage() {
                   {t.name}
                 </div>
                 <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-[32px] font-bold text-[#1A1A1A]">₮{formatMNT(t.price)}</span>
-                  <span className="text-[13px] text-[#888888]">{t.period}</span>
+                  <span className="text-[32px] font-bold text-[#E8E8E8]">₮{formatMNT(t.price)}</span>
+                  <span className="text-[13px] text-[#666666]">{t.period}</span>
                 </div>
-                <div className="mt-1 text-[12px] text-[#888888]">{t.tagline}</div>
+                <div className="mt-1 text-[12px] text-[#666666]">{t.tagline}</div>
               </div>
 
               {/* Divider */}
@@ -354,11 +354,11 @@ export default function ClanPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (
-                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#DDD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     )}
-                    <span className={`text-[12px] ${f.included ? "text-[#444]" : "text-[#CCC]"}`}>
+                    <span className={`text-[12px] ${f.included ? "text-[#BBBBBB]" : "text-[#444]"}`}>
                       {f.text}
                     </span>
                   </div>
@@ -403,23 +403,23 @@ export default function ClanPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="mt-8 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5"
+        className="mt-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5"
       >
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="text-center">
             <div className="text-[20px] font-bold text-[#888]">Entry</div>
             <div className="mt-1 text-[12px] text-[#888]">Суралцаж эхлэх</div>
-            <div className="mt-2 text-[11px] text-[#AAA]">Бичлэгтэй хичээл + community хандалт. AI-н үндэс суурийг тавина.</div>
+            <div className="mt-2 text-[11px] text-[#555]">Бичлэгтэй хичээл + community хандалт. AI-н үндэс суурийг тавина.</div>
           </div>
           <div className="text-center">
             <div className="text-[20px] font-bold text-[#EF2C58]">Core</div>
             <div className="mt-1 text-[12px] text-[#EF2C58]">Бодит ахиц, бодит дэмжлэг</div>
-            <div className="mt-2 text-[11px] text-[#AAA]">Live session + шууд холбогдох эрх. Чамтай тодорхой цагт шууд ярьж, зөвлөгөө авна.</div>
+            <div className="mt-2 text-[11px] text-[#555]">Live session + шууд холбогдох эрх. Чамтай тодорхой цагт шууд ярьж, зөвлөгөө авна.</div>
           </div>
           <div className="text-center">
             <div className="text-[20px] font-bold text-[#8B5CF6]">Inner Circle</div>
             <div className="mt-1 text-[12px] text-[#8B5CF6]">Хамгийн дээд түвшин</div>
-            <div className="mt-2 text-[11px] text-[#AAA]">20 хүний жижиг бүлэг. 1:1 зөвлөгөө, төслийн review, бизнес стратеги.</div>
+            <div className="mt-2 text-[11px] text-[#555]">20 хүний жижиг бүлэг. 1:1 зөвлөгөө, төслийн review, бизнес стратеги.</div>
           </div>
         </div>
       </motion.div>
@@ -431,7 +431,7 @@ export default function ClanPage() {
           <a href="mailto:antaqor@gmail.com" className="font-bold text-[#EF2C58] hover:underline">antaqor@gmail.com</a>
         </p>
         {!session && (
-          <p className="mt-2 text-[12px] text-[#AAA]">
+          <p className="mt-2 text-[12px] text-[#555]">
             Бүртгэлтэй юу?{" "}
             <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
           </p>
@@ -450,8 +450,8 @@ function PayRow({
   return (
     <div className="flex items-center justify-between px-4 py-3">
       <div>
-        <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">{label}</div>
-        <div className={`mt-0.5 font-semibold text-[#1A1A1A] ${mono ? "text-[16px] tracking-wider" : "text-[14px]"}`}>
+        <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">{label}</div>
+        <div className={`mt-0.5 font-semibold text-[#E8E8E8] ${mono ? "text-[16px] tracking-wider" : "text-[14px]"}`}>
           {value}
         </div>
       </div>
@@ -471,7 +471,7 @@ function CopyBtn({
     <button
       onClick={() => onCopy(text, field)}
       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] transition ${
-        accent ? "text-[#EF2C58]/60 hover:text-[#EF2C58]" : "text-[#AAAAAA] hover:text-[#1A1A1A]"
+        accent ? "text-[#EF2C58]/60 hover:text-[#EF2C58]" : "text-[#666666] hover:text-[#E8E8E8]"
       }`}
     >
       {done ? (

@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 <title>VIP — Joy Billiard & Pub</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VIP — Joy Billiard & Pub">
+<meta property="og:description" content="Бильярд, караоке, VIP өрөө — Joy Billiard & Pub">
+<meta property="og:image" content="/Joybilliardlogo.png">
+<meta property="og:url" content="https://joybillard.mn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/Joybilliardlogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -40,6 +50,39 @@ body {
 .back-btn:hover { color: #fff; }
 .back-btn svg { width: 18px; height: 18px; }
 
+/* Hero visual — same 3:4 aspect ratio as homepage cards */
+.hero-visual {
+  position: relative; width: 100%; aspect-ratio: 3/4;
+  overflow: hidden; background: #060d08;
+}
+.hero-visual video,
+.hero-visual img.hero-media {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.hero-visual-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.18) 58%, rgba(0,0,0,.88) 100%);
+}
+.hero-visual-body {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 16px;
+}
+.hero-visual-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 100px;
+  background: rgba(212,168,67,.15); border: 1px solid rgba(212,168,67,.25);
+  font-size: .5rem; font-weight: 800; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.hero-visual-name {
+  font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; line-height: 1.2;
+}
+.hero-visual-price {
+  font-size: 1rem; font-weight: 800; color: var(--accent);
+}
+.hero-visual-unit {
+  font-size: .62rem; color: rgba(255,255,255,.35); margin-left: 3px;
+}
+
 /* Gallery */
 .gallery-wrap {
   position: relative; width: 100%; overflow: hidden;
@@ -53,11 +96,8 @@ body {
 .gallery-track::-webkit-scrollbar { display: none; }
 .gallery-slide {
   flex: 0 0 100%; scroll-snap-align: start;
-  height: 220px; object-fit: cover;
-  background: rgba(255,255,255,.04);
-}
-@media(min-width:420px) {
-  .gallery-slide { height: 260px; }
+  aspect-ratio: 4/3; object-fit: cover;
+  background: rgba(255,255,255,.04); cursor: pointer;
 }
 .gallery-dots {
   display: flex; justify-content: center; gap: 6px;
@@ -76,19 +116,14 @@ body {
   background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
   font-size: .6rem; font-weight: 700; color: rgba(255,255,255,.7);
 }
+.gallery-label {
+  font-size: .6rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  padding: 16px 16px 8px;
+}
 
 /* Info */
 .vip-info { padding: 20px 16px 0; }
-.vip-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 4px 10px; border-radius: 100px;
-  background: rgba(212,168,67,.12); border: 1px solid rgba(212,168,67,.25);
-  font-size: .55rem; font-weight: 800; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--accent);
-  margin-bottom: 10px;
-}
-.vip-badge svg { width: 12px; height: 12px; }
-.vip-name { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
 .vip-desc {
   font-size: .88rem; color: rgba(255,255,255,.6);
   line-height: 1.6; margin-bottom: 18px;
@@ -102,14 +137,8 @@ body {
   background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
   font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.6);
 }
-.vip-price-row {
-  display: flex; align-items: baseline; gap: 6px;
-  margin-bottom: 24px;
-}
-.vip-price-big { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
-.vip-price-unit { font-size: .8rem; font-weight: 500; color: rgba(255,255,255,.4); }
 
-/* Action buttons — same as homepage link-btn */
+/* Action buttons */
 .action-buttons { display: flex; flex-direction: column; gap: 10px; padding: 0 16px; }
 .action-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -137,7 +166,6 @@ body {
   color: rgba(255,255,255,.3);
 }
 
-
 /* Loading */
 .loading { text-align: center; padding: 60px 20px; color: rgba(255,255,255,.3); font-size: .85rem; }
 
@@ -159,6 +187,17 @@ body {
 }
 .lightbox-close:hover { background: rgba(255,255,255,.2); }
 .lightbox-close svg { width: 20px; height: 20px; }
+@media(min-width:1024px){
+  .page{max-width:1200px;padding:0 40px;margin:0 auto}
+  .page-header{margin:0 -40px;padding:0 40px}
+  .page-header-inner{max-width:1200px;margin:0 auto}
+  .page-title{font-size:1.1rem}
+}
+@media(min-width:1440px){
+  .page{max-width:1400px;padding:0 60px}
+  .page-header{margin:0 -60px;padding:0 60px}
+  .page-header-inner{max-width:1400px}
+}
 </style>
 </head>
 <body>
@@ -184,24 +223,53 @@ fetch('/api/viprooms/' + roomId).then(function(r) {
   return r.json();
 }).then(function(rm) {
   var page = document.getElementById('page');
-  var allImages = [];
-  if (rm.image) allImages.push(rm.image);
-  (rm.gallery || []).forEach(function(g) { if (g) allImages.push(g); });
+
+  // Hero visual — video or cover image, same aspect ratio as homepage card
+  var heroHtml = '';
+  if (rm.video || rm.image) {
+    var media = '';
+    if (rm.video) {
+      media = '<video muted autoplay loop playsinline src="' + rm.video + '"></video>';
+    } else {
+      media = '<img class="hero-media" src="' + rm.image + '" alt="' + rm.name + '">';
+    }
+    heroHtml = '<div class="hero-visual">'
+      + media
+      + '<div class="hero-visual-overlay"></div>'
+      + '<div class="hero-visual-body">'
+      + '<div style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:100px;font-size:.5rem;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);letter-spacing:.3px;margin-bottom:6px;backdrop-filter:blur(4px)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:8px;height:8px;opacity:.6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>' + (rm.branch || 'Салбар 1') + '</div>'
+      + '<div class="hero-visual-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:10px;height:10px"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg> ' + rm.badge + '</div>'
+      + '<div class="hero-visual-name">' + rm.name + '</div>'
+      + '<div><span class="hero-visual-price">' + rm.price + '</span><span class="hero-visual-unit">' + rm.priceUnit + '</span></div>'
+      + '</div></div>';
+  }
+
+  // Gallery — additional images
+  var galleryImages = (rm.gallery || []).filter(function(g) { return !!g; });
+  // If no video, don't duplicate cover in gallery
+  if (rm.video && rm.image) {
+    galleryImages = [rm.image].concat(galleryImages);
+  } else if (!rm.video && !rm.image && galleryImages.length === 0) {
+    // no media at all
+  } else if (!rm.video && galleryImages.length > 0) {
+    // cover already shown as hero, gallery shows extras
+  }
 
   var galleryHtml = '';
-  if (allImages.length) {
-    var slides = allImages.map(function(src, i) {
+  if (galleryImages.length) {
+    var slides = galleryImages.map(function(src) {
       return '<img class="gallery-slide" src="' + src + '" alt="' + rm.name + '" onclick="openLightbox(\'' + src + '\')">';
     }).join('');
-    var dotsHtml = allImages.length > 1
-      ? '<div class="gallery-dots" id="galleryDots">' + allImages.map(function(_, i) {
+    var dotsHtml = galleryImages.length > 1
+      ? '<div class="gallery-dots" id="galleryDots">' + galleryImages.map(function(_, i) {
           return '<div class="gallery-dot' + (i === 0 ? ' active' : '') + '"></div>';
         }).join('') + '</div>'
       : '';
-    var counter = allImages.length > 1
-      ? '<div class="gallery-counter" id="galleryCounter">1 / ' + allImages.length + '</div>'
+    var counter = galleryImages.length > 1
+      ? '<div class="gallery-counter" id="galleryCounter">1 / ' + galleryImages.length + '</div>'
       : '';
-    galleryHtml = '<div class="gallery-wrap"><div class="gallery-track" id="galleryTrack">' + slides + '</div>' + counter + '</div>' + dotsHtml;
+    galleryHtml = '<div class="gallery-label">Галерей</div>'
+      + '<div class="gallery-wrap"><div class="gallery-track" id="galleryTrack">' + slides + '</div>' + counter + '</div>' + dotsHtml;
   }
 
   var featsHtml = (rm.features || []).map(function(f) {
@@ -225,28 +293,26 @@ fetch('/api/viprooms/' + roomId).then(function(r) {
   page.innerHTML = '<a class="back-btn" href="/">'
     + '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>'
     + 'Нүүр</a>'
-    + galleryHtml
+    + heroHtml
     + '<div class="vip-info">'
-    + '<div class="vip-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg> ' + rm.badge + '</div>'
-    + '<div class="vip-name">' + rm.name + '</div>'
-    + '<div class="vip-desc">' + rm.description + '</div>'
-    + '<div class="vip-features">' + featsHtml + '</div>'
-    + '<div class="vip-price-row"><span class="vip-price-big">' + rm.price + '</span><span class="vip-price-unit">' + rm.priceUnit + '</span></div>'
+    + (rm.description ? '<div class="vip-desc">' + rm.description + '</div>' : '')
+    + (featsHtml ? '<div class="vip-features">' + featsHtml + '</div>' : '')
     + '</div>'
-    + '<div class="action-buttons">' + actionsHtml + '</div>'
+    + galleryHtml
+    + '<div class="action-buttons" style="margin-top:20px">' + actionsHtml + '</div>'
     + '<div class="vip-footer">&copy; 2026 Joy Billiard & Pub</div>';
 
   document.title = rm.name + ' — Joy Billiard & Pub';
 
   // Gallery scroll tracking
-  if (allImages.length > 1) {
+  if (galleryImages.length > 1) {
     var track = document.getElementById('galleryTrack');
     var dots = document.querySelectorAll('#galleryDots .gallery-dot');
     var counter = document.getElementById('galleryCounter');
     track.addEventListener('scroll', function() {
       var idx = Math.round(track.scrollLeft / track.offsetWidth);
       dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
-      if (counter) counter.textContent = (idx + 1) + ' / ' + allImages.length;
+      if (counter) counter.textContent = (idx + 1) + ' / ' + galleryImages.length;
     }, { passive: true });
   }
 }).catch(function() {

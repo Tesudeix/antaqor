@@ -24,31 +24,19 @@
     </div>
   </nav>
 
-  <!-- Hero 1: Main -->
-  <section class="hero-section" id="hero1" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c1a2e 100%);">
-    <div class="hero-content">
-      <h1 class="hero-title" style="color:#fff;">HEROWATER</h1>
-      <p class="hero-subtitle">Цэвэр. Премиум. Усны шинэ стандарт.</p>
+  <!-- Hero Slider -->
+  <section class="hero-section hero-slider" id="heroSlider" style="background:#0f172a;">
+    <div class="hero-slider-bg" style="position:absolute;inset:0;z-index:0;background:linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c1a2e 100%);"></div>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.5) 100%);"></div>
+    <div class="hero-content" style="z-index:2;">
+      <h1 class="hero-slider-title hero-title" style="color:#fff;"></h1>
+      <p class="hero-slider-subtitle hero-subtitle"></p>
       <div class="hero-actions">
-        <a href="/products.html" class="btn btn-primary" style="padding:14px 48px;font-size:15px;">Захиалах</a>
+        <a href="/products.html" class="hero-slider-cta btn btn-primary" style="padding:14px 48px;font-size:15px;"></a>
         <a href="/about.html" class="btn btn-secondary">Дэлгэрэнгүй</a>
       </div>
     </div>
-    <div class="hero-bottom">
-      <div class="scroll-arrow"></div>
-    </div>
-  </section>
-
-  <!-- Hero 2: Featured product -->
-  <section class="hero-section" style="height:80vh;background:linear-gradient(160deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);">
-    <div class="hero-content">
-      <p class="section-label" style="color:var(--accent);">Шинэ бүтээгдэхүүн</p>
-      <h2 class="hero-title" style="font-size:clamp(32px, 6vw, 72px);color:var(--text);">Still Water</h2>
-      <p class="hero-subtitle" style="color:var(--text-secondary);">Монгол нутгийн гүний булгийн цэвэр ус. Байгалийн эрдэс бодисоор баялаг.</p>
-      <div class="hero-actions">
-        <a href="/products.html" class="btn btn-primary">Үзэх</a>
-      </div>
-    </div>
+    <div class="hero-dots" id="heroDots" style="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:8px;"></div>
   </section>
 
   <!-- Features -->

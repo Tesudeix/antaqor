@@ -200,7 +200,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="text-[15px] text-[#888888]">Хичээл олдсонгүй</p>
+        <p className="text-[15px] text-[#999999]">Хичээл олдсонгүй</p>
         <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
@@ -209,13 +209,13 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if ((lesson.requiredLevel || 0) > userLevel && !admin) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]">
-          <svg className="h-7 w-7 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
+          <svg className="h-7 w-7 text-[#999999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="text-[16px] font-bold text-[#1A1A1A]">LV.{lesson.requiredLevel} шаардлагатай</p>
-        <p className="mt-1.5 text-[14px] text-[#888888]">Таны түвшин: LV.{userLevel}</p>
+        <p className="text-[16px] font-bold text-[#E8E8E8]">LV.{lesson.requiredLevel} шаардлагатай</p>
+        <p className="mt-1.5 text-[14px] text-[#999999]">Таны түвшин: LV.{userLevel}</p>
         <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
       </div>
     );
@@ -231,7 +231,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       <div className="mb-6 flex items-center justify-between">
         <Link
           href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]"
+          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -240,7 +240,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         </Link>
         {/* Lesson nav (prev/next) always visible */}
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#888888]">
+          <span className="text-[11px] text-[#999999]">
             {formatDistanceToNow(lesson.createdAt)}
           </span>
         </div>
@@ -252,7 +252,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6]"
+          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]"
         >
           {embedUrl ? (
             <div className="relative aspect-video w-full">
@@ -283,9 +283,9 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
           className="mb-6"
         >
-          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#1A1A1A] sm:text-[32px]">{lesson.title}</h1>
+          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#E8E8E8] sm:text-[32px]">{lesson.title}</h1>
           {lesson.description && (
-            <p className="mt-3 text-[16px] leading-relaxed text-[#666666]">{lesson.description}</p>
+            <p className="mt-3 text-[16px] leading-relaxed text-[#999999]">{lesson.description}</p>
           )}
 
           {/* Actions row */}
@@ -313,7 +313,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 className={`rounded-[4px] border px-4 py-2.5 text-[12px] font-medium transition-all duration-200 ${
                   showTranscript
                     ? "border-[rgba(15,129,202,0.4)] bg-[rgba(15,129,202,0.1)] text-[#0F81CA]"
-                    : "border-[rgba(0,0,0,0.08)] text-[#888888] hover:text-[#1A1A1A]"
+                    : "border-[rgba(255,255,255,0.08)] text-[#999999] hover:text-[#E8E8E8]"
                 }`}
               >
                 Тэмдэглэл
@@ -335,12 +335,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                       className={`inline-flex items-center gap-1 rounded-[4px] px-2 py-1.5 transition-all duration-200 ${
                         reacted
                           ? "bg-[rgba(239,44,88,0.1)]"
-                          : "text-[#888888] hover:bg-[rgba(255,255,255,0.04)]"
+                          : "text-[#999999] hover:bg-[rgba(255,255,255,0.04)]"
                       }`}
                     >
                       <ReactionIcon type={key} active={reacted} />
                       {count > 0 && (
-                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#EF2C58]" : "text-[#888888]"}`}>{count}</span>
+                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#EF2C58]" : "text-[#999999]"}`}>{count}</span>
                       )}
                     </button>
                   );
@@ -350,8 +350,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
             {admin && (
               <div className="flex items-center gap-2">
-                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-4 py-2 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
+                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Засах</button>
+                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
               </div>
             )}
           </div>
@@ -360,13 +360,13 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
       {/* ─── Edit form ─── */}
       {editing && (
-        <div className="mb-8 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6 space-y-4">
-          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[18px] font-bold text-[#1A1A1A] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
-          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
+        <div className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
+          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
+          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
+          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
           <div className="flex items-center gap-3">
-            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[14px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" placeholder="Видео URL" />
-            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" placeholder="Видео URL" />
+            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
               {uploading ? `${uploadProgress}%` : "Файл"}
               <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
             </label>
@@ -378,7 +378,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           )}
           <div className="flex gap-3">
             <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#888888] transition-colors duration-200 hover:text-[#1A1A1A]">Цуцлах</button>
+            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Цуцлах</button>
           </div>
         </div>
       )}
@@ -391,12 +391,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="mb-8 overflow-hidden"
         >
-          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6">
             <div className="mb-4 flex items-center gap-2">
               <div className="h-[2px] w-6 bg-[#EF2C58]" />
               <span className="meta-label">Хичээлийн тэмдэглэл</span>
             </div>
-            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#666666]">
+            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#999999]">
               {lesson.content}
             </div>
           </div>

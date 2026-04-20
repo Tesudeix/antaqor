@@ -125,7 +125,7 @@ export default function HeroSlider() {
       <audio ref={audioRef} src={musicUrl} loop preload="auto" />
 
       <div
-        className="relative w-full overflow-hidden rounded-[8px] bg-[#FFFFFF] shadow-[0_2px_16px_rgba(0,0,0,0.06)]"
+        className="relative w-full overflow-hidden rounded-[8px] bg-[#141414] shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
         style={{ aspectRatio: "3/4" }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -183,7 +183,7 @@ export default function HeroSlider() {
               { href: "https://www.youtube.com/@antaqor", label: "YouTube", d: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
               { href: "https://www.threads.net/@antaqor", label: "Threads", d: "M16.556 12.65c-.068-.032-.137-.063-.207-.092a8.2 8.2 0 00-.229-.788c-.681-1.93-2.062-3.07-3.872-3.107h-.048c-1.083 0-1.972.44-2.572 1.272l1.088.764c.418-.58.975-.747 1.484-.747h.032c.573.004 1.006.17 1.286.495.204.236.34.563.41.98a10.5 10.5 0 00-1.62-.065c-2.278.132-3.744 1.46-3.634 3.288.056.927.502 1.724 1.254 2.244.636.44 1.454.654 2.3.605 1.116-.064 1.99-.466 2.6-1.196.462-.554.755-1.27.888-2.168.532.321.928.742 1.148 1.261.374.883.396 2.332-.82 3.548-1.068 1.067-2.352 1.529-4.31 1.543-2.172-.016-3.814-.713-4.881-2.074-.996-1.27-1.51-3.09-1.527-5.413.017-2.323.531-4.143 1.527-5.413 1.067-1.36 2.709-2.058 4.881-2.074 2.19.016 3.857.718 4.955 2.085.54.673.942 1.517 1.2 2.504l1.264-.335A8.3 8.3 0 0017.1 4.99C15.78 3.405 13.87 2.6 11.594 2.58h-.017C9.304 2.6 7.408 3.408 6.12 5.002 4.607 6.934 3.838 9.547 3.82 12.828v.012c.018 3.281.787 5.894 2.3 7.826 1.288 1.594 3.184 2.402 5.457 2.422h.017c2.326-.016 3.935-.614 5.29-1.97 1.744-1.744 1.66-3.928 1.107-5.233-.397-.935-1.16-1.694-2.204-2.196l-.23-.039zm-3.877 3.343c-.935.054-1.909-.367-1.96-1.218-.037-.63.447-1.332 2.136-1.43.187-.011.37-.016.55-.016.495 0 .957.048 1.376.141-.157 2.07-1.15 2.467-2.102 2.523z" },
             ].map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white/70 backdrop-blur-sm transition hover:bg-white/30 hover:text-white" aria-label={s.label}>
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-white/20 text-white/70 backdrop-blur-sm transition hover:bg-white/30 hover:text-white" aria-label={s.label}>
                 <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d={s.d} /></svg>
               </a>
             ))}
@@ -193,7 +193,7 @@ export default function HeroSlider() {
         {/* Music toggle */}
         <button
           onClick={toggleMusic}
-          className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm transition hover:bg-white"
+          className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/60 shadow-sm backdrop-blur-sm transition hover:bg-black/80"
           aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
         >
           {isPlaying ? (
@@ -213,7 +213,7 @@ export default function HeroSlider() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-[3px] rounded-full bg-[#EF2C58]"
+                className="w-[3px] rounded-[4px] bg-[#EF2C58]"
                 style={{
                   animation: `musicBar 0.${3 + i}s ease-in-out infinite alternate`,
                   height: `${8 + i * 2}px`,
@@ -230,7 +230,7 @@ export default function HeroSlider() {
               <button
                 key={i}
                 onClick={() => { goTo(i); resetTimer(); }}
-                className={`h-[6px] rounded-full transition-all duration-300 ${
+                className={`h-[6px] rounded-[4px] transition-all duration-300 ${
                   i === current
                     ? "w-[18px] bg-[#EF2C58]"
                     : "w-[6px] bg-white/40"
@@ -242,7 +242,7 @@ export default function HeroSlider() {
 
         {/* Counter */}
         {slides.length > 1 && (
-          <div className="absolute right-3 top-3 z-10 rounded-full bg-white/80 px-[10px] py-[3px] text-[10px] font-extrabold text-[#666666] shadow-sm backdrop-blur-sm">
+          <div className="absolute right-3 top-3 z-10 rounded-[4px] bg-black/60 px-[10px] py-[3px] text-[10px] font-extrabold text-[#CCCCCC] shadow-sm backdrop-blur-sm">
             {current + 1} / {slides.length}
           </div>
         )}

@@ -19,7 +19,7 @@ export default function PricingCalculator() {
             className={`block rounded-[4px] border p-4 transition hover:shadow-sm ${
               t.popular
                 ? "border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.03)]"
-                : "border-[rgba(0,0,0,0.08)] bg-[#FFFFFF]"
+                : "border-[rgba(255,255,255,0.08)] bg-[#141414]"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -33,7 +33,7 @@ export default function PricingCalculator() {
                 <div className="mt-0.5 text-[11px] text-[#888]">{t.desc}</div>
               </div>
               <div className="text-right">
-                <div className="text-[16px] font-bold text-[#1A1A1A]">{t.price}</div>
+                <div className="text-[16px] font-bold text-[#E8E8E8]">{t.price}</div>
                 <div className="text-[10px] text-[#AAA]">{t.period}</div>
               </div>
             </div>

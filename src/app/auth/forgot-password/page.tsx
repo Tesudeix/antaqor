@@ -38,11 +38,11 @@ export default function ForgotPassword() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
-          <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#E8E8E8]">
             Нууц үг сэргээх
           </h1>
-          <p className="mb-6 text-[12px] text-[#888888]">
+          <p className="mb-6 text-[12px] text-[#999999]">
             Бүртгэлтэй имэйлээ оруулна уу
           </p>
 
@@ -56,7 +56,7 @@ export default function ForgotPassword() {
               </div>
               <Link
                 href="/auth/signin"
-                className="block w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-transparent py-2.5 text-center text-[13px] font-medium text-[#666666] transition hover:text-[#1A1A1A] hover:border-[rgba(255,255,255,0.15)]"
+                className="block w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-transparent py-2.5 text-center text-[13px] font-medium text-[#999999] transition hover:text-[#E8E8E8] hover:border-[rgba(255,255,255,0.15)]"
               >
                 Нэвтрэх хуудас руу буцах
               </Link>
@@ -71,7 +71,7 @@ export default function ForgotPassword() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
+                  <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">
                     Имэйл хаяг
                   </label>
                   <input
@@ -79,7 +79,7 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                    className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -93,7 +93,7 @@ export default function ForgotPassword() {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-[12px] text-[#888888]">
+              <p className="mt-6 text-center text-[12px] text-[#999999]">
                 Нууц үгээ санаж байна уу?{" "}
                 <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
                   Нэвтрэх

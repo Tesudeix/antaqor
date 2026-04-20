@@ -105,7 +105,7 @@ export default function TasksPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="mb-4 text-4xl tracking-[2px] text-[#1A1A1A]">Даалгаврууд</h1>
+        <h1 className="mb-4 text-4xl tracking-[2px] text-[#E8E8E8]">Даалгаврууд</h1>
         <p className="mb-8 text-[13px] text-[rgba(240,236,227,0.5)]">Нэвтэрч орно уу.</p>
         <Link href="/auth/signin" className="btn-blood">Нэвтрэх</Link>
       </div>
@@ -128,7 +128,7 @@ export default function TasksPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[24px] font-bold tracking-[1px] text-[#1A1A1A]">
+          <h1 className="text-[24px] font-bold tracking-[1px] text-[#E8E8E8]">
             ДААЛГАВРУУД
           </h1>
           <p className="mt-1 text-[11px] tracking-[1px] text-[#999999]">
@@ -196,7 +196,7 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#E8E8E8]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
@@ -236,7 +236,7 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#E8E8E8]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
@@ -270,7 +270,7 @@ export default function TasksPage() {
               <div key={task._id} className="card p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-[14px] font-bold text-[#1A1A1A]">{task.title}</h3>
+                    <h3 className="text-[14px] font-bold text-[#E8E8E8]">{task.title}</h3>
                     {task.description && (
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}

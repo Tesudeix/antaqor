@@ -140,10 +140,10 @@ function NewPostContent() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 text-[22px] font-bold text-[#1A1A1A]">
+      <h1 className="mb-2 text-[22px] font-bold text-[#E8E8E8]">
         Пост үүсгэх
       </h1>
-      <p className="mb-6 text-[13px] text-[#888888]">
+      <p className="mb-6 text-[13px] text-[#999999]">
         Дижитал үндэстэнтэй хуваалцаарай
       </p>
 
@@ -154,16 +154,16 @@ function NewPostContent() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5">
           {/* Task selector */}
           {tasks.length > 0 && (
-            <div className="mb-4 border-b border-[rgba(0,0,0,0.08)] pb-4">
+            <div className="mb-4 border-b border-[rgba(255,255,255,0.08)] pb-4">
               <div className="mb-2 flex items-center gap-2">
                 <svg className="h-4 w-4 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
                 <span className="text-[11px] font-bold uppercase tracking-wide text-[#EF2C58]">Даалгавар сонгох</span>
-                <span className="text-[10px] text-[#888888]">· XP авах</span>
+                <span className="text-[10px] text-[#999999]">· XP авах</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {tasks.map((task, i) => (
@@ -174,14 +174,14 @@ function NewPostContent() {
                     className={`rounded-[4px] px-3 py-2 text-left transition ${
                       selectedTask === task._id
                         ? "border border-[rgba(239,44,88,0.4)] bg-[rgba(239,44,88,0.08)]"
-                        : "border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] hover:border-[rgba(255,255,255,0.15)]"
+                        : "border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] hover:border-[rgba(255,255,255,0.15)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className={`text-[12px] font-bold ${selectedTask === task._id ? "text-[#EF2C58]" : "text-[#666666]"}`}>
+                      <span className={`text-[12px] font-bold ${selectedTask === task._id ? "text-[#EF2C58]" : "text-[#999999]"}`}>
                         #{i + 1}
                       </span>
-                      <span className={`text-[12px] font-semibold ${selectedTask === task._id ? "text-[#1A1A1A]" : "text-[#666666]"}`}>
+                      <span className={`text-[12px] font-semibold ${selectedTask === task._id ? "text-[#E8E8E8]" : "text-[#999999]"}`}>
                         {task.title}
                       </span>
                       <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">
@@ -189,13 +189,13 @@ function NewPostContent() {
                       </span>
                     </div>
                     {task.description && (
-                      <p className="mt-0.5 text-[10px] text-[#888888] line-clamp-1">{task.description}</p>
+                      <p className="mt-0.5 text-[10px] text-[#999999] line-clamp-1">{task.description}</p>
                     )}
                   </button>
                 ))}
               </div>
               {selTask && (
-                <div className="mt-2 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-3 py-2 text-[11px] text-[#666666]">
+                <div className="mt-2 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-3 py-2 text-[11px] text-[#999999]">
                   Энэ постыг <span className="font-bold text-[#EF2C58]">#{tasks.findIndex((t) => t._id === selectedTask) + 1} {selTask.title}</span> даалгавартай холбож <span className="font-bold text-[#EF2C58]">+{selTask.xpReward} XP</span> авна
                 </div>
               )}
@@ -203,8 +203,8 @@ function NewPostContent() {
           )}
 
           {/* Category selector */}
-          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(0,0,0,0.08)] pb-4">
-            <span className="text-[10px] uppercase tracking-[1px] text-[#888888]">Ангилал:</span>
+          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(255,255,255,0.08)] pb-4">
+            <span className="text-[10px] uppercase tracking-[1px] text-[#999999]">Ангилал:</span>
             {([
               { key: "мэдээлэл" as const, label: "Мэдээлэл" },
               { key: "ялалт" as const, label: "Ялалт" },
@@ -219,7 +219,7 @@ function NewPostContent() {
                 className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                   category === cat.key
                     ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border border-[rgba(239,44,88,0.3)]"
-                    : "text-[#888888] border border-[rgba(0,0,0,0.08)] hover:text-[#666666]"
+                    : "text-[#999999] border border-[rgba(255,255,255,0.08)] hover:text-[#999999]"
                 }`}
               >
                 {cat.label}
@@ -233,11 +233,11 @@ function NewPostContent() {
             placeholder="Та юу бодож байна? (зурагтай бол заавал биш)"
             rows={4}
             maxLength={2000}
-            className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#1A1A1A] placeholder-[#888888] focus:outline-none"
+            className="w-full resize-none border-0 bg-transparent text-[13px] leading-[1.9] text-[#E8E8E8] placeholder-[#555555] focus:outline-none"
           />
 
           {imagePreview && (
-            <div className="relative mt-4 overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)]">
+            <div className="relative mt-4 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)]">
               <img
                 src={imagePreview}
                 alt="Урьдчилан харах"
@@ -275,13 +275,13 @@ function NewPostContent() {
                   : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
               }`}
             >
-              <svg className="h-6 w-6 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6 text-[#999999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span className="text-[11px] text-[#888888]">
+              <span className="text-[11px] text-[#999999]">
                 {dragOver ? "Зургаа энд тавина уу" : "Зураг дарах эсвэл чирэх"}
               </span>
-              <span className="text-[9px] text-[#888888]">
+              <span className="text-[9px] text-[#999999]">
                 JPEG, PNG, WebP, GIF · Хамгийн ихдээ 10MB
               </span>
             </div>
@@ -295,9 +295,9 @@ function NewPostContent() {
             className="hidden"
           />
 
-          <div className="flex items-center justify-between border-t border-[rgba(0,0,0,0.08)] pt-4 mt-4">
+          <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.08)] pt-4 mt-4">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] text-[#888888]">
+              <span className="text-[10px] text-[#999999]">
                 {content.length}/2000
               </span>
               {imageUrl && (

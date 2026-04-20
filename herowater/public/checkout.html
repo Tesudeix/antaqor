@@ -65,19 +65,82 @@
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:24px;padding:14px;" id="submitBtn">Захиалга баталгаажуулах</button>
+      <!-- Bank info shown when bank transfer selected -->
+      <div id="bankInfo" style="display:none;background:var(--accent-light);border:1px solid var(--accent-subtle);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <svg width="20" height="20" fill="none" stroke="var(--accent)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          <span style="font-size:14px;font-weight:700;color:var(--accent);">Шилжүүлэх данс</span>
+        </div>
+        <div style="font-size:14px;line-height:2;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Банк:</span>
+            <span style="font-weight:600;">Худалдаа хөгжил банк</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Данс:</span>
+            <span style="font-weight:700;font-size:16px;letter-spacing:1px;">426086874</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Хүлээн авагч:</span>
+            <span style="font-weight:600;">Отгондаваа Сэргэлэн</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--accent-subtle);">
+            <span style="color:var(--text-secondary);">Шилжүүлэх дүн:</span>
+            <span style="font-weight:800;font-size:18px;color:var(--accent);" id="bankTotal"></span>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:12px;">Гүйлгээний утга дээр захиалгын дугаар эсвэл утасны дугаараа бичнэ үү.</p>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;padding:14px;" id="submitBtn">Захиалга баталгаажуулах</button>
       <div id="checkoutError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;"></div>
     </form>
 
-    <div id="checkoutSuccess" style="display:none;text-align:center;padding:80px 0;">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--success-light);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
-        <svg width="32" height="32" fill="none" stroke="var(--success)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <!-- Success -->
+    <div id="checkoutSuccess" style="display:none;padding:60px 0;">
+      <div style="text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--success-light);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <svg width="32" height="32" fill="none" stroke="var(--success)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2 style="margin-bottom:12px;font-size:24px;">Захиалга амжилттай!</h2>
+        <p style="color:var(--text-secondary);margin-bottom:4px;">Таны захиалгын дугаар:</p>
+        <p style="font-size:28px;font-weight:800;color:var(--accent);margin-bottom:8px;font-family:monospace;" id="orderNumber"></p>
+        <p style="font-size:18px;font-weight:700;margin-bottom:24px;">Нийт: <span id="successTotal"></span></p>
       </div>
-      <h2 style="margin-bottom:12px;font-size:24px;">Захиалга амжилттай!</h2>
-      <p style="color:var(--text-secondary);margin-bottom:8px;">Таны захиалгын дугаар:</p>
-      <p style="font-size:24px;font-weight:800;color:var(--accent);margin-bottom:32px;font-family:monospace;" id="orderNumber"></p>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:32px;">Бид тантай удахгүй холбогдох болно.</p>
-      <a href="/" class="btn btn-primary">Нүүр хуудас</a>
+
+      <!-- Bank info on success -->
+      <div id="successBankInfo" style="display:none;background:#fff;border:2px solid var(--accent);border-radius:var(--radius);padding:28px;margin:0 auto 32px;max-width:400px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <svg width="24" height="24" fill="none" stroke="var(--accent)" viewBox="0 0 24 24" style="margin-bottom:8px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          <p style="font-size:15px;font-weight:700;color:var(--accent);">Дараах дансанд шилжүүлнэ үү</p>
+        </div>
+        <div style="font-size:14px;line-height:2.2;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Банк:</span>
+            <span style="font-weight:600;">Худалдаа хөгжил банк</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Данс:</span>
+            <span style="font-weight:800;font-size:18px;letter-spacing:1.5px;">426086874</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary);">Хүлээн авагч:</span>
+            <span style="font-weight:600;">Отгондаваа Сэргэлэн</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:2px solid var(--accent-subtle);">
+            <span style="color:var(--text-secondary);">Шилжүүлэх дүн:</span>
+            <span style="font-weight:800;font-size:20px;color:var(--accent);" id="successBankTotal"></span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:var(--warning-light);border-radius:var(--radius-xs);font-size:13px;color:var(--warning);">
+          Гүйлгээний утга дээр захиалгын дугаар бичнэ үү.
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;">Бид тантай удахгүй холбогдох болно.</p>
+        <a href="/" class="btn btn-primary">Нүүр хуудас</a>
+      </div>
     </div>
   </section>
 

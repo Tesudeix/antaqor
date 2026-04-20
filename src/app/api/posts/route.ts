@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
 
     const query: Record<string, unknown> = {};
     if (authorId) query.author = authorId;
-    if (category === "мэдээлэл" || category === "ялалт") query.category = category;
+    const validCategories = ["мэдээлэл", "ялалт", "промт", "бүтээл", "танилцуулга"];
+    if (category && validCategories.includes(category)) query.category = category;
 
     // Non-authenticated users can only see free posts
     if (!session?.user) {
@@ -89,7 +90,8 @@ export async function POST(req: NextRequest) {
         ? visibility
         : "members";
 
-    const postCategory = (category === "мэдээлэл" || category === "ялалт") ? category : "мэдээлэл";
+    const validCats = ["мэдээлэл", "ялалт", "промт", "бүтээл", "танилцуулга"];
+    const postCategory = (category && validCats.includes(category)) ? category : "мэдээлэл";
 
     const postData: Record<string, unknown> = {
       author: userId,

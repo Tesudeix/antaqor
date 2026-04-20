@@ -6,8 +6,8 @@ export default function OfflinePage() {
       <svg className="mb-6 h-16 w-16 text-[#EF2C58] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M18.364 5.636a9 9 0 010 12.728M5.636 18.364a9 9 0 010-12.728M12 9v4m0 4h.01" />
       </svg>
-      <h1 className="text-[24px] font-bold text-[#1A1A1A]">Офлайн байна</h1>
-      <p className="mt-2 max-w-xs text-[14px] text-[#888888]">
+      <h1 className="text-[24px] font-bold text-[#E8E8E8]">Офлайн байна</h1>
+      <p className="mt-2 max-w-xs text-[14px] text-[#999999]">
         Интернэт холболтгүй байна. Холболт сэргээгдмэгц автоматаар ачааллана.
       </p>
       <button

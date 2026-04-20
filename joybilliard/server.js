@@ -10,7 +10,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/joybil
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '60mb' }));
+app.use(express.json({ limit: '120mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes

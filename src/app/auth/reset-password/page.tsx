@@ -29,7 +29,7 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="text-center py-4">
-        <p className="mb-4 text-[14px] text-[#666666]">
+        <p className="mb-4 text-[14px] text-[#999999]">
           Холбоос хүчингүй байна
         </p>
         <Link
@@ -81,10 +81,10 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
+      <h1 className="mb-1 text-[22px] font-bold text-[#E8E8E8]">
         Шинэ нууц үг
       </h1>
-      <p className="mb-6 text-[12px] text-[#888888]">
+      <p className="mb-6 text-[12px] text-[#999999]">
         Шинэ нууц үгээ оруулна уу
       </p>
 
@@ -113,7 +113,7 @@ function ResetPasswordForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">
                 Шинэ нууц үг
               </label>
               <input
@@ -122,13 +122,13 @@ function ResetPasswordForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                 placeholder="6+ тэмдэгт"
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">
+              <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">
                 Нууц үг давтах
               </label>
               <input
@@ -137,7 +137,7 @@ function ResetPasswordForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                 placeholder="••••••••"
               />
             </div>
@@ -160,7 +160,7 @@ export default function ResetPassword() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8">
           <Suspense fallback={<div className="flex justify-center py-8"><div className="h-3 w-3 animate-pulse rounded-full bg-[#EF2C58]" /></div>}>
             <ResetPasswordForm />
           </Suspense>

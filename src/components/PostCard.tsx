@@ -22,7 +22,6 @@ const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
   }
 };
 
-// Only 3 reactions: fire, rocket, sparkle
 const REACTION_KEYS = ["fire", "rocket", "think"];
 
 interface PostCardProps {
@@ -75,7 +74,6 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   const hasImage = !!post.image;
   const isLongPost = hasText && post.content.length > 400;
   const displayContent = isLongPost && !expanded ? post.content.slice(0, 400) : post.content;
-  const totalReactions = Object.values(reactions).reduce((sum, r) => sum + r.count, 0);
 
   const handleReaction = async (emoji: string) => {
     if (!session || reactingEmoji || locked) return;
@@ -108,26 +106,26 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
   if (locked) {
     return (
-      <article className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-6">
+      <article className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6">
         <div className="flex items-center gap-3 mb-4">
           {post.author.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-full object-cover" />
+            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-[4px] object-cover" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-[11px] font-bold text-[#888888]">{initials}</div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
           )}
           <div>
-            <p className="text-[13px] font-semibold text-[#1A1A1A]">{post.author.name}</p>
-            <p className="text-[11px] text-[#888888]">{formatDistanceToNow(post.createdAt)}</p>
+            <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
+            <p className="text-[11px] text-[#666666]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </div>
         <div className="relative">
           <div className="select-none blur-[6px]">
-            <p className="text-[14px] text-[#888888]">
+            <p className="text-[14px] text-[#666666]">
               {post.content?.slice(0, 120) || "Энэ нийтлэлийн агуулгыг зөвхөн гишүүд харах боломжтой..."}
             </p>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[12px] font-medium text-[#888888]">Гишүүдэд зориулсан</span>
+            <span className="text-[12px] font-medium text-[#666666]">Гишүүдэд зориулсан</span>
             <Link href="/clan" className="mt-2 text-[12px] font-bold text-[#EF2C58]">
               Кланд нэгдэх
             </Link>
@@ -138,37 +136,37 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   }
 
   return (
-    <article className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)]">
+    <article className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)]">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-5">
         <Link href={`/profile/${post.author._id}`} className="flex items-center gap-3">
           {post.author.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-full object-cover" />
+            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-[4px] object-cover" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-[11px] font-bold text-[#888888]">{initials}</div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
           )}
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-[13px] font-semibold text-[#1A1A1A]">{post.author.name}</p>
+              <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
               {post.category === "ялалт" && (
-                <span className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#EF2C58]">ЯЛАЛТ</span>
+                <span className="rounded-[4px] bg-[rgba(239,44,88,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#EF2C58]">ЯЛАЛТ</span>
               )}
               {post.category === "промт" && (
-                <span className="rounded-[4px] bg-[rgba(15,129,202,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#0F81CA]">ПРОМТ</span>
+                <span className="rounded-[4px] bg-[rgba(15,129,202,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#0F81CA]">ПРОМТ</span>
               )}
               {post.category === "бүтээл" && (
-                <span className="rounded-[4px] bg-[rgba(34,197,94,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#22C55E]">БҮТЭЭЛ</span>
+                <span className="rounded-[4px] bg-[rgba(34,197,94,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#22C55E]">БҮТЭЭЛ</span>
               )}
               {post.category === "танилцуулга" && (
-                <span className="rounded-[4px] bg-[rgba(168,85,247,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#A855F7]">ТАНИЛЦУУЛГА</span>
+                <span className="rounded-[4px] bg-[rgba(168,85,247,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#A855F7]">ТАНИЛЦУУЛГА</span>
               )}
             </div>
-            <p className="text-[11px] text-[#888888]">{formatDistanceToNow(post.createdAt)}</p>
+            <p className="text-[11px] text-[#666666]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </Link>
 
         {canDelete && (
-          <button onClick={handleDelete} className="rounded-[4px] p-2 text-[#888888] transition-colors duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#666666]" aria-label="Устгах">
+          <button onClick={handleDelete} className="rounded-[4px] p-2 text-[#666666] transition-colors duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]" aria-label="Устгах">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
@@ -180,7 +178,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       {hasText && (
         <div className="px-6 mt-3">
           <Link href={`/posts/${post._id}`} className="block">
-            <p className="whitespace-pre-wrap text-[14px] leading-[1.7] text-[#666666]">
+            <p className="whitespace-pre-wrap text-[14px] leading-[1.7] text-[#999999]">
               {displayContent}
             </p>
           </Link>
@@ -198,18 +196,18 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       {/* Image */}
       {hasImage && (
         <Link href={`/posts/${post._id}`} className="block mt-3">
-          <div className="relative overflow-hidden bg-[#F8F8F6]">
+          <div className="relative overflow-hidden bg-[#1A1A1A]">
             {!imgLoaded && (
               <div className="flex items-center justify-center py-24">
-                <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
+                <div className="h-2 w-2 animate-pulse-gold rounded-[4px] bg-[#EF2C58]" />
               </div>
             )}
             <img
               src={post.image}
               alt="Пост"
               onLoad={() => setImgLoaded(true)}
-              className={`w-full object-contain transition-opacity duration-200 ${imgLoaded ? "opacity-100" : "h-0 opacity-0"}`}
-              style={{ maxHeight: "500px" }}
+              className={`w-full transition-opacity duration-200 ${imgLoaded ? "opacity-100" : "h-0 opacity-0"}`}
+              style={{ maxHeight: "600px", objectFit: "cover" }}
             />
           </div>
         </Link>
@@ -229,13 +227,13 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                 disabled={!session || reactingEmoji === key}
                 className={`inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 transition-all duration-200 ${
                   reacted
-                    ? "bg-[rgba(239,44,88,0.1)] border border-[rgba(239,44,88,0.2)]"
-                    : "text-[#888888] border border-transparent hover:bg-[rgba(255,255,255,0.04)] hover:text-[#666666]"
+                    ? "bg-[rgba(239,44,88,0.15)] border border-[rgba(239,44,88,0.3)]"
+                    : "text-[#666666] border border-transparent hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
                 } ${reactingEmoji === key ? "scale-110" : "active:scale-95"}`}
               >
                 <ReactionIcon type={key} active={reacted} />
                 {count > 0 && (
-                  <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#EF2C58]" : "text-[#888888]"}`}>
+                  <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#EF2C58]" : "text-[#666666]"}`}>
                     {count}
                   </span>
                 )}
@@ -246,7 +244,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
         <Link
           href={`/posts/${post._id}`}
-          className="flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 text-[#888888] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#666666]"
+          className="flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 text-[#666666] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
         >
           <svg className="h-[16px] w-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

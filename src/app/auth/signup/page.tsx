@@ -142,9 +142,9 @@ export default function SignUp() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="w-full max-w-[440px]">
-          <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] overflow-hidden">
             {/* Progress bar */}
-            <div className="h-[3px] bg-[#F0F0EE]">
+            <div className="h-[3px] bg-[#1A1A1A]">
               <motion.div
                 className="h-full bg-[#EF2C58]"
                 initial={{ width: 0 }}
@@ -176,7 +176,7 @@ export default function SignUp() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mb-6 text-[20px] font-bold text-[#1A1A1A]"
+                className="mb-6 text-[20px] font-bold text-[#E8E8E8]"
               >
                 {q.label}
               </motion.h1>
@@ -204,8 +204,8 @@ export default function SignUp() {
                         onClick={() => handleAnswer(q.id, opt.value)}
                         className={`flex w-full items-center gap-3 rounded-[4px] border px-4 py-3.5 text-left text-[13px] transition ${
                           selected
-                            ? "border-[#EF2C58] bg-[rgba(239,44,88,0.06)] text-[#1A1A1A] font-semibold shadow-[0_0_0_1px_rgba(239,44,88,0.2)]"
-                            : "border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] text-[#666666] hover:border-[rgba(0,0,0,0.15)] hover:bg-[#F4F4F2]"
+                            ? "border-[#EF2C58] bg-[rgba(239,44,88,0.06)] text-[#E8E8E8] font-semibold shadow-[0_0_0_1px_rgba(239,44,88,0.2)]"
+                            : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#999999] hover:border-[rgba(0,0,0,0.15)] hover:bg-[#1A1A1A]"
                         }`}
                       >
                         <span className="text-[16px]">{opt.emoji}</span>
@@ -231,13 +231,13 @@ export default function SignUp() {
               {currentQ > 0 && (
                 <button
                   onClick={() => setCurrentQ((c) => c - 1)}
-                  className="mt-4 text-[12px] text-[#888] transition hover:text-[#1A1A1A]"
+                  className="mt-4 text-[12px] text-[#888] transition hover:text-[#E8E8E8]"
                 >
                   ← Буцах
                 </button>
               )}
 
-              <p className="mt-6 text-center text-[12px] text-[#888888]">
+              <p className="mt-6 text-center text-[12px] text-[#999999]">
                 Бүртгэлтэй юу?{" "}
                 <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
                   Нэвтрэх
@@ -266,7 +266,7 @@ export default function SignUp() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8 text-center"
+            className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8 text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -277,7 +277,7 @@ export default function SignUp() {
               {config.emoji}
             </motion.div>
 
-            <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888]">
+            <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#999999]">
               Таны AI түвшин
             </div>
 
@@ -295,13 +295,13 @@ export default function SignUp() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mb-6 text-[13px] text-[#666666]"
+              className="mb-6 text-[13px] text-[#999999]"
             >
               {aiLevel.description}
             </motion.p>
 
-            <div className="mb-6 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 text-left">
-              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888] mb-3">
+            <div className="mb-6 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4 text-left">
+              <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#999999] mb-3">
                 Таны сургалтын зам
               </div>
               {config.paths.map((path, i) => (
@@ -310,7 +310,7 @@ export default function SignUp() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + i * 0.1 }}
-                  className="flex items-center gap-2 py-1.5 text-[13px] text-[#1A1A1A]"
+                  className="flex items-center gap-2 py-1.5 text-[13px] text-[#E8E8E8]"
                 >
                   <div className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: config.text }} />
                   {path}
@@ -318,12 +318,12 @@ export default function SignUp() {
               ))}
             </div>
 
-            <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 mb-6">
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4 mb-6">
               <div className="flex items-baseline gap-1">
                 <span className="text-[24px] font-bold text-[#EF2C58]">49,000₮</span>
                 <span className="text-[13px] text-[#888]">-оос</span>
               </div>
-              <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · 3 түвшний сонголт</div>
+              <div className="text-[12px] text-[#999999]">сарын гишүүнчлэл · 3 түвшний сонголт</div>
             </div>
 
             <motion.button
@@ -337,7 +337,7 @@ export default function SignUp() {
 
             <button
               onClick={() => { setStep("quiz"); setCurrentQ(0); setAiLevel(null); setQuizAnswers({ q1: "", q2: "", q3: "" }); }}
-              className="mt-3 text-[12px] text-[#888888] transition hover:text-[#1A1A1A]"
+              className="mt-3 text-[12px] text-[#999999] transition hover:text-[#E8E8E8]"
             >
               Дахин шалгах
             </button>
@@ -355,7 +355,7 @@ export default function SignUp() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8"
+          className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8"
         >
           {aiLevel && (
             <div
@@ -368,10 +368,10 @@ export default function SignUp() {
               {aiLevel.label} түвшин
             </div>
           )}
-          <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
+          <h1 className="mb-1 text-[22px] font-bold text-[#E8E8E8]">
             Бүртгэл үүсгэх
           </h1>
-          <p className="mb-6 text-[12px] text-[#888888]">
+          <p className="mb-6 text-[12px] text-[#999999]">
             Бүртгүүлсний дараа шууд төлбөр хийх боломжтой
           </p>
 
@@ -389,7 +389,7 @@ export default function SignUp() {
               { label: "Нууц үг", type: "password", value: password, set: setPassword, placeholder: "6+ тэмдэгт", min: 6 },
             ].map((f) => (
               <div key={f.label}>
-                <label className="mb-1.5 block text-[12px] font-medium text-[#666666]">{f.label}</label>
+                <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">{f.label}</label>
                 <input
                   type={f.type}
                   value={f.value}
@@ -397,7 +397,7 @@ export default function SignUp() {
                   required
                   minLength={f.min}
                   maxLength={f.max}
-                  className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#888888]"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
                   placeholder={f.placeholder}
                 />
               </div>
@@ -414,7 +414,7 @@ export default function SignUp() {
             </motion.button>
           </form>
 
-          <p className="mt-6 text-center text-[12px] text-[#888888]">
+          <p className="mt-6 text-center text-[12px] text-[#999999]">
             Бүртгэлтэй юу?{" "}
             <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
               Нэвтрэх

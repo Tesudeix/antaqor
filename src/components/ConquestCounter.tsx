@@ -98,7 +98,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
           <div className="text-[10px] uppercase tracking-[4px] text-[#999999]">
             Эрхэм зорилго · Явц
           </div>
-          <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#1A1A1A]">
+          <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#E8E8E8]">
             <span className="text-[#EF2C58]">10,000</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
       <div className="mt-3 flex items-center justify-between">
         <div className="flex gap-6">
           <div>
-            <span className="text-lg tracking-[2px] text-[#1A1A1A]">
+            <span className="text-lg tracking-[2px] text-[#E8E8E8]">
               <AnimatedNumber value={stats.paidMembers} />
             </span>
             <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#999999]">
