@@ -50,7 +50,7 @@ interface StatsData {
   progress: number;
 }
 
-type CategoryFilter = "all" | "мэдээлэл" | "ялалт";
+type CategoryFilter = "all" | "мэдээлэл" | "ялалт" | "промт" | "бүтээл" | "танилцуулга";
 
 // ─── Stat counter with animation ───
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -466,11 +466,14 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-1">
+        <div className="flex items-center gap-1 overflow-x-auto rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-1 scrollbar-hide">
           {([
             { key: "all" as CategoryFilter, label: "Бүгд" },
             { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл" },
             { key: "ялалт" as CategoryFilter, label: "Ялалт" },
+            { key: "промт" as CategoryFilter, label: "Промт" },
+            { key: "бүтээл" as CategoryFilter, label: "Бүтээл" },
+            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга" },
           ]).map((tab) => (
             <button
               key={tab.key}

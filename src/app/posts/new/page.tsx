@@ -31,7 +31,7 @@ function NewPostContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [category, setCategory] = useState<"мэдээлэл" | "ялалт">("мэдээлэл");
+  const [category, setCategory] = useState<"мэдээлэл" | "ялалт" | "промт" | "бүтээл" | "танилцуулга">("мэдээлэл");
   const [tasks, setTasks] = useState<TaskData[]>([]);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -205,28 +205,26 @@ function NewPostContent() {
           {/* Category selector */}
           <div className="mb-4 flex items-center gap-2 border-b border-[rgba(0,0,0,0.08)] pb-4">
             <span className="text-[10px] uppercase tracking-[1px] text-[#888888]">Ангилал:</span>
-            <button
-              type="button"
-              onClick={() => setCategory("мэдээлэл")}
-              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
-                category === "мэдээлэл"
-                  ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border border-[rgba(239,44,88,0.3)]"
-                  : "text-[#888888] border border-[rgba(0,0,0,0.08)] hover:text-[#666666]"
-              }`}
-            >
-              Мэдээлэл
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategory("ялалт")}
-              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
-                category === "ялалт"
-                  ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border border-[rgba(239,44,88,0.3)]"
-                  : "text-[#888888] border border-[rgba(0,0,0,0.08)] hover:text-[#666666]"
-              }`}
-            >
-              Ялалт
-            </button>
+            {([
+              { key: "мэдээлэл" as const, label: "Мэдээлэл" },
+              { key: "ялалт" as const, label: "Ялалт" },
+              { key: "промт" as const, label: "Промт" },
+              { key: "бүтээл" as const, label: "Бүтээл" },
+              { key: "танилцуулга" as const, label: "Танилцуулга" },
+            ]).map((cat) => (
+              <button
+                key={cat.key}
+                type="button"
+                onClick={() => setCategory(cat.key)}
+                className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
+                  category === cat.key
+                    ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border border-[rgba(239,44,88,0.3)]"
+                    : "text-[#888888] border border-[rgba(0,0,0,0.08)] hover:text-[#666666]"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
           </div>
 
           <textarea

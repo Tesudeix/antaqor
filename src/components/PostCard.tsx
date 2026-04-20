@@ -153,6 +153,15 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               {post.category === "ялалт" && (
                 <span className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#EF2C58]">ЯЛАЛТ</span>
               )}
+              {post.category === "промт" && (
+                <span className="rounded-[4px] bg-[rgba(15,129,202,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#0F81CA]">ПРОМТ</span>
+              )}
+              {post.category === "бүтээл" && (
+                <span className="rounded-[4px] bg-[rgba(34,197,94,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#22C55E]">БҮТЭЭЛ</span>
+              )}
+              {post.category === "танилцуулга" && (
+                <span className="rounded-[4px] bg-[rgba(168,85,247,0.1)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#A855F7]">ТАНИЛЦУУЛГА</span>
+              )}
             </div>
             <p className="text-[11px] text-[#888888]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
