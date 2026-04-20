@@ -16,48 +16,67 @@ export async function POST(req: NextRequest) {
     }
 
     const videoId = match[5];
+    const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 
-    // Use a public API approach - cobalt.tools API
-    const cobaltRes = await fetch("https://api.cobalt.tools/", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        audioFormat: "mp3",
-        isAudioOnly: true,
-        aFormat: "mp3",
-        filenameStyle: "pretty",
-      }),
-    });
+    // Try cobalt API v10
+    try {
+      const cobaltRes = await fetch("https://api.cobalt.tools/", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          downloadMode: "audio",
+          audioFormat: "mp3",
+        }),
+      });
 
-    if (!cobaltRes.ok) {
-      // Fallback: return video info and a redirect to a converter
-      return NextResponse.json({
-        title: `YouTube Video (${videoId})`,
-        thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-        duration: "",
-        downloadUrl: `https://api.cobalt.tools/api/json`,
-        error: "Серверийн алдаа. Дахин оролдоно уу.",
-      }, { status: 502 });
+      if (cobaltRes.ok) {
+        const data = await cobaltRes.json();
+        if (data.url) {
+          return NextResponse.json({
+            title: data.filename || `YouTube Audio`,
+            thumbnail,
+            duration: "",
+            downloadUrl: data.url,
+          });
+        }
+      }
+    } catch {
+      // cobalt failed, try fallback
     }
 
-    const data = await cobaltRes.json();
-
-    if (data.status === "error") {
-      return NextResponse.json({ error: data.text || "Хөрвүүлж чадсангүй" }, { status: 400 });
+    // Fallback: use yt-dlp style API via a different service
+    try {
+      const fallbackRes = await fetch(`https://yt-download.org/api/button/mp3/${videoId}`);
+      if (fallbackRes.ok) {
+        const html = await fallbackRes.text();
+        const linkMatch = html.match(/href="(https?:\/\/[^"]+\.mp3[^"]*)"/);
+        if (linkMatch) {
+          return NextResponse.json({
+            title: `YouTube Audio`,
+            thumbnail,
+            duration: "",
+            downloadUrl: linkMatch[1],
+          });
+        }
+      }
+    } catch {
+      // fallback also failed
     }
 
+    // Final fallback: redirect to a converter site
     return NextResponse.json({
-      title: data.filename || `YouTube Video (${videoId})`,
-      thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+      title: `YouTube Audio`,
+      thumbnail,
       duration: "",
-      downloadUrl: data.url || data.audio,
+      downloadUrl: `https://cnvmp3.com/download.php?id=${videoId}`,
+      note: "redirect",
     });
   } catch (err) {
     console.error("YouTube MP3 error:", err);
-    return NextResponse.json({ error: "Серверийн алдаа" }, { status: 500 });
+    return NextResponse.json({ error: "Серверийн алдаа. Дахин оролдоно уу." }, { status: 500 });
   }
 }

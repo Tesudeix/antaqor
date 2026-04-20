@@ -51,14 +51,9 @@ export default function YouTubeMp3Page() {
       setProgress(100);
       setStatus("done");
 
-      // Auto trigger download
+      // Auto trigger download — open in new tab for cross-origin
       if (data.downloadUrl) {
-        const a = document.createElement("a");
-        a.href = data.downloadUrl;
-        a.download = `${data.title || "audio"}.mp3`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        window.open(data.downloadUrl, "_blank");
       }
     } catch (err) {
       clearInterval(interval);

@@ -85,7 +85,7 @@ export default function ClanPage() {
   const [paymentSubmitted, setPaymentSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [selectedTier, setSelectedTier] = useState<string>("core");
+  const [selectedTier, setSelectedTier] = useState<string>("entry");
 
   useEffect(() => {
     checkMembership();
@@ -172,6 +172,10 @@ export default function ClanPage() {
           <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Гүйлгээний утга</div>
           <div className="mt-0.5 text-[14px] font-semibold text-[#EF2C58]">{userEmail}</div>
         </div>
+        <div className="mt-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-5 py-3">
+          <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Холбоо барих</div>
+          <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#1A1A1A]">94641031</a>
+        </div>
         <Link href="/" className="mt-6 rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white">Нүүр хуудас</Link>
       </div>
     );
@@ -241,6 +245,14 @@ export default function ClanPage() {
           <p className="text-[11px] text-[#888888]">
             Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ заавал бичнэ үү.
           </p>
+        </div>
+
+        <div className="mt-3 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-4 py-3 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Лавлах утас</div>
+            <a href="tel:94641031" className="mt-0.5 block text-[14px] font-semibold text-[#1A1A1A]">94641031</a>
+          </div>
+          <CopyBtn text="94641031" field="phone" copied={copied} onCopy={copyToClipboard} />
         </div>
 
         <button
