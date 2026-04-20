@@ -1,18 +1,23 @@
 {
-  "name": "ANTAQOR — Cyber Empire",
+  "name": "ANTAQOR — Mongolia's #1 AI Community",
   "short_name": "Antaqor",
-  "description": "Дижитал Үндэстний нийгэмлэг. AI-г эзэмшиж, хэрэгслээ бүтээж, ирээдүйгээ тодорхойлдог бүтээгчдийн үндэстэн.",
+  "description": "Монголын хамгийн том AI нийгэмлэг. AI сурах, бүтээх, хамтдаа хөгжих платформ.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F8F8F6",
   "theme_color": "#F8F8F6",
   "orientation": "portrait-primary",
-  "categories": ["social", "education"],
+  "categories": ["social", "education", "productivity"],
   "lang": "mn",
   "icons": [
     {
-      "src": "/icon",
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },

@@ -15,6 +15,7 @@ interface Slide {
 
 export default function HeroSlider() {
   const [slides, setSlides] = useState<Slide[]>(FALLBACK_SLIDES);
+  const [musicUrl, setMusicUrl] = useState("/fire-again.mp3");
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -22,7 +23,7 @@ export default function HeroSlider() {
   const touchStartX = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Fetch slides from admin API
+  // Fetch slides and music from admin API
   useEffect(() => {
     fetch("/api/hero/slides")
       .then((r) => r.json())
@@ -30,6 +31,12 @@ export default function HeroSlider() {
         if (d.slides && d.slides.length > 0) {
           setSlides(d.slides);
         }
+      })
+      .catch(() => {});
+    fetch("/api/hero/music")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.url) setMusicUrl(d.url);
       })
       .catch(() => {});
   }, []);
@@ -115,7 +122,7 @@ export default function HeroSlider() {
 
   return (
     <div className="w-full">
-      <audio ref={audioRef} src="/fire-again.mp3" loop preload="auto" />
+      <audio ref={audioRef} src={musicUrl} loop preload="auto" />
 
       <div
         className="relative w-full overflow-hidden rounded-[8px] bg-[#FFFFFF] shadow-[0_2px_16px_rgba(0,0,0,0.06)]"

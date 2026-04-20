@@ -26,11 +26,8 @@ function shouldShow(): boolean {
   if (typeof window === "undefined") return false;
   if (isInstalled()) return false;
   const data = getDismissData();
-  if (data.permanent) return false;
-  if (data.count === 0) return true;
-  // After first dismiss: wait 1 day. After second: wait 3 days. After third+: wait 7 days.
-  const waitDays = data.count === 1 ? 1 : data.count === 2 ? 3 : 7;
-  return Date.now() - data.lastDismissed > waitDays * 24 * 60 * 60 * 1000;
+  if (data.count > 0) return false; // Show only once
+  return true;
 }
 
 function recordDismiss(permanent: boolean) {
@@ -106,7 +103,7 @@ export default function InstallPrompt() {
 
   const handleDismiss = useCallback(() => {
     setShowModal(false);
-    recordDismiss(false);
+    recordDismiss(true);
   }, []);
 
   const handleNeverShow = useCallback(() => {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import PostCard from "@/components/PostCard";
 import Link from "next/link";
-import Image from "next/image";
+
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
 
@@ -133,19 +133,30 @@ function ShowcaseGallery() {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {posts.map((post) => (
+        {posts.map((post) => {
+          const isVideo = /\.(mp4|webm|mov)($|\?)/i.test(post.image);
+          return (
           <Link
             key={post._id}
             href="/auth/signup"
             className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#FFFFFF]"
           >
-            <Image
-              src={post.image}
-              alt={post.content?.slice(0, 30) || "Showcase"}
-              fill
-              className="object-cover transition duration-300 group-hover:scale-105"
-              sizes="(max-width: 640px) 50vw, 33vw"
-            />
+            {isVideo ? (
+              <video
+                src={post.image}
+                muted
+                autoPlay
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <img
+                src={post.image}
+                alt={post.content?.slice(0, 30) || "Showcase"}
+                className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              />
+            )}
             {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
             {/* Author */}
@@ -168,7 +179,8 @@ function ShowcaseGallery() {
               </div>
             )}
           </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

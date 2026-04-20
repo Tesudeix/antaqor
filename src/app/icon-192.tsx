@@ -1,9 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 export const size = { width: 192, height: 192 };
 export const contentType = "image/png";
 
-export default function Icon192() {
+export default async function Icon192() {
+  const logoData = await readFile(join(process.cwd(), "public", "favicon.png"));
+  const logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -16,17 +21,12 @@ export default function Icon192() {
           background: "#F8F8F6",
         }}
       >
-        <span
-          style={{
-            fontSize: 130,
-            fontWeight: 900,
-            color: "#EF2C58",
-            fontFamily: "Arial Black, sans-serif",
-            lineHeight: 1,
-          }}
-        >
-          A
-        </span>
+        <img
+          src={logoBase64}
+          width={160}
+          height={160}
+          style={{ objectFit: "contain" }}
+        />
       </div>
     ),
     { ...size }

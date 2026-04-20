@@ -20,6 +20,25 @@ function formatMNT(n: number) {
   return n.toLocaleString("mn-MN");
 }
 
+const BENEFITS = [
+  { icon: "book", text: "AI сургалт, хичээл, бодит кейс судалгаа" },
+  { icon: "users", text: "Бүтээгчдийн хүрээлэл, хамтын суралцах орчин" },
+  { icon: "trophy", text: "Challenge, өрсөлдөөн, шагналтай даалгавар" },
+  { icon: "zap", text: "Менторшип, feedback, карьер зөвлөгөө" },
+  { icon: "tool", text: "AI хэрэгсэл бүтээх чадвар, практик дадлага" },
+];
+
+function BenefitIcon({ icon }: { icon: string }) {
+  switch (icon) {
+    case "book": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />;
+    case "users": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />;
+    case "trophy": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />;
+    case "zap": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />;
+    case "tool": return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />;
+    default: return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />;
+  }
+}
+
 export default function ClanPage() {
   const { data: session } = useSession();
   const [isMember, setIsMember] = useState(false);
@@ -39,6 +58,16 @@ export default function ClanPage() {
       .catch(() => {});
   }, [session]);
 
+  // Auto-show payment if redirected after signup
+  useEffect(() => {
+    if (session && !isMember && !loading) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("pay") === "1") {
+        handleJoin();
+      }
+    }
+  }, [session, isMember, loading]);
+
   const checkMembership = async () => {
     try {
       const res = await fetch("/api/clan/status");
@@ -49,8 +78,8 @@ export default function ClanPage() {
     }
   };
 
-  const displayPrice = pricing ? formatMNT(pricing.currentPrice) : "...";
-  const rawPrice = pricing ? String(pricing.currentPrice) : "25000";
+  const displayPrice = pricing ? formatMNT(pricing.currentPrice) : "29,000";
+  const rawPrice = pricing ? String(pricing.currentPrice) : "29000";
 
   const handleJoin = async () => {
     if (!session) return;
@@ -111,9 +140,9 @@ export default function ClanPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Хүлээн авлаа</h1>
+        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Баярлалаа!</h1>
         <p className="mt-2 max-w-sm text-[13px] text-[#888888]">
-          Таны төлбөр баталгаажуулалт хүлээгдэж байна. Ихэвчлэн 24 цагийн дотор шалгагдана.
+          Таны төлбөр баталгаажуулалт хүлээгдэж байна. 24 цагийн дотор идэвхжинэ.
         </p>
         <div className="mt-4 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] px-5 py-3">
           <div className="text-[10px] uppercase tracking-[1px] text-[#AAAAAA]">Гүйлгээний утга</div>
@@ -133,16 +162,16 @@ export default function ClanPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Та кланд байна</h1>
+        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Та аль хэдийн гишүүн</h1>
         <p className="mt-2 max-w-sm text-[13px] text-[#888888]">
-          Бүх контент, хичээл, нийгэмлэгт бүрэн хандалттай.
+          Бүх сургалт, challenge, нийгэмлэгт бүрэн хандалттай.
         </p>
         <div className="mt-6 flex gap-3">
-          <Link href="/" className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#D4264E]">
-            Мэдээ
+          <Link href="/classroom" className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#D4264E]">
+            Хичээл үзэх
           </Link>
-          <Link href="/classroom" className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-5 py-2.5 text-[13px] font-medium text-[#888888] transition hover:text-[#1A1A1A]">
-            Хичээл
+          <Link href="/" className="rounded-[4px] border border-[rgba(0,0,0,0.08)] px-5 py-2.5 text-[13px] font-medium text-[#888888] transition hover:text-[#1A1A1A]">
+            Нүүр
           </Link>
         </div>
       </div>
@@ -154,9 +183,10 @@ export default function ClanPage() {
     return (
       <div className="-mx-5">
         <div className="px-5 py-8">
-          <h1 className="text-[24px] font-bold text-[#1A1A1A]">Кланд нэгдэх</h1>
+          <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">AI Training Ground</div>
+          <h1 className="text-[26px] font-bold text-[#1A1A1A]">Чадвараа хөгжүүл, хамтдаа өс</h1>
           <p className="mt-2 max-w-md text-[13px] leading-relaxed text-[#888888]">
-            Бүртгүүлж, сарын гишүүнчлэлийн төлбөрөө хийгээд кланд нэгдээрэй.
+            AI чадвар эзэмшиж, бодит төсөл дээр дадлагажиж, ижил зорилготой бүтээгчидтэй хамт өрсөлдөж суралц.
           </p>
         </div>
 
@@ -167,31 +197,37 @@ export default function ClanPage() {
             <div className="mt-1 text-[32px] font-bold leading-none text-black">
               ₮{displayPrice}
             </div>
-            {pricing && (
-              <div className="mt-2 text-[11px] font-medium text-black/60">
-                Гишүүн бүр +₮{formatMNT(pricing.increment)} нэмнэ
-              </div>
-            )}
+            <div className="mt-2 text-[11px] font-medium text-black/60">
+              /сар · хүссэн үедээ цуцлах боломжтой
+            </div>
           </div>
           <div className="space-y-0 divide-y divide-[rgba(0,0,0,0.08)] px-5">
-            {["Бүх контент, хичээлд хандалт", "Гишүүдтэй чат, нийгэмлэг", "Менторшип, feedback"].map((b) => (
-              <div key={b} className="flex items-center gap-3 py-3">
-                <svg className="h-3.5 w-3.5 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            {BENEFITS.map((b) => (
+              <div key={b.text} className="flex items-center gap-3 py-3">
+                <svg className="h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <BenefitIcon icon={b.icon} />
                 </svg>
-                <span className="text-[13px] text-[#888888]">{b}</span>
+                <span className="text-[13px] text-[#666666]">{b.text}</span>
               </div>
             ))}
           </div>
           <div className="p-5">
-            <Link href="/auth/signup" className="flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3 text-[13px] font-semibold text-white transition hover:bg-[#D4264E]">
-              Бүртгүүлэх
+            <Link href="/auth/signup" className="flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:bg-[#D4264E]">
+              Бүртгүүлж эхлэх
             </Link>
             <p className="mt-3 text-center text-[12px] text-[#AAAAAA]">
               Бүртгэлтэй юу? <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
             </p>
           </div>
         </div>
+
+        {/* Social proof */}
+        {pricing && pricing.paidMembers > 0 && (
+          <div className="mx-5 mt-4 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-4 text-center">
+            <div className="text-[20px] font-bold text-[#1A1A1A]">{pricing.paidMembers}+</div>
+            <div className="text-[11px] text-[#888888]">гишүүн аль хэдийн суралцаж байна</div>
+          </div>
+        )}
       </div>
     );
   }
@@ -200,48 +236,44 @@ export default function ClanPage() {
   return (
     <div className="-mx-5">
       <div className="px-5 pb-4 pt-2">
-        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Кланд нэгдэх</h1>
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#EF2C58]">Сүүлийн алхам</div>
+        <h1 className="text-[22px] font-bold text-[#1A1A1A]">Төлбөр төлж гишүүн болох</h1>
         <p className="mt-1 text-[13px] text-[#888888]">
-          Сарын гишүүнчлэл — <span className="font-semibold text-[#EF2C58]">₮{displayPrice}</span>
+          Сарын гишүүнчлэл — <span className="font-bold text-[#EF2C58]">₮{displayPrice}</span>
         </p>
-        {pricing && (
-          <p className="mt-1 text-[11px] text-[#999999]">
-            Гишүүн бүр <span className="text-[#EF2C58]">+₮{formatMNT(pricing.increment)}</span> нэмнэ · дараагийн үнэ ₮{formatMNT(pricing.nextPrice)}
-          </p>
-        )}
       </div>
 
       {!showPayment ? (
-        /* Join button */
+        /* Benefits + Join button */
         <div className="mx-5 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-5">
           <div className="space-y-0 divide-y divide-[rgba(0,0,0,0.08)]">
-            {["Бүх контент, хичээлд хандалт", "Гишүүдтэй чат, нийгэмлэг", "Менторшип, feedback"].map((b) => (
-              <div key={b} className="flex items-center gap-3 py-3">
-                <svg className="h-3.5 w-3.5 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            {BENEFITS.map((b) => (
+              <div key={b.text} className="flex items-center gap-3 py-3">
+                <svg className="h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <BenefitIcon icon={b.icon} />
                 </svg>
-                <span className="text-[13px] text-[#888888]">{b}</span>
+                <span className="text-[13px] text-[#666666]">{b.text}</span>
               </div>
             ))}
           </div>
           <button
             onClick={handleJoin}
             disabled={submitting}
-            className="mt-4 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3 text-[13px] font-semibold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
+            className="mt-4 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
           >
-            {submitting ? "..." : `Нэгдэх — ₮${displayPrice}/сар`}
+            {submitting ? "..." : `Төлбөр шилжүүлэх — ₮${displayPrice}/сар`}
           </button>
         </div>
       ) : (
         /* Payment details */
         <div className="px-5">
-          {/* QR */}
+          {/* QPay QR */}
           <div className="mb-4 flex justify-center">
             <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-white p-3">
-              <Image src="/qpay.png" alt="QPay QR" width={180} height={180} className="h-[180px] w-[180px] object-contain" />
+              <Image src="/qpay.png" alt="QPay QR" width={200} height={200} className="h-[200px] w-[200px] object-contain" />
             </div>
           </div>
-          <p className="mb-4 text-center text-[11px] text-[#AAAAAA]">Банкны апп-аар уншуулах</p>
+          <p className="mb-4 text-center text-[12px] font-medium text-[#888888]">QPay / Банкны апп-аар QR уншуулах</p>
 
           {/* Transfer info */}
           <div className="divide-y divide-[rgba(0,0,0,0.08)] rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] overflow-hidden">
@@ -258,14 +290,16 @@ export default function ClanPage() {
             </div>
           </div>
 
-          <p className="mt-3 text-[11px] text-[#AAAAAA]">
-            Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ бичнэ үү.
-          </p>
+          <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.04)] border border-[rgba(239,44,88,0.1)] px-4 py-2.5">
+            <p className="text-[11px] text-[#888888]">
+              Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{userEmail}</strong> имэйлээ заавал бичнэ үү.
+            </p>
+          </div>
 
           <button
             onClick={handleConfirmPayment}
             disabled={submitting}
-            className="mt-5 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3 text-[13px] font-semibold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
+            className="mt-5 flex w-full items-center justify-center rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
           >
             {submitting ? "Шалгаж байна..." : "Төлбөр шилжүүлсэн"}
           </button>

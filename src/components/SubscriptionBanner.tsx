@@ -10,15 +10,15 @@ export default function SubscriptionBanner() {
   if (loading || !isLoggedIn || isMember || isAdmin) return null;
 
   return (
-    <div className="sticky top-0 z-[60] flex h-[50px] items-center justify-center gap-3 bg-[#dc2626] px-4">
+    <div className="sticky top-0 z-[60] flex h-[50px] items-center justify-center gap-3 bg-[#EF2C58] px-4">
       <span className="text-[13px] font-semibold text-white">
-        Гишүүнчлэлээ идэвхжүүлээрэй
+        Сургалт, challenge, нийгэмлэгт нэгдэх
       </span>
       <Link
         href="/clan"
-        className="rounded-[4px] bg-white px-4 py-1.5 text-[12px] font-bold text-[#dc2626] transition hover:bg-white/90"
+        className="rounded-[4px] bg-white px-4 py-1.5 text-[12px] font-bold text-[#EF2C58] transition hover:bg-white/90"
       >
-        Төлбөр төлөх
+        Нэгдэх
       </Link>
     </div>
   );

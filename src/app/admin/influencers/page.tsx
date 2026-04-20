@@ -151,9 +151,18 @@ export default function AdminInfluencersPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Устгах уу?")) return;
     try {
-      await fetch(`/api/influencers/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/influencers/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        setMsg(`Алдаа: ${data.error || "Устгаж чадсангүй"}`);
+        return;
+      }
       setInfluencers((prev) => prev.filter((i) => i._id !== id));
-    } catch {}
+      setMsg("Устгагдлаа!");
+      setTimeout(() => setMsg(null), 3000);
+    } catch {
+      setMsg("Алдаа: Сервертэй холбогдож чадсангүй");
+    }
   };
 
   const ic = "w-full rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]";

@@ -89,7 +89,7 @@ export default function SignUp() {
       if (signInRes?.error) {
         setError(signInRes.error);
       } else {
-        router.push("/clan");
+        router.push("/clan?pay=1");
         router.refresh();
       }
     } finally {
@@ -111,13 +111,13 @@ export default function SignUp() {
         <div className="w-full max-w-[440px]">
           <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] p-8">
             <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#EF2C58]">
-              AI боловсролын түвшин
+              AI Training Ground
             </div>
             <h1 className="mb-2 text-[22px] font-bold text-[#1A1A1A]">
-              Бүртгүүлэхийн өмнө
+              Чадварын түвшнээ мэдэх
             </h1>
             <p className="mb-6 text-[12px] text-[#888888]">
-              Танд тохирох сургалтын түвшинг тодорхойлъё
+              Танд тохирох сургалт, challenge-г тодорхойлъё
             </p>
 
             <div className="space-y-6">
@@ -244,41 +244,41 @@ export default function SignUp() {
 
             <div className="mb-6 rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 text-left">
               <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#888888] mb-2">
-                Танд санал болгох сургалт
+                Таны сургалтын зам
               </div>
               {aiLevel.level === "beginner" && (
                 <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
-                  <li>• AI-н үндсэн ойлголт, хэрэглээ</li>
-                  <li>• ChatGPT, Claude ашиглах арга</li>
-                  <li>• Промпт бичих анхан шатны дадлага</li>
+                  <li>• AI-н үндсэн ойлголт, хэрэглээний дадлага</li>
+                  <li>• ChatGPT, Claude ашиглах арга техник</li>
+                  <li>• Эхлэгчдийн challenge, бодит даалгавар</li>
                 </ul>
               )}
               {aiLevel.level === "intermediate" && (
                 <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
                   <li>• Промпт инженерингийн дэвшилтэт техник</li>
-                  <li>• AI автоматжуулалт, workflow</li>
-                  <li>• AI-р контент, дизайн бүтээх</li>
+                  <li>• AI автоматжуулалт, бизнес workflow</li>
+                  <li>• Өрсөлдөөнт challenge, багийн төсөл</li>
                 </ul>
               )}
               {aiLevel.level === "advanced" && (
                 <ul className="space-y-1.5 text-[13px] text-[#1A1A1A]">
-                  <li>• API интеграци, custom AI app</li>
-                  <li>• RAG, Agent, Function calling</li>
-                  <li>• AI бизнес, SaaS бүтээгдэхүүн</li>
+                  <li>• API интеграци, AI бүтээгдэхүүн бүтээх</li>
+                  <li>• RAG, Agent, Function calling дадлага</li>
+                  <li>• AI бизнес challenge, SaaS өрсөлдөөн</li>
                 </ul>
               )}
             </div>
 
             <div className="rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] p-4 mb-6">
               <div className="text-[24px] font-bold text-[#EF2C58]">29,000₮</div>
-              <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · бүх түвшний сургалт</div>
+              <div className="text-[12px] text-[#888888]">сарын гишүүнчлэл · сургалт + challenge + нийгэмлэг</div>
             </div>
 
             <button
               onClick={() => setStep("register")}
               className="w-full rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:brightness-110"
             >
-              Бүртгүүлэх — 29,000₮/сар
+              Одоо эхлэх — 29,000₮/сар
             </button>
 
             <button
@@ -310,10 +310,10 @@ export default function SignUp() {
             </div>
           )}
           <h1 className="mb-1 text-[22px] font-bold text-[#1A1A1A]">
-            Бүртгүүлэх
+            Бүртгэл үүсгэх
           </h1>
           <p className="mb-6 text-[12px] text-[#888888]">
-            Antaqor-д нэгдэх · 29,000₮/сар
+            Бүртгүүлсний дараа шууд төлбөр хийх боломжтой
           </p>
 
           {error && (

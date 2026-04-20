@@ -1,445 +1,320 @@
 {
-  "id": "gochu_nightlife_editorial_v8_seoul_bar_ladies_night",
-  "version": "8.0",
-  "type": "image_generation",
+  "id": "gochu_brand_stylized_portrait_reference_matched_v2",
+  "version": "2.0",
+  "type": "style_transfer_image_generation",
   "engine_target": "nano_banana",
-  "render_style": "high_end_realistic_cinematic_nightlife_editorial",
+  "mode": "photo_to_stylized_3d_portrait",
 
-  "master_mood_directive": {
-    "primary": "(seoul_neon_bar_ambient:1.3)",
-    "secondary": "(hyperreal_skin_with_neon_reflection:1.25)",
-    "tertiary": "(cocktail_glass_in_hand:1.2)",
-    "quaternary": "(magenta_pink_and_cool_blue_dual_tone:1.2)",
-    "quinary": "(blurred_busy_bar_crowd_background:1.15)",
-    "overall": "cinematic_seoul_nightlife_moment_realistic_portrait_of_confident_Korean_woman_in_busy_neon_lit_bar_ladies_night_energy"
-  },
-
-  "scene_narrative": {
-    "setting": "upscale_trendy_seoul_cocktail_bar_friday_ladies_night",
-    "moment": "subject_paused_mid_conversation_holding_signature_cocktail_looking_through_sunglasses",
-    "energy": "confident_playful_mysterious_alive",
-    "time_of_night": "10pm_to_midnight_prime_nightlife_hour",
-    "social_context": "surrounded_by_blurred_bar_patrons_but_subject_holds_center_frame"
-  },
-
-  "brand_color_system": {
-    "neon_magenta_pink": {
-      "hex_range": "#FF2E8A_to_#FF4DB8",
-      "role": "dominant_warm_neon_punch",
-      "usage": "bar_signage_behind_subject_neon_tube_lighting_reflection_on_surfaces",
-      "coverage_percentage": "25_to_35_percent_of_frame",
-      "behavior": "glowing_saturated_seoul_nightlife_signature"
-    },
-    "ambient_cool_blue": {
-      "hex_range": "#4A6B9E_to_#7A95C4",
-      "role": "cool_secondary_atmospheric_depth",
-      "usage": "shadow_side_ambient_wash_background_depth",
-      "coverage_percentage": "30_to_40_percent_of_frame"
-    },
-    "warm_amber_accents": {
-      "hex": "#E8A860",
-      "role": "cocktail_glass_glow_and_bar_pendant_lights",
-      "usage": "cocktail_reflection_subtle_pendant_warmth_in_deep_background",
-      "coverage_percentage": "10_to_15_percent"
-    },
-    "subject_warm_protected": {
-      "zone": "skin_face_arms_only",
-      "role": "warm_vibrance_protected_from_neon_color_cast",
-      "critical_note": "subject_skin_stays_natural_while_environment_bathes_in_magenta_and_blue"
-    },
-    "deep_black_negative_space": {
-      "hex": "#0A0A0F",
-      "role": "grounding_contrast_deep_bar_shadows_and_wardrobe"
-    },
-    "balance_rule": "magenta_pink_neon_dominant_with_cool_blue_secondary_and_protected_warm_skin_cocktail_as_warm_focal_punch"
-  },
-
-  "hyper_realism_skin_system": {
-    "priority_level": "maximum_override_default_AI_smoothing",
-    "weighting_token": "(hyperreal_skin:1.25)",
-
-    "pore_structure": {
-      "visibility": "distinctly_visible_across_nose_cheeks_forehead",
-      "distribution": "varied_natural_not_uniform",
-      "density_map": {
-        "t_zone": "denser_larger_pores",
-        "cheeks": "moderate_visible",
-        "temples": "finer_smaller",
-        "under_eye": "smooth_minimal"
-      }
-    },
-
-    "freckles_and_natural_markers": {
-      "placement": "upper_cheeks_nose_bridge_sparse_natural",
-      "distribution": "irregular_not_uniform",
-      "distinctive_moles": "preserve_one_or_two_small_beauty_marks_as_identity"
-    },
-
-    "sebum_and_neon_sheen": {
-      "natural_sebum": "subtle_on_nose_bridge_and_cheekbone_high_points",
-      "neon_reflection_behavior": "skin_catches_magenta_and_blue_neon_softly_without_being_tinted_entirely",
-      "critical": "warm_skin_undertone_must_survive_saturated_neon_environment"
-    },
-
-    "vellus_hair_peach_fuzz": {
-      "visibility": "clearly_visible_catching_neon_rim_light",
-      "placement": [
-        "cheekbones",
-        "jaw_edge",
-        "forehead_hairline",
-        "above_upper_lip",
-        "temples"
-      ],
-      "behavior": "neon_back_and_rim_light_IDEAL_for_catching_fine_facial_hair_halo_effect"
-    },
-
-    "skin_color_temperature_variation": {
-      "cheeks_and_lips": "slightly_flushed_from_drink_and_warmth_of_bar",
-      "temples": "subtle_cool_neon_blue_spill",
-      "nose_tip_and_cheekbones": "subtle_warm_pink_flush",
-      "jawline": "natural_consistent_with_base_tone"
-    },
-
-    "eyebrows": {
-      "rendering": "individual_hairs_visible_defined",
-      "partial_visibility": "eyebrows_partially_obscured_by_sunglasses_top_rim_show_outer_edges"
-    },
-
-    "lips": {
-      "texture": "natural_vertical_lip_lines_visible",
-      "finish": "subtle_moisture_from_recent_sip_of_cocktail",
-      "color": "natural_warm_pink_slightly_enhanced_by_warm_undertone_of_bar_lighting",
-      "optional_lipstick": "subtle_rose_or_berry_tone_bar_appropriate"
-    },
-
-    "hard_prohibitions": [
-      "plastic_smooth_skin",
-      "porcelain_airbrushed_finish",
-      "AI_beauty_filter_oversmoothing",
-      "uniform_magenta_cast_over_entire_face",
-      "blue_cast_over_entire_face",
-      "wax_CGI_appearance"
+  "critical_style_declaration": {
+    "what_this_IS": "semi_stylized_3D_character_render_with_photoreal_elements",
+    "what_this_is_NOT": [
+      "cinematic_photography",
+      "editorial_magazine_photo",
+      "hyperreal_skin_portrait",
+      "film_grain_aesthetic",
+      "Vogue_style_editorial"
     ],
+    "closest_references": [
+      "3D_character_render_pixar_quality_but_more_realistic",
+      "unreal_engine_metahuman_stylized_slightly_softened",
+      "commercial_3D_avatar_render_premium_brand",
+      "Genshin_Impact_character_portrait_meets_photoreal",
+      "modern_mobile_game_cinematic_portrait"
+    ],
+    "render_engine_feel": "octane_or_unreal_with_soft_shader_pass"
+  },
 
-    "identity_preservation": {
-      "rule": "preserve_exact_face_structure_mole_placement_and_distinctive_features",
-      "note": "sunglasses_cover_eyes_but_face_identity_still_readable_via_nose_lips_jawline_hair"
+  "master_style_directive": {
+    "primary": "(semi_stylized_3d_render:1.4)",
+    "secondary": "(porcelain_airbrushed_skin:1.3)",
+    "tertiary": "(soft_flat_studio_lighting:1.2)",
+    "quaternary": "(slightly_enlarged_stylized_eyes:1.15)",
+    "quinary": "(locked_frontal_crossed_arms_pose:1.25)",
+    "overall": "identity_preserved_subject_rendered_as_semi_stylized_3d_brand_portrait_matching_reference_image_exactly"
+  },
+
+  "rendering_style_system": {
+    "category": "semi_stylized_3D_portrait_render",
+    "skin_render": {
+      "finish": "smooth_porcelain_airbrushed",
+      "pore_visibility": "none_or_minimal",
+      "subsurface_scattering": "subtle_soft_warm_glow_under_skin",
+      "highlight_placement": "soft_broad_highlights_on_cheekbones_nose_bridge_forehead",
+      "shadow_quality": "gentle_soft_no_harsh_edges",
+      "color_uniformity": "even_tone_slight_warmth_at_cheeks",
+      "critical_note": "NOT_hyperreal_NOT_photographic_pores_this_is_stylized_smoothness"
+    },
+    "eye_render": {
+      "size": "slightly_enlarged_from_real_proportions_stylized",
+      "iris_detail": "clear_defined_iris_with_subtle_catchlights",
+      "eyelash_render": "defined_but_not_hyperreal",
+      "eye_shape_preservation": "preserve_reference_person_eye_SHAPE_but_render_in_stylized_manner",
+      "pupil": "clear_dark_sharp",
+      "tear_duct": "natural_soft"
+    },
+    "hair_render": {
+      "strand_detail": "grouped_strands_not_individual_photoreal_hairs",
+      "finish": "smooth_slightly_glossy_3d_render_look",
+      "flyaways": "minimal_controlled",
+      "color": "rich_deep_black_with_subtle_highlight"
+    },
+    "lip_render": {
+      "finish": "soft_natural_matte_to_semi_matte",
+      "texture": "smooth_stylized_not_photoreal_lip_lines",
+      "color": "natural_warm_pink_with_subtle_gradient",
+      "highlight": "soft_center_highlight"
+    },
+    "overall_render_quality": "premium_3d_brand_avatar_not_photograph"
+  },
+
+  "identity_preservation_system": {
+    "priority_level": "maximum",
+    "rule": "the_subject_must_be_recognizable_as_the_person_in_reference_photo_rendered_in_3D_stylized_form",
+    "must_preserve": [
+      "overall_face_shape_and_proportions",
+      "eye_shape_and_spacing_rendered_slightly_larger",
+      "nose_shape_and_bridge",
+      "lip_shape",
+      "jawline_and_chin_structure",
+      "ethnicity_appearance",
+      "approximate_age",
+      "gender",
+      "distinctive_moles_beauty_marks_freckles_keep_as_identity_markers",
+      "eyebrow_shape_structure"
+    ],
+    "stylization_allowances": [
+      "eyes_can_be_slightly_enlarged_stylized",
+      "skin_smoothed_to_porcelain_finish",
+      "minor_asymmetries_gently_balanced",
+      "hair_restyled_to_brand_fixed_style",
+      "proportions_subtly_idealized_not_dramatically"
+    ],
+    "never_change": [
+      "fundamental_face_identity",
+      "ethnicity",
+      "gender",
+      "distinctive_identity_moles_or_marks"
+    ]
+  },
+
+  "locked_pose_system": {
+    "pose_name": "frontal_crossed_arms_confident",
+    "body_orientation": "directly_facing_camera_square_shoulders_zero_rotation",
+    "arms": {
+      "position": "crossed_horizontally_at_waist_to_lower_chest",
+      "left_over_right": "left_forearm_rests_on_top_of_right_forearm",
+      "hands_visible": "both_hands_resting_on_opposite_forearm"
+    },
+    "hands": {
+      "finger_count_each_hand": "exactly_five_no_extra_no_missing",
+      "finger_position": "relaxed_natural_slight_curve_fingers_separated_clearly",
+      "thumb_visible": "yes_correctly_positioned",
+      "nails": "clean_natural_short"
+    },
+    "head": {
+      "angle": "level_straight_forward",
+      "tilt": "zero_degrees",
+      "chin": "slightly_lowered_confident"
+    },
+    "shoulders": "relaxed_square_even_height",
+    "spine": "upright_natural_alignment"
+  },
+
+  "locked_expression_system": {
+    "eyes": {
+      "gaze": "direct_at_camera_lens",
+      "intensity": "calm_confident_present",
+      "openness": "relaxed_natural_not_wide_not_squinted"
+    },
+    "mouth": {
+      "shape": "closed_softly_relaxed",
+      "corners": "neutral_or_barely_perceptible_upturn",
+      "no_smile_no_frown": true
+    },
+    "eyebrows": "relaxed_natural_neither_raised_nor_furrowed",
+    "jaw": "relaxed_soft",
+    "overall_read": "quiet_confident_professional_approachable"
+  },
+
+  "locked_wardrobe_system": {
+    "top": {
+      "type": "short_sleeve_polo_shirt",
+      "color": "clean_off_white_cream",
+      "fabric_render": "smooth_cotton_pique_stylized_fabric_render",
+      "fit": "tailored_clean",
+      "collar": "classic_polo_two_button_placket",
+      "buttons": "natural_cream_bone_color"
+    },
+    "under_layer": {
+      "type": "long_sleeve_black_base_layer",
+      "visibility": "sleeves_extend_from_under_polo_to_wrists",
+      "color": "deep_matte_black",
+      "fabric_render": "smooth_performance_knit_stylized"
+    },
+    "gender_cut_adaptation": {
+      "male": "slightly_looser_masculine_cut_same_garments",
+      "female": "slightly_tailored_feminine_cut_same_garments"
+    },
+    "no_logos_no_accessories": true
+  },
+
+  "locked_hair_system": {
+    "base_color": "preserve_reference_natural_color_usually_black_or_dark_brown",
+    "female_style": {
+      "primary": "sleek_center_part_pulled_back_into_clean_low_bun_or_low_ponytail",
+      "finish": "smooth_3d_render_controlled_no_flyaways"
+    },
+    "male_style": {
+      "primary": "short_clean_modern_cut_smooth_render",
+      "finish": "matte_not_gelled_subtle_texture"
     }
   },
 
-  "subject": {
-    "gender": "woman",
-    "age": 23,
-    "ethnicity": "Korean",
-    "role": "confident_nightlife_lifestyle_figure",
-    "beauty_descriptor": "strikingly_beautiful_modern_seoul_aesthetic_clean_features_editorial_caliber",
-
-    "hair": {
-      "color": "rich_deep_black_with_subtle_brown_undertone",
-      "style_options": {
-        "primary_recommended": {
-          "name": "sleek_long_straight_down_with_subtle_movement",
-          "description": "long_glossy_black_hair_flowing_down_past_shoulders_clean_middle_or_slight_side_part_catching_neon_highlights",
-          "finish": "glossy_reflective_catching_magenta_and_blue_neon_in_highlights"
-        },
-        "alternative_a": {
-          "name": "high_sleek_ponytail",
-          "description": "pulled_tight_at_crown_long_ponytail_clean_sculpted_seoul_fashion_week_style"
-        },
-        "alternative_b": {
-          "name": "soft_wavy_down",
-          "description": "loose_natural_waves_seoul_salon_style_movement"
-        }
-      },
-      "critical_note": "hair_catches_neon_highlights_creating_magenta_sheen_on_black"
+  "locked_lighting_system": {
+    "setup": "soft_studio_flat_lighting_matching_reference",
+    "key_light": {
+      "type": "large_soft_frontal_diffused",
+      "position": "camera_front_slightly_above",
+      "color_temperature_k": 5200,
+      "intensity": "bright_clean_even",
+      "quality": "very_soft_almost_shadowless"
     },
-
-    "face": {
-      "structure": "clean_modern_korean_features_high_cheekbones_defined_jawline",
-      "expression_options": {
-        "primary_recommended": {
-          "name": "confident_barely_there_smile",
-          "mouth": "closed_or_slightly_parted_subtle_upturn_at_corners",
-          "emotion": "knowing_confident_mystery_alive_in_moment",
-          "intensity": "subtle_but_magnetic",
-          "gaze_through_sunglasses": "directed_at_camera_or_slightly_off_camera"
-        },
-        "alternative_a": {
-          "name": "caught_mid_laugh",
-          "mouth": "open_genuine_laugh_teeth_visible",
-          "emotion": "authentic_joy_ladies_night_energy",
-          "intensity": "high_alive"
-        },
-        "alternative_b": {
-          "name": "sip_pause_moment",
-          "mouth": "just_lowered_from_cocktail_lips_slightly_parted_moisture",
-          "emotion": "savoring_moment_sensory_present",
-          "intensity": "intimate_editorial"
-        },
-        "alternative_c": {
-          "name": "playful_smirk",
-          "mouth": "one_corner_raised_knowing_smirk",
-          "emotion": "playful_flirty_confident",
-          "intensity": "editorial_cool"
-        }
-      }
+    "fill_light": {
+      "type": "soft_fill_opposite_side",
+      "purpose": "eliminate_deep_shadows"
     },
-
-    "accessories_primary": {
-      "sunglasses": {
-        "type": "modern_statement_sunglasses_worn_indoors_at_night",
-        "style_options": [
-          "rectangular_narrow_y2k_tinted",
-          "oversized_tortoise_shell_acetate",
-          "sleek_black_cat_eye",
-          "silver_chrome_minimal_modern"
-        ],
-        "lens_tint": "dark_but_transparent_enough_to_see_faint_eye_shape_through",
-        "reflection": "captures_magenta_and_blue_neon_signage_reflection_on_lens_surface",
-        "fit": "properly_sized_for_face_not_oversized_cartoon"
-      }
+    "rim_light": {
+      "type": "minimal_optional",
+      "intensity": "very_subtle_barely_visible"
     },
-
-    "wardrobe": {
-      "top_options": {
-        "primary": {
-          "type": "fitted_black_silky_tank_or_bodysuit",
-          "fabric": "silk_or_satin_catches_neon_highlights",
-          "neckline": "clean_scoop_or_square_neck_tasteful_confident"
-        },
-        "alternative_a": {
-          "type": "sleek_black_mini_dress_with_thin_straps",
-          "fabric": "satin_finish_reflective"
-        },
-        "alternative_b": {
-          "type": "structured_black_blazer_over_nothing_seoul_fashion_week",
-          "styling": "sharp_confident_minimal"
-        }
-      },
-      "jewelry": {
-        "type": "minimal_modern_chain_necklace_or_single_hoop_earrings",
-        "metal": "silver_or_white_gold_reflecting_cool_neon_not_warm",
-        "rule": "one_statement_piece_not_stacked"
-      },
-      "nails": {
-        "finish": "clean_manicure_nude_neutral_or_deep_black",
-        "shape": "modern_almond_or_square"
-      },
-      "styling_principle": "black_sculptural_silhouette_lets_neon_environment_and_cocktail_be_color_protagonists"
-    },
-
-    "skin_reference": "see_hyper_realism_skin_system_block"
+    "contrast_ratio": "very_low_2_to_1_flat_editorial",
+    "shadow_behavior": "extremely_soft_shadows_almost_absent",
+    "mood": "clean_bright_flat_commercial_3d_render_lighting",
+    "NOT_THIS": [
+      "cinematic_dramatic_lighting",
+      "moody_directional_light",
+      "rembrandt_or_split_lighting",
+      "hard_shadows"
+    ]
   },
 
-  "primary_object_cocktail": {
-    "type": "signature_cocktail_in_elegant_glassware",
-    "glass_options": [
-      "coupe_glass_classic_elegant",
-      "martini_glass_angular_modern",
-      "rocks_glass_with_single_large_ice_cube",
-      "tall_highball_with_garnish"
-    ],
-    "cocktail_color_options": {
-      "recommended": [
-        "pink_paloma_matching_neon_palette",
-        "deep_red_negroni_jewel_tone",
-        "clear_gin_martini_with_citrus_twist",
-        "amber_old_fashioned_warm_glow",
-        "blush_cosmopolitan_matching_magenta"
-      ]
+  "locked_background_system": {
+    "type": "solid_soft_gradient_backdrop",
+    "color_options": {
+      "primary": "warm_peach_to_cream_gradient_matching_reference_orange_tone",
+      "alternative_a": "soft_off_white_to_pale_cream_gradient",
+      "alternative_b": "warm_beige_gradient"
     },
-    "garnish": "subtle_elegant_citrus_twist_or_cherry_or_edible_flower",
-    "glass_condensation": "light_natural_condensation_catching_neon_reflection",
-    "hold_style": {
-      "grip": "elegant_hold_by_stem_or_relaxed_around_rocks_glass",
-      "height": "raised_to_chest_or_near_face_for_composition",
-      "hand_anatomy": "exactly_five_fingers_natural_grip_nails_visible_elegantly"
-    },
-    "reflection_on_glass": "cocktail_glass_catches_both_magenta_neon_and_warm_bar_pendant_light_as_highlights"
+    "texture": "completely_smooth_no_visible_texture",
+    "clutter": "zero_pure_solid_color_field",
+    "shadow_behind_subject": "very_subtle_soft_shadow_for_slight_grounding",
+    "style_note": "this_is_studio_seamless_backdrop_3d_render_style"
   },
 
-  "environment": {
-    "location": "upscale_trendy_seoul_cocktail_bar_gangnam_or_hongdae_style",
-    "interior_style": "moody_modern_asian_nightlife_design",
-    "architectural_details": {
-      "bar_counter_background": "dark_marble_or_polished_wood_softly_visible_through_blur",
-      "shelving": "backlit_liquor_shelves_softly_blurred_with_amber_glow",
-      "walls": "dark_textured_surfaces_catching_neon_reflections",
-      "ceiling": "intimate_low_pendant_lights_amber_warm_dots_in_bokeh"
-    },
-    "signage_and_neon": {
-      "primary_neon": {
-        "content": "korean_hangul_or_english_bar_name_or_abstract_neon_shape",
-        "color": "magenta_pink_dominant_with_subtle_blue_accent",
-        "position": "behind_subject_upper_frame_softly_out_of_focus",
-        "behavior": "glowing_creating_atmospheric_halo_and_color_wash"
-      },
-      "optional_brand_touch": {
-        "element": "subtle_gochu_signage_or_gochu_cocktail_menu_blurred_far_background",
-        "visibility": "atmospheric_not_hero",
-        "purpose": "brand_presence_without_overt_product_push"
-      }
-    },
-    "crowd_and_background_life": {
-      "patrons": "3_to_5_softly_blurred_figures_at_bar_and_tables_background",
-      "activity": "natural_conversation_laughter_drinks_in_hand_caught_in_motion_blur",
-      "depth": "multiple_depth_layers_of_blur_subject_in_sharp_focus",
-      "critical": "crowd_presence_felt_but_no_individual_face_recognizable_ensures_subject_is_hero"
-    },
-    "atmosphere": {
-      "haze": "subtle_atmospheric_haze_catching_neon_light_cinematic_depth",
-      "bokeh_quality": "creamy_round_bokeh_from_pendant_lights_and_distant_neon",
-      "density": "busy_feeling_but_compositionally_clean_around_subject"
-    }
+  "locked_camera_system": {
+    "framing": "waist_up_portrait_with_crossed_arms_visible",
+    "crop": "top_of_head_small_breathing_space_to_just_below_crossed_forearms",
+    "angle_degrees": 0,
+    "angle_direction": "level_eye_to_lens_straight_on",
+    "lens_equivalent": "85mm_portrait_compression",
+    "depth_of_field": "medium_subject_sharp_background_clean_solid",
+    "subject_position": "centered_horizontally_symmetrical",
+    "camera_distance": "medium_portrait_distance"
   },
 
-  "camera": {
-    "framing": "medium_close_up_to_medium_shot_chest_to_head_with_cocktail_visible",
-    "angle_degrees": 5,
-    "angle_direction": "near_eye_level_slight_low_for_confidence",
-    "lens_mm": 50,
-    "aperture": "f_1.4_to_f_1.8_extreme_shallow",
-    "view": "slight_three_quarter_rotation_dynamic",
-    "subject_position": "center_or_slight_offset_rule_of_thirds",
-    "intent": "intimate_cinematic_editorial_capturing_moment_of_confidence",
-    "focus_point": "subject_face_sharp_cocktail_glass_sharp_everything_else_dissolves_into_bokeh",
-    "bokeh_intention": "maximum_creamy_background_separation"
-  },
-
-  "lighting": {
-    "master_style": "multi_source_neon_bar_ambient_with_protected_warm_skin",
-    "skin_detail_directive": "neon_side_light_and_rim_must_reveal_pore_texture_and_vellus_hair_not_flatten",
-
-    "primary_neon_source": {
-      "type": "magenta_pink_neon_signage_behind_and_beside_subject",
-      "position": "camera_back_right_and_ambient_environmental",
-      "color_temperature_k": "non_standard_saturated_magenta_490nm_peak",
-      "intensity": "strong_ambient_wash_defines_atmosphere",
-      "effect_on_subject": "magenta_rim_light_on_right_shoulder_hair_and_cheek_edge"
-    },
-
-    "secondary_cool_source": {
-      "type": "cool_blue_neon_or_ambient_bar_lighting",
-      "position": "camera_back_left",
-      "color_temperature_k": "non_standard_saturated_blue_475nm",
-      "intensity": "moderate_providing_dimensional_contrast",
-      "effect": "cool_blue_rim_on_opposite_side_of_face_creating_dual_tone_lighting"
-    },
-
-    "warm_key_for_skin_protection": {
-      "type": "subtle_warm_bar_pendant_light_or_candle_equivalent",
-      "position": "camera_front_slight_below_or_from_cocktail_level",
-      "color_temperature_k": 2800,
-      "purpose": "protect_warm_skin_undertone_from_being_consumed_by_neon",
-      "intensity": "low_but_present_enough_to_keep_skin_natural"
-    },
-
-    "cocktail_glow": {
-      "source": "cocktail_itself_and_bar_pendant_above",
-      "effect": "warm_amber_glow_on_hand_holding_glass_and_lower_face",
-      "purpose": "cocktail_as_mini_lightsource_adds_intimacy"
-    },
-
-    "contrast_ratio": "dramatic_5_to_1_nightlife_cinematic",
-    "shadow_quality": "deep_neon_tinted_shadows_magenta_on_one_side_blue_on_other",
-    "purpose": "dual_tone_neon_bath_with_warm_skin_island_and_cocktail_warmth_anchor"
-  },
-
-  "depth_of_field": {
-    "type": "extreme_shallow",
-    "subject_focus": "tack_sharp_on_face_sunglasses_and_cocktail_glass",
-    "background_blur": "extreme_creamy_bokeh_crowd_and_bar_dissolve_into_color_fields",
-    "foreground_blur": "subtle_soft_atmospheric_haze",
-    "bokeh_character": "round_creamy_neon_lights_become_glowing_orbs"
-  },
-
-  "color_grading": {
-    "overall_temperature": "split_tone_magenta_highlights_blue_shadows_warm_skin_island",
-    "white_balance": "mixed_non_standard_neon_environment",
-    "highlights": "magenta_pink_tinted_saturated",
-    "midtones": "warm_skin_protected_cocktail_warm",
-    "shadows": "deep_cool_blue_tinted_neon_influenced",
-    "saturation_global": "saturated_nightlife_plus_15",
-    "saturation_skin": "protected_warm_natural_plus_5",
-    "saturation_neon": "punched_plus_25_for_signature_seoul_feel",
-    "film_reference": "Wong_Kar_Wai_In_the_Mood_for_Love_meets_Blade_Runner_2049_meets_modern_Seoul_cinema_Park_Chan_Wook",
-    "grading_model": "teal_and_magenta_split_tone_with_protected_warm_skin_and_cocktail"
+  "locked_color_grading_system": {
+    "overall_temperature": "neutral_warm",
+    "white_balance": "5000k_to_5200k_clean",
+    "highlights": "bright_soft_clean_not_blown",
+    "midtones": "natural_warm_skin_protected_even",
+    "shadows": "lifted_soft_not_crushed",
+    "saturation": "natural_editorial_restrained_slight_warmth",
+    "grading_style": "clean_premium_brand_3d_render_not_cinematic_film_grade",
+    "film_grain": "none_this_is_digital_render_look",
+    "reference_aesthetic": "premium_3d_character_portrait_brand_campaign"
   },
 
   "hand_anatomy_enforcement": {
     "priority": "maximum",
     "rules": [
-      "exactly_five_fingers_on_cocktail_holding_hand",
-      "natural_elegant_grip_around_stem_or_glass",
-      "nails_visible_clean_manicured",
-      "hand_skin_matches_face_skin_tone_warm_protected",
-      "wrist_joint_natural_not_broken_angle"
-    ],
-    "prohibitions": [
-      "six_or_four_fingers",
-      "fused_melted_fingers",
-      "floating_thumb",
-      "impossible_wrist_angle",
-      "mitten_hand",
-      "different_colored_hand_from_face"
+      "exactly_five_fingers_per_hand",
+      "natural_human_proportions",
+      "fingers_clearly_separated_not_fused",
+      "thumb_visible_and_correctly_positioned",
+      "hands_resting_relaxed_on_opposite_forearm",
+      "skin_tone_matches_face",
+      "rendered_in_same_porcelain_stylized_smoothness_as_face"
     ]
   },
 
-  "style": {
-    "aesthetic": "cinematic_seoul_nightlife_editorial_realistic",
-    "mood": "confident_mysterious_alive_ladies_night_magnetic",
-    "cleanliness": "ultra_clean_high_end_despite_busy_bar_context",
-    "realism_level": "commercial_campaign_photography_with_cinematic_depth",
-    "reference_tier": "Wong_Kar_Wai_bar_scene_meets_Kim_Kardashian_SKIMS_campaign_meets_Song_of_Style_editorial"
-  },
-
   "consistency_rules": {
-    "face_identity_lock": true,
-    "skin_quality_continuity": "hyperreal_skin_system_applied_despite_neon_environment",
-    "brand_integration": "subtle_not_overt_this_is_lifestyle_campaign_not_product_ad"
+    "every_output_must_have_identical": [
+      "semi_stylized_3D_render_quality",
+      "porcelain_airbrushed_skin_finish",
+      "slightly_enlarged_stylized_eyes",
+      "frontal_crossed_arms_pose",
+      "neutral_confident_expression",
+      "white_polo_black_base_layer",
+      "soft_flat_studio_lighting",
+      "warm_peach_cream_gradient_background",
+      "waist_up_level_framing"
+    ],
+    "only_variable": "the_specific_person_identity_from_reference_image"
   },
 
   "negative_constraints": [
-    "flat_commercial_bar_photography",
-    "overexposed_neon_blowout",
-    "uniform_magenta_or_blue_wash_over_entire_face",
-    "plastic_airbrushed_skin",
-    "porcelain_doll_finish",
-    "AI_beauty_filter_oversmoothing",
-    "sunglasses_obscuring_entire_face_identity",
-    "generic_nightclub_stock_photo_aesthetic",
-    "cartoonish_oversaturated_colors",
-    "wrong_finger_count_on_cocktail_hand",
-    "mushy_blurry_hands",
-    "cocktail_glass_with_impossible_liquid_physics",
-    "drunk_sloppy_expression",
-    "vulgar_or_suggestive_posing",
-    "excessive_cleavage_or_skin_exposure",
-    "crowd_faces_in_sharp_focus",
-    "gochu_signage_garbled_if_included",
-    "overly_bright_phone_screen_if_phone_shown",
-    "cheap_looking_bar_aesthetic",
-    "daylight_lighting",
-    "oversharpened_background",
-    "dutch_tilted_angle",
-    "wide_angle_facial_distortion",
-    "multiple_foreground_subjects",
-    "tacky_neon_signage_saying_random_words",
-    "disco_ball_club_aesthetic_wrong_vibe",
-    "karaoke_room_aesthetic_wrong_vibe"
+    "hyperreal_photographic_skin_with_visible_pores",
+    "cinematic_editorial_photography_look",
+    "film_grain_or_noise",
+    "dramatic_directional_lighting",
+    "cool_blue_ambient_lighting",
+    "Vogue_magazine_editorial_aesthetic",
+    "Blade_Runner_2049_cinematic_mood",
+    "harsh_shadows",
+    "outdoor_environment",
+    "cluttered_background",
+    "patterned_or_textured_backdrop",
+    "dark_moody_atmosphere",
+    "cartoon_anime_over_stylization",
+    "photorealistic_portrait_photography",
+    "changing_face_identity",
+    "changing_ethnicity_or_gender",
+    "removing_distinctive_moles_or_identity_markers",
+    "tilted_head_or_dynamic_body_pose",
+    "different_wardrobe_from_locked_system",
+    "different_background_color",
+    "smiling_broadly_or_laughing",
+    "wrong_finger_count",
+    "fused_or_melted_hands",
+    "side_profile_or_three_quarter_turn",
+    "props_or_accessories",
+    "visible_logos_or_text",
+    "facial_hair_on_female_subject",
+    "heavy_makeup",
+    "jewelry",
+    "different_hair_color_from_reference_unless_naturally_dyed"
   ],
 
+  "workflow_instruction": {
+    "step_1": "analyze_reference_photo_extract_identity_markers_face_shape_features_ethnicity_gender_age",
+    "step_2": "preserve_identity_but_apply_semi_stylized_3d_render_treatment_to_face",
+    "step_3": "render_skin_as_porcelain_smooth_not_photoreal",
+    "step_4": "enlarge_eyes_very_slightly_for_stylized_3d_portrait_feel",
+    "step_5": "place_subject_in_locked_pose_wardrobe_expression",
+    "step_6": "apply_flat_soft_studio_lighting_and_warm_gradient_background",
+    "step_7": "verify_hand_anatomy_and_identity_recognition",
+    "final_check": "result_should_look_like_premium_3D_character_render_not_photograph"
+  },
+
   "output": {
-    "aspect_ratio": "9:16",
-    "resolution": "high_resolution_4k_equivalent",
-    "format": "photorealistic_cinematic_still_nightlife_editorial",
+    "aspect_ratio": "4:5_portrait",
+    "resolution": "high_resolution",
+    "format": "semi_stylized_3d_portrait_render_consistent_brand_series",
     "use_cases": [
-      "gochu_nightlife_campaign_hero",
-      "instagram_reels_cover_nightlife_content",
-      "tiktok_vertical_ladies_night_campaign",
-      "threads_mood_post",
-      "cocktail_menu_hero_visual",
-      "ladies_night_event_promo"
+      "brand_avatar_series",
+      "gochu_team_portrait_roster",
+      "ambassador_visual_set",
+      "stylized_social_media_avatars"
     ]
   }
 }

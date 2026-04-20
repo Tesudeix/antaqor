@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antaqor Poster Template</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  /* ============================================
+     ANTAQOR DESIGN SYSTEM — CSS TOKENS
+     Do not change these unless rebranding.
+  ============================================ */
+  :root {
+    --brand-yellow:     #FFFF00;
+    --brand-yellow-dim: rgba(255,255,0,0.08);
+    --brand-yellow-mid: rgba(255,255,0,0.15);
+    --bg-base:          #050505;
+    --bg-block:         rgba(255,255,0,0.02);
+    --border-dark:      #1a1a1a;
+    --border-yellow:    #1a1a00;
+    --border-yellow-hi: rgba(255,255,0,0.25);
+    --text-white:       #ffffff;
+    --text-mid:         #888888;
+    --text-muted:       #555555;
+    --text-dim:         #333333;
+    --text-ghost:       #222222;
+    --text-invisible:   #1f1f00;
+    --font-sans:        'IBM Plex Sans', sans-serif;
+    --font-mono:        'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ============================================
+     LAYOUT — Editor + Preview side by side
+  ============================================ */
+  body {
+    background: #0a0a0a;
+    font-family: var(--font-sans);
+    color: var(--text-white);
+    min-height: 100vh;
+    display: flex;
+    gap: 0;
+  }
+
+  /* LEFT — Controls panel */
+  .panel {
+    width: 320px;
+    min-height: 100vh;
+    background: #0d0d0d;
+    border-right: 1px solid #1a1a1a;
+    padding: 28px 24px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .panel-logo {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--brand-yellow);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .panel-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    line-height: 1.1;
+  }
+
+  .panel-title span { color: var(--brand-yellow); }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #141400;
+  }
+
+  .field-group { margin-bottom: 12px; }
+
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
+    color: var(--text-white);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+    border-radius: 0;
+    appearance: none;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--brand-yellow);
+  }
+
+  textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
+
+  select option { background: #0d0d0d; }
+
+  /* Toggle row */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .toggle-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .toggle {
+    width: 32px; height: 18px;
+    background: #1a1a1a;
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid #2a2a2a;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--brand-yellow); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle.on::after { left: 16px; background: #000; }
+
+  /* Color swatch row */
+  .swatch-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    width: 28px; height: 28px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .swatch.selected { border-color: #fff; }
+
+  /* Btn */
+  .btn {
+    width: 100%;
+    padding: 11px;
+    background: var(--brand-yellow);
+    color: #000;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid #1e1e1e;
+    margin-top: 8px;
+  }
+
+  .btn-ghost:hover { border-color: #333; color: var(--text-white); opacity: 1; }
+
+  /* RIGHT — Preview */
+  .preview-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #070707;
+    min-height: 100vh;
+  }
+
+  .preview-meta {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #2a2a2a;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    align-self: flex-start;
+  }
+
+  /* ============================================
+     THE POSTER — Core component
+  ============================================ */
+  .poster {
+    width: 420px;
+    height: 560px;
+    background: var(--bg-base);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-dark);
+    flex-shrink: 0;
+  }
+
+  /* Background grid */
+  .p-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,0,0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* Scan line */
+  .p-scan {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: var(--brand-yellow-mid);
+    animation: scan 4s linear infinite;
+    z-index: 2;
+  }
+  @keyframes scan { 0% { top: -2px; } 100% { top: 102%; } }
+
+  /* Top accent bar */
+  .p-topbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--brand-yellow);
+  }
+
+  /* Corner marks */
+  .p-corner {
+    position: absolute;
+    width: 16px; height: 16px;
+    z-index: 10;
+  }
+  .p-corner-tl { top: 12px; left: 12px; border-top: 1px solid var(--brand-yellow); border-left: 1px solid var(--brand-yellow); }
+  .p-corner-tr { top: 12px; right: 12px; border-top: 1px solid var(--brand-yellow); border-right: 1px solid var(--brand-yellow); }
+  .p-corner-bl { bottom: 12px; left: 12px; border-bottom: 1px solid var(--brand-yellow); border-left: 1px solid var(--brand-yellow); }
+  .p-corner-br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--brand-yellow); border-right: 1px solid var(--brand-yellow); }
+
+  /* Hex ref watermark top-right */
+  .p-hexref {
+    position: absolute;
+    right: 32px; top: 36px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-invisible);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.6;
+    z-index: 5;
+  }
+
+  /* Content container */
+  .p-content {
+    position: relative;
+    z-index: 5;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 32px 32px;
+  }
+
+  /* Live tag */
+  .p-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--brand-yellow);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .p-tag-dot {
+    width: 5px; height: 5px;
+    background: var(--brand-yellow);
+    border-radius: 50%;
+    animation: blink 1.2s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* Brand name */
+  .p-brand {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* Main title — line 1 white, line 2 yellow */
+  .p-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-white);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .p-title-accent {
+    color: var(--brand-yellow);
+    display: block;
+  }
+
+  /* Sub label */
+  .p-subtitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  /* Yellow divider */
+  .p-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--brand-yellow) 0%, transparent 100%);
+    margin-bottom: 22px;
+    opacity: 0.4;
+  }
+
+  /* Optional badge (e.g. "Өнөөдөр эхэлж байна") */
+  .p-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--brand-yellow-dim);
+    border: 1px solid var(--border-yellow-hi);
+    padding: 5px 12px;
+    margin-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--brand-yellow);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+
+  .p-badge-dot {
+    width: 5px; height: 5px;
+    background: var(--brand-yellow);
+    border-radius: 50%;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.7); }
+  }
+
+  /* Info block — key/value rows */
+  .p-block {
+    border: 1px solid var(--border-yellow);
+    background: var(--bg-block);
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  .p-block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--brand-yellow);
+  }
+
+  .p-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+  }
+
+  .p-row + .p-row { border-top: 1px solid #111; }
+
+  .p-row-key {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .p-row-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  .p-row-val.hi { color: var(--brand-yellow); }
+
+  /* Big number / time display */
+  .p-bignum {
+    font-family: var(--font-mono);
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--brand-yellow);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    animation: glitch 7s ease-in-out infinite;
+    margin-bottom: 4px;
+  }
+
+  @keyframes glitch {
+    0%,88%,100% { transform: none; }
+    90% { transform: translate(-2px, 0); }
+    92% { transform: translate(2px, 0); }
+    94% { transform: none; }
+  }
+
+  .p-bignum-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  /* Curriculum rows */
+  .p-curriculum {
+    border: 1px solid var(--border-yellow);
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  .p-curriculum::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--brand-yellow);
+  }
+
+  .p-lesson {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  .p-lesson + .p-lesson { border-top: 1px solid #111; }
+  .p-lesson.active { background: rgba(255,255,0,0.04); }
+
+  .p-lesson-num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #333;
+    min-width: 22px;
+    letter-spacing: 0.05em;
+  }
+
+  .p-lesson.active .p-lesson-num { color: var(--brand-yellow); }
+
+  .p-lesson-info { flex: 1; }
+
+  .p-lesson-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mid);
+    margin-bottom: 2px;
+  }
+
+  .p-lesson.active .p-lesson-title { color: var(--text-white); }
+
+  .p-lesson-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #333;
+  }
+
+  .p-lesson.active .p-lesson-sub { color: #555; }
+
+  .p-status-today {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--brand-yellow);
+    border: 1px solid rgba(255,255,0,0.3);
+    padding: 2px 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .p-status-soon {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #222;
+    letter-spacing: 0.1em;
+  }
+
+  /* Days strip */
+  .p-days {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  .p-day {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    color: #2a2a2a;
+    border: 1px solid #1a1a1a;
+  }
+
+  .p-day.on {
+    color: #000;
+    background: var(--brand-yellow);
+    border-color: var(--brand-yellow);
+    font-weight: 500;
+  }
+
+  /* Bottom section */
+  .p-bottom { margin-top: auto; }
+
+  .p-cta-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .p-cta-bar { flex: 1; height: 1px; background: var(--border-dark); }
+
+  .p-cta-text {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .p-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .p-stat { }
+  .p-stat-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #444;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .p-stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .p-stat-sub {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #333;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  .p-progress-wrap { flex: 1; margin: 0 20px; }
+
+  .p-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #333;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+  }
+
+  .p-progress-bar { height: 2px; background: #111; position: relative; }
+  .p-progress-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--brand-yellow);
+    transition: width 0.4s ease;
+  }
+
+  .p-goal { text-align: right; }
+  .p-goal-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #444;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .p-goal-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand-yellow);
+    letter-spacing: 0.05em;
+  }
+
+  /* Live badge */
+  .p-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(255,255,0,0.3);
+    background: rgba(255,255,0,0.06);
+    padding: 8px 16px;
+  }
+
+  .p-live-dot {
+    width: 7px; height: 7px;
+    background: var(--brand-yellow);
+    border-radius: 50%;
+    animation: livepulse 1s ease-in-out infinite;
+  }
+
+  @keyframes livepulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,255,0,0.4); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(255,255,0,0); }
+  }
+
+  .p-live-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--brand-yellow);
+    letter-spacing: 0.2em;
+  }
+
+  /* Watermark bottom center */
+  .p-watermark {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #1a1a1a;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ============================================
+     TEMPLATE SELECTOR BUTTONS
+  ============================================ */
+  .template-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .tpl-btn {
+    width: 100%;
+    padding: 9px 12px;
+    background: transparent;
+    border: 1px solid #1a1a1a;
+    color: var(--text-mid);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tpl-btn:hover { border-color: #333; color: var(--text-white); }
+  .tpl-btn.active { border-color: var(--brand-yellow); color: var(--brand-yellow); }
+
+  .tpl-dot { width: 5px; height: 5px; background: currentColor; border-radius: 50%; }
+
+  /* Download hint */
+  .download-hint {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #222;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* ============================================
+     THREADS POST CARD — mobile format 390×690
+  ============================================ */
+  .threads-card {
+    width: 390px;
+    min-height: 690px;
+    background: #050505;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .th-topbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--brand-yellow);
+  }
+
+  .th-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,0,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .th-scan {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,0,0.1);
+    animation: scan 4s linear infinite;
+    z-index: 2;
+  }
+
+  .th-corner { position: absolute; width: 14px; height: 14px; z-index: 10; }
+  .th-corner-tl { top: 10px; left: 10px; border-top: 1px solid #FFFF00; border-left: 1px solid #FFFF00; }
+  .th-corner-tr { top: 10px; right: 10px; border-top: 1px solid #FFFF00; border-right: 1px solid #FFFF00; }
+  .th-corner-bl { bottom: 10px; left: 10px; border-bottom: 1px solid #FFFF00; border-left: 1px solid #FFFF00; }
+  .th-corner-br { bottom: 10px; right: 10px; border-bottom: 1px solid #FFFF00; border-right: 1px solid #FFFF00; }
+
+  .th-inner {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 28px 24px;
+  }
+
+  /* Profile row */
+  .th-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .th-avatar {
+    width: 40px; height: 40px;
+    border: 1px solid #FFFF00;
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .th-avatar-inner {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: #FFFF00;
+    letter-spacing: 0.05em;
+  }
+
+  .th-profile-info { flex: 1; }
+
+  .th-handle {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.05em;
+  }
+
+  .th-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .th-date {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #444;
+    letter-spacing: 0.1em;
+  }
+
+  .th-category-pill {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #000;
+    background: #FFFF00;
+    padding: 2px 7px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* Category tag */
+  .th-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #FFFF00;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .th-cat-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,0,0.3), transparent);
+  }
+
+  /* Main quote / thought */
+  .th-quote-mark {
+    font-family: var(--font-mono);
+    font-size: 48px;
+    color: rgba(255,255,0,0.12);
+    line-height: 0.6;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .th-quote {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+
+  .th-quote .th-highlight {
+    color: #FFFF00;
+  }
+
+  /* Body text / thought body */
+  .th-body {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.7;
+    margin-bottom: 22px;
+    font-weight: 400;
+    border-left: 2px solid #1e1e00;
+    padding-left: 14px;
+  }
+
+  /* Tags row */
+  .th-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 22px;
+  }
+
+  .th-tag-pill {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #444;
+    border: 1px solid #1e1e1e;
+    padding: 3px 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .th-tag-pill.active {
+    color: rgba(255,255,0,0.7);
+    border-color: rgba(255,255,0,0.2);
+  }
+
+  /* Divider */
+  .th-divider {
+    height: 1px;
+    background: linear-gradient(90deg, #FFFF00, transparent);
+    opacity: 0.2;
+    margin-bottom: 18px;
+  }
+
+  /* Stats row */
+  .th-stats {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border: 1px solid #1a1a00;
+  }
+
+  .th-stat {
+    flex: 1;
+    padding: 10px 14px;
+    position: relative;
+  }
+
+  .th-stat + .th-stat { border-left: 1px solid #111; }
+
+  .th-stat-num {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFF00;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .th-stat-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #444;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Bottom row */
+  .th-bottom {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .th-brand-sig {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .th-sig-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: #FFFF00;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .th-sig-sub {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: #333;
+    letter-spacing: 0.1em;
+  }
+
+  .th-follow-btn {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #000;
+    background: #FFFF00;
+    border: none;
+    padding: 7px 16px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: default;
+  }
+
+  .th-watermark {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    color: #1a1a1a;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* post type selector chips */
+  .type-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .type-chip {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid #1e1e1e;
+    color: #444;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+  }
+
+  .type-chip:hover { border-color: #333; color: #888; }
+  .type-chip.sel { border-color: #FFFF00; color: #FFFF00; }
+</style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="panel">
+  <div class="panel-logo">Antaqor · Design System</div>
+  <div class="panel-title">Poster<br><span>Template</span></div>
+
+  <!-- Template type -->
+  <div class="section-label">Загвар сонгох</div>
+  <div class="template-grid">
+    <button class="tpl-btn active" onclick="setTemplate('pricing')"><span class="tpl-dot"></span>Үнийн мэдээлэл</button>
+    <button class="tpl-btn" onclick="setTemplate('course')"><span class="tpl-dot"></span>AI Курс / Сургалт</button>
+    <button class="tpl-btn" onclick="setTemplate('live')"><span class="tpl-dot"></span>Live хичээл</button>
+    <button class="tpl-btn" onclick="setTemplate('announcement')"><span class="tpl-dot"></span>Зарлал / Announcement</button>
+    <button class="tpl-btn" onclick="setTemplate('threads')"><span class="tpl-dot"></span>Threads · Өдөр тутмын пост</button>
+  </div>
+
+  <!-- Common fields -->
+  <div class="section-label" id="panel-shared-label">Үндсэн текст</div>
+
+  <div class="field-group shared-poster-field">
+    <label class="field-label">Tag (дээр байгаа текст)</label>
+    <input type="text" id="f-tag" value="Cyber Empire · Live" oninput="render()">
+  </div>
+
+  <div class="field-group shared-poster-field">
+    <label class="field-label">Гарчиг — мөр 1</label>
+    <input type="text" id="f-title1" value="CYBER" oninput="render()">
+  </div>
+
+  <div class="field-group shared-poster-field">
+    <label class="field-label">Гарчиг — мөр 2 (шар өнгө)</label>
+    <input type="text" id="f-title2" value="EMPIRE" oninput="render()">
+  </div>
+
+  <div class="field-group shared-poster-field">
+    <label class="field-label">Subtitle</label>
+    <input type="text" id="f-subtitle" value="AI · Private · Community" oninput="render()">
+  </div>
+
+  <!-- Dynamic content area -->
+  <div id="dynamic-fields"></div>
+
+  <!-- Bottom fields -->
+  <div class="section-label" id="panel-bottom-label">Доод хэсэг</div>
+
+  <div class="field-group" id="panel-bottom-cta">
+    <label class="field-label">CTA текст (дундах шугамын)</label>
+    <input type="text" id="f-cta" value="Эрт орших тусам хямд" oninput="render()">
+  </div>
+
+  <div class="field-group" id="panel-bottom-wm">
+    <label class="field-label">Watermark (antaqor.com)</label>
+    <input type="text" id="f-watermark" value="antaqor.com" oninput="render()">
+  </div>
+
+  <!-- Toggles -->
+  <div class="section-label">Харагдах байдал</div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Scan line анимэйшн</span>
+    <div class="toggle on" id="t-scan" onclick="toggleSwitch('t-scan', render)"></div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Grid background</span>
+    <div class="toggle on" id="t-grid" onclick="toggleSwitch('t-grid', render)"></div>
+  </div>
+
+  <div class="toggle-row" id="panel-toggle-badge">
+    <span class="toggle-label">Badge харуулах</span>
+    <div class="toggle on" id="t-badge" onclick="toggleSwitch('t-badge', render)"></div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Hex ref (#AI-001)</span>
+    <div class="toggle on" id="t-hex" onclick="toggleSwitch('t-hex', render)"></div>
+  </div>
+
+  <button class="btn" onclick="downloadHTML()">↓ HTML татаж авах</button>
+  <div class="download-hint">Зургаар хадгалахдаа браузерийн screenshot ашиглана уу</div>
+</div>
+
+<!-- RIGHT PREVIEW -->
+<div class="preview-area">
+  <div class="preview-meta">PREVIEW · 420 × 560px · Antaqor Design System v1.0</div>
+  <div id="poster-root"></div>
+</div>
+
+<script>
+  let currentTemplate = 'pricing';
+
+  const templates = {
+    pricing: {
+      tag: 'Cyber Empire · Live',
+      title1: 'CYBER',
+      title2: 'EMPIRE',
+      subtitle: 'AI · Private · Community',
+      badge: 'Одоогийн үнэ',
+      cta: 'Эрт орших тусам хямд',
+      dynamicFields: `
+        <div class="section-label">Үнийн мэдээлэл</div>
+        <div class="field-group">
+          <label class="field-label">Одоогийн үнэ</label>
+          <input type="text" id="f-price" value="17,400₮" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хугацаа (/ сар бүр)</label>
+          <input type="text" id="f-period" value="сар бүр" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 1 (key)</label>
+          <input type="text" id="f-k1" value="Гишүүн бүр нэмнэ" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 1 (val)</label>
+          <input type="text" id="f-v1" value="+500₮" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 2 (key)</label>
+          <input type="text" id="f-k2" value="Одоогийн гишүүд" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 2 (val)</label>
+          <input type="text" id="f-v2" value="15 гишүүн" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 3 (key)</label>
+          <input type="text" id="f-k3" value="Анхны үнэ байсан" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Динамик мессеж 3 (val)</label>
+          <input type="text" id="f-v3" value="9,900₮" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Зүүн доод — том тоо</label>
+          <input type="text" id="f-bignum" value="15" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Зүүн доод — label</label>
+          <input type="text" id="f-bignumlabel" value="гишүүд" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Баруун доод — үнэ</label>
+          <input type="text" id="f-nowprice" value="17,400₮" oninput="render()">
+        </div>
+      `,
+      render: renderPricing
+    },
+    course: {
+      tag: 'Cyber Empire · AI Course',
+      title1: 'CLAUDE',
+      title2: 'AI КУРС',
+      subtitle: '4 сард · Бүрэн эзэмшинэ',
+      badge: 'Өнөөдөр эхэлж байна',
+      cta: 'Замнал',
+      dynamicFields: `
+        <div class="section-label">Хичээлийн мэдээлэл</div>
+        <div class="field-group">
+          <label class="field-label">Хичээл 1 (идэвхтэй)</label>
+          <input type="text" id="f-l1" value="Prompt Engineering" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хичээл 1 sub</label>
+          <input type="text" id="f-l1s" value="Үр дүнтэй промт бичих арга" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хичээл 2</label>
+          <input type="text" id="f-l2" value="Claude API & Workflow" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хичээл 3</label>
+          <input type="text" id="f-l3" value="AI Agent Builder" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хичээл 4</label>
+          <input type="text" id="f-l4" value="Бүрэн Эзэмшлийн Төсөл" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Хугацаа (доод зүүн)</label>
+          <input type="text" id="f-duration" value="4 сар" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Эцсийн зорилго</label>
+          <input type="text" id="f-goal" value="AI Master" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Явц % (0–100)</label>
+          <input type="text" id="f-progress" value="7" oninput="render()">
+        </div>
+      `,
+      render: renderCourse
+    },
+    live: {
+      tag: 'Cyber Empire · Өдөр бүр',
+      title1: 'ӨДӨР',
+      title2: 'БҮРИЙН LIVE',
+      subtitle: 'Claude AI · Хичээл',
+      badge: 'Шууд дамжуулалт',
+      cta: 'Тасралтгүй сургалт',
+      dynamicFields: `
+        <div class="section-label">Live мэдээлэл</div>
+        <div class="field-group">
+          <label class="field-label">Цаг (том тоо)</label>
+          <input type="text" id="f-time" value="20:30" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Цагийн label</label>
+          <input type="text" id="f-timelabel" value="Монголын цагаар · Шөнийн хичээл" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 1 key</label>
+          <input type="text" id="f-k1" value="Хэзээ" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 1 val</label>
+          <input type="text" id="f-v1" value="Өдөр бүр 20:30" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 2 key</label>
+          <input type="text" id="f-k2" value="Хичээлийн төрөл" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 2 val</label>
+          <input type="text" id="f-v2" value="Live · Асуулт хариулт" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 3 key</label>
+          <input type="text" id="f-k3" value="Хаана" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 3 val</label>
+          <input type="text" id="f-v3" value="Cyber Empire" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Платформ нэр</label>
+          <input type="text" id="f-platform" value="Cyber Empire" oninput="render()">
+        </div>
+      `,
+      render: renderLive
+    },
+    announcement: {
+      tag: 'Cyber Empire · Зарлал',
+      title1: 'ШИНЭ',
+      title2: 'ЗАРЛАЛ',
+      subtitle: 'Чухал мэдээлэл',
+      badge: 'Анхааруулга',
+      cta: 'Дэлгэрэнгүй мэдээлэл',
+      dynamicFields: `
+        <div class="section-label">Зарлалын агуулга</div>
+        <div class="field-group">
+          <label class="field-label">Том тоо / он сар өдөр</label>
+          <input type="text" id="f-bignum" value="04.06" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Том тооны label</label>
+          <input type="text" id="f-bignumlabel" value="Эхлэх огноо" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 1 key</label>
+          <input type="text" id="f-k1" value="Юу" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 1 val (шар өнгө)</label>
+          <input type="text" id="f-v1" value="Claude AI курс эхэлнэ" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 2 key</label>
+          <input type="text" id="f-k2" value="Хэзээ" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 2 val</label>
+          <input type="text" id="f-v2" value="Өдөр бүр 20:30" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 3 key</label>
+          <input type="text" id="f-k3" value="Хаана" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Row 3 val</label>
+          <input type="text" id="f-v3" value="Cyber Empire" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Баруун доод текст</label>
+          <input type="text" id="f-goal" value="Нэгдэх" oninput="render()">
+        </div>
+      `,
+      render: renderAnnouncement
+    },
+    threads: {
+      tag: '',
+      title1: '',
+      title2: '',
+      subtitle: '',
+      badge: '',
+      cta: '',
+      dynamicFields: `
+        <div class="section-label">Пост төрөл</div>
+        <div class="type-chips">
+          <button class="type-chip sel" onclick="selectChip(this,'thought');render()">Бодол</button>
+          <button class="type-chip" onclick="selectChip(this,'inspire');render()">Урам</button>
+          <button class="type-chip" onclick="selectChip(this,'lesson');render()">Хичээл</button>
+          <button class="type-chip" onclick="selectChip(this,'question');render()">Асуулт</button>
+        </div>
+        <div class="section-label">Профайл</div>
+        <div class="field-group">
+          <label class="field-label">Хэрэглэгчийн нэр</label>
+          <input type="text" id="f-handle" value="@antaqor" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Огноо</label>
+          <input type="text" id="f-date" value="Apr 6, 2025" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Ангилал (пилл)</label>
+          <input type="text" id="f-catpill" value="AI" oninput="render()">
+        </div>
+        <div class="section-label">Агуулга</div>
+        <div class="field-group">
+          <label class="field-label">Категори шошго</label>
+          <input type="text" id="f-cattag" value="Өдрийн бодол" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Үндсэн санаа (том текст)</label>
+          <textarea id="f-mainquote" oninput="render()">AI ашиглах чадвар нь цалин биш, чөлөөлөгдөх зэвсэг юм.</textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Дэлгэрэнгүй тайлбар</label>
+          <textarea id="f-body" oninput="render()">Ихэнх хүн AI-г ажлаа хялбарчлах хэрэгсэл гэж харна. Гэвч жинхэнэ утга нь — тэр хэрэгслийг ойлгосон хүн системийг удирдана. Бусад нь дагана.</textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Шошгонууд (таслалаар тусгаарла)</label>
+          <input type="text" id="f-tags" value="#AI, #Antaqor, #CyberEmpire, #Монгол" oninput="render()">
+        </div>
+        <div class="section-label">Статистик</div>
+        <div class="field-group">
+          <label class="field-label">Стат 1 тоо</label>
+          <input type="text" id="f-s1n" value="Day 1" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Стат 1 нэр</label>
+          <input type="text" id="f-s1l" value="Эхлэл" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Стат 2 тоо</label>
+          <input type="text" id="f-s2n" value="4 cap" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Стат 2 нэр</label>
+          <input type="text" id="f-s2l" value="Хөтөлбөр" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Стат 3 тоо</label>
+          <input type="text" id="f-s3n" value="∞" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Стат 3 нэр</label>
+          <input type="text" id="f-s3l" value="Боломж" oninput="render()">
+        </div>
+        <div class="section-label">Доод хэсэг</div>
+        <div class="field-group">
+          <label class="field-label">Брэнд нэр</label>
+          <input type="text" id="f-signame" value="ANTAQOR" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Брэнд sub</label>
+          <input type="text" id="f-sigsub" value="antaqor.com · Cyber Empire" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Товч текст</label>
+          <input type="text" id="f-followbtn" value="ДАГАХ" oninput="render()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Watermark</label>
+          <input type="text" id="f-watermark" value="antaqor.com" oninput="render()">
+        </div>
+      `,
+      render: renderThreads
+    }
+  };
+
+  function g(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : '';
+  }
+
+  function isOn(id) {
+    return document.getElementById(id)?.classList.contains('on');
+  }
+
+  function toggleSwitch(id, cb) {
+    document.getElementById(id).classList.toggle('on');
+    cb();
+  }
+
+  function baseShell(innerHTML) {
+    const scan = isOn('t-scan') ? '<div class="p-scan"></div>' : '';
+    const grid = isOn('t-grid') ? '<div class="p-grid"></div>' : '';
+    const hexref = isOn('t-hex') ? `<div class="p-hexref">#CE-001<br>#2025<br>#MNG</div>` : '';
+    const wm = g('f-watermark') || 'antaqor.com';
+    return `
+      <div class="poster">
+        ${grid}
+        ${scan}
+        <div class="p-topbar"></div>
+        <div class="p-corner p-corner-tl"></div>
+        <div class="p-corner p-corner-tr"></div>
+        <div class="p-corner p-corner-bl"></div>
+        <div class="p-corner p-corner-br"></div>
+        ${hexref}
+        <div class="p-content">
+          ${innerHTML}
+        </div>
+        <div class="p-watermark">${wm}</div>
+      </div>`;
+  }
+
+  function baseHeader() {
+    const badge = isOn('t-badge') ? `
+      <div class="p-badge"><span class="p-badge-dot"></span>${g('f-badge') || 'Badge'}</div>` : '';
+    return `
+      <div class="p-tag"><span class="p-tag-dot"></span>${g('f-tag')}</div>
+      <div class="p-brand">Antaqor</div>
+      <div class="p-title">${g('f-title1')}<span class="p-title-accent">${g('f-title2')}</span></div>
+      <div class="p-subtitle">${g('f-subtitle')}</div>
+      <div class="p-divider"></div>
+      ${badge}`;
+  }
+
+  function baseBottom(left, right) {
+    return `
+      <div class="p-bottom">
+        <div class="p-cta-line">
+          <div class="p-cta-bar"></div>
+          <div class="p-cta-text">${g('f-cta')}</div>
+          <div class="p-cta-bar"></div>
+        </div>
+        <div class="p-bottom-row">
+          ${left}
+          ${right}
+        </div>
+      </div>`;
+  }
+
+  function renderPricing() {
+    const inner = baseHeader() + `
+      <div class="p-block">
+        <div class="p-row"><span class="p-row-key">${g('f-k1')}</span><span class="p-row-val hi">${g('f-v1')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k2')}</span><span class="p-row-val">${g('f-v2')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k3')}</span><span class="p-row-val">${g('f-v3')}</span></div>
+      </div>
+      <div style="margin-bottom:4px">
+        <div style="font-family:var(--font-mono);font-size:9px;color:#555;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">Одоогийн үнэ</div>
+        <div style="font-family:var(--font-mono);font-size:54px;font-weight:700;color:#FFFF00;line-height:1;letter-spacing:-0.03em">${g('f-price')}</div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:#444;letter-spacing:0.1em">/ ${g('f-period')}</div>
+      </div>
+    ` + baseBottom(`
+      <div class="p-stat">
+        <div class="p-stat-label">Гишүүд</div>
+        <div class="p-stat-val">${g('f-bignum')}</div>
+        <div class="p-stat-sub">${g('f-bignumlabel')}</div>
+      </div>
+    `, `
+      <div style="text-align:right">
+        <div style="font-family:var(--font-mono);font-size:8px;color:#555;letter-spacing:0.15em;text-transform:uppercase">Одоо элсэх үнэ</div>
+        <div style="font-size:20px;font-weight:700;color:#FFFF00;letter-spacing:-0.02em">${g('f-nowprice')}</div>
+      </div>
+    `);
+    document.getElementById('poster-root').innerHTML = baseShell(inner);
+  }
+
+  function renderCourse() {
+    const p = Math.min(100, Math.max(0, parseInt(g('f-progress')) || 0));
+    const inner = baseHeader() + `
+      <div class="p-curriculum">
+        <div class="p-lesson active">
+          <div class="p-lesson-num">01</div>
+          <div class="p-lesson-info">
+            <div class="p-lesson-title">${g('f-l1')}</div>
+            <div class="p-lesson-sub">${g('f-l1s')}</div>
+          </div>
+          <div class="p-status-today">TODAY</div>
+        </div>
+        <div class="p-lesson">
+          <div class="p-lesson-num">02</div>
+          <div class="p-lesson-info">
+            <div class="p-lesson-title">${g('f-l2')}</div>
+          </div>
+          <div class="p-status-soon">——</div>
+        </div>
+        <div class="p-lesson">
+          <div class="p-lesson-num">03</div>
+          <div class="p-lesson-info">
+            <div class="p-lesson-title">${g('f-l3')}</div>
+          </div>
+          <div class="p-status-soon">——</div>
+        </div>
+        <div class="p-lesson">
+          <div class="p-lesson-num">04</div>
+          <div class="p-lesson-info">
+            <div class="p-lesson-title">${g('f-l4')}</div>
+          </div>
+          <div class="p-status-soon">——</div>
+        </div>
+      </div>
+    ` + baseBottom(`
+      <div class="p-stat">
+        <div class="p-stat-label">Хугацаа</div>
+        <div class="p-stat-val">${g('f-duration')}</div>
+        <div class="p-stat-sub">бүрэн программ</div>
+      </div>
+    `, `
+      <div class="p-progress-wrap" style="margin:0 0 0 16px">
+        <div class="p-progress-label"><span>Эхлэл</span><span>Бүрэн</span></div>
+        <div class="p-progress-bar"><div class="p-progress-fill" style="width:${p}%"></div></div>
+      </div>
+      <div class="p-goal" style="margin-left:16px">
+        <div class="p-goal-label">Зорилго</div>
+        <div class="p-goal-val">${g('f-goal')}</div>
+      </div>
+    `);
+    document.getElementById('poster-root').innerHTML = baseShell(inner);
+  }
+
+  function renderLive() {
+    const inner = baseHeader() + `
+      <div class="p-bignum">${g('f-time')}</div>
+      <div class="p-bignum-label">${g('f-timelabel')}</div>
+      <div class="p-block">
+        <div class="p-row"><span class="p-row-key">${g('f-k1')}</span><span class="p-row-val hi">${g('f-v1')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k2')}</span><span class="p-row-val">${g('f-v2')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k3')}</span><span class="p-row-val">${g('f-v3')}</span></div>
+      </div>
+      <div class="p-days">
+        <div class="p-day on">ДАВ</div>
+        <div class="p-day on">МЯГ</div>
+        <div class="p-day on">ЛХА</div>
+        <div class="p-day on">ПҮР</div>
+        <div class="p-day on">БАА</div>
+        <div class="p-day on">БЯМ</div>
+        <div class="p-day on">НЯМ</div>
+      </div>
+    ` + baseBottom(`
+      <div class="p-stat">
+        <div class="p-stat-label">Платформ</div>
+        <div style="font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em">${g('f-platform')}</div>
+      </div>
+    `, `
+      <div class="p-live-badge">
+        <div class="p-live-dot"></div>
+        <div class="p-live-text">LIVE</div>
+      </div>
+    `);
+    document.getElementById('poster-root').innerHTML = baseShell(inner);
+  }
+
+  function renderAnnouncement() {
+    const inner = baseHeader() + `
+      <div class="p-bignum" style="font-size:52px">${g('f-bignum')}</div>
+      <div class="p-bignum-label">${g('f-bignumlabel')}</div>
+      <div class="p-block">
+        <div class="p-row"><span class="p-row-key">${g('f-k1')}</span><span class="p-row-val hi">${g('f-v1')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k2')}</span><span class="p-row-val">${g('f-v2')}</span></div>
+        <div class="p-row"><span class="p-row-key">${g('f-k3')}</span><span class="p-row-val">${g('f-v3')}</span></div>
+      </div>
+    ` + baseBottom(`
+      <div class="p-live-badge">
+        <div class="p-live-dot"></div>
+        <div class="p-live-text">LIVE</div>
+      </div>
+    `, `
+      <div class="p-goal">
+        <div class="p-goal-label">Үйлдэл</div>
+        <div class="p-goal-val">${g('f-goal')}</div>
+      </div>
+    `);
+    document.getElementById('poster-root').innerHTML = baseShell(inner);
+  }
+
+  // ── chip type state
+  let threadsPostType = 'thought';
+
+  function selectChip(el, type) {
+    threadsPostType = type;
+    document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+  }
+
+  function renderThreads() {
+    const handle   = g('f-handle')    || '@antaqor';
+    const date     = g('f-date')      || 'Today';
+    const catpill  = g('f-catpill')   || 'AI';
+    const cattag   = g('f-cattag')    || 'Өдрийн бодол';
+    const mainq    = g('f-mainquote') || '';
+    const body     = g('f-body')      || '';
+    const tagsRaw  = g('f-tags')      || '';
+    const s1n      = g('f-s1n')       || '';
+    const s1l      = g('f-s1l')       || '';
+    const s2n      = g('f-s2n')       || '';
+    const s2l      = g('f-s2l')       || '';
+    const s3n      = g('f-s3n')       || '';
+    const s3l      = g('f-s3l')       || '';
+    const signame  = g('f-signame')   || 'ANTAQOR';
+    const sigsub   = g('f-sigsub')    || 'antaqor.com';
+    const followbtn= g('f-followbtn') || 'ДАГАХ';
+    const wm       = g('f-watermark') || 'antaqor.com';
+
+    // Highlight first bold phrase in main quote (text before first comma or period)
+    const qParts = mainq.split(/([,\.])/);
+    const qHTML  = mainq.replace(/^([^,\.]+)/, '<span class="th-highlight">$1</span>');
+
+    // Tags
+    const tagPills = tagsRaw.split(',').map((t, i) =>
+      `<div class="th-tag-pill${i < 2 ? ' active' : ''}">${t.trim()}</div>`
+    ).join('');
+
+    // Type-specific top label
+    const typeLabels = { thought: 'Бодол', inspire: 'Урам', lesson: 'Хичээл', question: 'Асуулт' };
+    const typeLabel  = typeLabels[threadsPostType] || 'Пост';
+
+    const scan = isOn('t-scan') ? '<div class="th-scan"></div>' : '';
+    const grid = isOn('t-grid') ? '<div class="th-grid"></div>' : '';
+
+    const html = `
+      <div class="threads-card">
+        ${grid}
+        ${scan}
+        <div class="th-topbar"></div>
+        <div class="th-corner th-corner-tl"></div>
+        <div class="th-corner th-corner-tr"></div>
+        <div class="th-corner th-corner-bl"></div>
+        <div class="th-corner th-corner-br"></div>
+
+        <div class="th-inner">
+
+          <!-- Profile row -->
+          <div class="th-profile">
+            <div class="th-avatar">
+              <div class="th-avatar-inner">AQ</div>
+            </div>
+            <div class="th-profile-info">
+              <div class="th-handle">${handle}</div>
+              <div class="th-meta">
+                <div class="th-date">${date}</div>
+                <div class="th-category-pill">${catpill}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category tag line -->
+          <div class="th-cat-tag">
+            <span>${typeLabel} · ${cattag}</span>
+            <div class="th-cat-line"></div>
+          </div>
+
+          <!-- Quote mark + main thought -->
+          <div class="th-quote-mark">"</div>
+          <div class="th-quote">${qHTML}</div>
+
+          <!-- Body -->
+          ${body ? `<div class="th-body">${body}</div>` : ''}
+
+          <!-- Tags -->
+          ${tagsRaw ? `<div class="th-tags">${tagPills}</div>` : ''}
+
+          <div class="th-divider"></div>
+
+          <!-- Stats row -->
+          <div class="th-stats">
+            <div class="th-stat">
+              <div class="th-stat-num">${s1n}</div>
+              <div class="th-stat-label">${s1l}</div>
+            </div>
+            <div class="th-stat">
+              <div class="th-stat-num">${s2n}</div>
+              <div class="th-stat-label">${s2l}</div>
+            </div>
+            <div class="th-stat">
+              <div class="th-stat-num">${s3n}</div>
+              <div class="th-stat-label">${s3l}</div>
+            </div>
+          </div>
+
+          <!-- Bottom -->
+          <div class="th-bottom">
+            <div class="th-brand-sig">
+              <div class="th-sig-name">${signame}</div>
+              <div class="th-sig-sub">${sigsub}</div>
+            </div>
+            <div class="th-follow-btn">${followbtn}</div>
+          </div>
+
+        </div>
+        <div class="th-watermark">${wm}</div>
+      </div>`;
+
+    document.getElementById('poster-root').innerHTML = html;
+  }
+
+  function setTemplate(name) {
+    currentTemplate = name;
+
+    // Update active button
+    document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.tpl-btn').classList.add('active');
+
+    const tpl = templates[name];
+
+    // For threads, hide shared poster fields as they don't apply
+    const sharedSection = document.querySelector('.panel > .section-label');
+    const sharedFields  = ['f-tag','f-title1','f-title2','f-subtitle'];
+    const bottomSection = document.querySelectorAll('.panel > .section-label');
+
+    if (name === 'threads') {
+      // hide poster-specific shared fields
+      document.querySelectorAll('.shared-poster-field').forEach(el => el.style.display = 'none');
+      document.getElementById('panel-shared-label').style.display = 'none';
+      document.getElementById('panel-bottom-label').style.display = 'none';
+      document.getElementById('panel-bottom-cta').style.display = 'none';
+      document.getElementById('panel-bottom-wm').style.display = 'none';
+      document.getElementById('panel-toggle-badge').style.display = 'none';
+    } else {
+      document.querySelectorAll('.shared-poster-field').forEach(el => el.style.display = '');
+      document.getElementById('panel-shared-label').style.display = '';
+      document.getElementById('panel-bottom-label').style.display = '';
+      document.getElementById('panel-bottom-cta').style.display = '';
+      document.getElementById('panel-bottom-wm').style.display = '';
+      document.getElementById('panel-toggle-badge').style.display = '';
+
+      // Set shared field values
+      document.getElementById('f-tag').value = tpl.tag;
+      document.getElementById('f-title1').value = tpl.title1;
+      document.getElementById('f-title2').value = tpl.title2;
+      document.getElementById('f-subtitle').value = tpl.subtitle;
+      document.getElementById('f-cta').value = tpl.cta;
+
+      // Set badge
+      const badgeInput = document.getElementById('f-badge');
+      if (badgeInput) badgeInput.value = tpl.badge;
+    }
+
+    // Inject dynamic fields
+    document.getElementById('dynamic-fields').innerHTML = tpl.dynamicFields;
+
+    // Re-add dynamic field listeners
+    document.querySelectorAll('#dynamic-fields input, #dynamic-fields textarea').forEach(el => {
+      el.addEventListener('input', render);
+    });
+
+    // reset threads chip state
+    if (name === 'threads') threadsPostType = 'thought';
+
+    render();
+  }
+
+  function render() {
+    templates[currentTemplate].render();
+  }
+
+  function downloadHTML() {
+    const posterEl = document.getElementById('poster-root');
+    const html = `<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<title>Antaqor Poster</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--brand-yellow:#FFFF00;--brand-yellow-dim:rgba(255,255,0,0.08);--brand-yellow-mid:rgba(255,255,0,0.15);--bg-base:#050505;--bg-block:rgba(255,255,0,0.02);--border-dark:#1a1a1a;--border-yellow:#1a1a00;--border-yellow-hi:rgba(255,255,0,0.25);--text-white:#fff;--text-mid:#888;--text-muted:#555;--text-dim:#333;--text-ghost:#222;--text-invisible:#1f1f00;--font-sans:'IBM Plex Sans',sans-serif;--font-mono:'IBM Plex Mono',monospace}
+body{background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:var(--font-sans)}
+${document.querySelector('style').textContent.split('/* ============================================\n     LAYOUT')[0]}
+</style>
+</head>
+<body>
+${posterEl.innerHTML}
+</body>
+</html>`;
+    const blob = new Blob([html], {type: 'text/html'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `antaqor-poster-${currentTemplate}-${Date.now()}.html`;
+    a.click();
+  }
+
+  // Init badge field
+  document.getElementById('dynamic-fields').innerHTML = templates.pricing.dynamicFields;
+  document.querySelectorAll('#dynamic-fields input').forEach(el => el.addEventListener('input', render));
+
+  // Add hidden badge field
+  const badgeHidden = document.createElement('input');
+  badgeHidden.type = 'hidden';
+  badgeHidden.id = 'f-badge';
+  badgeHidden.value = 'Одоогийн үнэ';
+  document.body.appendChild(badgeHidden);
+
+  render();
+</script>
+</body>
+</html>

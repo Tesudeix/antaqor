@@ -181,16 +181,19 @@ function CourseCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.04 }}
-      className="relative"
     >
       <Link
         href={`/classroom/course/${course._id}`}
         className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] transition-all duration-200 hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
         style={{ minHeight: 280 }}
       >
-        {/* Cover art */}
+        {/* Cover art or thumbnail */}
         <div className="relative h-[140px] shrink-0 overflow-hidden">
-          <CourseCover style={coverStyle} index={index} />
+          {course.thumbnail ? (
+            <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
+          ) : (
+            <CourseCover style={coverStyle} index={index} />
+          )}
           {/* Status badge - top left */}
           <div className="absolute left-3 top-3">
             <StatusBadge status={status} />
@@ -223,19 +226,20 @@ function CourseCard({
           </div>
         </div>
 
+        {/* Admin delete — inside Link, onClick prevents navigation */}
+        {admin && (
+          <button
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete(course._id); }}
+            className="absolute left-3 bottom-4 z-30 flex items-center gap-1.5 rounded-[4px] bg-red-500 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-colors duration-200 hover:bg-red-600"
+            aria-label="Курс устгах"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Устгах
+          </button>
+        )}
       </Link>
-      {/* Admin delete — outside the Link to avoid navigation conflicts */}
-      {admin && (
-        <button
-          onClick={() => onDelete(course._id)}
-          className="absolute right-3 bottom-3 z-20 rounded-[4px] bg-white/80 p-2 text-[#888888] shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-red-50 hover:text-red-500"
-          aria-label="Курс устгах"
-        >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
-      )}
     </motion.div>
   );
 }
@@ -302,6 +306,8 @@ export default function ClassroomPage() {
   const [showNewCourse, setShowNewCourse] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseDesc, setNewCourseDesc] = useState("");
+  const [newCourseThumbnail, setNewCourseThumbnail] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -322,6 +328,21 @@ export default function ClassroomPage() {
     }
   };
 
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) setNewCourseThumbnail(data.url);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCreateCourse = async () => {
     if (!newCourseTitle.trim() || creating) return;
     setCreating(true);
@@ -329,11 +350,12 @@ export default function ClassroomPage() {
       const res = await fetch("/api/classroom/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, order: courses.length }),
+        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, thumbnail: newCourseThumbnail, order: courses.length }),
       });
       if (res.ok) {
         setNewCourseTitle("");
         setNewCourseDesc("");
+        setNewCourseThumbnail("");
         setShowNewCourse(false);
         fetchCourses();
       }
@@ -510,6 +532,37 @@ export default function ClassroomPage() {
                 rows={2}
                 className="w-full rounded-[4px] border border-[rgba(0,0,0,0.08)] bg-[#F8F8F6] px-4 py-3 text-[15px] text-[#1A1A1A] placeholder-[#888888] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none"
               />
+
+              {/* Thumbnail upload */}
+              <div>
+                <label className="mb-1.5 block text-[12px] font-medium text-[#888888]">Зураг (thumbnail)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleThumbnailUpload}
+                    disabled={uploading}
+                    className="text-[13px] text-[#666666] file:mr-3 file:rounded-[4px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[12px] file:font-bold file:text-[#F8F8F6] file:cursor-pointer file:transition-all file:duration-200 hover:file:shadow-[0_0_16px_rgba(239,44,88,0.2)]"
+                  />
+                  {uploading && (
+                    <span className="text-[12px] text-[#888888]">Байршуулж байна...</span>
+                  )}
+                </div>
+                {newCourseThumbnail && (
+                  <div className="mt-2 relative inline-block">
+                    <img
+                      src={newCourseThumbnail}
+                      alt="Preview"
+                      className="h-[100px] w-auto rounded-[4px] border border-[rgba(0,0,0,0.08)] object-cover"
+                    />
+                    <button
+                      onClick={() => setNewCourseThumbnail("")}
+                      className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#EF2C58] text-[10px] font-bold text-white shadow-sm hover:bg-red-600"
+                    >✕</button>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end">
                 <button
                   onClick={handleCreateCourse}

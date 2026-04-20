@@ -31,9 +31,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const videoUrl = formData.get("videoUrl") as string | null;
+    const contentType = req.headers.get("content-type") || "";
+    let file: File | null = null;
+    let videoUrl: string | null = null;
+
+    if (contentType.includes("application/json")) {
+      const json = await req.json();
+      videoUrl = json.videoUrl || null;
+    } else {
+      const formData = await req.formData();
+      file = formData.get("file") as File | null;
+      videoUrl = formData.get("videoUrl") as string | null;
+    }
 
     await dbConnect();
     const setting = await SiteSettings.findOne({ key: "heroSlides" });

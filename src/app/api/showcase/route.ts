@@ -9,14 +9,23 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
 
-    const posts = await Post.find({
-      image: { $ne: "" },
-      visibility: "members",
-    })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .populate("author", "name avatar xp level")
-      .lean();
+    // Aggregate to sort by likes count (most liked first), then recent
+    const posts = await Post.aggregate([
+      { $match: { image: { $exists: true, $ne: "" } } },
+      { $addFields: { likesCount: { $size: { $ifNull: ["$likes", []] } } } },
+      { $sort: { likesCount: -1, createdAt: -1 } },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "author",
+          pipeline: [{ $project: { name: 1, avatar: 1, xp: 1, level: 1 } }],
+        },
+      },
+      { $unwind: { path: "$author", preserveNullAndEmptyArrays: true } },
+    ]);
 
     return NextResponse.json({ posts });
   } catch {
