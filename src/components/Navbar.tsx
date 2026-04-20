@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-8 lg:px-12">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/logo.png" alt="Antaqor" width={28} height={28} className="rounded-[4px]" />
+          <Image src="/favicon.png" alt="Antaqor" width={28} height={28} className="rounded-[4px]" />
           <span className="text-[15px] font-bold tracking-[3px] text-[#1A1A1A]">
             ANTAQOR
           </span>
