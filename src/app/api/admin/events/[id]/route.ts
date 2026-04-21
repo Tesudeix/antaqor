@@ -29,6 +29,9 @@ export async function PUT(
     if (body.liveLink !== undefined) update.liveLink = body.liveLink.trim();
     if (body.location !== undefined) update.location = body.location.trim();
     if (body.status !== undefined) update.status = body.status;
+    if (body.type !== undefined) update.type = body.type;
+    if (body.color !== undefined) update.color = body.color;
+    if (body.recurring !== undefined) update.recurring = body.recurring;
 
     const event = await Event.findByIdAndUpdate(id, update, { new: true });
     if (!event) {

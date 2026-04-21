@@ -166,7 +166,7 @@ export default function ClanPage() {
         </div>
         <h1 className="text-[22px] font-bold text-[#E8E8E8]">Баярлалаа!</h1>
         <p className="mt-2 max-w-sm text-[13px] text-[#666666]">
-          Таны төлбөр баталгаажуулалт хүлээгдэж байна. 24 цагийн дотор идэвхжинэ.
+          Таны төлбөр баталгаажуулалт хүлээгдэж байна. 20 минутын дотор идэвхжинэ.
         </p>
         <div className="mt-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-5 py-3">
           <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">Гүйлгээний утга</div>

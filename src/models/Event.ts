@@ -5,11 +5,14 @@ export interface IEvent extends Document {
   title: string;
   description: string;
   image: string;
+  type: "event" | "live" | "class" | "deadline" | "workshop";
   date: Date;
   endDate: Date;
   liveLink: string;
   location: string;
   status: "upcoming" | "live" | "ended";
+  color: string;
+  recurring: "none" | "daily" | "weekly" | "monthly";
   attendees: mongoose.Types.ObjectId[];
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -46,6 +49,11 @@ const EventSchema = new Schema<IEvent>(
       default: "",
       trim: true,
     },
+    type: {
+      type: String,
+      enum: ["event", "live", "class", "deadline", "workshop"],
+      default: "event",
+    },
     location: {
       type: String,
       default: "",
@@ -55,6 +63,15 @@ const EventSchema = new Schema<IEvent>(
       type: String,
       enum: ["upcoming", "live", "ended"],
       default: "upcoming",
+    },
+    color: {
+      type: String,
+      default: "",
+    },
+    recurring: {
+      type: String,
+      enum: ["none", "daily", "weekly", "monthly"],
+      default: "none",
     },
     attendees: [
       {
