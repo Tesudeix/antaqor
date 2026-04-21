@@ -4,40 +4,59 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ReactNode, useEffect, useState } from "react";
+import { useMembership } from "@/lib/useMembership";
 
-const NAV_ITEMS = [
-  { href: "/admin", label: "Хянах самбар", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
-  { href: "/admin/members", label: "Гишүүд", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" },
-  { href: "/classroom", label: "Хичээл", icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
-  { href: "/admin/services", label: "Үйлчилгээ", icon: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" },
-  { href: "/admin/calendar", label: "Календар", icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
-  { href: "/admin/events", label: "Эвентүүд", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
-  { href: "/admin/poster", label: "Постер", icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
-  { href: "/admin/threads", label: "Threads", icon: "M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" },
+// ─── Navigation Structure ───
+const NAV_MAIN = [
+  { href: "/admin",          label: "Dashboard",  shortLabel: "Home",     icon: "M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" },
+  { href: "/admin/calendar", label: "Календар",   shortLabel: "Календар", icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" },
+  { href: "/admin/members",  label: "Гишүүд",     shortLabel: "Гишүүд",  icon: "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" },
+  { href: "/classroom",      label: "Хичээл",     shortLabel: "Хичээл",  icon: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" },
 ];
 
-const ADMIN_EMAIL = "antaqor@gmail.com";
+const NAV_TOOLS = [
+  { href: "/admin/events",   label: "Эвентүүд",   shortLabel: "Эвент",   icon: "M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" },
+  { href: "/admin/services",  label: "Үйлчилгээ",  shortLabel: "Сервис",  icon: "M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.431.992a7.723 7.723 0 010 .255c-.007.378.138.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z" },
+  { href: "/admin/poster",   label: "Постер",      shortLabel: "Постер",  icon: "M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.764m3.42 3.42a6.776 6.776 0 00-3.42-3.42" },
+  { href: "/admin/threads",  label: "Threads",     shortLabel: "Threads", icon: "M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" },
+];
+
+// Mobile bottom tabs — most important 5
+const MOBILE_TABS = [
+  NAV_MAIN[0], // Dashboard
+  NAV_MAIN[1], // Calendar
+  NAV_MAIN[2], // Members
+  NAV_MAIN[3], // Classroom
+  { href: "/admin/more", label: "Бусад", shortLabel: "Бусад", icon: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" },
+];
+
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAdmin: dbAdmin } = useMembership();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
-  const isAdmin =
-    session?.user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const isSuperAdmin = SUPER_ADMIN_EMAILS.includes(
+    session?.user?.email?.toLowerCase() || ""
+  );
+  const isAdmin = isSuperAdmin || dbAdmin;
 
   useEffect(() => {
-    setSidebarOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
 
   if (status === "loading") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent mx-auto" />
-          <p className="text-[10px] uppercase tracking-[0.5px] text-[#555555]">
-            Хандалт шалгаж байна
-          </p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative h-10 w-10">
+            <div className="absolute inset-0 rounded-full border-2 border-[rgba(239,44,88,0.2)]" />
+            <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#EF2C58]" />
+          </div>
+          <p className="text-[11px] tracking-[0.1em] text-[#444444]">LOADING</p>
         </div>
       </div>
     );
@@ -45,109 +64,222 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (!session || !isAdmin) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="max-w-md rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-10 text-center">
-          <div className="mb-6 text-2xl font-bold tracking-[4px] text-[#EF2C58]">
-            ХАНДАЛТ ХОРИГЛОГДСОН
+      <div className="flex min-h-[60vh] items-center justify-center px-4">
+        <div className="w-full max-w-sm rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-8 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(239,44,88,0.1)]">
+            <svg className="h-6 w-6 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
           </div>
-          <p className="mb-6 text-[12px] leading-relaxed text-[#555555]">
-            Энэ хэсэг зөвхөн админд зориулагдсан.
-          </p>
-          <Link href="/" className="inline-block rounded-[8px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
-            Нүүр хуудас руу буцах
+          <h2 className="text-[18px] font-bold text-[#E8E8E8]">Хандалт хориглогдсон</h2>
+          <p className="mt-2 text-[13px] text-[#555555]">Зөвхөн админ эрхтэй хэрэглэгч</p>
+          <Link href="/" className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:bg-[#D4264E]">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Нүүр хуудас
           </Link>
         </div>
       </div>
     );
   }
 
+  const isActive = (href: string) => {
+    if (href === "/admin") return pathname === "/admin";
+    return pathname.startsWith(href);
+  };
+
+  const allTools = NAV_TOOLS;
+
   return (
-    <div className="flex min-h-[60vh] gap-0 -mx-6 -my-8 md:-mx-10">
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#EF2C58] shadow-lg md:hidden"
-        aria-label="Админ цэс"
-      >
-        <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {sidebarOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h8" />
+    <div className="flex min-h-[60vh] -mx-6 -my-8 md:-mx-10">
+
+      {/* ═══════════════════════════════════════════
+          DESKTOP SIDEBAR
+          ═══════════════════════════════════════════ */}
+      <aside className={`hidden md:flex flex-col border-r border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] transition-all duration-300 ${sidebarCollapsed ? "w-[68px]" : "w-[220px]"}`}>
+        {/* Brand */}
+        <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] px-4 py-5">
+          {!sidebarCollapsed && (
+            <div>
+              <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">
+                Antaqor
+              </div>
+              <div className="mt-0.5 text-[15px] font-bold tracking-[0.5px] text-[#E8E8E8]">
+                Admin
+              </div>
+            </div>
           )}
-        </svg>
-      </button>
+          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[#555555] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#E8E8E8]">
+            <svg className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+            </svg>
+          </button>
+        </div>
 
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-56 transform border-r border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] pt-20 transition-transform md:relative md:inset-auto md:z-auto md:translate-x-0 md:pt-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex h-full flex-col">
-          <div className="border-b border-[rgba(255,255,255,0.06)] px-5 py-6">
-            <div className="text-[9px] uppercase tracking-[1px] text-[#EF2C58]">
-              Удирдлагын төв
-            </div>
-            <div className="mt-1 text-xl font-bold tracking-[1px] text-[#E8E8E8]">
-              АДМИН
-            </div>
+        {/* Main Nav */}
+        <nav className="flex-1 overflow-y-auto px-2 py-3">
+          {!sidebarCollapsed && (
+            <div className="mb-1 px-3 text-[9px] font-bold uppercase tracking-[0.12em] text-[#333333]">Ерөнхий</div>
+          )}
+          {NAV_MAIN.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link key={item.href} href={item.href}
+                className={`group relative mb-0.5 flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 ${
+                  active
+                    ? "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]"
+                    : "text-[#666666] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#CCCCCC]"
+                }`}
+                title={sidebarCollapsed ? item.label : undefined}
+              >
+                {active && <div className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#EF2C58]" />}
+                <svg className={`h-[18px] w-[18px] shrink-0 transition-colors ${active ? "text-[#EF2C58]" : "text-[#555555] group-hover:text-[#888888]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                </svg>
+                {!sidebarCollapsed && (
+                  <span className={`text-[13px] font-medium ${active ? "font-semibold" : ""}`}>{item.label}</span>
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Tools section */}
+          <div className={`mt-4 ${sidebarCollapsed ? "" : "px-3"}`}>
+            {!sidebarCollapsed && (
+              <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#333333]">Хэрэгслүүд</div>
+            )}
+            {sidebarCollapsed && <div className="mx-auto my-2 h-[1px] w-6 bg-[rgba(255,255,255,0.08)]" />}
           </div>
+          {NAV_TOOLS.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link key={item.href} href={item.href}
+                className={`group relative mb-0.5 flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 ${
+                  active
+                    ? "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]"
+                    : "text-[#666666] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#CCCCCC]"
+                }`}
+                title={sidebarCollapsed ? item.label : undefined}
+              >
+                {active && <div className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#EF2C58]" />}
+                <svg className={`h-[18px] w-[18px] shrink-0 transition-colors ${active ? "text-[#EF2C58]" : "text-[#555555] group-hover:text-[#888888]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                </svg>
+                {!sidebarCollapsed && (
+                  <span className={`text-[13px] font-medium ${active ? "font-semibold" : ""}`}>{item.label}</span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-          <nav className="flex-1 px-3 py-4">
-            {NAV_ITEMS.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`mb-1 flex items-center gap-3 rounded-[6px] px-3 py-3 text-[11px] uppercase tracking-[2px] transition-all ${
-                    active
-                      ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border-l-2 border-[#EF2C58]"
-                      : "text-[#666666] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#CCCCCC]"
-                  }`}
-                >
-                  <svg
-                    className="h-4 w-4 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d={item.icon}
-                    />
-                  </svg>
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="border-t border-[rgba(255,255,255,0.06)] px-5 py-4">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-[10px] uppercase tracking-[2px] text-[#555555] transition hover:text-[#E8E8E8]"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-              </svg>
-              Сайт руу буцах
-            </Link>
-          </div>
+        {/* Footer */}
+        <div className="border-t border-[rgba(255,255,255,0.06)] p-3">
+          <Link href="/"
+            className={`flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[#555555] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#E8E8E8] ${sidebarCollapsed ? "justify-center" : ""}`}
+            title={sidebarCollapsed ? "Сайт руу буцах" : undefined}
+          >
+            <svg className="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            {!sidebarCollapsed && <span className="text-[12px] font-medium">Сайт харах</span>}
+          </Link>
+          {/* User */}
+          {!sidebarCollapsed && session?.user && (
+            <div className="mt-2 flex items-center gap-2.5 rounded-[10px] bg-[rgba(255,255,255,0.03)] px-3 py-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)] text-[10px] font-bold text-[#EF2C58]">
+                {session.user.name?.charAt(0) || "A"}
+              </div>
+              <div className="min-w-0">
+                <div className="truncate text-[12px] font-semibold text-[#CCCCCC]">{session.user.name}</div>
+                <div className="truncate text-[10px] text-[#444444]">{isSuperAdmin ? "Super Admin" : "Admin"}</div>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
 
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/60 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      <main className="flex-1 overflow-x-hidden p-6 md:p-8">
-        {children}
+      {/* ═══════════════════════════════════════════
+          MAIN CONTENT
+          ═══════════════════════════════════════════ */}
+      <main className="flex-1 overflow-x-hidden pb-20 md:pb-0">
+        <div className="p-4 sm:p-6 md:p-8">
+          {children}
+        </div>
       </main>
+
+      {/* ═══════════════════════════════════════════
+          MOBILE BOTTOM TAB BAR
+          ═══════════════════════════════════════════ */}
+      <div className="fixed inset-x-0 bottom-0 z-50 md:hidden">
+        {/* More menu overlay */}
+        {moreOpen && (
+          <>
+            <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setMoreOpen(false)} />
+            <div className="relative z-50 mx-3 mb-2 rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[#111111] p-3 shadow-2xl backdrop-blur-xl">
+              <div className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#444444]">Хэрэгслүүд</div>
+              <div className="grid grid-cols-4 gap-1">
+                {allTools.map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link key={item.href} href={item.href}
+                      className={`flex flex-col items-center gap-1.5 rounded-[12px] px-2 py-3 transition ${active ? "bg-[rgba(239,44,88,0.12)]" : "hover:bg-[rgba(255,255,255,0.04)]"}`}>
+                      <svg className={`h-5 w-5 ${active ? "text-[#EF2C58]" : "text-[#666666]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                      </svg>
+                      <span className={`text-[10px] font-medium ${active ? "text-[#EF2C58]" : "text-[#888888]"}`}>{item.shortLabel}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="mt-2 border-t border-[rgba(255,255,255,0.06)] pt-2">
+                <Link href="/" className="flex items-center gap-2 rounded-[10px] px-3 py-2.5 text-[#666666] transition hover:bg-[rgba(255,255,255,0.04)]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                  <span className="text-[12px] font-medium">Сайт руу буцах</span>
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Tab bar */}
+        <div className="border-t border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]/95 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
+            {MOBILE_TABS.map((item) => {
+              if (item.href === "/admin/more") {
+                const anyToolActive = allTools.some(t => isActive(t.href));
+                return (
+                  <button key="more" onClick={() => setMoreOpen(!moreOpen)}
+                    className="flex flex-1 flex-col items-center gap-0.5 py-2.5 transition">
+                    <div className={`flex h-7 w-7 items-center justify-center rounded-[8px] transition ${anyToolActive || moreOpen ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
+                      <svg className={`h-5 w-5 transition ${anyToolActive || moreOpen ? "text-[#EF2C58]" : "text-[#555555]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                      </svg>
+                    </div>
+                    <span className={`text-[9px] font-semibold ${anyToolActive || moreOpen ? "text-[#EF2C58]" : "text-[#555555]"}`}>{item.shortLabel}</span>
+                  </button>
+                );
+              }
+
+              const active = isActive(item.href);
+              return (
+                <Link key={item.href} href={item.href}
+                  className="flex flex-1 flex-col items-center gap-0.5 py-2.5 transition">
+                  <div className={`flex h-7 w-7 items-center justify-center rounded-[8px] transition ${active ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
+                    <svg className={`h-5 w-5 transition ${active ? "text-[#EF2C58]" : "text-[#555555]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                    </svg>
+                  </div>
+                  <span className={`text-[9px] font-semibold ${active ? "text-[#EF2C58]" : "text-[#555555]"}`}>{item.shortLabel}</span>
+                  {active && <div className="h-[2px] w-4 rounded-full bg-[#EF2C58]" />}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
