@@ -5,16 +5,23 @@ import dbConnect from "./mongodb";
 import ThreadsToken from "@/models/ThreadsToken";
 import { ThreadsAPI } from "./threads";
 
-const ADMIN_EMAIL = (
-  process.env.ADMIN_EMAIL || "antaqor@gmail.com"
-).toLowerCase();
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
 
 export async function getAdminSession() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return null;
-  const email = session.user.email?.toLowerCase();
-  if (email !== ADMIN_EMAIL) return null;
-  return session;
+  const email = session.user.email?.toLowerCase() || "";
+
+  // Super admins (hardcoded) always pass
+  if (SUPER_ADMIN_EMAILS.includes(email)) return session;
+
+  // Check DB role for dynamic admins
+  await dbConnect();
+  const User = (await import("@/models/User")).default;
+  const user = await User.findOne({ email }).select("role").lean();
+  if (user && user.role === "admin") return session;
+
+  return null;
 }
 
 export function unauthorized() {

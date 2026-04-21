@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
-const ADMIN_EMAILS = ["antaqor@gmail.com"];
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
 
 export async function GET() {
   try {
@@ -15,9 +15,9 @@ export async function GET() {
 
     const userId = (session.user as { id?: string })?.id;
     const email = session.user.email || "";
-    const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+    const isSuperAdmin = SUPER_ADMIN_EMAILS.includes(email.toLowerCase());
 
-    if (isAdmin) {
+    if (isSuperAdmin) {
       return NextResponse.json({
         isMember: true,
         isAdmin: true,
@@ -34,7 +34,7 @@ export async function GET() {
     await dbConnect();
 
     const user = await User.findById(userId).select(
-      "clan clanJoinedAt subscriptionExpiresAt"
+      "clan clanJoinedAt subscriptionExpiresAt role"
     );
 
     const now = new Date();
@@ -43,10 +43,11 @@ export async function GET() {
       hasClan &&
       user?.subscriptionExpiresAt &&
       new Date(user.subscriptionExpiresAt) < now;
+    const isAdmin = user?.role === "admin";
 
     return NextResponse.json({
       isMember: hasClan && !isExpired,
-      isAdmin: false,
+      isAdmin,
       clan: user?.clan || null,
       joinedAt: user?.clanJoinedAt || null,
       expiresAt: user?.subscriptionExpiresAt || null,

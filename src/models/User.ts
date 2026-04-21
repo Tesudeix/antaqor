@@ -24,6 +24,7 @@ export interface IUser extends Document {
   subscriptionExpiresAt?: Date;
   resetToken?: string;
   resetTokenExpiry?: Date;
+  role: "user" | "admin";
   xp: number;
   level: number;
   xpHistory: IXPHistoryEntry[];
@@ -105,6 +106,11 @@ const UserSchema = new Schema<IUser>(
     },
     resetTokenExpiry: {
       type: Date,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     xp: {
       type: Number,

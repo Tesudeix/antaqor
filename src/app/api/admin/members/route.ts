@@ -38,7 +38,7 @@ export async function GET(req: Request) {
     const query = conditions.length > 0 ? { $and: conditions } : {};
 
     const users = await User.find(query)
-      .select("name email phone avatar bio age aiExperience interests clan clanJoinedAt subscriptionExpiresAt createdAt")
+      .select("name email phone avatar bio age aiExperience interests clan clanJoinedAt subscriptionExpiresAt role createdAt")
       .sort({ createdAt: -1 })
       .lean();
 

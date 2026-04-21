@@ -35,6 +35,7 @@ interface AdminUser {
   clan?: string;
   clanJoinedAt?: string;
   subscriptionExpiresAt?: string;
+  role?: string;
   createdAt: string;
 }
 
@@ -327,6 +328,12 @@ export default function AdminMembersPage() {
                       </span>
                     )}
 
+                    {user.role === "admin" && (
+                      <span className="px-2 py-1 text-[9px] uppercase tracking-[2px] bg-[rgba(168,85,247,0.1)] text-[#A855F7]">
+                        Админ
+                      </span>
+                    )}
+
                     {!member ? (
                       <button
                         onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
@@ -400,6 +407,33 @@ export default function AdminMembersPage() {
                     {user.bio && (
                       <p className="mt-3 text-[11px] leading-[1.6] text-[rgba(240,236,227,0.5)]">{user.bio}</p>
                     )}
+                    <div className="mt-3 flex gap-2 border-t border-[rgba(255,255,255,0.08)] pt-3">
+                      {user.role === "admin" ? (
+                        <button
+                          onClick={() => {
+                            if (confirm(`${user.name}-н админ эрхийг хасах уу?`)) {
+                              handleAction(user._id, "removeAdmin");
+                            }
+                          }}
+                          disabled={actionLoading === user._id}
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[rgba(168,85,247,0.1)] text-[#A855F7] transition hover:bg-[rgba(168,85,247,0.2)] disabled:opacity-50"
+                        >
+                          {actionLoading === user._id ? "..." : "Админ эрх хасах"}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (confirm(`${user.name}-г админ болгох уу?`)) {
+                              handleAction(user._id, "makeAdmin");
+                            }
+                          }}
+                          disabled={actionLoading === user._id}
+                          className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] border border-[rgba(168,85,247,0.3)] text-[#A855F7] transition hover:bg-[rgba(168,85,247,0.1)] disabled:opacity-50"
+                        >
+                          {actionLoading === user._id ? "..." : "Админ болгох"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

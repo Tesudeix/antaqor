@@ -96,6 +96,24 @@ export async function PATCH(
         });
       }
 
+      case "makeAdmin": {
+        user.role = "admin";
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-г админ болголоо`,
+          user: { _id: user._id, role: "admin" },
+        });
+      }
+
+      case "removeAdmin": {
+        user.role = "user";
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-н админ эрхийг хаслаа`,
+          user: { _id: user._id, role: "user" },
+        });
+      }
+
       default:
         return NextResponse.json({ error: "Буруу үйлдэл" }, { status: 400 });
     }

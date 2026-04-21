@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
-const ADMIN_EMAILS = ["antaqor@gmail.com"];
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
 
 interface MembershipState {
   loading: boolean;
@@ -41,9 +41,9 @@ export function useMembership(): MembershipState {
     }
 
     const email = session.user.email || "";
-    const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+    const isSuperAdmin = SUPER_ADMIN_EMAILS.includes(email.toLowerCase());
 
-    if (isAdmin) {
+    if (isSuperAdmin) {
       setState({
         loading: false,
         isMember: true,
@@ -62,7 +62,7 @@ export function useMembership(): MembershipState {
         setState({
           loading: false,
           isMember: !!data.isMember,
-          isAdmin: false,
+          isAdmin: !!data.isAdmin,
           isLoggedIn: true,
           expired: !!data.expired,
           expiresAt: data.expiresAt || null,
