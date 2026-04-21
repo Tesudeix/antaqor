@@ -213,8 +213,18 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             <img
               src={post.image}
               alt="Пост"
+              loading="lazy"
               onLoad={() => setImgLoaded(true)}
-              onError={() => setImgLoaded(true)}
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (!img.dataset.retried) {
+                  img.dataset.retried = "1";
+                  img.src = img.src + (img.src.includes("?") ? "&" : "?") + "t=" + Date.now();
+                } else {
+                  setImgLoaded(true);
+                  img.style.display = "none";
+                }
+              }}
               className="w-full object-cover"
               style={{ maxHeight: "600px", minHeight: imgLoaded ? undefined : "200px", opacity: imgLoaded ? 1 : 0.01 }}
             />

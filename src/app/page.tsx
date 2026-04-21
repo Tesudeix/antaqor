@@ -138,8 +138,17 @@ function LatestTanilts() {
                 <img
                   src={post.image}
                   alt=""
-                  loading="lazy"
+                  loading="eager"
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (!img.dataset.retried) {
+                      img.dataset.retried = "1";
+                      img.src = img.src + (img.src.includes("?") ? "&" : "?") + "t=" + Date.now();
+                    } else {
+                      img.style.display = "none";
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
               </div>
@@ -201,7 +210,7 @@ function ShowcaseGallery() {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {posts.map((post) => (
+        {posts.map((post, idx) => (
           <Link
             key={post._id}
             href="/auth/signup"
@@ -210,8 +219,17 @@ function ShowcaseGallery() {
             <img
               src={post.image}
               alt=""
-              loading="lazy"
+              loading={idx < 2 ? "eager" : "lazy"}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (!img.dataset.retried) {
+                  img.dataset.retried = "1";
+                  img.src = img.src + (img.src.includes("?") ? "&" : "?") + "t=" + Date.now();
+                } else {
+                  img.style.display = "none";
+                }
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-2.5">

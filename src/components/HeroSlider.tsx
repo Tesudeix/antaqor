@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import Image from "next/image";
 
 const FALLBACK_SLIDES: { url: string; type: "image" | "video" }[] = [
   { url: "/hero-1.jpg", type: "image" },
@@ -150,13 +149,19 @@ export default function HeroSlider() {
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
-                <Image
+                <img
                   src={slide.url}
                   alt="Antaqor"
-                  fill
-                  className="object-cover"
-                  priority={i === 0}
-                  sizes="(max-width: 640px) 100vw, 640px"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "auto"}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (!img.dataset.retried) {
+                      img.dataset.retried = "1";
+                      img.src = img.src + (img.src.includes("?") ? "&" : "?") + "t=" + Date.now();
+                    }
+                  }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(0,0,0,0.5)]" />

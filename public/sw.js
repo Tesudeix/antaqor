@@ -1,5 +1,5 @@
-const CACHE_VERSION = "antaqor-v3";
-const STATIC_CACHE = "antaqor-static-v3";
+const CACHE_VERSION = "antaqor-v4";
+const STATIC_CACHE = "antaqor-static-v4";
 const API_CACHE = "antaqor-api-v1";
 const OFFLINE_URL = "/offline";
 
@@ -59,11 +59,29 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: cache-first
+  // Uploaded images: network-first (prevents stale broken images on mobile)
+  if (
+    url.pathname.startsWith("/uploads/") ||
+    url.pathname.startsWith("/_next/image")
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || new Response("", { status: 404 })))
+    );
+    return;
+  }
+
+  // Static assets (JS/CSS/fonts): cache-first
   if (
     url.pathname.startsWith("/_next/static") ||
-    url.pathname.startsWith("/uploads/") ||
-    url.pathname.match(/\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|webp|svg|ico)$/)
+    url.pathname.match(/\.(js|css|woff2?|ttf|otf)$/)
   ) {
     event.respondWith(
       caches.match(request).then(
@@ -76,6 +94,24 @@ self.addEventListener("fetch", (event) => {
             }
             return response;
           })
+      )
+    );
+    return;
+  }
+
+  // Other static images (public/): stale-while-revalidate
+  if (url.pathname.match(/\.(png|jpg|jpeg|webp|svg|ico)$/)) {
+    event.respondWith(
+      caches.open(STATIC_CACHE).then((cache) =>
+        cache.match(request).then((cached) => {
+          const fetched = fetch(request)
+            .then((response) => {
+              if (response.ok) cache.put(request, response.clone());
+              return response;
+            })
+            .catch(() => cached);
+          return cached || fetched;
+        })
       )
     );
     return;
