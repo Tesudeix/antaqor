@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-void: #F8F8F6;
-  --color-surface-1: #FFFFFF;
-  --color-surface-2: #F0F0EE;
+  --color-void: #0A0A0A;
+  --color-surface-1: #141414;
+  --color-surface-2: #1A1A1A;
   --color-cyber-gold: #EF2C58;
   --color-imperial-blue: #0F81CA;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #666666;
-  --color-text-muted: #888888;
-  --color-border: rgba(0,0,0,0.08);
+  --color-text-primary: #E8E8E8;
+  --color-text-secondary: #999999;
+  --color-text-muted: #666666;
+  --color-border: rgba(255,255,255,0.08);
   --color-border-hover: rgba(239,44,88,0.4);
-  --color-background: #F8F8F6;
-  --color-foreground: #1A1A1A;
+  --color-background: #0A0A0A;
+  --color-foreground: #E8E8E8;
   --font-sans: "Inter", "Geist", system-ui, -apple-system, sans-serif;
 }
 
@@ -21,8 +21,8 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: #F8F8F6;
-  color: #1A1A1A;
+  background: #0A0A0A;
+  color: #E8E8E8;
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
@@ -33,13 +33,13 @@ body {
 
 ::selection {
   background: #EF2C58;
-  color: #F8F8F6;
+  color: #FFFFFF;
 }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(239,44,88,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(239,44,88,0.4); }
 
 input, textarea, select {
   font-family: var(--font-sans);
@@ -67,7 +67,7 @@ h2 { letter-spacing: -0.01em; }
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #888888;
+  color: #999999;
 }
 
 /* ─── Animations ─── */
@@ -103,8 +103,8 @@ h2 { letter-spacing: -0.01em; }
 
 /* ─── Hero Slider Effects ─── */
 .hero-slider {
-  background: #FFFFFF;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  background: #141414;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 .hero-shimmer {
