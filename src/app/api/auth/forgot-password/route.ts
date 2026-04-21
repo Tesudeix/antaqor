@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,6 +21,7 @@ export async function POST(req: NextRequest) {
 
     const user = await User.findOne({ email: email.toLowerCase() });
 
+    // Always return success message to prevent email enumeration
     if (!user) {
       return NextResponse.json({
         message: "Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдлээ.",
@@ -45,26 +38,28 @@ export async function POST(req: NextRequest) {
 
     const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
 
-    await transporter.sendMail({
-      from: `"Antaqor" <${process.env.SMTP_USER || "noreply@antaqor.com"}>`,
+    const fromEmail = process.env.EMAIL_FROM || "Antaqor <onboarding@resend.dev>";
+
+    await resend.emails.send({
+      from: fromEmail,
       to: user.email,
       subject: "Нууц үг сэргээх — Antaqor",
       html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #F8F8F6; color: #1A1A1A; padding: 40px; border-radius: 4px;">
-          <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #1A1A1A;">
+        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #0A0A0A; color: #E8E8E8; padding: 40px; border-radius: 8px;">
+          <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #E8E8E8;">
             ANTAQOR
           </div>
-          <p style="font-size: 14px; color: #666666; line-height: 1.8; margin-bottom: 24px;">
-            Сайн байна уу, <strong style="color: #1A1A1A;">${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
+          <p style="font-size: 14px; color: #999999; line-height: 1.8; margin-bottom: 24px;">
+            Сайн байна уу, <strong style="color: #E8E8E8;">${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
           </p>
-          <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #F8F8F6; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
+          <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #ffffff; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
             Нууц үг сэргээх
           </a>
-          <p style="font-size: 11px; color: #888888; margin-top: 24px; line-height: 1.8;">
+          <p style="font-size: 11px; color: #666666; margin-top: 24px; line-height: 1.8;">
             Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
           </p>
-          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 10px; color: #888888; letter-spacing: 2px;">
-            ANTAQOR
+          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: #666666; letter-spacing: 2px;">
+            ANTAQOR · CYBER EMPIRE
           </div>
         </div>
       `,
