@@ -106,16 +106,16 @@ export default function PosterPage() {
   const scale = Math.min(1, 480 / dim.w);
 
   // ─── Input helper ───
-  const ic = "w-full rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2 text-[12px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999]";
+  const ic = "w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999]";
   const label = "block mb-1 text-[9px] uppercase tracking-[1px] text-[#999]";
   const section = "text-[9px] uppercase tracking-[2px] text-[#EF2C58] mt-5 mb-3 pb-2 border-b border-[#F0F0EE]";
 
   return (
     <div className="flex gap-0 -mx-8 -my-8 min-h-screen">
       {/* ═══ LEFT PANEL ═══ */}
-      <div className="w-[320px] shrink-0 overflow-y-auto border-r border-[#E8E8E6] bg-[#FFFFFF] p-6" style={{ maxHeight: "100vh" }}>
+      <div className="w-[320px] shrink-0 overflow-y-auto border-r border-[rgba(255,255,255,0.08)] bg-[#141414] p-6" style={{ maxHeight: "100vh" }}>
         <div className="text-[9px] uppercase tracking-[2px] text-[#EF2C58]">Antaqor Design</div>
-        <h1 className="mt-1 text-[20px] font-bold tracking-[1px] text-[#1A1A1A]">
+        <h1 className="mt-1 text-[20px] font-bold tracking-[1px] text-[#E8E8E8]">
           Poster <span className="text-[#EF2C58]">Template</span>
         </h1>
 
@@ -129,7 +129,7 @@ export default function PosterPage() {
               className={`rounded-[4px] px-3 py-2 text-[10px] font-bold transition ${
                 aspect === key
                   ? "bg-[#EF2C58] text-white"
-                  : "border border-[#E8E8E6] text-[#999] hover:text-[#444]"
+                  : "border border-[rgba(255,255,255,0.08)] text-[#999] hover:text-[#CCCCCC]"
               }`}
             >
               {key} <span className="font-normal opacity-70">{val.label}</span>
@@ -153,7 +153,7 @@ export default function PosterPage() {
               className={`flex w-full items-center gap-2 rounded-[4px] px-3 py-2.5 text-left text-[11px] font-medium transition ${
                 template === t.key
                   ? "border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] text-[#EF2C58]"
-                  : "border border-[#E8E8E6] text-[#888] hover:text-[#444]"
+                  : "border border-[rgba(255,255,255,0.08)] text-[#888] hover:text-[#CCCCCC]"
               }`}
             >
               <span className={`h-[5px] w-[5px] rounded-full ${template === t.key ? "bg-[#EF2C58]" : "bg-[#CCC]"}`} />
@@ -310,7 +310,7 @@ export default function PosterPage() {
                 onClick={() => t.set(!t.val)}
                 className={`relative h-[20px] w-[36px] rounded-full transition ${t.val ? "bg-[#EF2C58]" : "bg-[#E8E8E6]"}`}
               >
-                <span className={`absolute top-[2px] h-[16px] w-[16px] rounded-full bg-white transition-all shadow-sm ${t.val ? "left-[18px]" : "left-[2px]"}`} />
+                <span className={`absolute top-[2px] h-[16px] w-[16px] rounded-full bg-[#141414] transition-all shadow-sm ${t.val ? "left-[18px]" : "left-[2px]"}`} />
               </button>
             </div>
           ))}

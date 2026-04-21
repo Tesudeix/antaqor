@@ -228,7 +228,7 @@ export default function AdminStories() {
                         className={`shrink-0 text-[8px] uppercase tracking-[1px] px-2 py-0.5 ${
                           story.published
                             ? "bg-green-950/50 text-green-500 border border-green-900/50"
-                            : "bg-[#F0F0EE] text-[#999999] border border-[#F0F0EE]"
+                            : "bg-[rgba(255,255,255,0.06)] text-[#999999] border border-[#F0F0EE]"
                         }`}
                       >
                         {story.published ? "Нийтлэгдсэн" : "Ноорог"}
@@ -250,7 +250,7 @@ export default function AdminStories() {
                   )}
                 </div>
                 <div className="mt-3 flex gap-2 border-t border-[#F0F0EE] pt-3">
-                  <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-[#444444] transition">
+                  <button onClick={() => handleEdit(story)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-[#CCCCCC] transition">
                     Засах
                   </button>
                   <button onClick={() => handleTogglePublish(story)} className="text-[9px] uppercase tracking-[1px] text-[#999999] hover:text-[#EF2C58] transition">

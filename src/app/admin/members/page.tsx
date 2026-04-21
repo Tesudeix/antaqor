@@ -147,7 +147,7 @@ export default function AdminMembersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl tracking-[1px] text-[#1A1A1A]">
+        <h1 className="text-3xl tracking-[1px] text-[#E8E8E8]">
           Гишүүд удирдах
         </h1>
         <p className="mt-1 text-[11px] tracking-[2px] text-[#999999]">
@@ -168,7 +168,7 @@ export default function AdminMembersPage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Нийт хэрэглэгч</div>
-          <div className="mt-1 text-2xl tracking-[2px] text-[#1A1A1A]">{totalUsers}</div>
+          <div className="mt-1 text-2xl tracking-[2px] text-[#E8E8E8]">{totalUsers}</div>
         </div>
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-[0.5px] text-[#999999]">Кланы гишүүд</div>
@@ -196,7 +196,7 @@ export default function AdminMembersPage() {
               const pct = totalUsers > 0 ? (count / totalUsers) * 100 : 0;
               return (
                 <div key={level} className="flex items-center gap-3">
-                  <span className="w-24 text-[10px] text-[#444444]">{AI_LEVEL_LABELS[level]}</span>
+                  <span className="w-24 text-[10px] text-[#CCCCCC]">{AI_LEVEL_LABELS[level]}</span>
                   <div className="h-[3px] flex-1 bg-[#E8E8E6]">
                     <div className="h-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} />
                   </div>
@@ -210,7 +210,7 @@ export default function AdminMembersPage() {
           <div className="mb-3 text-[10px] uppercase tracking-[0.5px] text-[#EF2C58]">Түгээмэл сонирхол</div>
           <div className="flex flex-wrap gap-1.5">
             {interestCounts.map((ic) => (
-              <span key={ic._id} className="border border-[#E8E8E6] px-2 py-1 text-[9px] text-[#444444]">
+              <span key={ic._id} className="border border-[rgba(255,255,255,0.08)] px-2 py-1 text-[9px] text-[#CCCCCC]">
                 {INTEREST_LABELS[ic._id] || ic._id} ({ic.count})
               </span>
             ))}
@@ -247,7 +247,7 @@ export default function AdminMembersPage() {
               className={`px-3 py-2 text-[9px] uppercase tracking-[2px] transition ${
                 filter === f.value
                   ? "bg-[rgba(0,100,145,0.1)] text-[#EF2C58]"
-                  : "text-[#999999] hover:text-[#444444]"
+                  : "text-[#999999] hover:text-[#CCCCCC]"
               }`}
             >
               {f.label}
@@ -289,10 +289,10 @@ export default function AdminMembersPage() {
                     {user.avatar ? (
                       <img src={user.avatar} alt={user.name} className="h-10 w-10 object-cover ring-1 ring-[#E8E8E6]" />
                     ) : (
-                      <div className="flex h-10 w-10 items-center justify-center bg-[#E8E8E6] text-[10px] font-bold text-[#444444]">{initials}</div>
+                      <div className="flex h-10 w-10 items-center justify-center bg-[#E8E8E6] text-[10px] font-bold text-[#CCCCCC]">{initials}</div>
                     )}
                     <div className="min-w-0">
-                      <p className="text-[13px] font-bold text-[#1A1A1A]">{user.name}</p>
+                      <p className="text-[13px] font-bold text-[#E8E8E8]">{user.name}</p>
                       <p className="text-[10px] text-[#999999]">
                         {user.email}
                         {user.phone && <span className="ml-2">· {user.phone}</span>}
@@ -302,7 +302,7 @@ export default function AdminMembersPage() {
 
                   <div className="flex flex-wrap items-center gap-2">
                     {user.aiExperience && (
-                      <span className="px-2 py-0.5 text-[8px] uppercase tracking-[1px] border border-[#E8E8E6] text-[#444444]">
+                      <span className="px-2 py-0.5 text-[8px] uppercase tracking-[1px] border border-[rgba(255,255,255,0.08)] text-[#CCCCCC]">
                         {AI_LEVEL_LABELS[user.aiExperience]}
                       </span>
                     )}
@@ -331,7 +331,7 @@ export default function AdminMembersPage() {
                       <button
                         onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
                         disabled={actionLoading === user._id}
-                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#EF2C58] text-[#1A1A1A] transition hover:bg-[#D4264E] disabled:opacity-50"
+                        className="px-3 py-1.5 text-[9px] uppercase tracking-[2px] bg-[#EF2C58] text-[#E8E8E8] transition hover:bg-[#D4264E] disabled:opacity-50"
                       >
                         {actionLoading === user._id ? "..." : "Эрх олгох"}
                       </button>
@@ -363,35 +363,35 @@ export default function AdminMembersPage() {
 
                 {/* Expanded details */}
                 {expanded && (
-                  <div className="border-t border-[#E8E8E6] px-4 py-3">
+                  <div className="border-t border-[rgba(255,255,255,0.08)] px-4 py-3">
                     <div className="grid grid-cols-2 gap-3 text-[10px] sm:grid-cols-4">
                       <div>
                         <span className="text-[#999999]">Бүртгүүлсэн</span>
-                        <p className="mt-0.5 text-[#444444]">{formatDate(user.createdAt)}</p>
+                        <p className="mt-0.5 text-[#CCCCCC]">{formatDate(user.createdAt)}</p>
                       </div>
                       {user.clan && (
                         <>
                           <div>
                             <span className="text-[#999999]">Клан нэгдсэн</span>
-                            <p className="mt-0.5 text-[#444444]">{formatDate(user.clanJoinedAt)}</p>
+                            <p className="mt-0.5 text-[#CCCCCC]">{formatDate(user.clanJoinedAt)}</p>
                           </div>
                           <div>
                             <span className="text-[#999999]">Дуусах</span>
-                            <p className="mt-0.5 text-[#444444]">{formatDate(user.subscriptionExpiresAt)}</p>
+                            <p className="mt-0.5 text-[#CCCCCC]">{formatDate(user.subscriptionExpiresAt)}</p>
                           </div>
                         </>
                       )}
                       {user.aiExperience && (
                         <div>
                           <span className="text-[#999999]">AI Түвшин</span>
-                          <p className="mt-0.5 text-[#444444]">{AI_LEVEL_LABELS[user.aiExperience]}</p>
+                          <p className="mt-0.5 text-[#CCCCCC]">{AI_LEVEL_LABELS[user.aiExperience]}</p>
                         </div>
                       )}
                     </div>
                     {user.interests && user.interests.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1">
                         {user.interests.map((i) => (
-                          <span key={i} className="border border-[#E8E8E6] px-2 py-0.5 text-[8px] uppercase tracking-[0.5px] text-[#999999]">
+                          <span key={i} className="border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[8px] uppercase tracking-[0.5px] text-[#999999]">
                             {INTEREST_LABELS[i] || i}
                           </span>
                         ))}
@@ -412,11 +412,11 @@ export default function AdminMembersPage() {
       {grantModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="card mx-4 w-full max-w-md p-6">
-            <h2 className="mb-4 text-2xl tracking-[1px] text-[#1A1A1A]">
+            <h2 className="mb-4 text-2xl tracking-[1px] text-[#E8E8E8]">
               {isMember(grantModal) ? "Гишүүнчлэл сунгах" : "Гишүүнчлэл олгох"}
             </h2>
             <p className="mb-4 text-[12px] text-[rgba(240,236,227,0.5)]">
-              <strong className="text-[#1A1A1A]">{grantModal.name}</strong> ({grantModal.email})
+              <strong className="text-[#E8E8E8]">{grantModal.name}</strong> ({grantModal.email})
             </p>
 
             <div className="mb-4">
@@ -430,8 +430,8 @@ export default function AdminMembersPage() {
                     onClick={() => setGrantDays(d)}
                     className={`px-3 py-2 text-[10px] transition ${
                       grantDays === d
-                        ? "bg-[#EF2C58] text-[#1A1A1A]"
-                        : "bg-[#E8E8E6] text-[#999999] hover:text-[#444444]"
+                        ? "bg-[#EF2C58] text-[#E8E8E8]"
+                        : "bg-[#E8E8E6] text-[#999999] hover:text-[#CCCCCC]"
                     }`}
                   >
                     {d}

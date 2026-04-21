@@ -162,7 +162,7 @@ export default function RepliesManagementPage() {
           <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999] mb-3">
             Your Threads
           </div>
-          <div className="max-h-[60vh] space-y-2 overflow-y-auto border border-[#E8E8E6] bg-[#F8F8F6] p-3">
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
             {posts
               .filter((p) => p.has_replies)
               .map((post) => (
@@ -172,10 +172,10 @@ export default function RepliesManagementPage() {
                   className={`w-full text-left p-3 border transition ${
                     selectedPost === post.id
                       ? "border-[#EF2C58] bg-[rgba(0,100,145,0.08)]"
-                      : "border-[#E8E8E6] hover:border-[rgba(240,236,227,0.1)]"
+                      : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(240,236,227,0.1)]"
                   }`}
                 >
-                  <p className="text-[12px] leading-relaxed text-[#444444] line-clamp-2">
+                  <p className="text-[12px] leading-relaxed text-[#CCCCCC] line-clamp-2">
                     {post.text || "[Media post]"}
                   </p>
                   <span className="mt-1 block text-[9px] text-[#999999]">
@@ -194,18 +194,18 @@ export default function RepliesManagementPage() {
         {/* Replies Panel */}
         <div className="lg:col-span-3">
           {!selectedPost ? (
-            <div className="flex h-full min-h-[300px] items-center justify-center border border-[#E8E8E6] bg-[#F8F8F6] p-8">
+            <div className="flex h-full min-h-[300px] items-center justify-center border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-8">
               <p className="text-[12px] text-[#999999]">
                 Select a thread to view its replies
               </p>
             </div>
           ) : loadingReplies ? (
-            <div className="flex h-full min-h-[300px] items-center justify-center border border-[#E8E8E6] bg-[#F8F8F6]">
+            <div className="flex h-full min-h-[300px] items-center justify-center border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
               <div className="h-6 w-6 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
             </div>
           ) : (
-            <div className="border border-[#E8E8E6] bg-[#F8F8F6]">
-              <div className="flex items-center justify-between border-b border-[#E8E8E6] px-4 py-3">
+            <div className="border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
+              <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] px-4 py-3">
                 <span className="text-[10px] uppercase tracking-[2px] text-[#999999]">
                   {replies.length} {replies.length === 1 ? "Reply" : "Replies"}
                 </span>
@@ -232,12 +232,12 @@ export default function RepliesManagementPage() {
                           isHidden ? "opacity-40" : ""
                         }`}
                       >
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#E8E8E6] text-[10px] font-bold text-[#999999]">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[10px] font-bold text-[#999999]">
                           {reply.username?.charAt(0).toUpperCase() || "?"}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-[#444444]">
+                            <span className="text-[11px] font-bold text-[#CCCCCC]">
                               @{reply.username || "unknown"}
                             </span>
                             <span className="text-[9px] text-[#999999]">
@@ -249,7 +249,7 @@ export default function RepliesManagementPage() {
                               </span>
                             )}
                           </div>
-                          <p className="mt-1 text-[12px] leading-relaxed text-[#1A1A1A] break-words">
+                          <p className="mt-1 text-[12px] leading-relaxed text-[#E8E8E8] break-words">
                             {reply.text || "[Media]"}
                           </p>
                         </div>
@@ -259,7 +259,7 @@ export default function RepliesManagementPage() {
                               href={reply.permalink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex h-7 w-7 items-center justify-center border border-[#E8E8E6] text-[#999999] hover:text-[#444444]"
+                              className="flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#999999] hover:text-[#CCCCCC]"
                               title="View on Threads"
                             >
                               <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +270,7 @@ export default function RepliesManagementPage() {
                           <button
                             onClick={() => handleToggleHide(reply.id, isHidden)}
                             disabled={managingId === reply.id}
-                            className={`flex h-7 w-7 items-center justify-center border border-[#E8E8E6] transition ${
+                            className={`flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] transition ${
                               isHidden
                                 ? "text-green-600 hover:text-green-400"
                                 : "text-yellow-600 hover:text-yellow-400"
@@ -297,7 +297,7 @@ export default function RepliesManagementPage() {
               </div>
 
               {/* Quick reply */}
-              <div className="border-t border-[#E8E8E6] p-4">
+              <div className="border-t border-[rgba(255,255,255,0.08)] p-4">
                 <div className="flex gap-3">
                   <input
                     type="text"

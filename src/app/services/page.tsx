@@ -108,7 +108,7 @@ export default function ServicesPage() {
                 <h3 className="text-[14px] font-bold text-[#E8E8E8] transition group-hover:text-[#EF2C58]">{tool.name}</h3>
                 <p className="mt-0.5 text-[11px] text-[#666]">{tool.desc}</p>
               </div>
-              <svg className="h-4 w-4 shrink-0 text-[#444] transition group-hover:translate-x-0.5 group-hover:text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 shrink-0 text-[#CCCCCC] transition group-hover:translate-x-0.5 group-hover:text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
@@ -240,7 +240,7 @@ export default function ServicesPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <svg className="mx-auto mb-4 h-12 w-12 text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto mb-4 h-12 w-12 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d={DEFAULT_ICON} />
           </svg>
           <p className="text-[14px] text-[#666]">Үйлчилгээ удахгүй нэмэгдэнэ</p>

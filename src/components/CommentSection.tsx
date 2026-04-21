@@ -112,14 +112,14 @@ export default function CommentSection({ postId }: { postId: string }) {
             return (
               <div
                 key={comment._id}
-                className="border-l-2 border-[#E8E8E6] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#EF2C58]"
+                className="border-l-2 border-[rgba(255,255,255,0.08)] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#EF2C58]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <Link href={`/profile/${comment.author._id}`} className="flex items-center gap-2">
                     {comment.author.avatar ? (
                       <img src={comment.author.avatar} alt="" className="h-6 w-6 object-cover" />
                     ) : (
-                      <div className="flex h-6 w-6 items-center justify-center bg-[#E8E8E6] text-[9px] font-bold text-[#444444]">
+                      <div className="flex h-6 w-6 items-center justify-center bg-[#E8E8E6] text-[9px] font-bold text-[#CCCCCC]">
                         {initials}
                       </div>
                     )}

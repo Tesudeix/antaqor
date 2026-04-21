@@ -146,8 +146,8 @@ export default function AdminServicesPage() {
     } catch {}
   };
 
-  const inputClass = "w-full rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]";
-  const selectClass = "rounded-[4px] border border-[#E8E8E6] bg-[#F8F8F6] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none transition focus:border-[rgba(239,44,88,0.4)]";
+  const inputClass = "w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]";
+  const selectClass = "rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)]";
 
   if (loading) {
     return (
@@ -184,7 +184,7 @@ export default function AdminServicesPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] p-5 space-y-3">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5 space-y-3">
           <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] mb-2">
             {editing ? "Засварлах" : "Шинэ үйлчилгээ"}
           </div>
@@ -277,7 +277,7 @@ export default function AdminServicesPage() {
               className={`${inputClass} w-20`}
             />
 
-            <label className="flex items-center gap-1.5 text-[11px] text-[#444444] cursor-pointer">
+            <label className="flex items-center gap-1.5 text-[11px] text-[#CCCCCC] cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.featured}
@@ -305,7 +305,7 @@ export default function AdminServicesPage() {
             </button>
             <button
               onClick={resetForm}
-              className="rounded-[4px] border border-[#E8E8E6] px-4 py-2.5 text-[12px] text-[#999999] transition hover:text-[#444444]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 text-[12px] text-[#999999] transition hover:text-[#CCCCCC]"
             >
               Болих
             </button>
@@ -318,7 +318,7 @@ export default function AdminServicesPage() {
         {services.map((s) => {
           const statusInfo = STATUSES.find((st) => st.value === s.status);
           return (
-            <div key={s._id} className="flex items-center gap-4 rounded-[4px] border border-[#E8E8E6] bg-[#FFFFFF] p-4">
+            <div key={s._id} className="flex items-center gap-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4">
               {/* Icon */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[#E8E8E6] text-[14px] font-black text-[#EF2C58]">
                 {s.name.charAt(0)}
@@ -327,7 +327,7 @@ export default function AdminServicesPage() {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-bold text-[#1A1A1A]">{s.name}</span>
+                  <span className="text-[14px] font-bold text-[#E8E8E8]">{s.name}</span>
                   {s.featured && (
                     <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#EF2C58]">
                       FEATURED
@@ -348,13 +348,13 @@ export default function AdminServicesPage() {
               <div className="flex shrink-0 gap-2">
                 <button
                   onClick={() => startEdit(s)}
-                  className="rounded-[4px] border border-[#E8E8E6] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]"
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]"
                 >
                   Засах
                 </button>
                 <button
                   onClick={() => handleDelete(s._id)}
-                  className="rounded-[4px] border border-[#E8E8E6] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50"
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50"
                 >
                   Устгах
                 </button>

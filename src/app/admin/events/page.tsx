@@ -163,7 +163,7 @@ export default function AdminEventsPage() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-[2px] text-[#1A1A1A]">Эвентүүд</h1>
+          <h1 className="text-2xl font-bold tracking-[2px] text-[#E8E8E8]">Эвентүүд</h1>
           <p className="mt-1 text-[11px] text-[#999999]">{events.length} эвент</p>
         </div>
         <button
@@ -183,7 +183,7 @@ export default function AdminEventsPage() {
       {/* Create/Edit Form */}
       {showForm && (
         <div className="card mb-6 p-5 md:p-6">
-          <h2 className="mb-4 text-[14px] font-semibold text-[#1A1A1A]">
+          <h2 className="mb-4 text-[14px] font-semibold text-[#E8E8E8]">
             {editingId ? "Эвент засах" : "Шинэ эвент"}
           </h2>
           <div className="space-y-3">
@@ -265,7 +265,7 @@ export default function AdminEventsPage() {
                       className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
                         form.status === s
                           ? STATUS_MAP[s].color + " border border-current"
-                          : "text-[#999999] border border-[#E8E8E6] hover:text-[#444444]"
+                          : "text-[#999999] border border-[rgba(255,255,255,0.08)] hover:text-[#CCCCCC]"
                       }`}
                     >
                       {STATUS_MAP[s].label}
@@ -284,7 +284,7 @@ export default function AdminEventsPage() {
               </button>
               <button
                 onClick={resetForm}
-                className="rounded-[4px] border border-[#E8E8E6] px-4 py-2 text-[12px] font-medium text-[#888888] transition hover:text-[#F8F8F6]"
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#888888] transition hover:text-[#F8F8F6]"
               >
                 Цуцлах
               </button>
@@ -311,7 +311,7 @@ export default function AdminEventsPage() {
                       <span className={`rounded-[4px] px-2 py-0.5 text-[10px] font-bold ${st.color}`}>
                         {st.label}
                       </span>
-                      <h3 className="truncate text-[14px] font-semibold text-[#1A1A1A]">{ev.title}</h3>
+                      <h3 className="truncate text-[14px] font-semibold text-[#E8E8E8]">{ev.title}</h3>
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-[#999999]">
                       <span>{formatDate(ev.date)}</span>
@@ -343,7 +343,7 @@ export default function AdminEventsPage() {
                     )}
                     <button
                       onClick={() => startEdit(ev)}
-                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#1A1A1A]"
+                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#E8E8E8]"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -351,7 +351,7 @@ export default function AdminEventsPage() {
                     </button>
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : ev._id)}
-                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#1A1A1A]"
+                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#E8E8E8]"
                     >
                       <svg className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
@@ -370,7 +370,7 @@ export default function AdminEventsPage() {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="border-t border-[#E8E8E6] px-4 py-3">
+                  <div className="border-t border-[rgba(255,255,255,0.08)] px-4 py-3">
                     {ev.description && (
                       <p className="mb-3 text-[13px] leading-relaxed text-[#888888]">{ev.description}</p>
                     )}

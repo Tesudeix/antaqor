@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    const { title, description, thumbnail, order } = await req.json();
+    const { title, description, thumbnail, order, requiredLevel } = await req.json();
     if (!title?.trim()) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       description: description?.trim() || "",
       thumbnail: thumbnail || "",
       order: order ?? 0,
+      requiredLevel: requiredLevel ?? 0,
     });
 
     broadcastNotification({

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useMembership } from "@/lib/useMembership";
+import { getLevelTitle } from "@/lib/xpClient";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Types ───
@@ -14,6 +15,7 @@ interface Course {
   thumbnail: string;
   lessonsCount: number;
   completedLessons?: number;
+  requiredLevel?: number;
   createdAt: string;
 }
 
@@ -162,13 +164,17 @@ function CourseCard({
   course,
   index,
   admin,
+  userLevel,
   onDelete,
 }: {
   course: Course;
   index: number;
   admin: boolean;
+  userLevel: number;
   onDelete: (id: string) => void;
 }) {
+  const isLocked = !admin && (course.requiredLevel || 0) > userLevel;
+  const reqTitle = course.requiredLevel ? getLevelTitle(course.requiredLevel) : null;
   const completed = course.completedLessons || 0;
   const total = course.lessonsCount || 0;
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -183,8 +189,13 @@ function CourseCard({
       transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.04 }}
     >
       <Link
-        href={`/classroom/course/${course._id}`}
-        className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition-all duration-200 hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
+        href={isLocked ? "#" : `/classroom/course/${course._id}`}
+        onClick={isLocked ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+        className={`group relative flex flex-col overflow-hidden rounded-[8px] border bg-[#141414] transition-all duration-200 ${
+          isLocked
+            ? "border-[rgba(255,255,255,0.04)] opacity-60 cursor-not-allowed"
+            : "border-[rgba(255,255,255,0.08)] hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
+        }`}
         style={{ minHeight: 280 }}
       >
         {/* Cover art or thumbnail */}
@@ -195,11 +206,23 @@ function CourseCard({
             <CourseCover style={coverStyle} index={index} />
           )}
           {/* Status badge - top left */}
-          <div className="absolute left-3 top-3">
-            <StatusBadge status={status} />
+          <div className="absolute left-3 top-3 flex items-center gap-1.5">
+            {isLocked ? (
+              <span className="flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.1)] px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm">
+                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                LV.{course.requiredLevel}
+              </span>
+            ) : (
+              <StatusBadge status={status} />
+            )}
+            {reqTitle && (course.requiredLevel || 0) > 0 && (
+              <span className="rounded-full bg-[rgba(0,0,0,0.5)] px-2 py-0.5 text-[9px] font-bold text-[#EF2C58] backdrop-blur-sm">
+                {reqTitle.titleMN}
+              </span>
+            )}
           </div>
           {/* Progress ring - top right */}
-          {total > 0 && (
+          {total > 0 && !isLocked && (
             <div className="absolute right-3 top-3" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label={`Явц: ${percent}%`}>
               <ProgressRing percent={percent} />
             </div>
@@ -208,7 +231,7 @@ function CourseCard({
 
         {/* Body */}
         <div className="flex flex-1 flex-col p-5">
-          <h3 className="text-[18px] font-medium leading-snug text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#EF2C58]">
+          <h3 className={`text-[18px] font-medium leading-snug transition-colors duration-200 ${isLocked ? "text-[#666666]" : "text-[#E8E8E8] group-hover:text-[#EF2C58]"}`}>
             {course.title}
           </h3>
           {course.description && (
@@ -220,9 +243,15 @@ function CourseCard({
             <span className="text-[12px] text-[#666666]">
               {total} хичээл
             </span>
-            <span className="text-[12px] font-bold text-[#EF2C58] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              Нээх →
-            </span>
+            {isLocked ? (
+              <span className="text-[11px] font-bold text-[#555555]">
+                LV.{course.requiredLevel} шаардлагатай
+              </span>
+            ) : (
+              <span className="text-[12px] font-bold text-[#EF2C58] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                Нээх →
+              </span>
+            )}
           </div>
         </div>
 
@@ -301,18 +330,27 @@ export default function ClassroomPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [userLevel, setUserLevel] = useState(1);
 
   // Admin: new course
   const [showNewCourse, setShowNewCourse] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseDesc, setNewCourseDesc] = useState("");
   const [newCourseThumbnail, setNewCourseThumbnail] = useState("");
+  const [newCourseRequiredLevel, setNewCourseRequiredLevel] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (!memberLoading && session) {
       fetchCourses();
+      const uid = (session.user as { id?: string })?.id;
+      if (uid) {
+        fetch(`/api/users/${uid}`)
+          .then((r) => r.json())
+          .then((d) => { if (d.user?.level) setUserLevel(d.user.level); })
+          .catch(() => {});
+      }
     } else if (!memberLoading) {
       setLoading(false);
     }
@@ -350,12 +388,13 @@ export default function ClassroomPage() {
       const res = await fetch("/api/classroom/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, thumbnail: newCourseThumbnail, order: courses.length }),
+        body: JSON.stringify({ title: newCourseTitle, description: newCourseDesc, thumbnail: newCourseThumbnail, order: courses.length, requiredLevel: newCourseRequiredLevel }),
       });
       if (res.ok) {
         setNewCourseTitle("");
         setNewCourseDesc("");
         setNewCourseThumbnail("");
+        setNewCourseRequiredLevel(0);
         setShowNewCourse(false);
         fetchCourses();
       }
@@ -563,6 +602,20 @@ export default function ClassroomPage() {
                 )}
               </div>
 
+              {/* Required level */}
+              <div className="flex items-center gap-3">
+                <span className="text-[12px] text-[#666666]">Шаардлагатай түвшин:</span>
+                <input
+                  type="number" min={0} max={100}
+                  value={newCourseRequiredLevel}
+                  onChange={(e) => setNewCourseRequiredLevel(parseInt(e.target.value) || 0)}
+                  className="w-20 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-center text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+                />
+                {newCourseRequiredLevel > 0 && (
+                  <span className="text-[11px] text-[#EF2C58] font-bold">{getLevelTitle(newCourseRequiredLevel).titleMN}</span>
+                )}
+              </div>
+
               <div className="flex justify-end">
                 <button
                   onClick={handleCreateCourse}
@@ -598,6 +651,7 @@ export default function ClassroomPage() {
                     course={course}
                     index={i}
                     admin={admin}
+                    userLevel={userLevel}
                     onDelete={handleDeleteCourse}
                   />
                 ))}

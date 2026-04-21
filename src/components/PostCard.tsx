@@ -206,7 +206,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
         <Link href={`/posts/${post._id}`} className="block mt-3">
           <div className="relative overflow-hidden bg-[#0A0A0A]">
             {!imgLoaded && (
-              <div className="flex items-center justify-center py-24">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
               </div>
             )}
@@ -214,8 +214,9 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               src={post.image}
               alt="Пост"
               onLoad={() => setImgLoaded(true)}
-              className={`w-full transition-opacity duration-200 ${imgLoaded ? "opacity-100" : "h-0 opacity-0"}`}
-              style={{ maxHeight: "600px", objectFit: "cover" }}
+              onError={() => setImgLoaded(true)}
+              className="w-full object-cover"
+              style={{ maxHeight: "600px", minHeight: imgLoaded ? undefined : "200px", opacity: imgLoaded ? 1 : 0.01 }}
             />
           </div>
         </Link>

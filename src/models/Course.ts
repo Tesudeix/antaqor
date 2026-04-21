@@ -7,6 +7,7 @@ export interface ICourse extends Document {
   thumbnail: string;
   order: number;
   lessonsCount: number;
+  requiredLevel: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +34,10 @@ const CourseSchema = new Schema<ICourse>(
       default: 0,
     },
     lessonsCount: {
+      type: Number,
+      default: 0,
+    },
+    requiredLevel: {
       type: Number,
       default: 0,
     },
