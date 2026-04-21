@@ -6,6 +6,31 @@ import User from "@/models/User";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const BRANDED_FROM = "Antaqor <noreply@antaqor.com>";
+const FALLBACK_FROM = "Antaqor <onboarding@resend.dev>";
+
+function buildEmailHtml(name: string, resetUrl: string) {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #0A0A0A; color: #E8E8E8; padding: 40px; border-radius: 8px;">
+      <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #E8E8E8;">
+        ANTAQOR
+      </div>
+      <p style="font-size: 14px; color: #999999; line-height: 1.8; margin-bottom: 24px;">
+        Сайн байна уу, <strong style="color: #E8E8E8;">${name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
+      </p>
+      <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #ffffff; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
+        Нууц үг сэргээх
+      </a>
+      <p style="font-size: 11px; color: #666666; margin-top: 24px; line-height: 1.8;">
+        Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлти��г илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
+      </p>
+      <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: #666666; letter-spacing: 2px;">
+        ANTAQOR · CYBER EMPIRE
+      </div>
+    </div>
+  `;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
@@ -37,33 +62,20 @@ export async function POST(req: NextRequest) {
     );
 
     const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
+    const html = buildEmailHtml(user.name, resetUrl);
+    const payload = { to: user.email, subject: "Нууц үг сэргээх — Antaqor", html };
 
-    const fromEmail = process.env.EMAIL_FROM || "Antaqor <onboarding@resend.dev>";
+    // Try branded domain first, fall back to resend.dev if domain not yet verified
+    let result = await resend.emails.send({ from: BRANDED_FROM, ...payload });
 
-    await resend.emails.send({
-      from: fromEmail,
-      to: user.email,
-      subject: "Нууц үг сэргээх — Antaqor",
-      html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #0A0A0A; color: #E8E8E8; padding: 40px; border-radius: 8px;">
-          <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #E8E8E8;">
-            ANTAQOR
-          </div>
-          <p style="font-size: 14px; color: #999999; line-height: 1.8; margin-bottom: 24px;">
-            Сайн байна уу, <strong style="color: #E8E8E8;">${user.name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
-          </p>
-          <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #ffffff; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
-            Нууц үг сэргээх
-          </a>
-          <p style="font-size: 11px; color: #666666; margin-top: 24px; line-height: 1.8;">
-            Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
-          </p>
-          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: #666666; letter-spacing: 2px;">
-            ANTAQOR · CYBER EMPIRE
-          </div>
-        </div>
-      `,
-    });
+    if (result.error) {
+      result = await resend.emails.send({ from: FALLBACK_FROM, ...payload });
+    }
+
+    if (result.error) {
+      console.error("Resend error:", result.error);
+      throw new Error(result.error.message);
+    }
 
     return NextResponse.json({
       message: "Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдлээ.",
