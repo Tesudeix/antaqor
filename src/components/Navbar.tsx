@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const tabs = [
     { href: "/", label: "Мэдээ", check: (p: string) => p === "/" || p.startsWith("/posts") },
+    { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
     { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
     { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") || p.startsWith("/tools") },
     { href: "/members", label: "Гишүүд", check: (p: string) => p.startsWith("/members") },
