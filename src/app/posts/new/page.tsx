@@ -203,28 +203,30 @@ function NewPostContent() {
           )}
 
           {/* Category selector */}
-          <div className="mb-4 flex items-center gap-2 border-b border-[rgba(255,255,255,0.08)] pb-4">
-            <span className="text-[10px] uppercase tracking-[1px] text-[#999999]">Ангилал:</span>
-            {([
-              { key: "мэдээлэл" as const, label: "Мэдээлэл" },
-              { key: "ялалт" as const, label: "Ялалт" },
-              { key: "промт" as const, label: "Промт" },
-              { key: "бүтээл" as const, label: "Бүтээл" },
-              { key: "танилцуулга" as const, label: "Танилцуулга" },
-            ]).map((cat) => (
-              <button
-                key={cat.key}
-                type="button"
-                onClick={() => setCategory(cat.key)}
-                className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
-                  category === cat.key
-                    ? "bg-[rgba(239,44,88,0.1)] text-[#EF2C58] border border-[rgba(239,44,88,0.3)]"
-                    : "text-[#999999] border border-[rgba(255,255,255,0.08)] hover:text-[#999999]"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          <div className="mb-4 border-b border-[rgba(255,255,255,0.08)] pb-4">
+            <div className="mb-2 text-[10px] uppercase tracking-[1px] text-[#555555]">Ангилал</div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {([
+                { key: "мэдээлэл" as const, label: "Мэдээлэл" },
+                { key: "ялалт" as const, label: "Ялалт" },
+                { key: "промт" as const, label: "Промт" },
+                { key: "бүтээл" as const, label: "Бүтээл" },
+                { key: "танилцуулга" as const, label: "Танилцуулга" },
+              ]).map((cat) => (
+                <button
+                  key={cat.key}
+                  type="button"
+                  onClick={() => setCategory(cat.key)}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition ${
+                    category === cat.key
+                      ? "bg-[#EF2C58] text-white"
+                      : "text-[#666666] bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <textarea

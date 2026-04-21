@@ -15,6 +15,11 @@ const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
   const color = active ? "#EF2C58" : "currentColor";
   const props = { className: "h-[16px] w-[16px]", fill: "none", stroke: color, viewBox: "0 0 24 24", strokeWidth: active ? 2 : 1.5 };
   switch (type) {
+    case "heart": return (
+      <svg {...props} fill={active ? "#EF2C58" : "none"}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+      </svg>
+    );
     case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(239,44,88,0.2)" : "none"} /></svg>);
     case "rocket": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>);
     case "think": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>);
@@ -22,7 +27,15 @@ const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
   }
 };
 
-const REACTION_KEYS = ["fire", "rocket", "think"];
+const REACTION_KEYS = ["heart", "fire", "rocket", "think"];
+
+const CATEGORY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  "мэдээлэл": { bg: "bg-[rgba(59,130,246,0.15)]", text: "text-[#3B82F6]", label: "МЭДЭЭЛЭЛ" },
+  "ялалт": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#EF2C58]", label: "ЯЛАЛТ" },
+  "промт": { bg: "bg-[rgba(15,129,202,0.15)]", text: "text-[#0F81CA]", label: "ПРОМТ" },
+  "бүтээл": { bg: "bg-[rgba(34,197,94,0.15)]", text: "text-[#22C55E]", label: "БҮТЭЭЛ" },
+  "танилцуулга": { bg: "bg-[rgba(168,85,247,0.15)]", text: "text-[#A855F7]", label: "ТАНИЛЦУУЛГА" },
+};
 
 interface PostCardProps {
   post: {
@@ -51,9 +64,10 @@ function buildReactions(post: PostCardProps["post"], userId: string | null): Rec
     const users: string[] = post.reactions?.[key] || [];
     result[key] = { count: users.length, reacted: userId ? users.includes(userId) : false };
   }
+  // Migrate old likes to heart
   const hasAnyReaction = Object.values(result).some((r) => r.count > 0);
   if (!hasAnyReaction && post.likes?.length > 0) {
-    result.fire = { count: post.likes.length, reacted: userId ? post.likes.includes(userId) : false };
+    result.heart = { count: post.likes.length, reacted: userId ? post.likes.includes(userId) : false };
   }
   return result;
 }
@@ -74,6 +88,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   const hasImage = !!post.image;
   const isLongPost = hasText && post.content.length > 400;
   const displayContent = isLongPost && !expanded ? post.content.slice(0, 400) : post.content;
+  const catStyle = post.category ? CATEGORY_STYLES[post.category] : null;
 
   const handleReaction = async (emoji: string) => {
     if (!session || reactingEmoji || locked) return;
@@ -106,12 +121,12 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
   if (locked) {
     return (
-      <article className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6">
+      <article className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5">
         <div className="flex items-center gap-3 mb-4">
           {post.author.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-[4px] object-cover" />
+            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-full object-cover" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
           )}
           <div>
             <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
@@ -136,39 +151,32 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   }
 
   return (
-    <article className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)]">
+    <article className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] transition-all duration-200 hover:border-[rgba(255,255,255,0.12)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-5">
-        <Link href={`/profile/${post.author._id}`} className="flex items-center gap-3">
+      <div className="flex items-start justify-between px-4 pt-4 sm:px-5">
+        <Link href={`/profile/${post.author._id}`} className="flex items-center gap-2.5 min-w-0">
           {post.author.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 rounded-[4px] object-cover" />
+            <img src={post.author.avatar} alt={post.author.name} className="h-9 w-9 shrink-0 rounded-full object-cover" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
           )}
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
-              {post.category === "ялалт" && (
-                <span className="rounded-[4px] bg-[rgba(239,44,88,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#EF2C58]">ЯЛАЛТ</span>
-              )}
-              {post.category === "промт" && (
-                <span className="rounded-[4px] bg-[rgba(15,129,202,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#0F81CA]">ПРОМТ</span>
-              )}
-              {post.category === "бүтээл" && (
-                <span className="rounded-[4px] bg-[rgba(34,197,94,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#22C55E]">БҮТЭЭЛ</span>
-              )}
-              {post.category === "танилцуулга" && (
-                <span className="rounded-[4px] bg-[rgba(168,85,247,0.15)] px-2 py-0.5 text-[9px] font-bold tracking-wide text-[#A855F7]">ТАНИЛЦУУЛГА</span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-[13px] font-semibold text-[#E8E8E8] truncate">{post.author.name}</p>
+              {catStyle && (
+                <span className={`shrink-0 rounded-full ${catStyle.bg} px-2 py-0.5 text-[9px] font-bold ${catStyle.text}`}>
+                  {catStyle.label}
+                </span>
               )}
             </div>
-            <p className="text-[11px] text-[#666666]">{formatDistanceToNow(post.createdAt)}</p>
+            <p className="text-[11px] text-[#555555]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </Link>
 
         {canDelete && (
-          <button onClick={handleDelete} className="rounded-[4px] p-2 text-[#666666] transition-colors duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]" aria-label="Устгах">
+          <button onClick={handleDelete} className="shrink-0 rounded-full p-2 text-[#555555] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]" aria-label="Устгах">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
@@ -176,9 +184,9 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
       {/* Content */}
       {hasText && (
-        <div className="px-6 mt-3">
+        <div className="px-4 mt-2.5 sm:px-5">
           <Link href={`/posts/${post._id}`} className="block">
-            <p className="whitespace-pre-wrap text-[14px] leading-[1.7] text-[#999999]">
+            <p className="whitespace-pre-wrap text-[14px] leading-[1.7] text-[#CCCCCC]">
               {displayContent}
             </p>
           </Link>
@@ -196,10 +204,10 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       {/* Image */}
       {hasImage && (
         <Link href={`/posts/${post._id}`} className="block mt-3">
-          <div className="relative overflow-hidden bg-[#1A1A1A]">
+          <div className="relative overflow-hidden bg-[#0A0A0A]">
             {!imgLoaded && (
               <div className="flex items-center justify-center py-24">
-                <div className="h-2 w-2 animate-pulse-gold rounded-[4px] bg-[#EF2C58]" />
+                <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
               </div>
             )}
             <img
@@ -214,8 +222,8 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       )}
 
       {/* Reactions + comments */}
-      <div className="flex items-center justify-between px-6 py-3">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between px-4 py-2.5 sm:px-5">
+        <div className="flex items-center gap-0.5">
           {REACTION_KEYS.map((key) => {
             const data = reactions[key];
             const count = data?.count || 0;
@@ -225,15 +233,15 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                 key={key}
                 onClick={() => handleReaction(key)}
                 disabled={!session || reactingEmoji === key}
-                className={`inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 transition-all duration-200 ${
+                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 transition-all duration-200 ${
                   reacted
-                    ? "bg-[rgba(239,44,88,0.15)] border border-[rgba(239,44,88,0.3)]"
-                    : "text-[#666666] border border-transparent hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
+                    ? "bg-[rgba(239,44,88,0.12)]"
+                    : "text-[#555555] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
                 } ${reactingEmoji === key ? "scale-110" : "active:scale-95"}`}
               >
                 <ReactionIcon type={key} active={reacted} />
                 {count > 0 && (
-                  <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#EF2C58]" : "text-[#666666]"}`}>
+                  <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#EF2C58]" : "text-[#555555]"}`}>
                     {count}
                   </span>
                 )}
@@ -244,7 +252,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
         <Link
           href={`/posts/${post._id}`}
-          className="flex items-center gap-1.5 rounded-[4px] px-2.5 py-1.5 text-[#666666] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
+          className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[#555555] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
         >
           <svg className="h-[16px] w-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

@@ -172,9 +172,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   if (!user) {
     return (
       <div className="py-16 text-center">
-        <p className="text-lg text-[#AAAAAA]">
-          Хэрэглэгч олдсонгүй
-        </p>
+        <p className="text-lg text-[#666666]">Хэрэглэгч олдсонгүй</p>
       </div>
     );
   }
@@ -188,18 +186,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mb-8 border-b border-[rgba(255,255,255,0.08)] pb-8">
-        <div className="flex flex-col items-start gap-5 sm:flex-row">
-          {/* Square avatar */}
-          <div className="relative group">
+      {/* Profile Header Card */}
+      <div className="mb-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="flex items-start gap-4">
+          {/* Avatar */}
+          <div className="relative group shrink-0">
             {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="h-20 w-20 rounded-[4px] object-cover"
-              />
+              <img src={user.avatar} alt={user.name} className="h-16 w-16 rounded-full object-cover sm:h-20 sm:w-20" />
             ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.08)] text-2xl font-bold text-[#AAAAAA]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1A1A1A] text-xl font-bold text-[#EF2C58] sm:h-20 sm:w-20 sm:text-2xl">
                 {initials}
               </div>
             )}
@@ -208,12 +203,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="absolute inset-0 flex items-center justify-center rounded-[4px] bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
+                  className="absolute inset-0 flex items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 transition group-hover:opacity-100"
                 >
                   {uploading ? (
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
                   ) : (
-                    <svg className="h-5 w-5 text-[#F8F8F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -236,13 +231,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -250,32 +245,25 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full rounded-[4px] border border-[#E8E8E6] bg-[#141414] px-4 py-2.5 text-[14px] text-[#F8F8F6] placeholder-[#555555] outline-none transition focus:border-[#EF2C58] resize-none"
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-2">
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
-                  >
+                  <button onClick={handleSave} disabled={saving}
+                    className="rounded-full bg-[#EF2C58] px-5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#D4264E] disabled:opacity-50">
                     {saving ? "..." : "Хадгалах"}
                   </button>
-                  <button
-                    onClick={() => setEditing(false)}
-                    className="rounded-[4px] border border-[#E8E8E6] px-4 py-2 text-[12px] font-medium text-[#999999] transition hover:text-[#F8F8F6]"
-                  >
+                  <button onClick={() => setEditing(false)}
+                    className="rounded-full border border-[rgba(255,255,255,0.1)] px-4 py-2 text-[12px] font-medium text-[#999999] transition hover:text-[#E8E8E8]">
                     Цуцлах
                   </button>
                 </div>
               </div>
             ) : (
               <>
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h1 className="text-xl font-bold text-[#F8F8F6]">
-                      {user.name}
-                    </h1>
+                    <h1 className="text-lg font-bold text-[#E8E8E8] sm:text-xl">{user.name}</h1>
                     {(() => {
                       const level = user.level || 1;
                       const xp = user.xp || 0;
@@ -283,47 +271,32 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       const progress = getLevelProgress(xp, level);
                       const nextXP = xpForLevel(level + 1);
                       return (
-                        <div className="mt-1.5">
+                        <div className="mt-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-[#EF2C58]">
-                              LV.{level}
-                            </span>
-                            <span className="text-[11px] text-[#999999]">
-                              {title.titleMN}
-                            </span>
+                            <span className="text-[11px] font-bold text-[#EF2C58]">LV.{level}</span>
+                            <span className="text-[11px] text-[#666666]">{title.titleMN}</span>
+                            {user.clan && (
+                              <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[9px] font-bold text-[#EF2C58]">КЛАН</span>
+                            )}
                           </div>
                           <div className="mt-1.5 flex items-center gap-2">
-                            <div className="h-1 w-28 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
-                              <div
-                                className="h-full rounded-full bg-[#EF2C58] transition-all"
-                                style={{ width: `${Math.round(progress * 100)}%` }}
-                              />
+                            <div className="h-1 w-24 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
+                              <div className="h-full rounded-full bg-[#EF2C58] transition-all" style={{ width: `${Math.round(progress * 100)}%` }} />
                             </div>
-                            <span className="text-[10px] text-[#AAAAAA]">
-                              {xp.toLocaleString()} / {nextXP.toLocaleString()} XP
-                            </span>
+                            <span className="text-[10px] text-[#555555]">{xp.toLocaleString()} / {nextXP.toLocaleString()} XP</span>
                           </div>
                         </div>
                       );
                     })()}
-                    {user.clan && (
-                      <span className="mt-1.5 inline-block rounded-[4px] bg-[rgba(239,44,88,0.06)] border border-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[10px] font-semibold text-[#EF2C58]">
-                        Кланы гишүүн
-                      </span>
-                    )}
                   </div>
                   {isOwner && (
                     <div className="flex shrink-0 gap-2">
-                      <button
-                        onClick={() => setEditing(true)}
-                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-[#999999] transition hover:border-[#EF2C58] hover:text-[#F8F8F6]"
-                      >
+                      <button onClick={() => setEditing(true)}
+                        className="rounded-full border border-[rgba(255,255,255,0.1)] px-3.5 py-1.5 text-[12px] font-medium text-[#999999] transition hover:border-[rgba(255,255,255,0.2)] hover:text-[#E8E8E8]">
                         Засах
                       </button>
-                      <button
-                        onClick={() => signOut()}
-                        className="rounded-[4px] border border-[#E8E8E6] px-3.5 py-1.5 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400"
-                      >
+                      <button onClick={() => signOut()}
+                        className="rounded-full border border-[rgba(255,255,255,0.1)] px-3.5 py-1.5 text-[12px] font-medium text-[#555555] transition hover:border-red-500/30 hover:text-red-400">
                         Гарах
                       </button>
                     </div>
@@ -331,28 +304,19 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
 
                 {user.bio && (
-                  <p className="mt-3 text-[13px] leading-[1.7] text-[#999999]">
-                    {user.bio}
-                  </p>
+                  <p className="mt-2.5 text-[13px] leading-[1.7] text-[#999999]">{user.bio}</p>
                 )}
 
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-[#AAAAAA]">
-                  {user.aiExperience && (
-                    <span>AI: {AI_LEVEL_LABELS[user.aiExperience] || user.aiExperience}</span>
-                  )}
-                  {user.age && (
-                    <span>{user.age} нас</span>
-                  )}
+                <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#555555]">
+                  {user.aiExperience && <span>AI: {AI_LEVEL_LABELS[user.aiExperience] || user.aiExperience}</span>}
+                  {user.age && <span>{user.age} нас</span>}
                   <span>{formatDistanceToNow(user.createdAt)} нэгдсэн</span>
                 </div>
 
                 {user.interests && user.interests.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
                     {user.interests.map((i) => (
-                      <span
-                        key={i}
-                        className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[10px] text-[#AAAAAA]"
-                      >
+                      <span key={i} className="rounded-full bg-[rgba(255,255,255,0.04)] px-2.5 py-0.5 text-[10px] text-[#666666]">
                         {INTEREST_LABELS[i] || i}
                       </span>
                     ))}
@@ -364,16 +328,19 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
-      {/* Posts section */}
+      {/* Posts header */}
       <div className="mb-3 flex items-center gap-2 px-1">
-        <span className="text-[12px] font-semibold text-[#999999]">Нийтлэлүүд</span>
-        <span className="text-[12px] text-[#AAAAAA]">{posts.length}</span>
+        <span className="text-[12px] font-bold text-[#E8E8E8]">Нийтлэлүүд</span>
+        <span className="rounded-full bg-[rgba(255,255,255,0.06)] px-2 py-0.5 text-[10px] font-bold text-[#555555]">{posts.length}</span>
       </div>
 
+      {/* Posts feed — same style as homepage */}
       {posts.length === 0 ? (
-        <p className="py-8 text-center text-[13px] text-[#AAAAAA]">Нийтлэл байхгүй байна.</p>
+        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] py-12 text-center">
+          <p className="text-[13px] text-[#555555]">Нийтлэл байхгүй байна.</p>
+        </div>
       ) : (
-        <div className="-mx-5">
+        <div className="space-y-3">
           {posts.map((post) => (
             <PostCard key={post._id} post={post} onDelete={handleDeletePost} />
           ))}
