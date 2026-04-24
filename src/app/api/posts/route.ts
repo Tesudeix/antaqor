@@ -5,8 +5,11 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import Task from "@/models/Task";
+import User from "@/models/User";
 import { broadcastNotification } from "@/lib/notifications";
 import { awardXP } from "@/lib/xp";
+import { isActiveMember, effectiveLevel, feedBand } from "@/lib/membership";
+import { getAllLevelSettings } from "@/lib/siteSettings";
 
 export async function GET(req: NextRequest) {
   try {
@@ -34,6 +37,43 @@ export async function GET(req: NextRequest) {
       query.visibility = "members";
     }
 
+    // ─── Level-gated feed visibility ───
+    // Applies only to members-visibility posts (free posts remain public to all).
+    // Browsing a specific author (authorId) skips the gate — profile view stays coherent.
+    const settings = await getAllLevelSettings();
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    const isAdminUser = isAdmin(session?.user?.email);
+
+    if (
+      settings.enabled &&
+      !isAdminUser &&
+      !authorId &&
+      session?.user &&
+      userId
+    ) {
+      const me = await User.findById(userId).select("level subscriptionExpiresAt").lean();
+      const myLevel = (me as unknown as { level?: number } | null)?.level || 1;
+      const paid = await isActiveMember(userId, session.user.email);
+      const effLevel = effectiveLevel(myLevel, paid, settings.cap);
+      const { lo, hi } = feedBand(effLevel, settings.band);
+
+      // Apply the band constraint to members posts only — keep free posts visible
+      // Missing authorLevel (legacy posts) falls through the gate until backfilled.
+      const bandFilter = {
+        $or: [
+          { visibility: "free" },
+          { authorLevel: { $gte: lo, $lte: hi } },
+          { authorLevel: { $exists: false } },
+        ],
+      };
+
+      if (query.$and) {
+        (query.$and as unknown[]).push(bandFilter);
+      } else {
+        query.$and = [bandFilter];
+      }
+    }
+
     const skip = (page - 1) * limit;
 
     const [posts, total] = await Promise.all([
@@ -41,7 +81,7 @@ export async function GET(req: NextRequest) {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("author", "name avatar")
+        .populate("author", "name avatar level")
         .lean(),
       Post.countDocuments(query),
     ]);
@@ -93,8 +133,13 @@ export async function POST(req: NextRequest) {
     const validCats = ["мэдээлэл", "ялалт", "промт", "бүтээл", "танилцуулга"];
     const postCategory = (category && validCats.includes(category)) ? category : "мэдээлэл";
 
+    // Snapshot author's current level for fast feed-band filtering
+    const authorDoc = await User.findById(userId).select("level").lean();
+    const authorLevel = (authorDoc as unknown as { level?: number } | null)?.level || 1;
+
     const postData: Record<string, unknown> = {
       author: userId,
+      authorLevel,
       content: hasContent ? content.trim() : "",
       image: hasImage ? image.trim() : "",
       visibility: postVisibility,

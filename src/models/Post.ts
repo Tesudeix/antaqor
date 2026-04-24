@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IPost extends Document {
   _id: mongoose.Types.ObjectId;
   author: mongoose.Types.ObjectId;
+  authorLevel: number;
   content: string;
   image: string;
   visibility: "free" | "members";
@@ -21,6 +22,12 @@ const PostSchema = new Schema<IPost>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    authorLevel: {
+      type: Number,
+      default: 1,
+      min: 1,
+      index: true,
     },
     content: {
       type: String,
@@ -71,6 +78,7 @@ PostSchema.index({ createdAt: -1 });
 PostSchema.index({ author: 1 });
 PostSchema.index({ visibility: 1, createdAt: -1 });
 PostSchema.index({ category: 1, createdAt: -1 });
+PostSchema.index({ visibility: 1, authorLevel: 1, createdAt: -1 });
 
 const Post: Model<IPost> =
   mongoose.models.Post || mongoose.model<IPost>("Post", PostSchema);

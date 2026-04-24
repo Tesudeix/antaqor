@@ -2,9 +2,13 @@
 
 import { useEffect, useState, use, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import { formatDistanceToNow } from "@/lib/utils";
 import { getLevelTitle, getLevelProgress, xpForLevel } from "@/lib/xpClient";
+import { useMembership } from "@/lib/useMembership";
+
+const FREE_LEVEL_CAP = 5;
 
 const AI_LEVEL_LABELS: Record<string, string> = {
   beginner: "Эхлэгч",
@@ -59,6 +63,7 @@ interface Post {
 export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session, update: updateSession } = useSession();
+  const { isMember, isAdmin: isAdminViewer } = useMembership();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -270,13 +275,20 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       const title = getLevelTitle(level);
                       const progress = getLevelProgress(xp, level);
                       const nextXP = xpForLevel(level + 1);
+                      const viewerIsPaid = isMember || isAdminViewer;
+                      const capped = isOwner && !viewerIsPaid && level >= FREE_LEVEL_CAP;
                       return (
                         <div className="mt-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-[#EF2C58]">LV.{level}</span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[11px] font-bold text-[#EF2C58]">
+                              LV.{level}{capped && ` / ${FREE_LEVEL_CAP}`}
+                            </span>
                             <span className="text-[11px] text-[#666666]">{title.titleMN}</span>
                             {user.clan && (
                               <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[9px] font-bold text-[#EF2C58]">КЛАН</span>
+                            )}
+                            {capped && (
+                              <span className="rounded-full bg-[rgba(255,193,7,0.1)] px-2 py-0.5 text-[9px] font-bold text-[#FFC107]">MAX · FREE</span>
                             )}
                           </div>
                           <div className="mt-1.5 flex items-center gap-2">
@@ -285,6 +297,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             </div>
                             <span className="text-[10px] text-[#555555]">{xp.toLocaleString()} / {nextXP.toLocaleString()} XP</span>
                           </div>
+                          {capped && (
+                            <Link
+                              href="/clan?pay=1"
+                              className="mt-2.5 inline-flex items-center gap-1.5 rounded-[6px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-bold text-white shadow-[0_0_18px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.4)]"
+                            >
+                              Level 6+ нээх
+                              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                            </Link>
+                          )}
                         </div>
                       );
                     })()}

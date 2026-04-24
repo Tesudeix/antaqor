@@ -49,14 +49,39 @@ interface PostCardProps {
     reactions?: Record<string, string[]>;
     commentsCount: number;
     createdAt: string;
+    authorLevel?: number;
     author: {
       _id: string;
       name: string;
       avatar?: string;
+      level?: number;
     } | null;
   };
   locked?: boolean;
   onDelete?: (id: string) => void;
+}
+
+function levelColor(lvl: number): string {
+  if (lvl >= 96) return "#F472B6"; // Legend
+  if (lvl >= 81) return "#FF4473"; // Emperor
+  if (lvl >= 61) return "#A855F7"; // Entaqor
+  if (lvl >= 41) return "#EF2C58"; // Conqueror
+  if (lvl >= 26) return "#22C55E"; // Entrepreneur
+  if (lvl >= 16) return "#0F81CA"; // Engineer
+  if (lvl >= 6)  return "#3B82F6"; // Creator
+  return "#999999";                 // Punk
+}
+
+function LevelChip({ level }: { level: number }) {
+  const color = levelColor(level);
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[8px] font-black leading-none"
+      style={{ background: `${color}1F`, color }}
+    >
+      L{level}
+    </span>
+  );
 }
 
 function buildReactions(post: PostCardProps["post"], userId: string | null): Record<string, ReactionData> {
@@ -130,7 +155,13 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-[11px] font-bold text-[#666666]">{initials}</div>
           )}
           <div>
-            <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-[13px] font-semibold text-[#E8E8E8]">{post.author.name}</p>
+              {(() => {
+                const lvl = post.authorLevel ?? post.author.level ?? 0;
+                return lvl > 0 ? <LevelChip level={lvl} /> : null;
+              })()}
+            </div>
             <p className="text-[11px] text-[#666666]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </div>
@@ -164,6 +195,10 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <p className="text-[13px] font-semibold text-[#E8E8E8] truncate">{post.author.name}</p>
+              {(() => {
+                const lvl = post.authorLevel ?? post.author.level ?? 0;
+                return lvl > 0 ? <LevelChip level={lvl} /> : null;
+              })()}
               {catStyle && (
                 <span className={`shrink-0 rounded-full ${catStyle.bg} px-2 py-0.5 text-[9px] font-bold ${catStyle.text}`}>
                   {catStyle.label}
