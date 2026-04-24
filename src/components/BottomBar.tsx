@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -17,21 +17,6 @@ type Tab = {
 export default function BottomBar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [unread, setUnread] = useState(0);
-
-  useEffect(() => {
-    if (!session) return;
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch("/api/chat/unread");
-        const data = await res.json();
-        if (typeof data.count === "number") setUnread(data.count);
-      } catch { /* ignore */ }
-    };
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 15000);
-    return () => clearInterval(interval);
-  }, [session]);
 
   const myId = (session?.user as { id?: string })?.id || "";
 
@@ -109,7 +94,6 @@ export default function BottomBar() {
         {
           href: "/chat",
           label: "Чат",
-          badge: unread,
           icon: iconChat,
           match: (p) => p.startsWith("/chat"),
         },
@@ -159,7 +143,7 @@ export default function BottomBar() {
         match: (p) => p.startsWith("/auth"),
       },
     ];
-  }, [session, unread, myId]);
+  }, [session, myId]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
