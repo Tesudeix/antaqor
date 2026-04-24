@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { Types } from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
@@ -21,7 +22,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
 
     if (!news) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const article = news as unknown as { category: string; _id: unknown; publishedAt: Date };
+    const article = news as unknown as { category: string; _id: Types.ObjectId };
     const related = await News.find({
       published: true,
       _id: { $ne: article._id },
