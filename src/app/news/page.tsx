@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import dbConnect from "@/lib/mongodb";
 import News from "@/models/News";
-import NewsFeed, { type NewsFeedProps } from "./NewsFeed";
+import NewsFeed from "./NewsFeed";
 
 const VALID_CATEGORIES = ["AI", "LLM", "Agents", "Research", "Бизнес", "Tool", "Монгол"] as const;
 type Cat = (typeof VALID_CATEGORIES)[number];
+type CategoryFilter = "All" | Cat;
 
 type SearchParams = Promise<{
   q?: string;
@@ -12,7 +13,7 @@ type SearchParams = Promise<{
   page?: string;
 }>;
 
-function resolveCategory(raw?: string): NewsFeedProps["initialCategory"] {
+function resolveCategory(raw?: string): CategoryFilter {
   if (!raw) return "All";
   return (VALID_CATEGORIES as readonly string[]).includes(raw) ? (raw as Cat) : "All";
 }
