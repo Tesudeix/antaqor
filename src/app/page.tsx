@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
 import ReferralBanner from "@/components/ReferralBanner";
+import Testimonials from "@/components/Testimonials";
 
 interface Post {
   _id: string;
@@ -661,22 +662,51 @@ function HeroLanding() {
       <HeroSlider />
       <SocialProof stats={stats} />
 
+      {/* Hero copy — outcome-led */}
       <div className="text-center">
-        <h2 className="text-[18px] font-bold leading-tight text-[#E8E8E8]">
-          AI-г эзэмшиж, орлогоо өсгө
+        <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
+          <span className="text-[9px] font-bold tracking-[0.12em] text-[#22C55E]">LIVE · MONGOLIA</span>
+        </div>
+        <h2 className="text-[20px] font-black leading-tight text-[#E8E8E8] md:text-[24px]">
+          AI-г эзэмшиж,<br />орлогоо өсгө
         </h2>
-        <p className="mt-1.5 text-[13px] text-[#666666]">
-          Монголын хамгийн идэвхтэй AI бүтээгчдийн нийгэмлэг
+        <p className="mt-2 text-[13px] text-[#888]">
+          Монголын AI бүтээгчдийн #1 нийгэмлэг — Чат · Хичээл · Market
         </p>
+
+        {/* Price + guarantee */}
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] px-3 py-1.5">
+          <span className="text-[11px] text-[#888]">₮49,000</span>
+          <span className="text-[#333]">·</span>
+          <span className="text-[11px] text-[#888]">/ сар</span>
+          <span className="text-[#333]">·</span>
+          <span className="text-[11px] font-bold text-[#22C55E]">14 хоног буцаан олго</span>
+        </div>
       </div>
 
+      {/* Primary CTA — consolidated */}
       <Link
         href="/auth/signup"
-        className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[14px] font-bold text-white transition-all duration-200 hover:shadow-[0_0_40px_rgba(239,44,88,0.35)]"
+        className="group relative block w-full overflow-hidden rounded-[8px] bg-gradient-to-r from-[#EF2C58] to-[#ff4e77] py-4 text-center text-[14px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_48px_rgba(239,44,88,0.4)]"
       >
-        <span className="relative z-10">Cyber Empire нэгдэх</span>
+        <span className="relative z-10">Cyber Empire нэгдэх · ₮49k</span>
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
       </Link>
+      <p className="text-center text-[11px] text-[#555] -mt-2">
+        Гишүүн үү?{" "}
+        <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
+          Нэвтрэх
+        </Link>
+      </p>
+
+      {/* Social proof — faces + results */}
+      <Testimonials
+        variant="grid"
+        limit={3}
+        eyebrow="ГИШҮҮДИЙН ҮР ДҮН"
+        heading="Бодит хүмүүс · Бодит AI ажил"
+      />
 
       <StatsBar />
       <LatestNews />
@@ -685,24 +715,20 @@ function HeroLanding() {
       <LatestTanilts />
       <Leaderboard />
 
-      {/* Final CTA */}
-      <div className="rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)] p-6 text-center">
-        <h3 className="text-[16px] font-bold text-[#E8E8E8]">Бэлэн үү?</h3>
-        <p className="mt-1 text-[12px] text-[#666666]">
-          Өнөөдрөөс AI-н ирээдүйд хөрөнгө оруулаарай
+      {/* Final CTA — tight, includes price + guarantee */}
+      <div className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 text-center md:p-7">
+        <div className="mb-1 text-[10px] font-bold tracking-[0.18em] text-[#EF2C58]">ХҮЛЭЭГДЭЛГҮЙ</div>
+        <h3 className="text-[18px] font-black text-[#E8E8E8] md:text-[20px]">Өнөөдөр AI-г эзэмшиж эхэл</h3>
+        <p className="mt-1.5 text-[12px] text-[#888]">
+          ₮49k/сар · Community · Хичээл · 14 хоног буцаан олголт
         </p>
         <Link
           href="/auth/signup"
-          className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-8 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]"
+          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-[#EF2C58] px-8 py-3 text-[13px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_36px_rgba(239,44,88,0.4)]"
         >
           Нэгдэх
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
         </Link>
-        <p className="mt-3 text-[11px] text-[#666666]">
-          Гишүүн үү?{" "}
-          <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
-            Нэвтрэх
-          </Link>
-        </p>
       </div>
 
       {/* Members Танилцуулга */}

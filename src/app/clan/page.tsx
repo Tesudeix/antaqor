@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Testimonials from "@/components/Testimonials";
 
 const BANK_ACCOUNT = "5926153085";
 const BANK_NAME = "Хаан банк";
@@ -314,6 +315,15 @@ export default function ClanPage() {
           <span>✓ 20 мин дотор идэвхжинэ</span>
         </div>
       </motion.div>
+
+      {/* Social proof — members with results */}
+      <Testimonials
+        variant="grid"
+        limit={3}
+        className="mt-8"
+        eyebrow="ГИШҮҮДИЙН ҮР ДҮН"
+        heading="Чамаас өмнө нэгдсэн хүмүүс"
+      />
 
       {/* Trust / support */}
       <div className="mt-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-4 text-center">
