@@ -31,10 +31,16 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "12")));
     const category = searchParams.get("category");
     const featured = searchParams.get("featured");
+    const q = (searchParams.get("q") || "").trim();
 
     const query: Record<string, unknown> = { published: true };
     if (category && VALID_CATEGORIES.includes(category)) query.category = category;
     if (featured === "true") query.featured = true;
+    if (q) {
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const rx = new RegExp(safe, "i");
+      query.$or = [{ title: rx }, { excerpt: rx }, { tags: rx }];
+    }
 
     const skip = (page - 1) * limit;
 

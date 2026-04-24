@@ -8,18 +8,14 @@ import News from "@/models/News";
 
 const VALID_CATEGORIES = ["AI", "LLM", "Agents", "Research", "Бизнес", "Tool", "Монгол"];
 
-// GET — public, fetch by slug, increments view counter
+// GET — public, fetch by slug. Admin uses this for editing (does NOT increment views —
+// view counting happens in the server page render).
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     await dbConnect();
     const { slug } = await params;
 
-    const news = await News.findOneAndUpdate(
-      { slug: slug.toLowerCase(), published: true },
-      { $inc: { views: 1 } },
-      { new: true }
-    ).lean();
-
+    const news = await News.findOne({ slug: slug.toLowerCase() }).lean();
     if (!news) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const article = news as unknown as { category: string; _id: Types.ObjectId };

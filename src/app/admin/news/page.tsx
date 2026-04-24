@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 type Category = "AI" | "LLM" | "Agents" | "Research" | "Бизнес" | "Tool" | "Монгол";
@@ -50,6 +50,15 @@ const EMPTY = {
   featured: false,
 };
 
+async function uploadImage(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data.url as string;
+}
+
 export default function AdminNewsPage() {
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,10 +66,62 @@ export default function AdminNewsPage() {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [flash, setFlash] = useState("");
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [inlineUploading, setInlineUploading] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const inlineInputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const showFlash = (msg: string) => {
     setFlash(msg);
     setTimeout(() => setFlash(""), 2500);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverUploading(true);
+    try {
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, coverImage: url }));
+      showFlash("Cover зураг оруулагдлаа");
+    } catch (err) {
+      showFlash("Алдаа: " + (err instanceof Error ? err.message : "upload"));
+    } finally {
+      setCoverUploading(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
+
+  const handleInlineUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setInlineUploading(true);
+    try {
+      const url = await uploadImage(file);
+      const ta = contentRef.current;
+      const snippet = `\n\n![${file.name.replace(/\.[^.]+$/, "")}](${url})\n\n`;
+      if (ta) {
+        const start = ta.selectionStart ?? form.content.length;
+        const end = ta.selectionEnd ?? form.content.length;
+        const next = form.content.slice(0, start) + snippet + form.content.slice(end);
+        setForm((f) => ({ ...f, content: next }));
+        // restore focus and caret after state applies
+        setTimeout(() => {
+          ta.focus();
+          const pos = start + snippet.length;
+          ta.setSelectionRange(pos, pos);
+        }, 0);
+      } else {
+        setForm((f) => ({ ...f, content: f.content + snippet }));
+      }
+      showFlash("Зураг контент дотор оруулагдлаа");
+    } catch (err) {
+      showFlash("Алдаа: " + (err instanceof Error ? err.message : "upload"));
+    } finally {
+      setInlineUploading(false);
+      if (inlineInputRef.current) inlineInputRef.current.value = "";
+    }
   };
 
   const load = useCallback(async () => {
@@ -223,21 +284,95 @@ export default function AdminNewsPage() {
             rows={2}
             className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
           />
-          <textarea
-            value={form.content}
-            onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-            placeholder={"Үндсэн контент...\n\nShift+Enter = шинэ мөр. Давхар шинэ мөр = шинэ параграф.\n\n# H2 гарчиг\n## H3 гарчиг\n> иш татсан үг"}
-            rows={10}
-            className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
-          />
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-2 text-[10px] text-[#555]">
+              <span className="font-bold uppercase tracking-[0.12em]">Контент</span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline">
+                  # H2 · ## H3 · &gt; quote · **bold** · [link](url) · ![alt](url)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => inlineInputRef.current?.click()}
+                  disabled={inlineUploading}
+                  className="flex items-center gap-1 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
+                >
+                  {inlineUploading ? (
+                    <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+                  ) : (
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  )}
+                  Зураг оруулах
+                </button>
+                <input
+                  ref={inlineInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleInlineUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            <textarea
+              ref={contentRef}
+              value={form.content}
+              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+              placeholder={"Үндсэн контент...\n\nДавхар мөр = шинэ параграф.\n\n# H2 гарчиг\n## H3 гарчиг\n> иш татсан үг\n**bold** эсвэл `code`\n\nЗураг оруулах: дээрх товчийг дар, автоматаар ![alt](url) тэмдэглэгээ орно"}
+              rows={14}
+              className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+            />
+          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          {/* Cover image */}
+          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#555]">Cover зураг</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  disabled={coverUploading}
+                  className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-2.5 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
+                >
+                  {coverUploading ? "Байршуулж байна..." : form.coverImage ? "Солих" : "Сонгох"}
+                </button>
+                {form.coverImage && (
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, coverImage: "" }))}
+                    className="text-[10px] text-[#555] hover:text-[#EF4444]"
+                  >
+                    Устгах
+                  </button>
+                )}
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            {form.coverImage ? (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-[6px] bg-[#141414]">
+                <img src={form.coverImage} alt="cover preview" className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-6 text-[11px] text-[#444]">
+                <svg className="h-6 w-6 text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                JPG / PNG / WebP / GIF · max 10MB · автоматаар WebP-д хөрвүүлнэ
+              </div>
+            )}
             <input
               value={form.coverImage}
               onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))}
-              placeholder="Cover image URL"
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              placeholder="эсвэл URL оруул"
+              className="mt-2 w-full rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#141414] px-2.5 py-1.5 text-[11px] text-[#AAA] placeholder-[#333] outline-none transition focus:border-[rgba(239,44,88,0.3)]"
             />
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
             <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as Category }))}
