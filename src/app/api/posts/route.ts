@@ -10,6 +10,8 @@ import { broadcastNotification } from "@/lib/notifications";
 import { awardXP } from "@/lib/xp";
 import { isActiveMember, effectiveLevel, feedBand } from "@/lib/membership";
 import { getAllLevelSettings } from "@/lib/siteSettings";
+import { rateLimit, LIMITS } from "@/lib/rateLimit";
+import { safeExternalUrl } from "@/lib/urlSafety";
 
 export async function GET(req: NextRequest) {
   try {
@@ -120,10 +122,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Hard cap on content length defensively (schema says 2000 — double-check at API)
+    if (content && content.length > 2000) {
+      return NextResponse.json({ error: "Пост хэт урт" }, { status: 400 });
+    }
+
     await dbConnect();
 
     const userId = (session.user as { id: string }).id;
     const userIsAdmin = isAdmin(session.user.email);
+
+    // Ban check
+    const authorDoc = await User.findById(userId).select("level banned subscriptionExpiresAt").lean();
+    const author = authorDoc as unknown as {
+      level?: number;
+      banned?: boolean;
+      subscriptionExpiresAt?: Date;
+    } | null;
+    if (author?.banned && !userIsAdmin) {
+      return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+    }
+
+    // Post rate limit (tiered)
+    const paid =
+      userIsAdmin ||
+      !!(author?.subscriptionExpiresAt && new Date(author.subscriptionExpiresAt) > new Date());
+    if (!userIsAdmin) {
+      const cfg = paid ? LIMITS.POST_PAID_PER_HOUR : LIMITS.POST_FREE_PER_HOUR;
+      const rl = rateLimit(`post:${userId}`, cfg);
+      if (!rl.ok) {
+        const mins = Math.ceil(rl.resetInMs / 60_000);
+        return NextResponse.json(
+          {
+            error: `Цагт ${cfg.max} пост хязгаартай. ~${mins} минутын дараа оролдоно уу.${paid ? "" : " Гишүүнчлэлтэй бол хязгаар илүү том."}`,
+          },
+          { status: 429 }
+        );
+      }
+    }
 
     const postVisibility =
       userIsAdmin && (visibility === "free" || visibility === "members")
@@ -134,14 +170,27 @@ export async function POST(req: NextRequest) {
     const postCategory = (category && validCats.includes(category)) ? category : "мэдээлэл";
 
     // Snapshot author's current level for fast feed-band filtering
-    const authorDoc = await User.findById(userId).select("level").lean();
-    const authorLevel = (authorDoc as unknown as { level?: number } | null)?.level || 1;
+    const authorLevel = author?.level || 1;
+
+    // Validate image URL: allow local /uploads paths OR safe external http(s) URLs only
+    let safeImage = "";
+    if (hasImage) {
+      const trimmed = image.trim();
+      if (trimmed.startsWith("/uploads/")) {
+        safeImage = trimmed;
+      } else {
+        safeImage = safeExternalUrl(trimmed);
+        if (!safeImage) {
+          return NextResponse.json({ error: "Зургийн URL хүчингүй." }, { status: 400 });
+        }
+      }
+    }
 
     const postData: Record<string, unknown> = {
       author: userId,
       authorLevel,
       content: hasContent ? content.trim() : "",
-      image: hasImage ? image.trim() : "",
+      image: safeImage,
       visibility: postVisibility,
       category: postCategory,
     };

@@ -34,6 +34,11 @@ export interface IUser extends Document {
   referralCode?: string;
   referredBy?: mongoose.Types.ObjectId;
   referralCount: number;
+  banned: boolean;
+  bannedReason?: string;
+  bannedAt?: Date;
+  uploadBytesMonth: number;
+  uploadMonthResetAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -167,6 +172,26 @@ const UserSchema = new Schema<IUser>(
     referralCount: {
       type: Number,
       default: 0,
+    },
+    banned: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    bannedReason: {
+      type: String,
+      default: "",
+      maxlength: 500,
+    },
+    bannedAt: {
+      type: Date,
+    },
+    uploadBytesMonth: {
+      type: Number,
+      default: 0,
+    },
+    uploadMonthResetAt: {
+      type: Date,
     },
   },
   {

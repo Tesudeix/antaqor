@@ -119,6 +119,28 @@ export async function PATCH(
         });
       }
 
+      case "ban": {
+        user.banned = true;
+        user.bannedAt = new Date();
+        user.bannedReason = (typeof body.reason === "string" ? body.reason : "").slice(0, 500);
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-г түр түдгэлзүүлсэн`,
+          user: { _id: user._id, banned: true, bannedReason: user.bannedReason },
+        });
+      }
+
+      case "unban": {
+        user.banned = false;
+        user.bannedAt = undefined;
+        user.bannedReason = "";
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-н блокыг цуцаллаа`,
+          user: { _id: user._id, banned: false },
+        });
+      }
+
       default:
         return NextResponse.json({ error: "Буруу үйлдэл" }, { status: 400 });
     }

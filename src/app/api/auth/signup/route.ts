@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import { initializeReferral } from "@/lib/credits";
+import { rateLimit, clientIp, LIMITS } from "@/lib/rateLimit";
 
 const VALID_INTERESTS = [
   "ai_tools",
@@ -19,6 +20,17 @@ const VALID_INTERESTS = [
 
 export async function POST(req: NextRequest) {
   try {
+    // IP-based rate limit — prevents signup farming
+    const ip = clientIp(req.headers);
+    const rl = rateLimit(`signup:ip:${ip}`, LIMITS.SIGNUP_PER_IP);
+    if (!rl.ok) {
+      const mins = Math.ceil(rl.resetInMs / 60_000);
+      return NextResponse.json(
+        { error: `Дэндүү олон бүртгэлийн оролдлого. ~${mins} минутын дараа дахин оролдоорой.` },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.resetInMs / 1000)) } }
+      );
+    }
+
     const { name, username, email, phone, password, age, aiExperience, interests, referralCode, instagram } =
       await req.json();
 
