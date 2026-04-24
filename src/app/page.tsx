@@ -578,44 +578,29 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      {/* Post button - mobile fixed, desktop inline */}
-      <Link
-        href="/posts/new"
-        className="fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-[4px] bg-[#EF2C58] text-white shadow-lg transition hover:shadow-[0_0_24px_rgba(239,44,88,0.4)] md:hidden"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-      </Link>
-
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex-1 overflow-x-auto scrollbar-hide">
-          <div className="flex items-center gap-1.5 pb-1">
-            {([
-              { key: "all" as CategoryFilter, label: "Бүгд" },
-              { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл" },
-              { key: "ялалт" as CategoryFilter, label: "Ялалт" },
-              { key: "промт" as CategoryFilter, label: "Промт" },
-              { key: "бүтээл" as CategoryFilter, label: "Бүтээл" },
-              { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга" },
-            ]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => switchCategory(tab.key)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
-                  category === tab.key
-                    ? "bg-[#EF2C58] text-white"
-                    : "bg-[rgba(255,255,255,0.04)] text-[#666666] hover:text-[#999999]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+      <div className="mb-4 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1.5 pb-1">
+          {([
+            { key: "all" as CategoryFilter, label: "Бүгд" },
+            { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл" },
+            { key: "ялалт" as CategoryFilter, label: "Ялалт" },
+            { key: "промт" as CategoryFilter, label: "Промт" },
+            { key: "бүтээл" as CategoryFilter, label: "Бүтээл" },
+            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => switchCategory(tab.key)}
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
+                category === tab.key
+                  ? "bg-[#EF2C58] text-white"
+                  : "bg-[rgba(255,255,255,0.04)] text-[#666666] hover:text-[#999999]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-        <Link href="/posts/new" className="hidden shrink-0 rounded-full bg-[#EF2C58] px-5 py-2 text-[12px] font-bold text-white transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] md:block">
-          + Пост
-        </Link>
       </div>
 
       {loading ? (

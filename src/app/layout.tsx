@@ -4,6 +4,7 @@ import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import BottomBar from "@/components/BottomBar";
 import InstallPrompt from "@/components/InstallPrompt";
+import PostFAB from "@/components/PostFAB";
 
 export const metadata: Metadata = {
   title: {
@@ -111,6 +112,7 @@ export default function RootLayout({
             {children}
           </main>
           <BottomBar />
+          <PostFAB />
           <InstallPrompt />
         </Providers>
       </body>
