@@ -1,0 +1,340 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+
+type Status = "pending" | "paid" | "failed";
+
+interface Payment {
+  _id: string;
+  amount: number;
+  status: Status;
+  referenceCode: string;
+  receiptImage: string;
+  receiptUploadedAt?: string;
+  claimedAt?: string;
+  adminNote: string;
+  paidAt?: string;
+  createdAt: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    phone?: string;
+    instagram?: string;
+    level?: number;
+    subscriptionExpiresAt?: string;
+    clan?: string;
+  } | null;
+}
+
+function relative(iso?: string): string {
+  if (!iso) return "";
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60_000);
+  if (m < 1) return "сая";
+  if (m < 60) return `${m} мин`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ц`;
+  const d = Math.floor(h / 24);
+  return `${d} өдөр`;
+}
+
+export default function AdminPaymentsPage() {
+  const [status, setStatus] = useState<Status>("pending");
+  const [items, setItems] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [flash, setFlash] = useState("");
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
+  const [counts, setCounts] = useState<{ pending: number; pendingWithReceipt: number }>({ pending: 0, pendingWithReceipt: 0 });
+
+  const showFlash = (msg: string) => {
+    setFlash(msg);
+    setTimeout(() => setFlash(""), 2500);
+  };
+
+  const load = useCallback(async (current: Status) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/payments?status=${current}&limit=50`);
+      const data = await res.json();
+      if (res.ok) {
+        setItems(data.items || []);
+        setCounts(data.counts || { pending: 0, pendingWithReceipt: 0 });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(status); }, [status, load]);
+
+  // Auto-refresh pending tab every 20s
+  useEffect(() => {
+    if (status !== "pending") return;
+    const t = setInterval(() => load("pending"), 20_000);
+    return () => clearInterval(t);
+  }, [status, load]);
+
+  const approve = async (p: Payment) => {
+    if (!confirm(`${p.user?.name} · ₮${p.amount.toLocaleString()} · 30 хоног идэвхжүүлэх үү?`)) return;
+    setProcessingId(p._id);
+    try {
+      const res = await fetch(`/api/admin/payments/${p._id}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days: 30 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showFlash(`${p.user?.name} идэвхжлээ`);
+        load(status);
+      } else {
+        showFlash("Алдаа: " + (data.error || "failed"));
+      }
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const reject = async () => {
+    if (!rejectingId) return;
+    const note = rejectNote.trim() || "Баримт шалгагдсангүй. Дахин шилжүүлж оролдоорой.";
+    setProcessingId(rejectingId);
+    try {
+      const res = await fetch(`/api/admin/payments/${rejectingId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note }),
+      });
+      if (res.ok) {
+        showFlash("Татгалзсан");
+        setRejectingId(null);
+        setRejectNote("");
+        load(status);
+      }
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  return (
+    <div className="space-y-5 pb-6">
+      {flash && (
+        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+          {flash}
+        </div>
+      )}
+
+      {lightbox && (
+        <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
+          <img src={lightbox} alt="Receipt full size" className="max-h-full max-w-full object-contain" onClick={(e) => e.stopPropagation()} />
+          <button onClick={() => setLightbox(null)} className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="close">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      )}
+
+      {rejectingId && (
+        <div onClick={() => setRejectingId(null)} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 p-4">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#111] p-5">
+            <h3 className="text-[16px] font-bold text-[#E8E8E8]">Татгалзах шалтгаан</h3>
+            <p className="mt-1 text-[12px] text-[#888]">Хэрэглэгчид энэ мессеж push-аар очино.</p>
+            <textarea
+              value={rejectNote}
+              onChange={(e) => setRejectNote(e.target.value)}
+              placeholder='Жишээ: "Дүн таарсангүй", "Reference код тохирсонгүй"'
+              rows={3}
+              maxLength={500}
+              className="mt-3 w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]"
+            />
+            <div className="mt-3 flex gap-2">
+              <button onClick={() => setRejectingId(null)} className="flex-1 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[13px] font-bold text-[#AAA]">Болих</button>
+              <button onClick={reject} disabled={processingId === rejectingId} className="flex-1 rounded-[8px] bg-[#EF4444] py-2.5 text-[13px] font-bold text-white transition hover:bg-[#DC3737] disabled:opacity-50">
+                {processingId === rejectingId ? "..." : "Татгалзах"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#E8E8E8]">Payments</h1>
+          <p className="mt-0.5 text-[12px] text-[#555]">
+            {counts.pending} хүлээгдэж буй · {counts.pendingWithReceipt} баримттай · 20 сек тутам шинэчлэгдэнэ
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => load(status)} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] text-[#AAA] hover:text-[#EF2C58]">
+            Шинэчлэх
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
+        {(["pending", "paid", "failed"] as Status[]).map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatus(s)}
+            className={`flex-1 rounded-[6px] px-4 py-2 text-[12px] font-bold transition ${
+              status === s ? "bg-[#EF2C58] text-white" : "text-[#AAA] hover:text-[#E8E8E8]"
+            }`}
+          >
+            {s === "pending" ? "Хүлээгдэж" : s === "paid" ? "Баталсан" : "Татгалзсан"}
+            {s === "pending" && counts.pending > 0 && (
+              <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-black ${status === s ? "bg-white/25" : "bg-[rgba(239,44,88,0.2)] text-[#EF2C58]"}`}>
+                {counts.pending}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+        </div>
+      ) : items.length === 0 ? (
+        <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-16 text-center text-[13px] text-[#555]">
+          {status === "pending" ? "Хүлээгдэж буй төлбөр алга" : "Байхгүй"}
+        </div>
+      ) : (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {items.map((p) => {
+            const hasReceipt = !!p.receiptImage;
+            const claimed = !!p.claimedAt;
+            return (
+              <div key={p._id} className="overflow-hidden rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
+                <div className="flex">
+                  {/* Receipt thumb — image-first scannability */}
+                  <div className="w-[140px] shrink-0 bg-[#0A0A0A] sm:w-[180px]">
+                    {hasReceipt ? (
+                      <button
+                        onClick={() => setLightbox(p.receiptImage)}
+                        className="group relative block h-full w-full"
+                        title="Томсгох"
+                      >
+                        <img src={p.receiptImage} alt="Receipt" className="h-full max-h-[200px] w-full object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/40">
+                          <svg className="h-6 w-6 text-white opacity-0 transition group-hover:opacity-100" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                        </div>
+                      </button>
+                    ) : (
+                      <div className="flex h-full min-h-[140px] w-full flex-col items-center justify-center gap-1 p-3 text-center">
+                        <svg className="h-6 w-6 text-[#444]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <span className="text-[10px] text-[#555]">Баримтгүй</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Body */}
+                  <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+                    {/* Header row */}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        {p.user?.avatar ? (
+                          <img src={p.user.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
+                        ) : (
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(239,44,88,0.1)] text-[10px] font-black text-[#EF2C58]">
+                            {p.user?.name?.charAt(0) || "?"}
+                          </div>
+                        )}
+                        <span className="truncate text-[12px] font-bold text-[#E8E8E8]">{p.user?.name || "—"}</span>
+                        {p.user?.level && (
+                          <span className="rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[9px] font-bold text-[#888]">L{p.user.level}</span>
+                        )}
+                      </div>
+                      <div className="mt-0.5 truncate text-[10px] text-[#666]">{p.user?.email}</div>
+                      {p.user?.instagram && (
+                        <a href={`https://instagram.com/${p.user.instagram}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-block text-[10px] text-[#EF2C58] hover:underline">
+                          @{p.user.instagram}
+                        </a>
+                      )}
+                      {p.user?.phone && (
+                        <a href={`tel:${p.user.phone}`} className="ml-2 text-[10px] text-[#888]">{p.user.phone}</a>
+                      )}
+                    </div>
+
+                    {/* Amount + Code */}
+                    <div className="my-2 flex items-center justify-between gap-2 rounded-[6px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.05)] px-2.5 py-1.5">
+                      <div>
+                        <div className="text-[8px] uppercase tracking-wider text-[#666]">Код</div>
+                        <div className="text-[13px] font-black tracking-[0.1em] text-[#EF2C58]">{p.referenceCode || "—"}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[8px] uppercase tracking-wider text-[#666]">Дүн</div>
+                        <div className="text-[12px] font-bold text-[#E8E8E8]">₮{p.amount.toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    {/* Timestamps */}
+                    <div className="mb-2 space-y-0.5 text-[10px] text-[#666]">
+                      <div className="flex items-center justify-between">
+                        <span>Үүсгэсэн</span>
+                        <span>{relative(p.createdAt)}</span>
+                      </div>
+                      {claimed && (
+                        <div className="flex items-center justify-between">
+                          <span>Шилжүүлсэн гэсэн</span>
+                          <span className="font-bold text-[#22C55E]">{relative(p.claimedAt)}</span>
+                        </div>
+                      )}
+                      {p.receiptUploadedAt && (
+                        <div className="flex items-center justify-between">
+                          <span>Баримт оруулсан</span>
+                          <span className="font-bold text-[#22C55E]">{relative(p.receiptUploadedAt)}</span>
+                        </div>
+                      )}
+                      {p.adminNote && (
+                        <div className="mt-1 rounded-[4px] bg-[rgba(239,68,68,0.08)] px-2 py-1 text-[#EF4444]">{p.adminNote}</div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    {p.status === "pending" ? (
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => approve(p)}
+                          disabled={processingId === p._id}
+                          className="flex-1 rounded-[6px] bg-[#22C55E] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-50"
+                        >
+                          {processingId === p._id ? "..." : "✓ Батлах · 30 хоног"}
+                        </button>
+                        <button
+                          onClick={() => { setRejectingId(p._id); setRejectNote(""); }}
+                          disabled={processingId === p._id}
+                          className="rounded-[6px] border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] font-black text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.15)] disabled:opacity-50"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : p.status === "paid" ? (
+                      <div className="flex items-center justify-between rounded-[6px] bg-[rgba(34,197,94,0.08)] px-3 py-2 text-[11px]">
+                        <span className="font-black text-[#22C55E]">✓ Баталсан</span>
+                        <span className="text-[10px] text-[#666]">{relative(p.paidAt)}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between rounded-[6px] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px]">
+                        <span className="font-black text-[#EF4444]">✕ Татгалзсан</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}

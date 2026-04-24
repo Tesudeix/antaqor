@@ -5,11 +5,16 @@ export interface IPayment extends Document {
   user: mongoose.Types.ObjectId;
   invoiceId: string;
   senderCode: string;
+  referenceCode: string;
   amount: number;
   description: string;
   status: "pending" | "paid" | "failed";
   qrImage: string;
   qrText: string;
+  receiptImage: string;
+  receiptUploadedAt?: Date;
+  claimedAt?: Date;
+  adminNote: string;
   paidAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +36,11 @@ const PaymentSchema = new Schema<IPayment>(
       type: String,
       required: true,
     },
+    referenceCode: {
+      type: String,
+      default: "",
+      index: true,
+    },
     amount: {
       type: Number,
       required: true,
@@ -51,6 +61,21 @@ const PaymentSchema = new Schema<IPayment>(
     qrText: {
       type: String,
       default: "",
+    },
+    receiptImage: {
+      type: String,
+      default: "",
+    },
+    receiptUploadedAt: {
+      type: Date,
+    },
+    claimedAt: {
+      type: Date,
+    },
+    adminNote: {
+      type: String,
+      default: "",
+      maxlength: 500,
     },
     paidAt: {
       type: Date,
