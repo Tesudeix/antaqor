@@ -581,25 +581,35 @@ export default function Home() {
       <div className="mb-4 overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
           {([
-            { key: "all" as CategoryFilter, label: "Бүгд" },
-            { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл" },
-            { key: "ялалт" as CategoryFilter, label: "Ялалт" },
-            { key: "промт" as CategoryFilter, label: "Промт" },
-            { key: "бүтээл" as CategoryFilter, label: "Бүтээл" },
-            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга" },
-          ]).map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => switchCategory(tab.key)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
-                category === tab.key
-                  ? "bg-[#EF2C58] text-white"
-                  : "bg-[rgba(255,255,255,0.04)] text-[#666666] hover:text-[#999999]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+            { key: "all" as CategoryFilter, label: "Бүгд", color: "#EF2C58" },
+            { key: "промт" as CategoryFilter, label: "Промт", color: "#0F81CA" },
+            { key: "бүтээл" as CategoryFilter, label: "Бүтээл", color: "#22C55E" },
+            { key: "ялалт" as CategoryFilter, label: "Ялалт", color: "#EF2C58" },
+            { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл", color: "#3B82F6" },
+            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга", color: "#A855F7" },
+          ]).map((tab) => {
+            const active = category === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => switchCategory(tab.key)}
+                className="group shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
+                style={{
+                  background: active ? tab.color : "rgba(255,255,255,0.04)",
+                  color: active ? "#FFFFFF" : "#888888",
+                }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full transition-opacity"
+                  style={{
+                    background: active ? "rgba(255,255,255,0.9)" : tab.color,
+                    opacity: active ? 1 : 0.7,
+                  }}
+                />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

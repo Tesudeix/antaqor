@@ -197,7 +197,7 @@ export default function ThreadDetailPage() {
                         {formatTime(reply.timestamp)}
                       </span>
                       {isHidden && (
-                        <span className="text-[8px] uppercase tracking-[1px] text-yellow-600">
+                        <span className="text-[8px] uppercase tracking-[1px] text-[#EF2C58]">
                           hidden
                         </span>
                       )}
@@ -222,7 +222,7 @@ export default function ThreadDetailPage() {
                         <button
                           onClick={() => handleToggleHide(reply.id, isHidden)}
                           disabled={managingId === reply.id}
-                          className="text-[9px] uppercase tracking-[1px] text-[#999999] transition hover:text-yellow-500"
+                          className="text-[9px] uppercase tracking-[1px] text-[#999999] transition hover:text-[#EF2C58]"
                         >
                           {managingId === reply.id
                             ? "..."

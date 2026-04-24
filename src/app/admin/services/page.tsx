@@ -38,7 +38,7 @@ const EMPTY_FORM = {
 const CATEGORIES = ["Зугаа цэнгэл", "Боловсрол", "Технологи", "AI & Automation", "Бизнес"];
 const STATUSES = [
   { value: "active", label: "Active", color: "text-green-400" },
-  { value: "coming_soon", label: "Coming Soon", color: "text-yellow-400" },
+  { value: "coming_soon", label: "Coming Soon", color: "text-[#EF2C58]" },
   { value: "inactive", label: "Inactive", color: "text-red-400" },
 ];
 

@@ -18,10 +18,10 @@ export default function PostFAB() {
     <Link
       href="/posts/new"
       aria-label="Пост үүсгэх"
-      className="group fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-[6px] bg-[#EF2C58] text-white shadow-[0_10px_30px_rgba(239,44,88,0.45)] ring-1 ring-[rgba(255,255,255,0.1)] transition-all duration-200 hover:scale-[1.04] hover:shadow-[0_14px_44px_rgba(239,44,88,0.6)] active:scale-95 bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] md:right-8 md:bottom-8 md:h-16 md:w-16"
+      className="group fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#EF2C58] text-white shadow-[0_10px_30px_rgba(239,44,88,0.45)] ring-1 ring-[rgba(255,255,255,0.1)] transition-all duration-200 hover:scale-[1.04] hover:shadow-[0_14px_44px_rgba(239,44,88,0.6)] active:scale-95 bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] md:right-8 md:bottom-8 md:h-16 md:w-16"
     >
       <span
-        className="pointer-events-none absolute inset-0 rounded-[6px] bg-[#EF2C58] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-60"
+        className="pointer-events-none absolute inset-0 rounded-[4px] bg-[#EF2C58] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-60"
         aria-hidden
       />
       <svg

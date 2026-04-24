@@ -13,10 +13,10 @@ interface AnnouncementData {
 }
 
 const TAG_STYLES: Record<string, { bg: string; text: string }> = {
-  "мэдэгдэл": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#8a8a00]" },
+  "мэдэгдэл": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#EF2C58]" },
   "шинэчлэл": { bg: "bg-[rgba(34,197,94,0.1)]", text: "text-green-600" },
   "AI": { bg: "bg-[rgba(99,102,241,0.1)]", text: "text-indigo-500" },
-  "эвент": { bg: "bg-[rgba(249,115,22,0.1)]", text: "text-orange-500" },
+  "эвент": { bg: "bg-[rgba(239,44,88,0.1)]", text: "text-[#EF2C58]" },
   "бусад": { bg: "bg-[rgba(0,0,0,0.05)]", text: "text-[rgba(0,0,0,0.4)]" },
 };
 

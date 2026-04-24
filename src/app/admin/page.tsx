@@ -208,7 +208,7 @@ export default function AdminDashboard() {
 
   const statusColors: Record<string, string> = {
     open: "bg-[rgba(34,197,94,0.15)] text-[#22C55E]",
-    submitted: "bg-[rgba(234,179,8,0.15)] text-[#EAB308]",
+    submitted: "bg-[rgba(239,44,88,0.08)] text-[rgba(239,44,88,0.75)]",
     accepted: "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]",
     rejected: "bg-[rgba(239,68,68,0.15)] text-[#EF4444]",
   };

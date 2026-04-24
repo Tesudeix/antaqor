@@ -26,7 +26,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   open: "text-green-400 border-green-900",
-  submitted: "text-yellow-400 border-yellow-900",
+  submitted: "text-[#EF2C58] border-[rgba(239,44,88,0.3)]",
   accepted: "text-[#EF2C58] border-[#EF2C58]",
   rejected: "text-[#999999] border-[#999999]",
 };

@@ -244,7 +244,7 @@ export default function RepliesManagementPage() {
                               {formatDate(reply.timestamp)}
                             </span>
                             {isHidden && (
-                              <span className="text-[8px] uppercase tracking-[1px] text-yellow-600 border border-yellow-900/30 px-1.5 py-0.5">
+                              <span className="text-[8px] uppercase tracking-[1px] text-[#EF2C58] border border-[rgba(239,44,88,0.3)] px-1.5 py-0.5">
                                 Hidden
                               </span>
                             )}
@@ -273,7 +273,7 @@ export default function RepliesManagementPage() {
                             className={`flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] transition ${
                               isHidden
                                 ? "text-green-600 hover:text-green-400"
-                                : "text-yellow-600 hover:text-yellow-400"
+                                : "text-[#EF2C58] hover:text-[rgba(239,44,88,0.7)]"
                             }`}
                             title={isHidden ? "Unhide" : "Hide"}
                           >

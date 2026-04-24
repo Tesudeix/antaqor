@@ -42,7 +42,7 @@ const TOOLS = [
 ];
 
 function getAccentColor(name: string): string {
-  const colors = ["#EF2C58", "#0F81CA", "#22C55E", "#A855F7", "#F97316", "#EC4899"];
+  const colors = ["#EF2C58", "#0F81CA", "#22C55E", "#A855F7", "#FF4473", "#EC4899"];
   const idx = name.charCodeAt(0) % colors.length;
   return colors[idx];
 }

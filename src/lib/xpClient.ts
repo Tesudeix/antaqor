@@ -17,8 +17,8 @@ export const ROLE_LABELS: Record<string, { en: string; mn: string; color: string
   entrepreneur: { en: "Entrepreneur", mn: "Антрепренёр", color: "#22C55E" },
   conqueror: { en: "Conqueror", mn: "Байлдан дагуулагч", color: "#EF2C58" },
   entaqor: { en: "Entaqor", mn: "Энтакор", color: "#A855F7" },
-  emperor: { en: "Emperor", mn: "Эзэн хаан", color: "#EAB308" },
-  legend: { en: "Legend", mn: "Домог", color: "#F97316" },
+  emperor: { en: "Emperor", mn: "Эзэн хаан", color: "#FF4473" },
+  legend: { en: "Legend", mn: "Домог", color: "#F472B6" },
 };
 
 /** Total XP required to reach level N: 100 * N^2 */
