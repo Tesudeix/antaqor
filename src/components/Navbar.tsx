@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const tabs = [
     { href: "/", label: "Мэдээ", check: (p: string) => p === "/" || p.startsWith("/posts") },
+    { href: "/news", label: "Блог", check: (p: string) => p.startsWith("/news") },
     { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
     { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
     { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") || p.startsWith("/tools") },
@@ -37,7 +38,7 @@ export default function Navbar() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`rounded-[4px] px-5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
                   active
                     ? "bg-[#EF2C58] text-white"
                     : "text-[#AAAAAA] hover:text-[#E8E8E8]"
