@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import NotificationBell from "./NotificationBell";
+import StreakChip from "./StreakChip";
 
 function CreditChip() {
   const { data: session } = useSession();
@@ -144,6 +145,7 @@ export default function Navbar() {
           {session ? (
             <>
               <JoinEmpireChip />
+              <StreakChip />
               <CreditChip />
               <NotificationBell />
               <Link

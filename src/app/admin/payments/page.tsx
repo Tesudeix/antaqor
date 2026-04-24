@@ -3,7 +3,40 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
+const BANK_ACCOUNT = "5926153085";
+const BANK_NAME = "Хаан банк";
+
 type Status = "pending" | "paid" | "failed";
+
+type OutcomeStatus = "match" | "no-match" | "amount-mismatch" | "already-paid" | "failed" | "approved";
+
+interface AutoMatchOutcome {
+  rawLine: string;
+  parsedRefCode: string;
+  parsedAmount: number;
+  status: OutcomeStatus;
+  payment?: {
+    _id: string;
+    expectedAmount: number;
+    status: string;
+    user: { _id: string; name: string; email: string; avatar?: string } | null;
+  };
+  error?: string;
+}
+
+interface AutoMatchResult {
+  summary: {
+    parsedLines: number;
+    matches: number;
+    approved: number;
+    amountMismatches: number;
+    noMatches: number;
+    alreadyPaid: number;
+    failed: number;
+  };
+  outcomes: AutoMatchOutcome[];
+  executed: boolean;
+}
 
 interface Payment {
   _id: string;
@@ -51,6 +84,11 @@ export default function AdminPaymentsPage() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectNote, setRejectNote] = useState("");
   const [counts, setCounts] = useState<{ pending: number; pendingWithReceipt: number }>({ pending: 0, pendingWithReceipt: 0 });
+  const [autoMatchOpen, setAutoMatchOpen] = useState(false);
+  const [statementText, setStatementText] = useState("");
+  const [autoMatching, setAutoMatching] = useState(false);
+  const [autoMatchResult, setAutoMatchResult] = useState<AutoMatchResult | null>(null);
+  const [autoApproving, setAutoApproving] = useState(false);
 
   const showFlash = (msg: string) => {
     setFlash(msg);
@@ -98,6 +136,31 @@ export default function AdminPaymentsPage() {
       }
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const runAutoMatch = async (execute: boolean) => {
+    if (!statementText.trim()) return;
+    const setter = execute ? setAutoApproving : setAutoMatching;
+    setter(true);
+    try {
+      const res = await fetch("/api/admin/payments/auto-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ statementText, execute, days: 30 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAutoMatchResult(data);
+        if (execute) {
+          showFlash(`${data.summary.approved} төлбөр идэвхжлээ`);
+          load(status);
+        }
+      } else {
+        showFlash("Алдаа: " + (data.error || "parse failed"));
+      }
+    } finally {
+      setter(false);
     }
   };
 
@@ -174,6 +237,129 @@ export default function AdminPaymentsPage() {
             Шинэчлэх
           </button>
         </div>
+      </div>
+
+      {/* Auto-match bank statement */}
+      <div className="overflow-hidden rounded-[10px] border border-[rgba(34,197,94,0.2)] bg-gradient-to-br from-[rgba(34,197,94,0.05)] via-[#111] to-[#111]">
+        <button
+          onClick={() => setAutoMatchOpen(!autoMatchOpen)}
+          className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[rgba(34,197,94,0.04)]"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(34,197,94,0.15)]">
+              <svg className="h-5 w-5 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+              </svg>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[14px] font-bold text-[#E8E8E8]">Банкны хуулга copy → auto-match</span>
+                <span className="rounded-full bg-[#22C55E] px-1.5 py-0.5 text-[9px] font-black uppercase text-white">BETA</span>
+              </div>
+              <div className="mt-0.5 text-[11px] text-[#888]">
+                {BANK_NAME} · {BANK_ACCOUNT} · refCode + дүн таарвал autoapprove
+              </div>
+            </div>
+          </div>
+          <svg className={`h-4 w-4 text-[#666] transition-transform ${autoMatchOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {autoMatchOpen && (
+          <div className="space-y-3 border-t border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] p-4">
+            <textarea
+              value={statementText}
+              onChange={(e) => setStatementText(e.target.value)}
+              placeholder={"Банкны апп-аас гүйлгээний жагсаалтыг copy хийж тавь.\n\nЖишээ мөр:\n[2026.04.25 14:30] +49,000₮ Guilgee: AB7K9X Bayanbileg B\n₮49,000 orj irlee · XY9K2M · Bold B.\n..."}
+              rows={8}
+              className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#22C55E]"
+            />
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => runAutoMatch(false)}
+                disabled={!statementText.trim() || autoMatching || autoApproving}
+                className="rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#141414] px-4 py-2 text-[12px] font-bold text-[#AAA] transition hover:text-[#22C55E] disabled:opacity-40"
+              >
+                {autoMatching ? "Шалгаж..." : "Preview match"}
+              </button>
+              <button
+                onClick={() => runAutoMatch(true)}
+                disabled={!statementText.trim() || autoMatching || autoApproving}
+                className="rounded-[8px] bg-[#22C55E] px-5 py-2 text-[12px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-40"
+              >
+                {autoApproving ? "Идэвхжүүлж..." : "✓ Match + Auto-approve"}
+              </button>
+              {autoMatchResult && (
+                <button
+                  onClick={() => { setAutoMatchResult(null); setStatementText(""); }}
+                  className="ml-auto text-[11px] text-[#666] hover:text-[#AAA]"
+                >
+                  Цэвэрлэх
+                </button>
+              )}
+            </div>
+
+            {autoMatchResult && (
+              <div className="space-y-2">
+                {/* Summary */}
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                  {[
+                    { k: "parsedLines", label: "Олсон", color: "#888" },
+                    { k: "matches", label: "Тохирсон", color: "#22C55E" },
+                    { k: "approved", label: "Идэвхжсэн", color: "#22C55E" },
+                    { k: "amountMismatches", label: "Дүн таарсангүй", color: "#FFC107" },
+                    { k: "noMatches", label: "Тохироогүй", color: "#666" },
+                    { k: "alreadyPaid", label: "Өмнө нь", color: "#3B82F6" },
+                  ].map((x) => {
+                    const value = (autoMatchResult.summary as unknown as Record<string, number>)[x.k];
+                    return (
+                      <div key={x.k} className="rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-2 text-center">
+                        <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: x.color }}>{x.label}</div>
+                        <div className="mt-0.5 text-[16px] font-black text-[#E8E8E8]">{value}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Per-line outcomes */}
+                <div className="divide-y divide-[rgba(255,255,255,0.04)] rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#111]">
+                  {autoMatchResult.outcomes.map((o, i) => {
+                    const colorMap: Record<OutcomeStatus, string> = {
+                      match: "#22C55E", approved: "#22C55E", "amount-mismatch": "#FFC107",
+                      "no-match": "#666", "already-paid": "#3B82F6", failed: "#EF4444",
+                    };
+                    const labelMap: Record<OutcomeStatus, string> = {
+                      match: "✓ Бэлэн", approved: "✓ Идэвхжсэн", "amount-mismatch": "⚠ Дүн",
+                      "no-match": "— Код олдсонгүй", "already-paid": "✓ Өмнө нь", failed: "✕ Алдаа",
+                    };
+                    return (
+                      <div key={i} className="flex items-center gap-3 p-2.5">
+                        <div className="w-20 shrink-0 text-[9px] font-black uppercase tracking-tight" style={{ color: colorMap[o.status] }}>
+                          {labelMap[o.status]}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[11px] font-black text-[#EF2C58]">{o.parsedRefCode}</span>
+                            <span className="text-[11px] text-[#888]">₮{o.parsedAmount.toLocaleString()}</span>
+                            {o.payment?.user && (
+                              <span className="text-[11px] text-[#AAA]">→ {o.payment.user.name}</span>
+                            )}
+                            {o.status === "amount-mismatch" && o.payment && (
+                              <span className="text-[10px] text-[#FFC107]">expected ₮{o.payment.expectedAmount.toLocaleString()}</span>
+                            )}
+                          </div>
+                          <div className="truncate text-[10px] text-[#555]">{o.rawLine}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}

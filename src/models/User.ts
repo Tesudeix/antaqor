@@ -39,6 +39,9 @@ export interface IUser extends Document {
   bannedAt?: Date;
   uploadBytesMonth: number;
   uploadMonthResetAt?: Date;
+  streakDays: number;
+  streakBestDays: number;
+  streakLastDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -191,6 +194,18 @@ const UserSchema = new Schema<IUser>(
       default: 0,
     },
     uploadMonthResetAt: {
+      type: Date,
+    },
+    streakDays: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
+    streakBestDays: {
+      type: Number,
+      default: 0,
+    },
+    streakLastDate: {
       type: Date,
     },
   },

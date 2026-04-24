@@ -478,13 +478,13 @@ export default function ClanPage() {
         </button>
 
         <p className="mt-3 text-center text-[11px] text-[#666]">
-          Баримт оруулалгүй үргэлжлүүлж болно, гэхдээ admin илүү удаан шалгана.
+          Баримттай оруулвал <span className="font-bold text-[#22C55E]">5 минутад</span> идэвхждэг.
         </p>
         <button
           onClick={() => setStep("pending")}
-          className="mt-1 block w-full text-center text-[11px] font-semibold text-[#555] hover:text-[#EF2C58]"
+          className="mt-1 block w-full text-center text-[10px] text-[#444] hover:text-[#666]"
         >
-          Баримтгүй үргэлжлүүлэх →
+          Одоогоор алгасах
         </button>
       </div>
     );

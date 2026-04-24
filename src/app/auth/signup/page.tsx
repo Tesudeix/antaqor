@@ -289,7 +289,7 @@ function SignUp() {
             </button>
             <div className="leading-tight">
               <div className="text-[12px] font-bold text-[#E8E8E8]">Профайл зураг</div>
-              <div className="text-[10px] text-[#666]">Дур зоргоор · хожим ч оруулж болно</div>
+              <div className="text-[10px] text-[#666]">Community-т бодитоор гарах түлхүүр</div>
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={onAvatarChange} className="hidden" />
           </div>
@@ -324,9 +324,9 @@ function SignUp() {
               label="Instagram"
               value={instagram}
               onChange={(v) => setInstagram(v.replace(/^@+/, ""))}
-              placeholder="username (заавал биш)"
+              placeholder="username"
               prefix="@"
-              optional
+              hint="community-г олж танихад"
             />
             <Field
               label="Нууц үг"
@@ -390,7 +390,7 @@ function Field({
   placeholder,
   type = "text",
   required,
-  optional,
+  hint,
   prefix,
   autoFocus,
 }: {
@@ -400,7 +400,7 @@ function Field({
   placeholder?: string;
   type?: string;
   required?: boolean;
-  optional?: boolean;
+  hint?: string;
   prefix?: string;
   autoFocus?: boolean;
 }) {
@@ -409,7 +409,7 @@ function Field({
       <div className="mb-1 flex items-center gap-1.5">
         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">{label}</span>
         {required && <span className="text-[9px] text-[#EF2C58]">·</span>}
-        {optional && <span className="rounded-full bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5 text-[8px] font-bold text-[#555]">заавал биш</span>}
+        {hint && <span className="text-[9px] text-[#555]">{hint}</span>}
       </div>
       <div className="flex items-center gap-0 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] transition focus-within:border-[rgba(239,44,88,0.4)]">
         {prefix && <span className="pl-3 text-[13px] text-[#555]">{prefix}</span>}
