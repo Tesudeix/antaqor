@@ -1,5 +1,18 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface ILessonTask {
+  text: string;
+  assignedTo?: mongoose.Types.ObjectId;
+  completed: boolean;
+}
+
+export interface IAttachment {
+  name: string;
+  url: string;
+  type: string;
+  size: number;
+}
+
 export interface ILesson extends Document {
   _id: mongoose.Types.ObjectId;
   course: mongoose.Types.ObjectId;
@@ -15,6 +28,8 @@ export interface ILesson extends Document {
   likes: mongoose.Types.ObjectId[];
   reactions: Map<string, mongoose.Types.ObjectId[]>;
   commentsCount: number;
+  lessonTasks: ILessonTask[];
+  attachments: IAttachment[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -83,6 +98,21 @@ const LessonSchema = new Schema<ILesson>(
       of: [{ type: Schema.Types.ObjectId, ref: "User" }],
       default: () => new Map(),
     },
+    lessonTasks: [
+      {
+        text: { type: String, required: true, maxlength: 500 },
+        assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
+        completed: { type: Boolean, default: false },
+      },
+    ],
+    attachments: [
+      {
+        name: { type: String, required: true },
+        url: { type: String, required: true },
+        type: { type: String, default: "" },
+        size: { type: Number, default: 0 },
+      },
+    ],
   },
   { timestamps: true }
 );

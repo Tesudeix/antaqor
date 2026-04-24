@@ -19,7 +19,13 @@ export async function GET(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const lessons = await Lesson.find({ course: id }).sort({ order: 1 }).lean();
+    const rawLessons = await Lesson.find({ course: id }).sort({ order: 1 }).lean();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lessons = rawLessons.map((l: any) => ({
+      ...l,
+      lessonTasksCount: Array.isArray(l.lessonTasks) ? l.lessonTasks.length : 0,
+      attachmentsCount: Array.isArray(l.attachments) ? l.attachments.length : 0,
+    }));
 
     return NextResponse.json({ course, lessons });
   } catch (error: unknown) {
@@ -39,7 +45,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { title, description, thumbnail, order, requiredLevel } = await req.json();
+    const { title, description, thumbnail, order } = await req.json();
 
     await dbConnect();
     const course = await Course.findByIdAndUpdate(
@@ -49,7 +55,6 @@ export async function PUT(
         ...(description !== undefined && { description: description.trim() }),
         ...(thumbnail !== undefined && { thumbnail }),
         ...(order !== undefined && { order }),
-        ...(requiredLevel !== undefined && { requiredLevel }),
       },
       { new: true, runValidators: true }
     );

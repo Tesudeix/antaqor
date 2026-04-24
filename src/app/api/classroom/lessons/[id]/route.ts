@@ -13,7 +13,10 @@ export async function GET(
   try {
     const { id } = await params;
     await dbConnect();
-    const lesson = await Lesson.findById(id).populate("course", "title").lean();
+    const lesson = await Lesson.findById(id)
+      .populate("course", "title")
+      .populate("lessonTasks.assignedTo", "name avatar")
+      .lean();
     if (!lesson) {
       return NextResponse.json({ error: "Lesson not found" }, { status: 404 });
     }
@@ -48,6 +51,8 @@ export async function PUT(
         ...(body.videoType && { videoType: body.videoType }),
         ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
         ...(body.order !== undefined && { order: body.order }),
+      ...(body.lessonTasks !== undefined && { lessonTasks: body.lessonTasks }),
+      ...(body.attachments !== undefined && { attachments: body.attachments }),
       },
       { new: true, runValidators: true }
     );

@@ -1,15 +1,29 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useRef } from "react";
 import Link from "next/link";
 import { isAdminEmail } from "@/lib/adminClient";
 import { formatDistanceToNow } from "@/lib/utils";
-import { motion } from "framer-motion";
+import RichEditor from "@/components/RichEditor";
 
 interface ReactionData {
   count: number;
   reacted: boolean;
+}
+
+interface LessonTask {
+  _id?: string;
+  text: string;
+  assignedTo?: { _id: string; name: string; avatar?: string };
+  completed: boolean;
+}
+
+interface Attachment {
+  name: string;
+  url: string;
+  type: string;
+  size: number;
 }
 
 interface LessonData {
@@ -24,22 +38,15 @@ interface LessonData {
   likes: string[];
   reactions?: Record<string, string[]>;
   commentsCount: number;
+  lessonTasks: LessonTask[];
+  attachments: Attachment[];
   createdAt: string;
   course: { _id: string; title: string };
 }
 
-// Only 3 reactions for lesson player
-const REACTION_KEYS = ["fire", "rocket", "think"];
-
-const ReactionIcon = ({ type, active }: { type: string; active: boolean }) => {
-  const color = active ? "#EF2C58" : "currentColor";
-  const props = { className: "h-[16px] w-[16px]", fill: "none", stroke: color, viewBox: "0 0 24 24", strokeWidth: active ? 2 : 1.5 };
-  switch (type) {
-    case "fire": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" fill={active ? "rgba(239,44,88,0.2)" : "none"} /></svg>);
-    case "rocket": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>);
-    case "think": return (<svg {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>);
-    default: return null;
-  }
+const REACTION_KEYS = ["fire", "heart", "clap", "rocket", "think", "hundred", "haha"];
+const REACTION_EMOJIS: Record<string, string> = {
+  fire: "🔥", heart: "❤️", clap: "👏", rocket: "🚀", think: "🤔", hundred: "💯", haha: "😂",
 };
 
 function getEmbedUrl(url: string): string | null {
@@ -60,6 +67,12 @@ function buildReactionsFromLesson(lesson: LessonData, userId: string | null): Re
   return result;
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
 export default function LessonPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session } = useSession();
@@ -73,7 +86,15 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const [userLevel, setUserLevel] = useState(1);
   const [reactions, setReactions] = useState<Record<string, ReactionData>>({});
   const [reactingEmoji, setReactingEmoji] = useState<string | null>(null);
-  const [showTranscript, setShowTranscript] = useState(false);
+
+  // Tasks
+  const [editTasks, setEditTasks] = useState<LessonTask[]>([]);
+  const [newTaskText, setNewTaskText] = useState("");
+
+  // Attachments
+  const [editAttachments, setEditAttachments] = useState<Attachment[]>([]);
+  const [fileUploading, setFileUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const admin = isAdminEmail(session?.user?.email);
   const userId = session ? (session.user as { id: string }).id : null;
@@ -101,6 +122,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
           content: data.lesson.content,
           videoUrl: data.lesson.videoUrl,
         });
+        setEditTasks(data.lesson.lessonTasks || []);
+        setEditAttachments(data.lesson.attachments || []);
       }
     } finally {
       setLoading(false);
@@ -156,6 +179,41 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
     }
   };
 
+  const handleImageUpload = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Upload failed");
+    return data.url;
+  };
+
+  const handleFileAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const endpoint = file.type.startsWith("video/") ? "/api/upload/video" : "/api/upload";
+      const res = await fetch(endpoint, { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setEditAttachments(prev => [...prev, {
+          name: file.name,
+          url: data.url,
+          type: file.type,
+          size: file.size,
+        }]);
+      }
+    } catch {
+      alert("Файл оруулахад алдаа гарлаа");
+    } finally {
+      setFileUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -163,7 +221,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
       const res = await fetch(`/api/classroom/lessons/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...editData, videoType }),
+        body: JSON.stringify({
+          ...editData,
+          videoType,
+          lessonTasks: editTasks.map(t => ({ text: t.text, assignedTo: t.assignedTo?._id, completed: t.completed })),
+          attachments: editAttachments,
+        }),
       });
       if (res.ok) {
         fetchLesson();
@@ -189,10 +252,25 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
     if (res.ok) fetchLesson();
   };
 
+  // Task actions for members
+  const handleTaskAction = async (taskIndex: number, action: "claim" | "unclaim" | "complete") => {
+    try {
+      const res = await fetch(`/api/classroom/lessons/${id}/tasks`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskIndex, action }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLesson(prev => prev ? { ...prev, lessonTasks: data.lessonTasks } : prev);
+      }
+    } catch {}
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFD300]" />
       </div>
     );
   }
@@ -200,8 +278,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if (!lesson) {
     return (
       <div className="py-16 text-center">
-        <p className="text-[15px] text-[#999999]">Хичээл олдсонгүй</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
+        <p className="text-[15px] text-[#6a6a72]">Хичээл олдсонгүй</p>
+        <Link href="/classroom" className="mt-4 inline-block text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">&larr; Буцах</Link>
       </div>
     );
   }
@@ -209,14 +287,14 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   if ((lesson.requiredLevel || 0) > userLevel && !admin) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
-          <svg className="h-7 w-7 text-[#999999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1a1a1e] border border-[rgba(255,211,0,0.1)]">
+          <svg className="h-6 w-6 text-[#6a6a72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        <p className="text-[16px] font-bold text-[#E8E8E8]">LV.{lesson.requiredLevel} шаардлагатай</p>
-        <p className="mt-1.5 text-[14px] text-[#999999]">Таны түвшин: LV.{userLevel}</p>
-        <Link href="/classroom" className="mt-8 text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
+        <p className="text-[15px] font-medium text-[#eeeee8]">LV.{lesson.requiredLevel} шаардлагатай</p>
+        <p className="mt-1 text-[13px] text-[#6a6a72]">Таны түвшин: LV.{userLevel}</p>
+        <Link href="/classroom" className="mt-6 text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">&larr; Буцах</Link>
       </div>
     );
   }
@@ -224,36 +302,24 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
   const embedUrl = getEmbedUrl(lesson.videoUrl);
   const isUploadedVideo = lesson.videoType === "upload" || lesson.videoUrl.startsWith("/uploads/");
+  const totalReactions = Object.values(reactions).reduce((sum, r) => sum + r.count, 0);
 
   return (
-    <div className="mx-auto max-w-[900px]">
-      {/* Back + nav */}
-      <div className="mb-6 flex items-center justify-between">
-        <Link
-          href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]"
-        >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-          </svg>
-          {lesson.course?.title || "Хичээлийн танхим"}
-        </Link>
-        {/* Lesson nav (prev/next) always visible */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#999999]">
-            {formatDistanceToNow(lesson.createdAt)}
-          </span>
-        </div>
-      </div>
+    <div className="mx-auto max-w-4xl">
+      {/* Back link */}
+      <Link
+        href={lesson.course?._id ? `/classroom/course/${lesson.course._id}` : "/classroom"}
+        className="mb-5 inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[13px] text-[#6a6a72] transition hover:bg-[#1a1a1e] hover:text-[#eeeee8]"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+        </svg>
+        {lesson.course?.title || "Classroom"}
+      </Link>
 
-      {/* ─── Video — dominant ─── */}
+      {/* Video */}
       {lesson.videoUrl && !editing && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]"
-        >
+        <div className="mb-6 overflow-hidden rounded-[14px] border border-[rgba(255,255,255,0.04)] bg-[#0e0e10]">
           {embedUrl ? (
             <div className="relative aspect-video w-full">
               <iframe
@@ -268,35 +334,196 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
               <source src={lesson.videoUrl} />
             </video>
           ) : (
-            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">
-              Видео нээх →
+            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-6 text-center text-[13px] text-[#FFD300] transition hover:text-[#e6be00]">
+              Видео нээх &rarr;
             </a>
           )}
-        </motion.div>
+        </div>
       )}
 
-      {/* ─── Title + Actions ─── */}
-      {!editing && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
-          className="mb-6"
-        >
-          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#E8E8E8] sm:text-[32px]">{lesson.title}</h1>
-          {lesson.description && (
-            <p className="mt-3 text-[16px] leading-relaxed text-[#999999]">{lesson.description}</p>
+      {/* ═══ EDITING MODE ═══ */}
+      {editing ? (
+        <div className="space-y-5">
+          {/* Title */}
+          <input
+            value={editData.title}
+            onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))}
+            className="w-full rounded-[8px] border border-[#2a2a2e] bg-[#141416] px-5 py-3 text-xl font-bold text-[#eeeee8] outline-none transition focus:border-[#FFD300]"
+            placeholder="Хичээлийн нэр"
+          />
+
+          {/* Description */}
+          <textarea
+            value={editData.description}
+            onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))}
+            rows={2}
+            className="w-full rounded-[8px] border border-[#2a2a2e] bg-[#141416] px-5 py-3 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300] resize-none"
+            placeholder="Богино тайлбар"
+          />
+
+          {/* Rich Content Editor */}
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <svg className="h-4 w-4 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span className="text-[13px] font-semibold text-[#eeeee8]">Агуулга</span>
+              <span className="text-[11px] text-[#4a4a55]">Blog editor - format, emoji, images</span>
+            </div>
+            <RichEditor
+              value={editData.content}
+              onChange={(html) => setEditData((p) => ({ ...p, content: html }))}
+              placeholder="Хичээлийн агуулгыг энд бичнэ... Enter = шинэ мөр, Formatting toolbar дээрээс bold, italic, heading, list, code, quote, emoji гэх мэт..."
+              onImageUpload={handleImageUpload}
+            />
+          </div>
+
+          {/* Video URL */}
+          <div className="flex items-center gap-3">
+            <input
+              value={editData.videoUrl}
+              onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))}
+              className="flex-1 rounded-[8px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[14px] text-[#eeeee8] placeholder-[#6a6a72] outline-none transition focus:border-[#FFD300]"
+              placeholder="YouTube/Vimeo URL"
+            />
+            <label className={`shrink-0 cursor-pointer rounded-[8px] border border-[#2a2a2e] bg-[#141416] px-4 py-2.5 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+              {uploading ? `${uploadProgress}%` : "Видео"}
+              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
+            </label>
+          </div>
+          {uploading && (
+            <div className="h-1.5 overflow-hidden rounded-full bg-[#141416]">
+              <div className="h-full rounded-full bg-gradient-to-r from-[#FFD300] to-[#ffeb80] transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+            </div>
           )}
 
-          {/* Actions row */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+          {/* ── Task Manager ── */}
+          <div className="rounded-[12px] border border-[#2a2a2e] bg-[#1a1a1e] overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-[#2a2a2e] px-4 py-3 bg-[#141416]">
+              <svg className="h-4 w-4 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              <span className="text-[13px] font-semibold text-[#eeeee8]">Даалгаврууд</span>
+              <span className="text-[11px] text-[#4a4a55]">Members can claim these</span>
+            </div>
+            <div className="p-4 space-y-2">
+              {editTasks.map((task, i) => (
+                <div key={i} className="flex items-center gap-3 rounded-[6px] border border-[#2a2a2e] bg-[#141416] px-3 py-2">
+                  <span className="flex-1 text-[13px] text-[#eeeee8]">{task.text}</span>
+                  <button onClick={() => setEditTasks(prev => prev.filter((_, idx) => idx !== i))} className="text-[#4a4a55] hover:text-red-400 transition">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              ))}
+              <div className="flex gap-2">
+                <input
+                  value={newTaskText}
+                  onChange={(e) => setNewTaskText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newTaskText.trim()) {
+                      setEditTasks(prev => [...prev, { text: newTaskText.trim(), completed: false }]);
+                      setNewTaskText("");
+                    }
+                  }}
+                  placeholder="Даалгавар нэмэх... (Enter)"
+                  className="flex-1 rounded-[6px] border border-[#2a2a2e] bg-[#141416] px-3 py-2 text-[13px] text-[#eeeee8] placeholder-[#4a4a55] outline-none focus:border-[rgba(255,211,0,0.3)]"
+                />
+                <button
+                  onClick={() => {
+                    if (newTaskText.trim()) {
+                      setEditTasks(prev => [...prev, { text: newTaskText.trim(), completed: false }]);
+                      setNewTaskText("");
+                    }
+                  }}
+                  className="rounded-[6px] bg-[rgba(255,211,0,0.08)] px-3 py-2 text-[12px] font-semibold text-[#FFD300] transition hover:bg-[rgba(255,211,0,0.15)]"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ── File Attachments ── */}
+          <div className="rounded-[12px] border border-[#2a2a2e] bg-[#1a1a1e] overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-[#2a2a2e] px-4 py-3 bg-[#141416]">
+              <svg className="h-4 w-4 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+              <span className="text-[13px] font-semibold text-[#eeeee8]">Хавсралтууд</span>
+            </div>
+            <div className="p-4 space-y-2">
+              {editAttachments.map((att, i) => (
+                <div key={i} className="flex items-center gap-3 rounded-[6px] border border-[#2a2a2e] bg-[#141416] px-3 py-2">
+                  <span className="text-[13px]">📎</span>
+                  <span className="flex-1 text-[13px] text-[#eeeee8] truncate">{att.name}</span>
+                  <span className="text-[11px] text-[#4a4a55]">{formatFileSize(att.size)}</span>
+                  <button onClick={() => setEditAttachments(prev => prev.filter((_, idx) => idx !== i))} className="text-[#4a4a55] hover:text-red-400 transition">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              ))}
+              <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-dashed border-[#2a2a2e] px-3 py-3 text-[12px] text-[#6a6a72] transition hover:border-[rgba(255,211,0,0.3)] hover:text-[#eeeee8] ${fileUploading ? "pointer-events-none opacity-50" : ""}`}>
+                {fileUploading ? (
+                  <div className="h-3 w-3 animate-spin rounded-full border border-[#FFD300] border-t-transparent" />
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
+                    Файл хавсаргах
+                  </>
+                )}
+                <input ref={fileInputRef} type="file" onChange={handleFileAttachment} className="hidden" disabled={fileUploading} />
+              </label>
+            </div>
+          </div>
+
+          {/* Save / Cancel */}
+          <div className="flex gap-3 pt-2">
+            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[8px] bg-[#FFD300] px-6 py-2.5 text-[13px] font-semibold text-black transition hover:bg-[#e6be00] disabled:opacity-50">
+              {saving ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+            <button onClick={() => { setEditing(false); setEditTasks(lesson.lessonTasks || []); setEditAttachments(lesson.attachments || []); }} className="rounded-[8px] border border-[#2a2a2e] px-5 py-2.5 text-[13px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">
+              Цуцлах
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ═══ VIEW MODE - Blog Style ═══ */}
+
+          {/* Title + Meta */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-[#eeeee8] sm:text-3xl leading-tight">{lesson.title}</h1>
+            {lesson.description && (
+              <p className="mt-2 text-[15px] leading-relaxed text-[#6a6a72]">{lesson.description}</p>
+            )}
+            <div className="mt-3 flex items-center gap-3 text-[12px] text-[#4a4a55]">
+              <span>{formatDistanceToNow(lesson.createdAt)}</span>
+              <span className="text-[#2a2a2e]">&middot;</span>
+              <span>{lesson.completedBy.length} дуусгасан</span>
+              {totalReactions > 0 && (
+                <>
+                  <span className="text-[#2a2a2e]">&middot;</span>
+                  <span>{totalReactions} reaction</span>
+                </>
+              )}
+              {(lesson.lessonTasks?.length || 0) > 0 && (
+                <>
+                  <span className="text-[#2a2a2e]">&middot;</span>
+                  <span>{lesson.lessonTasks.filter(t => t.completed).length}/{lesson.lessonTasks.length} tasks</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Actions bar */}
+          <div className="mb-6 flex flex-wrap items-center gap-2">
             {session && (
               <button
                 onClick={toggleComplete}
-                className={`flex items-center gap-2 rounded-[4px] px-5 py-2.5 text-[13px] font-bold transition-all duration-200 ${
+                className={`inline-flex items-center gap-2 rounded-[8px] px-4 py-2 text-[12px] font-semibold transition ${
                   isCompleted
-                    ? "bg-[rgba(239,44,88,0.1)] border border-[rgba(239,44,88,0.3)] text-[#EF2C58]"
-                    : "bg-[#EF2C58] text-[#F8F8F6] hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
+                    ? "bg-[rgba(0,230,118,0.1)] border border-[rgba(0,230,118,0.2)] text-[#00e676]"
+                    : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] text-[#6a6a72] hover:text-[#eeeee8] hover:border-[rgba(255,211,0,0.2)]"
                 }`}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,102 +532,195 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
                 {isCompleted ? "Дууссан" : "Дуусгах"}
               </button>
             )}
-
-            {/* Transcript toggle */}
-            {lesson.content && (
-              <button
-                onClick={() => setShowTranscript(!showTranscript)}
-                className={`rounded-[4px] border px-4 py-2.5 text-[12px] font-medium transition-all duration-200 ${
-                  showTranscript
-                    ? "border-[rgba(15,129,202,0.4)] bg-[rgba(15,129,202,0.1)] text-[#0F81CA]"
-                    : "border-[rgba(255,255,255,0.08)] text-[#999999] hover:text-[#E8E8E8]"
-                }`}
-              >
-                Тэмдэглэл
-              </button>
+            {admin && (
+              <>
+                <button onClick={() => setEditing(true)} className="rounded-[8px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-[#6a6a72] transition hover:border-[#FFD300] hover:text-[#eeeee8]">
+                  ✏️ Засах
+                </button>
+                <button onClick={handleDelete} className="rounded-[8px] border border-[#2a2a2e] px-4 py-2 text-[12px] font-medium text-red-400/60 transition hover:border-red-400/30 hover:text-red-400">
+                  Устгах
+                </button>
+              </>
             )}
+          </div>
 
-            {/* Reactions — minimized inline */}
-            {session && (
-              <div className="flex items-center gap-1 ml-auto">
-                {REACTION_KEYS.map((key) => {
-                  const data = reactions[key];
-                  const count = data?.count || 0;
-                  const reacted = data?.reacted || false;
+          {/* Reactions */}
+          {session && (
+            <div className="mb-6 flex flex-wrap items-center gap-1.5">
+              {REACTION_KEYS.map((key) => {
+                const data = reactions[key];
+                const count = data?.count || 0;
+                const reacted = data?.reacted || false;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleReaction(key)}
+                    disabled={reactingEmoji === key}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all duration-200 ${
+                      reacted
+                        ? "bg-[rgba(255,211,0,0.1)] border border-[rgba(255,211,0,0.25)]"
+                        : "bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.12)] hover:bg-[#222226]"
+                    } ${reactingEmoji === key ? "scale-110" : "active:scale-95"}`}
+                  >
+                    <span className="text-[15px]">{REACTION_EMOJIS[key]}</span>
+                    {count > 0 && (
+                      <span className={`text-[11px] font-semibold tabular-nums ${reacted ? "text-[#FFD300]" : "text-[#6a6a72]"}`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Read-only reactions for non-logged-in */}
+          {!session && totalReactions > 0 && (
+            <div className="mb-6 flex flex-wrap items-center gap-1.5">
+              {REACTION_KEYS.filter((key) => (reactions[key]?.count || 0) > 0).map((key) => (
+                <div key={key} className="inline-flex items-center gap-1.5 rounded-full bg-[#1a1a1e] border border-[rgba(255,255,255,0.04)] px-3 py-1.5">
+                  <span className="text-[15px]">{REACTION_EMOJIS[key]}</span>
+                  <span className="text-[11px] font-semibold text-[#6a6a72]">{reactions[key].count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Blog Content ── */}
+          {lesson.content && (
+            <article className="mb-8 rounded-[16px] border border-[rgba(255,255,255,0.04)] bg-[#1a1a1e] overflow-hidden">
+              <div className="border-b border-[rgba(255,255,255,0.04)] px-6 py-3.5">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-[#FFD300]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="text-[13px] font-semibold text-[#eeeee8]">Хичээлийн тэмдэглэл</span>
+                </div>
+              </div>
+              <div className="px-6 py-5 sm:px-8 sm:py-6">
+                <div
+                  className="blog-content text-[15px] leading-[1.9] text-[rgba(238,238,232,0.75)]"
+                  dangerouslySetInnerHTML={{ __html: lesson.content }}
+                />
+              </div>
+            </article>
+          )}
+
+          {/* ── Tasks Section ── */}
+          {lesson.lessonTasks && lesson.lessonTasks.length > 0 && (
+            <div className="mb-8 rounded-[16px] border border-[rgba(255,255,255,0.04)] bg-[#1a1a1e] overflow-hidden">
+              <div className="border-b border-[rgba(255,255,255,0.04)] px-6 py-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[16px]">📋</span>
+                    <span className="text-[13px] font-semibold text-[#eeeee8]">Даалгаврууд</span>
+                    <span className="rounded-full bg-[rgba(255,211,0,0.08)] px-2 py-0.5 text-[10px] font-bold text-[#FFD300]">
+                      {lesson.lessonTasks.filter(t => t.completed).length}/{lesson.lessonTasks.length}
+                    </span>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#141416]">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#FFD300] to-[#00e676] transition-all duration-500"
+                        style={{ width: `${lesson.lessonTasks.length > 0 ? (lesson.lessonTasks.filter(t => t.completed).length / lesson.lessonTasks.length * 100) : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="divide-y divide-[rgba(255,255,255,0.03)]">
+                {lesson.lessonTasks.map((task, i) => {
+                  const isMine = task.assignedTo && String(task.assignedTo._id) === userId;
+                  const isClaimed = !!task.assignedTo;
                   return (
-                    <button
-                      key={key}
-                      onClick={() => handleReaction(key)}
-                      disabled={reactingEmoji === key}
-                      className={`inline-flex items-center gap-1 rounded-[4px] px-2 py-1.5 transition-all duration-200 ${
-                        reacted
-                          ? "bg-[rgba(239,44,88,0.1)]"
-                          : "text-[#999999] hover:bg-[rgba(255,255,255,0.04)]"
-                      }`}
-                    >
-                      <ReactionIcon type={key} active={reacted} />
-                      {count > 0 && (
-                        <span className={`text-[10px] font-semibold ${reacted ? "text-[#EF2C58]" : "text-[#999999]"}`}>{count}</span>
+                    <div key={i} className={`flex items-center gap-3 px-6 py-3.5 transition ${task.completed ? "opacity-60" : ""}`}>
+                      {/* Status indicator */}
+                      <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] ${
+                        task.completed ? "bg-[#00e676] text-black" : isClaimed ? "bg-[rgba(255,211,0,0.1)] border border-[rgba(255,211,0,0.2)]" : "bg-[#141416] border border-[#2a2a2e]"
+                      }`}>
+                        {task.completed ? "✓" : isClaimed ? "👤" : (i + 1)}
+                      </div>
+
+                      {/* Task text */}
+                      <div className="flex-1 min-w-0">
+                        <span className={`text-[14px] ${task.completed ? "text-[#4a4a55] line-through" : "text-[#eeeee8]"}`}>
+                          {task.text}
+                        </span>
+                        {task.assignedTo && (
+                          <span className="ml-2 text-[11px] text-[#6a6a72]">
+                            &mdash; {task.assignedTo.name}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      {session && (
+                        <div className="flex shrink-0 gap-1.5">
+                          {!isClaimed && (
+                            <button onClick={() => handleTaskAction(i, "claim")} className="rounded-[6px] bg-[rgba(255,211,0,0.08)] px-3 py-1 text-[11px] font-semibold text-[#FFD300] transition hover:bg-[rgba(255,211,0,0.15)]">
+                              Авах
+                            </button>
+                          )}
+                          {isMine && !task.completed && (
+                            <>
+                              <button onClick={() => handleTaskAction(i, "complete")} className="rounded-[6px] bg-[rgba(0,230,118,0.08)] px-3 py-1 text-[11px] font-semibold text-[#00e676] transition hover:bg-[rgba(0,230,118,0.15)]">
+                                Дуусгах
+                              </button>
+                              <button onClick={() => handleTaskAction(i, "unclaim")} className="rounded-[6px] border border-[#2a2a2e] px-2 py-1 text-[11px] text-[#4a4a55] transition hover:text-red-400">
+                                ✕
+                              </button>
+                            </>
+                          )}
+                          {isMine && task.completed && (
+                            <button onClick={() => handleTaskAction(i, "complete")} className="rounded-[6px] border border-[#2a2a2e] px-3 py-1 text-[11px] text-[#4a4a55] transition hover:text-[#eeeee8]">
+                              Буцаах
+                            </button>
+                          )}
+                        </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
-            )}
-
-            {admin && (
-              <div className="flex items-center gap-2">
-                <button onClick={() => setEditing(true)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Засах</button>
-                <button onClick={handleDelete} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-red-500/50 transition-colors duration-200 hover:text-red-400">Устгах</button>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ─── Edit form ─── */}
-      {editing && (
-        <div className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
-          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
-          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
-          <div className="flex items-center gap-3">
-            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" placeholder="Видео URL" />
-            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-              {uploading ? `${uploadProgress}%` : "Файл"}
-              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
-            </label>
-          </div>
-          {uploading && (
-            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
-              <div className="h-full rounded-full bg-[#EF2C58] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
-          <div className="flex gap-3">
-            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Цуцлах</button>
-          </div>
-        </div>
-      )}
 
-      {/* ─── Transcript Panel (toggleable) ─── */}
-      {lesson.content && !editing && showTranscript && (
-        <motion.article
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="mb-8 overflow-hidden"
-        >
-          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <div className="h-[2px] w-6 bg-[#EF2C58]" />
-              <span className="meta-label">Хичээлийн тэмдэглэл</span>
+          {/* ── Attachments ── */}
+          {lesson.attachments && lesson.attachments.length > 0 && (
+            <div className="mb-8 rounded-[16px] border border-[rgba(255,255,255,0.04)] bg-[#1a1a1e] overflow-hidden">
+              <div className="border-b border-[rgba(255,255,255,0.04)] px-6 py-3.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[16px]">📎</span>
+                  <span className="text-[13px] font-semibold text-[#eeeee8]">Хавсралтууд</span>
+                  <span className="text-[11px] text-[#4a4a55]">{lesson.attachments.length} файл</span>
+                </div>
+              </div>
+              <div className="divide-y divide-[rgba(255,255,255,0.03)]">
+                {lesson.attachments.map((att, i) => (
+                  <a
+                    key={i}
+                    href={att.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-6 py-3 transition hover:bg-[rgba(255,211,0,0.03)]"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-[#141416] text-[16px]">
+                      {att.type.includes("pdf") ? "📄" : att.type.includes("image") ? "🖼️" : att.type.includes("video") ? "🎬" : att.type.includes("zip") || att.type.includes("rar") ? "📦" : "📁"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-[#eeeee8] truncate">{att.name}</div>
+                      <div className="text-[11px] text-[#4a4a55]">{formatFileSize(att.size)}</div>
+                    </div>
+                    <svg className="h-4 w-4 shrink-0 text-[#4a4a55]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                  </a>
+                ))}
+              </div>
             </div>
-            <div className="whitespace-pre-wrap text-[15px] leading-[1.8] text-[#999999]">
-              {lesson.content}
-            </div>
-          </div>
-        </motion.article>
+          )}
+        </>
       )}
     </div>
   );

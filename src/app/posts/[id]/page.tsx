@@ -9,8 +9,17 @@ import Link from "next/link";
 interface Post {
   _id: string;
   content: string;
+  richContent?: string;
   image?: string;
+  visibility?: string;
+  category?: string;
+  promptData?: {
+    title: string;
+    model: string;
+    tags: string[];
+  };
   likes: string[];
+  reactions?: Record<string, string[]>;
   commentsCount: number;
   createdAt: string;
   author: {
@@ -49,7 +58,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="h-3 w-3 animate-pulse bg-[#EF2C58]" />
+        <div className="h-3 w-3 animate-pulse bg-[#FFD300]" />
       </div>
     );
   }
@@ -60,7 +69,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
         <p className="text-2xl tracking-[2px] text-[rgba(240,236,227,0.3)]">
           Пост олдсонгүй
         </p>
-        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#EF2C58] hover:text-[#D4264E]">
+        <Link href="/" className="mt-4 inline-block text-[11px] tracking-[3px] text-[#FFD300] hover:text-[#B3B300]">
           ← МЭДЭЭ РҮҮ БУЦАХ
         </Link>
       </div>
@@ -69,7 +78,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#999999] transition hover:text-[#EF2C58]">
+      <Link href="/" className="mb-6 inline-block text-[10px] uppercase tracking-[3px] text-[#5a5550] transition hover:text-[#FFD300]">
         ← Мэдээ рүү буцах
       </Link>
       <PostCard post={post} onDelete={handleDelete} />

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import NotificationBell from "./NotificationBell";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
+  const userId = (session?.user as { id?: string })?.id || "";
 
   const tabs = [
     { href: "/", label: "Мэдээ", check: (p: string) => p === "/" || p.startsWith("/posts") },
@@ -54,16 +56,16 @@ export default function Navbar() {
           {session ? (
             <>
               <NotificationBell />
-              <Link
-                href={`/profile/${(session.user as { id?: string })?.id || ""}`}
-                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[12px] font-bold text-[#EF2C58] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_16px_rgba(239,44,88,0.1)] overflow-hidden"
+              <button
+                onClick={() => { if (userId) router.push(`/profile/${userId}`); }}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[12px] font-bold text-[#EF2C58] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_16px_rgba(239,44,88,0.1)] overflow-hidden"
               >
                 {session.user?.image ? (
-                  <img src={session.user.image} alt={session.user?.name || ""} className="h-8 w-8 rounded-[4px] object-cover" />
+                  <img src={session.user.image} alt={session.user?.name || ""} className="h-8 w-8 rounded-[4px] object-cover pointer-events-none" />
                 ) : (
                   session.user?.name?.charAt(0).toUpperCase() || "U"
                 )}
-              </Link>
+              </button>
             </>
           ) : (
             <>
