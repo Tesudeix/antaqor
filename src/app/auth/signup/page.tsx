@@ -3,7 +3,7 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface QuizAnswer {
@@ -69,7 +69,15 @@ const quizQuestions = [
   },
 ];
 
-export default function SignUp() {
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" /></div>}>
+      <SignUp />
+    </Suspense>
+  );
+}
+
+function SignUp() {
   const router = useRouter();
   const [currentQ, setCurrentQ] = useState(0);
   const [step, setStep] = useState<"quiz" | "result" | "register">("quiz");
