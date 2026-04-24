@@ -12,7 +12,6 @@ type Tab = {
   badge?: number;
   icon: React.ReactNode;
   match: (p: string) => boolean;
-  cta?: boolean; // visually distinct (signup)
 };
 
 export default function BottomBar() {
@@ -65,9 +64,16 @@ export default function BottomBar() {
       </svg>
     );
     const iconJoin = (
-      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
+      <span className="relative inline-flex items-center justify-center">
+        <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span className="absolute -right-1 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#EF2C58] ring-2 ring-[#0A0A0A]">
+          <svg className="h-2 w-2 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </span>
+      </span>
     );
 
     if (session) {
@@ -132,10 +138,9 @@ export default function BottomBar() {
       },
       {
         href: "/auth/signup",
-        label: "Нэгдэх",
+        label: "Би",
         icon: iconJoin,
         match: (p) => p.startsWith("/auth"),
-        cta: true,
       },
     ];
   }, [session, unread, myId]);
@@ -145,26 +150,6 @@ export default function BottomBar() {
       <div className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
         {tabs.map((tab) => {
           const active = tab.match(pathname);
-          if (tab.cta) {
-            return (
-              <Link
-                key={tab.label}
-                href={tab.href}
-                className="group relative flex flex-1 items-center justify-center py-2"
-              >
-                <div
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 transition-all duration-200 ${
-                    active
-                      ? "bg-[#EF2C58] text-white shadow-[0_0_20px_rgba(239,44,88,0.4)]"
-                      : "bg-[#EF2C58] text-white shadow-[0_0_14px_rgba(239,44,88,0.25)]"
-                  }`}
-                >
-                  <span className="h-4 w-4">{tab.icon}</span>
-                  <span className="text-[11px] font-bold tracking-wide">{tab.label}</span>
-                </div>
-              </Link>
-            );
-          }
           return (
             <Link
               key={tab.label}

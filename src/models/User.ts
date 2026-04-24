@@ -19,6 +19,7 @@ export interface IUser extends Document {
   interests: string[];
   avatar: string;
   bio: string;
+  instagram: string;
   clan: string;
   clanJoinedAt?: Date;
   subscriptionExpiresAt?: Date;
@@ -95,6 +96,12 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: "",
       maxlength: 300,
+    },
+    instagram: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 60,
     },
     clan: {
       type: String,

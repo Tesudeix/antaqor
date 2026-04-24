@@ -19,7 +19,7 @@ const VALID_INTERESTS = [
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, username, email, phone, password, age, aiExperience, interests, referralCode } =
+    const { name, username, email, phone, password, age, aiExperience, interests, referralCode, instagram } =
       await req.json();
 
     if (!name || !email || !password) {
@@ -92,6 +92,10 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const normalizedInstagram = typeof instagram === "string"
+      ? instagram.trim().replace(/^@+/, "").toLowerCase().slice(0, 60)
+      : "";
+
     const user = await User.create({
       name,
       username: username ? username.toLowerCase() : undefined,
@@ -101,6 +105,7 @@ export async function POST(req: NextRequest) {
       age: age || undefined,
       aiExperience: aiExperience || "",
       interests: safeInterests,
+      instagram: normalizedInstagram,
     });
 
     // Fire referral + welcome bonus. Non-blocking if it errors.
