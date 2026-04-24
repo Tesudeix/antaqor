@@ -41,14 +41,43 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const tabs = [
-    { href: "/", label: "Мэдээ", check: (p: string) => p === "/" || p.startsWith("/posts") },
-    { href: "/news", label: "Блог", check: (p: string) => p.startsWith("/news") },
-    { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
-    { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
-    { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") || p.startsWith("/tools") },
-    { href: "/members", label: "Гишүүд", check: (p: string) => p.startsWith("/members") },
-  ];
+  const myId = (session?.user as { id?: string })?.id || "";
+
+  const tabs = session
+    ? [
+        { href: "/", label: "Нүүр", check: (p: string) => p === "/" || p.startsWith("/posts") },
+        {
+          href: "/explore",
+          label: "Танилцах",
+          check: (p: string) =>
+            p.startsWith("/explore") ||
+            p.startsWith("/news") ||
+            p.startsWith("/classroom") ||
+            p.startsWith("/calendar") ||
+            p.startsWith("/services") ||
+            p.startsWith("/tools"),
+        },
+        { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
+        {
+          href: myId ? `/profile/${myId}` : "/credits",
+          label: "Би",
+          check: (p: string) => p.startsWith("/profile") || p.startsWith("/credits"),
+        },
+      ]
+    : [
+        { href: "/", label: "Нүүр", check: (p: string) => p === "/" || p.startsWith("/posts") },
+        {
+          href: "/explore",
+          label: "Танилцах",
+          check: (p: string) =>
+            p.startsWith("/explore") ||
+            p.startsWith("/classroom") ||
+            p.startsWith("/calendar") ||
+            p.startsWith("/services") ||
+            p.startsWith("/tools"),
+        },
+        { href: "/news", label: "Блог", check: (p: string) => p.startsWith("/news") },
+      ];
 
   return (
     <nav className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.92)] backdrop-blur-xl">
@@ -69,7 +98,7 @@ export default function Navbar() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                className={`rounded-[4px] px-5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
                   active
                     ? "bg-[#EF2C58] text-white"
                     : "text-[#AAAAAA] hover:text-[#E8E8E8]"

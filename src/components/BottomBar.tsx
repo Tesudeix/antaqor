@@ -1,20 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+
+// ─── Tab matcher ───
+type Tab = {
+  href: string;
+  label: string;
+  badge?: number;
+  icon: React.ReactNode;
+  match: (p: string) => boolean;
+  cta?: boolean; // visually distinct (signup)
+};
 
 export default function BottomBar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [unread, setUnread] = useState(0);
-
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/" || pathname.startsWith("/posts");
-    if (href === "/news") return pathname.startsWith("/news");
-    return pathname.startsWith(href);
-  };
 
   useEffect(() => {
     if (!session) return;
@@ -22,7 +26,7 @@ export default function BottomBar() {
       try {
         const res = await fetch("/api/chat/unread");
         const data = await res.json();
-        if (data.count) setUnread(data.count);
+        if (typeof data.count === "number") setUnread(data.count);
       } catch { /* ignore */ }
     };
     fetchUnread();
@@ -30,148 +34,164 @@ export default function BottomBar() {
     return () => clearInterval(interval);
   }, [session]);
 
-  const links = session
-    ? [
+  const myId = (session?.user as { id?: string })?.id || "";
+
+  const tabs: Tab[] = useMemo(() => {
+    const iconHome = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.122 0L21.75 12M4.5 9.75v9.75A2.25 2.25 0 006.75 21.75H18a2.25 2.25 0 002.25-2.25V9.75M9 21.75V15a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0115 15v6.75" />
+      </svg>
+    );
+    const iconExplore = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    );
+    const iconChat = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.132a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+      </svg>
+    );
+    const iconBlog = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    );
+    const iconMe = session?.user?.image ? (
+      <img src={session.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
+    ) : (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    );
+    const iconJoin = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    );
+
+    if (session) {
+      return [
         {
           href: "/",
-          label: "Мэдээ",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-          ),
+          label: "Нүүр",
+          icon: iconHome,
+          match: (p) => p === "/" || p.startsWith("/posts"),
         },
         {
-          href: "/calendar",
-          label: "Хуваарь",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-            </svg>
-          ),
-        },
-        {
-          href: "/classroom",
-          label: "Хичээл",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          ),
+          href: "/explore",
+          label: "Танилцах",
+          icon: iconExplore,
+          match: (p) =>
+            p.startsWith("/explore") ||
+            p.startsWith("/news") ||
+            p.startsWith("/classroom") ||
+            p.startsWith("/calendar") ||
+            p.startsWith("/services") ||
+            p.startsWith("/tools"),
         },
         {
           href: "/chat",
           label: "Чат",
           badge: unread,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          ),
+          icon: iconChat,
+          match: (p) => p.startsWith("/chat"),
         },
         {
-          href: "/services",
-          label: "Үйлчилгээ",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-          ),
-        },
-        {
-          href: `/profile/${(session?.user as { id?: string })?.id || ""}`,
-          label: "Профайл",
-          badge: 0,
-          icon: session?.user?.image ? (
-            <img src={session.user.image} alt={session.user?.name || ""} className="h-5 w-5 rounded-[4px] object-cover" />
-          ) : (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          ),
-        },
-      ]
-    : [
-        {
-          href: "/",
-          label: "Мэдээ",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-          ),
-        },
-        {
-          href: "/news",
-          label: "Блог",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-            </svg>
-          ),
-        },
-        {
-          href: "/calendar",
-          label: "Хуваарь",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-            </svg>
-          ),
-        },
-        {
-          href: "/services",
-          label: "Үйлчилгээ",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-          ),
-        },
-        {
-          href: "/auth/signin",
-          label: "Нэвтрэх",
-          badge: 0,
-          icon: (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-            </svg>
-          ),
+          href: myId ? `/profile/${myId}` : "/credits",
+          label: "Би",
+          icon: iconMe,
+          match: (p) => p.startsWith("/profile") || p.startsWith("/credits"),
         },
       ];
+    }
+
+    return [
+      {
+        href: "/",
+        label: "Нүүр",
+        icon: iconHome,
+        match: (p) => p === "/" || p.startsWith("/posts"),
+      },
+      {
+        href: "/explore",
+        label: "Танилцах",
+        icon: iconExplore,
+        match: (p) =>
+          p.startsWith("/explore") ||
+          p.startsWith("/classroom") ||
+          p.startsWith("/calendar") ||
+          p.startsWith("/services") ||
+          p.startsWith("/tools"),
+      },
+      {
+        href: "/news",
+        label: "Блог",
+        icon: iconBlog,
+        match: (p) => p.startsWith("/news"),
+      },
+      {
+        href: "/auth/signup",
+        label: "Нэгдэх",
+        icon: iconJoin,
+        match: (p) => p.startsWith("/auth"),
+        cta: true,
+      },
+    ];
+  }, [session, unread, myId]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
-      <div className="flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1">
-        {links.map((link) => {
-          const active = isActive(link.href);
+      <div className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
+        {tabs.map((tab) => {
+          const active = tab.match(pathname);
+          if (tab.cta) {
+            return (
+              <Link
+                key={tab.label}
+                href={tab.href}
+                className="group relative flex flex-1 items-center justify-center py-2"
+              >
+                <div
+                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 transition-all duration-200 ${
+                    active
+                      ? "bg-[#EF2C58] text-white shadow-[0_0_20px_rgba(239,44,88,0.4)]"
+                      : "bg-[#EF2C58] text-white shadow-[0_0_14px_rgba(239,44,88,0.25)]"
+                  }`}
+                >
+                  <span className="h-4 w-4">{tab.icon}</span>
+                  <span className="text-[11px] font-bold tracking-wide">{tab.label}</span>
+                </div>
+              </Link>
+            );
+          }
           return (
             <Link
-              key={link.label}
-              href={link.href}
-              className={`relative flex flex-col items-center gap-0.5 px-2 py-2 transition-colors duration-200 ${
-                active ? "text-[#EF2C58]" : "text-[#CCCCCC]"
+              key={tab.label}
+              href={tab.href}
+              className={`group relative flex flex-1 flex-col items-center gap-0.5 px-1 py-2 transition-colors duration-200 ${
+                active ? "text-[#EF2C58]" : "text-[#888]"
               }`}
             >
               <div className="relative">
-                {link.icon}
-                {link.badge > 0 && (
-                  <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-[4px] bg-[#EF2C58] px-1 text-[8px] font-bold text-white">
-                    {link.badge > 99 ? "99+" : link.badge}
+                <div
+                  className={`flex h-[30px] w-[30px] items-center justify-center rounded-[8px] transition ${
+                    active ? "bg-[rgba(239,44,88,0.12)]" : "bg-transparent"
+                  }`}
+                >
+                  {tab.icon}
+                </div>
+                {typeof tab.badge === "number" && tab.badge > 0 && (
+                  <span className="absolute -right-1 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#EF2C58] px-1 text-[9px] font-black text-white ring-2 ring-[#0A0A0A]">
+                    {tab.badge > 99 ? "99+" : tab.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[9px] font-semibold tracking-wide">{link.label}</span>
+              <span className={`text-[10px] font-semibold tracking-wide ${active ? "text-[#EF2C58]" : "text-[#888]"}`}>
+                {tab.label}
+              </span>
               {active && (
-                <div className="absolute -top-px left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-[4px] bg-[#EF2C58]" />
+                <span className="absolute -top-[1px] left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full bg-[#EF2C58]" />
               )}
             </Link>
           );
