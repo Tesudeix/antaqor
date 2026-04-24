@@ -431,7 +431,6 @@ export default function ClanPage() {
             ref={receiptInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handleReceiptPick}
             className="hidden"
           />
@@ -457,8 +456,8 @@ export default function ClanPage() {
                 </svg>
               </div>
               <div>
-                <div className="text-[14px] font-bold text-[#E8E8E8]">Screenshot оруулах</div>
-                <div className="mt-1 text-[11px] text-[#666]">JPG · PNG · WebP · max 10MB</div>
+                <div className="text-[14px] font-bold text-[#E8E8E8]">Зургийн сангаас сонгох</div>
+                <div className="mt-1 text-[11px] text-[#666]">Screenshot / banking app-ын гүйлгээний дэлгэц · max 10MB</div>
               </div>
             </button>
           )}

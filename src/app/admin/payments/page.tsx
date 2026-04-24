@@ -89,6 +89,7 @@ export default function AdminPaymentsPage() {
   const [autoMatching, setAutoMatching] = useState(false);
   const [autoMatchResult, setAutoMatchResult] = useState<AutoMatchResult | null>(null);
   const [autoApproving, setAutoApproving] = useState(false);
+  const [autoMatchErr, setAutoMatchErr] = useState("");
 
   const showFlash = (msg: string) => {
     setFlash(msg);
@@ -139,15 +140,16 @@ export default function AdminPaymentsPage() {
     }
   };
 
-  const runAutoMatch = async (execute: boolean) => {
-    if (!statementText.trim()) return;
+  const runAutoMatch = useCallback(async (text: string, execute: boolean) => {
+    if (!text.trim()) return;
     const setter = execute ? setAutoApproving : setAutoMatching;
     setter(true);
+    setAutoMatchErr("");
     try {
       const res = await fetch("/api/admin/payments/auto-match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ statementText, execute, days: 30 }),
+        body: JSON.stringify({ statementText: text, execute, days: 30 }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -157,12 +159,29 @@ export default function AdminPaymentsPage() {
           load(status);
         }
       } else {
-        showFlash("Алдаа: " + (data.error || "parse failed"));
+        setAutoMatchErr(data.error || "parse failed");
       }
+    } catch {
+      setAutoMatchErr("Network error");
     } finally {
       setter(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  // Auto-preview-match on paste/typing (debounced 400ms)
+  useEffect(() => {
+    const text = statementText.trim();
+    if (!text) {
+      setAutoMatchResult(null);
+      return;
+    }
+    // Don't auto-fire if we just executed — keep the success state visible
+    if (autoMatchResult?.executed) return;
+    const t = setTimeout(() => { runAutoMatch(text, false); }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statementText]);
 
   const reject = async () => {
     if (!rejectingId) return;
@@ -271,29 +290,48 @@ export default function AdminPaymentsPage() {
             <textarea
               value={statementText}
               onChange={(e) => setStatementText(e.target.value)}
-              placeholder={"Банкны апп-аас гүйлгээний жагсаалтыг copy хийж тавь.\n\nЖишээ мөр:\n[2026.04.25 14:30] +49,000₮ Guilgee: AB7K9X Bayanbileg B\n₮49,000 orj irlee · XY9K2M · Bold B.\n..."}
-              rows={8}
+              placeholder={"Банкны апп-аас copy → энд paste.\nСистем автоматаар refCode + дүнгээр таарна.\n\nЖишээ мөр:\n+49,000₮ · AB7K9X · Bayanbileg B\n[2026.04.25 14:30] ₮49,000 · XY9K2M · Bold"}
+              rows={7}
               className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#22C55E]"
             />
+            <p className="-mt-1 text-[10px] text-[#555]">
+              Paste хийхэд автоматаар таарал шалгана. Баталгаажуулахын тулд зөвхөн дээрх ногоон товчийг дар.
+            </p>
 
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => runAutoMatch(false)}
-                disabled={!statementText.trim() || autoMatching || autoApproving}
-                className="rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#141414] px-4 py-2 text-[12px] font-bold text-[#AAA] transition hover:text-[#22C55E] disabled:opacity-40"
-              >
-                {autoMatching ? "Шалгаж..." : "Preview match"}
-              </button>
-              <button
-                onClick={() => runAutoMatch(true)}
-                disabled={!statementText.trim() || autoMatching || autoApproving}
-                className="rounded-[8px] bg-[#22C55E] px-5 py-2 text-[12px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-40"
-              >
-                {autoApproving ? "Идэвхжүүлж..." : "✓ Match + Auto-approve"}
-              </button>
-              {autoMatchResult && (
+              {autoMatching && (
+                <div className="flex items-center gap-1.5 rounded-[8px] bg-[#0A0A0A] px-3 py-2 text-[11px] text-[#888]">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#22C55E]" />
+                  Хуулга шалгаж байна...
+                </div>
+              )}
+              {!autoMatching && autoMatchResult && autoMatchResult.summary.matches > 0 && !autoMatchResult.executed && (
                 <button
-                  onClick={() => { setAutoMatchResult(null); setStatementText(""); }}
+                  onClick={() => runAutoMatch(statementText, true)}
+                  disabled={autoApproving}
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[8px] bg-[#22C55E] px-6 py-2.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(34,197,94,0.25)] transition hover:shadow-[0_0_40px_rgba(34,197,94,0.45)] disabled:opacity-40"
+                >
+                  <span className="relative z-10">
+                    {autoApproving ? "Идэвхжүүлж..." : `✓ ${autoMatchResult.summary.matches} тохирлыг идэвхжүүлэх`}
+                  </span>
+                  {!autoApproving && (
+                    <svg className="relative z-10 h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  )}
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                </button>
+              )}
+              {autoMatchResult?.executed && (
+                <div className="flex items-center gap-2 rounded-[8px] bg-[rgba(34,197,94,0.1)] px-3 py-2 text-[12px] font-bold text-[#22C55E]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  {autoMatchResult.summary.approved} төлбөр идэвхжсэн
+                </div>
+              )}
+              {autoMatchErr && (
+                <div className="text-[11px] text-[#EF4444]">Алдаа: {autoMatchErr}</div>
+              )}
+              {(autoMatchResult || statementText) && (
+                <button
+                  onClick={() => { setAutoMatchResult(null); setStatementText(""); setAutoMatchErr(""); }}
                   className="ml-auto text-[11px] text-[#666] hover:text-[#AAA]"
                 >
                   Цэвэрлэх
