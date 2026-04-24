@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminSession, unauthorized } from "@/lib/adminAuth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { maybeAwardReferralPayment } from "@/lib/credits";
 
 export async function PATCH(
   req: Request,
@@ -40,6 +41,10 @@ export async function PATCH(
         }
         user.subscriptionExpiresAt = expiresAt;
         await user.save();
+
+        // Fire the "friend-paid" referral bonus to the referrer (if applicable).
+        // Idempotent: only awards once per referee.
+        maybeAwardReferralPayment(String(user._id)).catch(() => {});
 
         return NextResponse.json({
           message: `${user.name}-д ${duration} хоногийн гишүүнчлэл олголоо`,

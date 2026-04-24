@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
+import ReferralBanner from "@/components/ReferralBanner";
 
 interface Post {
   _id: string;
@@ -784,6 +785,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
+      <ReferralBanner />
       <LatestNews />
       <ShowcaseGallery />
       <MembersPreview />

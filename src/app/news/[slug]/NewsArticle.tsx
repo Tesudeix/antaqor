@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import ShareButton from "@/components/ShareButton";
 
 export type Category = "AI" | "LLM" | "Agents" | "Research" | "Бизнес" | "Tool" | "Монгол";
 
@@ -102,7 +103,6 @@ export interface NewsArticleProps {
 
 export default function NewsArticleView({ article, related }: NewsArticleProps) {
   const [progress, setProgress] = useState(0);
-  const [shareStatus, setShareStatus] = useState("");
 
   // reading progress bar
   useEffect(() => {
@@ -116,22 +116,6 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
     handler();
     return () => window.removeEventListener("scroll", handler);
   }, []);
-
-  const share = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: article.title, text: article.excerpt, url });
-        setShareStatus("Хуваалцлаа");
-      } else {
-        await navigator.clipboard.writeText(url);
-        setShareStatus("Холбоос хуулагдлаа");
-      }
-    } catch {
-      setShareStatus("");
-    }
-    setTimeout(() => setShareStatus(""), 2200);
-  };
 
   const categoryColor = useMemo(() => CATEGORY_COLORS[article.category], [article]);
 
@@ -193,13 +177,14 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={share}
-              className="flex items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] px-3.5 py-1.5 text-[11px] font-semibold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-              {shareStatus || "Хуваалцах"}
-            </button>
+            <ShareButton
+              kind="news"
+              resourceId={article.slug}
+              path={`/news/${article.slug}`}
+              title={article.title}
+              excerpt={article.excerpt}
+              size="md"
+            />
             {article.sourceUrl && (
               <a
                 href={article.sourceUrl}

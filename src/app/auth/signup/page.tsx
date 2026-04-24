@@ -2,8 +2,8 @@
 
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface QuizAnswer {
@@ -83,6 +83,21 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const searchParams = useSearchParams();
+  const [referralCode, setReferralCode] = useState<string>("");
+  const [referrer, setReferrer] = useState<{ name: string; avatar?: string } | null>(null);
+
+  useEffect(() => {
+    const fromUrl = searchParams?.get("ref");
+    if (!fromUrl) return;
+    const code = fromUrl.trim().toLowerCase();
+    setReferralCode(code);
+    fetch(`/api/referral/resolve?code=${encodeURIComponent(code)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d?.user) setReferrer({ name: d.user.name, avatar: d.user.avatar }); })
+      .catch(() => {});
+  }, [searchParams]);
+
   const handleAnswer = (qId: string, value: string) => {
     setQuizAnswers((p) => ({ ...p, [qId]: value }));
     // Auto-advance after a brief delay
@@ -110,7 +125,14 @@ export default function SignUp() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, email, password, aiLevel: aiLevel?.level }),
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          password,
+          aiLevel: aiLevel?.level,
+          referralCode: referralCode || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -142,6 +164,25 @@ export default function SignUp() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="w-full max-w-[440px]">
+          {referrer && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-3 flex items-center gap-2.5 rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.06)] p-3"
+            >
+              {referrer.avatar ? (
+                <img src={referrer.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(239,44,88,0.12)] text-[12px] font-bold text-[#EF2C58]">
+                  {referrer.name.charAt(0)}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="text-[12px] font-bold text-[#E8E8E8] truncate">{referrer.name} урилсан</div>
+                <div className="text-[11px] text-[#EF2C58]">+50 кредит тавтай морилох бэлэг</div>
+              </div>
+            </motion.div>
+          )}
           <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] overflow-hidden">
             {/* Progress bar */}
             <div className="h-[3px] bg-[#1A1A1A]">

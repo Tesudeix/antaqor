@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { formatDistanceToNow } from "@/lib/utils";
 import { isAdminEmail } from "@/lib/adminClient";
+import ShareButton from "./ShareButton";
 
 interface ReactionData {
   count: number;
@@ -261,17 +262,26 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           })}
         </div>
 
-        <Link
-          href={`/posts/${post._id}`}
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[#555555] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
-        >
-          <svg className="h-[16px] w-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          {post.commentsCount > 0 && (
-            <span className="text-[11px] font-semibold">{post.commentsCount}</span>
-          )}
-        </Link>
+        <div className="flex items-center gap-1">
+          <ShareButton
+            kind="post"
+            resourceId={post._id}
+            path={`/posts/${post._id}`}
+            title={post.author?.name ? `${post.author.name} · Antaqor` : "Antaqor"}
+            excerpt={post.content?.slice(0, 140) || ""}
+          />
+          <Link
+            href={`/posts/${post._id}`}
+            className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[#555555] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"
+          >
+            <svg className="h-[16px] w-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            {post.commentsCount > 0 && (
+              <span className="text-[11px] font-semibold">{post.commentsCount}</span>
+            )}
+          </Link>
+        </div>
       </div>
     </article>
   );

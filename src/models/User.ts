@@ -28,6 +28,11 @@ export interface IUser extends Document {
   xp: number;
   level: number;
   xpHistory: IXPHistoryEntry[];
+  credits: number;
+  creditsLifetime: number;
+  referralCode?: string;
+  referredBy?: mongoose.Types.ObjectId;
+  referralCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -130,6 +135,32 @@ const UserSchema = new Schema<IUser>(
         date: { type: Date, default: Date.now },
       },
     ],
+    credits: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
+    creditsLifetime: {
+      type: Number,
+      default: 0,
+    },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
+    referredBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
+    referralCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

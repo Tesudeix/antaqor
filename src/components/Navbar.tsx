@@ -2,9 +2,40 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import NotificationBell from "./NotificationBell";
+
+function CreditChip() {
+  const { data: session } = useSession();
+  const [balance, setBalance] = useState<number | null>(null);
+  useEffect(() => {
+    if (!session?.user) return;
+    let cancelled = false;
+    const load = () => {
+      fetch("/api/credits")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (!cancelled && typeof d?.balance === "number") setBalance(d.balance); })
+        .catch(() => {});
+    };
+    load();
+    const t = setInterval(load, 60000);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [session]);
+
+  if (!session?.user || balance === null) return null;
+  return (
+    <Link
+      href="/credits"
+      title="Миний кредит"
+      className="group flex items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)] px-2.5 py-1 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+    >
+      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span className="tabular-nums">{balance.toLocaleString()}</span>
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -54,6 +85,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {session ? (
             <>
+              <CreditChip />
               <NotificationBell />
               <Link
                 href={`/profile/${(session.user as { id?: string })?.id || ""}`}

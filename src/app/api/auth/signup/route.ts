@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { initializeReferral } from "@/lib/credits";
 
 const VALID_INTERESTS = [
   "ai_tools",
@@ -18,7 +19,7 @@ const VALID_INTERESTS = [
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, username, email, phone, password, age, aiExperience, interests } =
+    const { name, username, email, phone, password, age, aiExperience, interests, referralCode } =
       await req.json();
 
     if (!name || !email || !password) {
@@ -102,10 +103,21 @@ export async function POST(req: NextRequest) {
       interests: safeInterests,
     });
 
+    // Fire referral + welcome bonus. Non-blocking if it errors.
+    const ref = typeof referralCode === "string" ? referralCode.trim().toLowerCase() : null;
+    let referrerId: string | null = null;
+    try {
+      const result = await initializeReferral(String(user._id), ref);
+      referrerId = result.referrer;
+    } catch {
+      /* swallow — signup itself succeeded */
+    }
+
     return NextResponse.json(
       {
         message: "Бүртгэл амжилттай үүслээ",
         user: { id: user._id, name: user.name, email: user.email },
+        referral: referrerId ? { referrer: referrerId } : null,
       },
       { status: 201 }
     );
