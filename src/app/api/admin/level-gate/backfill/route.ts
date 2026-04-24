@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
+import { Types } from "mongoose";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import User from "@/models/User";
@@ -37,8 +38,8 @@ export async function POST() {
       .lean();
     if (batch.length === 0) break;
 
-    const ops: { updateOne: { filter: { _id: unknown }; update: { $set: { authorLevel: number } } } }[] = [];
-    for (const p of batch as unknown as { _id: unknown; author: { toString(): string }; authorLevel?: number }[]) {
+    const ops: { updateOne: { filter: { _id: Types.ObjectId }; update: { $set: { authorLevel: number } } } }[] = [];
+    for (const p of batch as unknown as { _id: Types.ObjectId; author: { toString(): string }; authorLevel?: number }[]) {
       const lvl = levelMap.get(p.author.toString()) || 1;
       if (p.authorLevel !== lvl) {
         ops.push({
@@ -51,7 +52,8 @@ export async function POST() {
     }
 
     if (ops.length > 0) {
-      const res = await Post.bulkWrite(ops);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await Post.bulkWrite(ops as any);
       updated += res.modifiedCount || 0;
     }
 
