@@ -56,6 +56,16 @@ export default function BottomBar() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
       </svg>
     );
+    const iconMarket = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+      </svg>
+    );
+    const iconClassroom = (
+      <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+      </svg>
+    );
     const iconMe = session?.user?.image ? (
       <img src={session.user.image} alt="" className="h-6 w-6 rounded-full object-cover" />
     ) : (
@@ -82,19 +92,19 @@ export default function BottomBar() {
           href: "/",
           label: "Нүүр",
           icon: iconHome,
-          match: (p) => p === "/" || p.startsWith("/posts"),
+          match: (p) => p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
         {
-          href: "/explore",
-          label: "Танилцах",
-          icon: iconExplore,
-          match: (p) =>
-            p.startsWith("/explore") ||
-            p.startsWith("/news") ||
-            p.startsWith("/classroom") ||
-            p.startsWith("/calendar") ||
-            p.startsWith("/services") ||
-            p.startsWith("/tools"),
+          href: "/market",
+          label: "Market",
+          icon: iconMarket,
+          match: (p) => p.startsWith("/market"),
+        },
+        {
+          href: "/classroom",
+          label: "Хичээл",
+          icon: iconClassroom,
+          match: (p) => p.startsWith("/classroom"),
         },
         {
           href: "/chat",
@@ -107,7 +117,12 @@ export default function BottomBar() {
           href: myId ? `/profile/${myId}` : "/credits",
           label: "Би",
           icon: iconMe,
-          match: (p) => p.startsWith("/profile") || p.startsWith("/credits"),
+          match: (p) =>
+            p.startsWith("/profile") ||
+            p.startsWith("/credits") ||
+            p.startsWith("/calendar") ||
+            p.startsWith("/services") ||
+            p.startsWith("/tools"),
         },
       ];
     }
@@ -117,18 +132,19 @@ export default function BottomBar() {
         href: "/",
         label: "Нүүр",
         icon: iconHome,
-        match: (p) => p === "/" || p.startsWith("/posts"),
+        match: (p) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
       },
       {
-        href: "/explore",
-        label: "Танилцах",
-        icon: iconExplore,
-        match: (p) =>
-          p.startsWith("/explore") ||
-          p.startsWith("/classroom") ||
-          p.startsWith("/calendar") ||
-          p.startsWith("/services") ||
-          p.startsWith("/tools"),
+        href: "/market",
+        label: "Market",
+        icon: iconMarket,
+        match: (p) => p.startsWith("/market"),
+      },
+      {
+        href: "/classroom",
+        label: "Classroom",
+        icon: iconClassroom,
+        match: (p) => p.startsWith("/classroom"),
       },
       {
         href: "/news",
@@ -147,14 +163,14 @@ export default function BottomBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
-      <div className="mx-auto flex max-w-md items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
+      <div className="mx-auto flex max-w-md items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)] pt-1.5">
         {tabs.map((tab) => {
           const active = tab.match(pathname);
           return (
             <Link
               key={tab.label}
               href={tab.href}
-              className={`group relative flex flex-1 flex-col items-center gap-0.5 px-1 py-2 transition-colors duration-200 ${
+              className={`group relative flex flex-1 min-w-0 flex-col items-center gap-0.5 px-0.5 py-2 transition-colors duration-200 ${
                 active ? "text-[#EF2C58]" : "text-[#888]"
               }`}
             >
@@ -172,7 +188,7 @@ export default function BottomBar() {
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] font-semibold tracking-wide ${active ? "text-[#EF2C58]" : "text-[#888]"}`}>
+              <span className={`w-full truncate text-center text-[10px] font-semibold tracking-tight ${active ? "text-[#EF2C58]" : "text-[#888]"}`}>
                 {tab.label}
               </span>
               {active && (

@@ -45,37 +45,34 @@ export default function Navbar() {
 
   const tabs = session
     ? [
-        { href: "/", label: "Нүүр", check: (p: string) => p === "/" || p.startsWith("/posts") },
         {
-          href: "/explore",
-          label: "Танилцах",
+          href: "/",
+          label: "Нүүр",
           check: (p: string) =>
-            p.startsWith("/explore") ||
-            p.startsWith("/news") ||
-            p.startsWith("/classroom") ||
-            p.startsWith("/calendar") ||
-            p.startsWith("/services") ||
-            p.startsWith("/tools"),
+            p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
+        { href: "/market", label: "Market", check: (p: string) => p.startsWith("/market") },
+        { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
           href: myId ? `/profile/${myId}` : "/credits",
           label: "Би",
-          check: (p: string) => p.startsWith("/profile") || p.startsWith("/credits"),
-        },
-      ]
-    : [
-        { href: "/", label: "Нүүр", check: (p: string) => p === "/" || p.startsWith("/posts") },
-        {
-          href: "/explore",
-          label: "Танилцах",
           check: (p: string) =>
-            p.startsWith("/explore") ||
-            p.startsWith("/classroom") ||
+            p.startsWith("/profile") ||
+            p.startsWith("/credits") ||
             p.startsWith("/calendar") ||
             p.startsWith("/services") ||
             p.startsWith("/tools"),
         },
+      ]
+    : [
+        {
+          href: "/",
+          label: "Нүүр",
+          check: (p: string) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
+        },
+        { href: "/market", label: "Market", check: (p: string) => p.startsWith("/market") },
+        { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/news", label: "Блог", check: (p: string) => p.startsWith("/news") },
       ];
 
@@ -98,7 +95,7 @@ export default function Navbar() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`rounded-[4px] px-5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
                   active
                     ? "bg-[#EF2C58] text-white"
                     : "text-[#AAAAAA] hover:text-[#E8E8E8]"
