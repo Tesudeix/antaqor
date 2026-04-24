@@ -217,39 +217,70 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
 
       {/* Body */}
       <div
-        className="news-article text-[15px] leading-[1.8] text-[#C8C8C8] md:text-[16px]"
+        className="news-article text-[16px] leading-[1.85] text-[#C8C8C8] md:text-[18px] md:leading-[1.85]"
         dangerouslySetInnerHTML={renderContent(article.content)}
       />
 
       {/* Tags */}
       {article.tags?.length > 0 && (
-        <div className="mt-10 flex flex-wrap items-center gap-1.5 border-t border-[rgba(255,255,255,0.06)] pt-6">
+        <div className="mt-12 flex flex-wrap items-center gap-1.5 border-t border-[rgba(255,255,255,0.06)] pt-6">
           <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#555]">Tags</span>
           {article.tags.map((t) => (
-            <span
+            <Link
               key={t}
+              href={`/news?q=${encodeURIComponent(t)}`}
               className="rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] px-2.5 py-1 text-[11px] text-[#999] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
             >
               #{t}
-            </span>
+            </Link>
           ))}
         </div>
       )}
 
-      {/* CTA */}
-      <section className="mt-10 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
+      {/* Telegram subscribe nudge — lower-friction than email opt-in */}
+      <section className="mt-10 overflow-hidden rounded-[8px] border border-[rgba(42,171,238,0.18)] bg-gradient-to-br from-[rgba(42,171,238,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-5 md:p-6">
+        <div className="flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#2AABEE] to-[#229ED9]">
+              <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.147l4.012 1.484 1.48 4.012a2.25 2.25 0 004.148.126l7.5-16.5a2.25 2.25 0 00-.217-2.022 2.25 2.25 0 00-1.527-.962z" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-[14px] font-bold text-[#E8E8E8]">AI-н шинэ мэдээ миний Telegram рүү</div>
+              <div className="text-[11px] text-[#888]">Antaqor community-д нэгдэж өдрийн шинэ мэдээ аваарай</div>
+            </div>
+          </div>
+          <Link
+            href="/chat"
+            className="shrink-0 rounded-[8px] bg-[#2AABEE] px-5 py-2.5 text-[13px] font-bold text-white transition hover:shadow-[0_0_24px_rgba(42,171,238,0.4)]"
+          >
+            Нэгдэх
+          </Link>
+        </div>
+      </section>
+
+      {/* Membership CTA — direct to 49k payment */}
+      <section className="mt-5 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-7">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">ANTAQOR</div>
-            <h3 className="mt-1.5 text-[18px] font-bold leading-tight text-[#E8E8E8] md:text-[20px]">
-              AI-г бүтээгчийн нүдээр
+            <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">CYBER EMPIRE</div>
+            <h3 className="mt-1.5 text-[20px] font-bold leading-tight text-[#E8E8E8] md:text-[22px]">
+              Бүх контент · Бүх хичээл · Хязгааргүй
             </h3>
-            <p className="mt-1 text-[12px] text-[#666] md:text-[13px]">
-              Cyber Empire-ийн гишүүд промт, агент, AI бизнесийн гарын авлагад хандах боломжтой.
+            <p className="mt-1 text-[12px] text-[#888] md:text-[13px]">
+              Member бол promt, agent, бизнесийн гарын авлагад бүрэн хандана.
             </p>
           </div>
-          <Link href="/auth/signup" className="rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
-            Нэгдэх
+          <Link
+            href="/clan?pay=1"
+            className="group relative inline-flex shrink-0 items-center gap-2 overflow-hidden rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.4)]"
+          >
+            <span className="relative z-10">Нэгдэх · ₮49k</span>
+            <svg className="relative z-10 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
           </Link>
         </div>
       </section>
@@ -291,15 +322,35 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
       )}
 
       <style jsx global>{`
-        .news-article p { margin: 0 0 1.1em; }
-        .news-article h2 { margin: 1.6em 0 0.6em; font-size: 22px; font-weight: 800; color: #E8E8E8; letter-spacing: -0.01em; }
-        .news-article h3 { margin: 1.4em 0 0.5em; font-size: 18px; font-weight: 700; color: #E8E8E8; }
+        .news-article p { margin: 0 0 1.35em; }
+        .news-article h2 {
+          margin: 2em 0 0.7em;
+          font-size: 24px;
+          font-weight: 800;
+          color: #E8E8E8;
+          letter-spacing: -0.015em;
+          line-height: 1.25;
+        }
+        @media (min-width: 768px) {
+          .news-article h2 { font-size: 28px; }
+          .news-article h3 { font-size: 22px; }
+        }
+        .news-article h3 {
+          margin: 1.7em 0 0.55em;
+          font-size: 20px;
+          font-weight: 700;
+          color: #E8E8E8;
+          letter-spacing: -0.01em;
+          line-height: 1.3;
+        }
+        .news-article h2 + p, .news-article h3 + p { margin-top: 0; }
         .news-article blockquote {
-          border-left: 2px solid #EF2C58;
-          padding: 0.25em 0 0.25em 1em;
-          margin: 1.2em 0;
+          border-left: 3px solid #EF2C58;
+          padding: 0.3em 0 0.3em 1.1em;
+          margin: 1.6em 0;
           color: #B8B8B8;
           font-style: italic;
+          font-size: 1.02em;
         }
         .news-article a { color: #EF2C58; text-decoration: none; border-bottom: 1px solid rgba(239,44,88,0.3); }
         .news-article a:hover { border-bottom-color: #EF2C58; }
@@ -313,20 +364,20 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
         }
         .news-article strong { color: #E8E8E8; font-weight: 700; }
         .news-article figure {
-          margin: 1.8em 0;
+          margin: 2em 0;
           display: flex;
           flex-direction: column;
-          gap: 0.5em;
+          gap: 0.6em;
         }
         .news-article figure img {
           width: 100%;
           height: auto;
-          border-radius: 8px;
+          border-radius: 10px;
           border: 1px solid rgba(255,255,255,0.06);
           background: #141414;
         }
         .news-article figcaption {
-          font-size: 12px;
+          font-size: 13px;
           color: #666;
           text-align: center;
           font-style: italic;
@@ -334,8 +385,15 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
         .news-article p img {
           max-width: 100%;
           height: auto;
-          border-radius: 6px;
-          margin: 0.3em 0;
+          border-radius: 8px;
+          margin: 0.5em 0;
+        }
+        .news-article ul, .news-article ol {
+          margin: 0 0 1.35em 1.4em;
+          padding: 0;
+        }
+        .news-article li {
+          margin-bottom: 0.55em;
         }
       `}</style>
     </article>

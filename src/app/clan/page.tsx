@@ -14,67 +14,26 @@ function formatMNT(n: number) {
   return n.toLocaleString("mn-MN");
 }
 
-// ─── Tier Data ───
-const TIERS = [
-  {
-    id: "entry",
-    name: "Entry",
-    price: 49000,
-    period: "/сар",
-    tagline: "AI суралцаж эхлэх",
-    popular: false,
-    features: [
-      { text: "Community хандалт", included: true },
-      { text: "Бичлэгтэй хичээлүүд (бүгд)", included: true },
-      { text: "Challenge, даалгаврууд", included: true },
-      { text: "Гишүүдийн форум", included: true },
-      { text: "Live session", included: false },
-      { text: "Шууд зөвлөгөө", included: false },
-      { text: "Төслийн review", included: false },
-    ],
-    cta: "Эхлэх",
-    color: "#888888",
-  },
-  {
-    id: "core",
-    name: "Core",
-    price: 149000,
-    period: "/сар",
-    tagline: "Бодит ахиц гаргах",
-    popular: true,
-    features: [
-      { text: "Entry-н бүх боломж", included: true },
-      { text: "Live session (7 хоног бүр)", included: true },
-      { text: "Шууд холбогдох эрх", included: true },
-      { text: "Менторшип, feedback", included: true },
-      { text: "Давуу эрхтэй challenge", included: true },
-      { text: "Карьер зөвлөгөө", included: true },
-      { text: "Inner Circle хандалт", included: false },
-    ],
-    cta: "Core болох",
-    color: "#EF2C58",
-  },
-  {
-    id: "inner",
-    name: "Inner Circle",
-    price: 990000,
-    period: "/жил",
-    tagline: "20 хүний жижиг бүлэг",
-    popular: false,
-    limit: 20,
-    features: [
-      { text: "Core-н бүх боломж", included: true },
-      { text: "Шууд 1:1 зөвлөгөө", included: true },
-      { text: "Төслийн review & feedback", included: true },
-      { text: "Хаалттай бүлгийн уулзалт", included: true },
-      { text: "Бизнес стратеги зөвлөгөө", included: true },
-      { text: "Эрт хандалт — шинэ контент", included: true },
-      { text: "Lifetime network", included: true },
-    ],
-    cta: "Хүсэлт илгээх",
-    color: "#8B5CF6",
-  },
-];
+// ─── Single Tier ───
+const CYBER_EMPIRE = {
+  id: "entry",
+  name: "Cyber Empire",
+  price: 49000,
+  period: "/сар",
+  tagline: "AI бүтээгчдийн нийгэмлэгт нэгдэх",
+  features: [
+    { text: "Бүх постыг хязгааргүй үзэх", included: true },
+    { text: "Бүх хичээл — promt, agent, automation", included: true },
+    { text: "Хязгааргүй пост + image upload (10MB)", included: true },
+    { text: "Telegram чат хандалт", included: true },
+    { text: "1.5× XP multiplier — level-ээ хурдлуул", included: true },
+    { text: "Credit эдийн засагт бүрэн оролцох", included: true },
+    { text: "Market listing + 20% fee зөвхөн", included: true },
+    { text: "Шинэ feature эрт хандалт", included: true },
+  ],
+  cta: "Нэгдэх",
+  color: "#EF2C58",
+};
 
 export default function ClanPage() {
   const { data: session } = useSession();
@@ -85,7 +44,6 @@ export default function ClanPage() {
   const [paymentSubmitted, setPaymentSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [selectedTier, setSelectedTier] = useState<string>("entry");
 
   useEffect(() => {
     checkMembership();
@@ -110,7 +68,7 @@ export default function ClanPage() {
     }
   };
 
-  const tier = TIERS.find((t) => t.id === selectedTier) || TIERS[1];
+  const tier = CYBER_EMPIRE;
   const displayPrice = formatMNT(tier.price);
 
   const handleJoin = async () => {
@@ -266,172 +224,107 @@ export default function ClanPage() {
     );
   }
 
-  // ─── Pricing Page — Three Tiers ───
+  // ─── Single-tier focused landing ───
   return (
-    <div className="mx-auto max-w-4xl py-4">
-      {/* Header */}
-      <div className="mb-8 text-center">
+    <div className="mx-auto max-w-md py-4">
+      <div className="mb-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]"
+          className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]"
         >
-          Гишүүнчлэл
+          CYBER EMPIRE
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-[26px] font-bold text-[#E8E8E8]"
+          className="text-[26px] font-black leading-tight text-[#E8E8E8] md:text-[30px]"
         >
-          Өөрт тохирох түвшнээ сонго
+          AI бүтээгчдийн<br />нийгэмлэгт нэгд
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mt-2 text-[13px] text-[#666666]"
+          className="mt-2 text-[13px] text-[#888]"
         >
-          AI чадвар эзэмшиж, бодит төсөл дээр дадлагаж, хамтдаа өсөж суралц
+          Хичээл · Чат · Пост · Market · Level system — бүгд нэг газар
         </motion.p>
       </div>
 
-      {/* Tier Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {TIERS.map((t, i) => {
-          const isSelected = selectedTier === t.id;
-          const isPopular = t.popular;
-
-          return (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.1 }}
-              onClick={() => setSelectedTier(t.id)}
-              className={`relative cursor-pointer rounded-[4px] border bg-[#141414] p-5 transition-all duration-200 ${
-                isSelected
-                  ? `border-[${t.color}] shadow-[0_0_0_1px_${t.color}] ring-1`
-                  : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)]"
-              }`}
-              style={isSelected ? { borderColor: t.color, boxShadow: `0 0 0 1px ${t.color}20, 0 4px 24px ${t.color}10` } : {}}
-            >
-              {/* Popular badge */}
-              {isPopular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#EF2C58] px-3 py-1 text-[9px] font-bold uppercase tracking-[1px] text-white">
-                  Хамгийн их сонголт
-                </div>
-              )}
-
-              {/* Limit badge */}
-              {t.limit && (
-                <div className="absolute -top-3 right-4 rounded-full bg-[#8B5CF6] px-2.5 py-1 text-[9px] font-bold text-white">
-                  {t.limit} хүн
-                </div>
-              )}
-
-              {/* Header */}
-              <div className="mb-4 pt-1">
-                <div className="text-[11px] font-bold uppercase tracking-[1px]" style={{ color: t.color }}>
-                  {t.name}
-                </div>
-                <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-[32px] font-bold text-[#E8E8E8]">₮{formatMNT(t.price)}</span>
-                  <span className="text-[13px] text-[#666666]">{t.period}</span>
-                </div>
-                <div className="mt-1 text-[12px] text-[#666666]">{t.tagline}</div>
-              </div>
-
-              {/* Divider */}
-              <div className="mb-4 h-[1px]" style={{ background: `linear-gradient(90deg, ${t.color}30, transparent)` }} />
-
-              {/* Features */}
-              <div className="space-y-2.5">
-                {t.features.map((f) => (
-                  <div key={f.text} className="flex items-start gap-2.5">
-                    {f.included ? (
-                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: t.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#CCCCCC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    )}
-                    <span className={`text-[12px] ${f.included ? "text-[#BBBBBB]" : "text-[#CCCCCC]"}`}>
-                      {f.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              {session ? (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setSelectedTier(t.id); handleJoin(); }}
-                  disabled={submitting}
-                  className="mt-5 flex w-full items-center justify-center rounded-[4px] py-3 text-[13px] font-bold transition disabled:opacity-50"
-                  style={
-                    isPopular
-                      ? { background: t.color, color: "#fff" }
-                      : { background: "transparent", border: `1px solid ${t.color}40`, color: t.color }
-                  }
-                >
-                  {submitting && isSelected ? "..." : t.cta}
-                </button>
-              ) : (
-                <Link
-                  href="/auth/signup"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-5 flex w-full items-center justify-center rounded-[4px] py-3 text-[13px] font-bold transition"
-                  style={
-                    isPopular
-                      ? { background: t.color, color: "#fff" }
-                      : { background: "transparent", border: `1px solid ${t.color}40`, color: t.color }
-                  }
-                >
-                  {t.cta}
-                </Link>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Comparison note */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="relative overflow-hidden rounded-[12px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#111] to-[#0D0D0D] p-6 md:p-7"
       >
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="text-center">
-            <div className="text-[20px] font-bold text-[#888]">Entry</div>
-            <div className="mt-1 text-[12px] text-[#888]">Суралцаж эхлэх</div>
-            <div className="mt-2 text-[11px] text-[#555]">Бичлэгтэй хичээл + community хандалт. AI-н үндэс суурийг тавина.</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[20px] font-bold text-[#EF2C58]">Core</div>
-            <div className="mt-1 text-[12px] text-[#EF2C58]">Бодит ахиц, бодит дэмжлэг</div>
-            <div className="mt-2 text-[11px] text-[#555]">Live session + шууд холбогдох эрх. Чамтай тодорхой цагт шууд ярьж, зөвлөгөө авна.</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[20px] font-bold text-[#8B5CF6]">Inner Circle</div>
-            <div className="mt-1 text-[12px] text-[#8B5CF6]">Хамгийн дээд түвшин</div>
-            <div className="mt-2 text-[11px] text-[#555]">20 хүний жижиг бүлэг. 1:1 зөвлөгөө, төслийн review, бизнес стратеги.</div>
-          </div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-[44px] font-black leading-none text-[#E8E8E8] md:text-[52px]">₮{formatMNT(CYBER_EMPIRE.price)}</span>
+          <span className="text-[15px] font-semibold text-[#888]">{CYBER_EMPIRE.period}</span>
+        </div>
+        <div className="mt-1 text-[12px] text-[#888]">{CYBER_EMPIRE.tagline}</div>
+
+        <div className="my-5 h-[1px] bg-gradient-to-r from-[rgba(239,44,88,0.35)] via-[rgba(239,44,88,0.1)] to-transparent" />
+
+        <ul className="space-y-2.5">
+          {CYBER_EMPIRE.features.map((f) => (
+            <li key={f.text} className="flex items-start gap-2.5">
+              <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-[13px] leading-snug text-[#CCC]">{f.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        {session ? (
+          <button
+            onClick={handleJoin}
+            disabled={submitting}
+            className="group relative mt-6 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-4 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.45)] disabled:opacity-60"
+          >
+            <span className="relative z-10">
+              {submitting ? "Төлбөр үүсгэж байна..." : `Нэгдэх · ₮${formatMNT(CYBER_EMPIRE.price)}`}
+            </span>
+            {!submitting && (
+              <svg className="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          </button>
+        ) : (
+          <Link
+            href="/auth/signup"
+            className="group relative mt-6 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-4 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.45)]"
+          >
+            <span className="relative z-10">Бүртгүүлэж үргэлжлүүлэх</span>
+            <svg className="relative z-10 h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-[#666]">
+          <span>✓ Сараар шинэчлэгдэх</span>
+          <span className="text-[#333]">·</span>
+          <span>✓ QPay / Банкны шилжүүлэг</span>
+          <span className="text-[#333]">·</span>
+          <span>✓ 20 мин дотор идэвхжинэ</span>
         </div>
       </motion.div>
 
-      {/* FAQ-style footer */}
-      <div className="mt-6 text-center">
-        <p className="text-[12px] text-[#888888]">
+      {/* Trust / support */}
+      <div className="mt-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-4 text-center">
+        <p className="text-[12px] text-[#888]">
           Асуулт байна уу?{" "}
           <a href="mailto:antaqor@gmail.com" className="font-bold text-[#EF2C58] hover:underline">antaqor@gmail.com</a>
+          {" · "}
+          <a href="tel:94641031" className="font-bold text-[#EF2C58] hover:underline">94641031</a>
         </p>
         {!session && (
-          <p className="mt-2 text-[12px] text-[#555]">
+          <p className="mt-2 text-[11px] text-[#555]">
             Бүртгэлтэй юу?{" "}
             <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
           </p>

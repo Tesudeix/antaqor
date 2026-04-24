@@ -29,10 +29,42 @@ function CreditChip() {
     <Link
       href="/credits"
       title="Миний кредит"
-      className="group flex items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)] px-2.5 py-1 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+      className="group hidden items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.06)] px-2.5 py-1 text-[12px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)] sm:flex"
     >
       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
       <span className="tabular-nums">{balance.toLocaleString()}</span>
+    </Link>
+  );
+}
+
+// ─── Direct-to-payment CTA shown only to logged-in non-members ───
+function JoinEmpireChip() {
+  const { data: session, status } = useSession();
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/clan/status")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d) setIsMember(!!d.isMember);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [status, session]);
+
+  if (!session?.user || isMember !== false) return null;
+
+  return (
+    <Link
+      href="/clan?pay=1"
+      title="Cyber Empire нэгдэх"
+      className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-[6px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_16px_rgba(239,44,88,0.3)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.5)]"
+    >
+      <span className="relative z-10">Empire</span>
+      <span className="relative z-10 rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-black tracking-tight">₮49k</span>
+      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
     </Link>
   );
 }
@@ -111,6 +143,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {session ? (
             <>
+              <JoinEmpireChip />
               <CreditChip />
               <NotificationBell />
               <Link

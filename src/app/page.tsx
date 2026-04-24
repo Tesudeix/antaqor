@@ -711,10 +711,39 @@ function HeroLanding() {
   );
 }
 
+// ─── Upgrade banner for logged-in free users ───
+function FreeTierBanner({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+  return (
+    <Link
+      href="/clan?pay=1"
+      className="group relative flex items-center gap-3 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-r from-[rgba(239,44,88,0.1)] via-[#111] to-[#111] p-3 transition hover:border-[rgba(239,44,88,0.5)]"
+    >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)]">
+        <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[13px] font-bold text-[#E8E8E8]">Cyber Empire нэгдэх</span>
+          <span className="rounded-full bg-[#EF2C58] px-1.5 py-0.5 text-[9px] font-black text-white">₮49k</span>
+        </div>
+        <div className="mt-0.5 text-[11px] text-[#888]">
+          Хязгааргүй пост · Бүх хичээл · 1.5× XP · Level дээшлүүл
+        </div>
+      </div>
+      <svg className="h-4 w-4 shrink-0 text-[#EF2C58] transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </Link>
+  );
+}
+
 // ─── Main Page ───
 export default function Home() {
   const { data: session } = useSession();
-  const { loading: memberLoading, isMember, isAdmin } = useMembership();
+  const { loading: memberLoading, isLoggedIn, isMember, isAdmin } = useMembership();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -744,14 +773,16 @@ export default function Home() {
 
   useEffect(() => {
     if (memberLoading) return;
-    if (isMember || isAdmin) {
+    // Feed loads for every logged-in user now (free users too).
+    // Backend level-gate decides what they actually see.
+    if (isLoggedIn) {
       setPage(1);
       setLoading(true);
       fetchPosts(1, category);
     } else {
       setLoading(false);
     }
-  }, [memberLoading, isMember, isAdmin, category]);
+  }, [memberLoading, isLoggedIn, category]);
 
   const switchCategory = (cat: CategoryFilter) => {
     setCategory(cat);
@@ -779,12 +810,16 @@ export default function Home() {
     );
   }
 
-  if (!isMember && !isAdmin) {
+  // Anonymous visitors only — logged-in free users drop to the feed below.
+  if (!isLoggedIn) {
     return <HeroLanding />;
   }
 
+  const isFreeUser = isLoggedIn && !isMember && !isAdmin;
+
   return (
     <div className="mx-auto max-w-3xl space-y-5">
+      <FreeTierBanner visible={isFreeUser} />
       <ReferralBanner />
       <LatestNews />
       <ShowcaseGallery />

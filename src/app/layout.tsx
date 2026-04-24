@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import BottomBar from "@/components/BottomBar";
 import InstallPrompt from "@/components/InstallPrompt";
 import PostFAB from "@/components/PostFAB";
+import LevelUpToast from "@/components/LevelUpToast";
 
 export const metadata: Metadata = {
   title: {
@@ -114,6 +115,7 @@ export default function RootLayout({
           <BottomBar />
           <PostFAB />
           <InstallPrompt />
+          <LevelUpToast />
         </Providers>
       </body>
     </html>

@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Payment from "@/models/Payment";
 
-const CLAN_PRICE = 25000;
+const CLAN_PRICE = 49000;
 
 export async function POST(req: NextRequest) {
   try {
