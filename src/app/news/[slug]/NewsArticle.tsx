@@ -122,10 +122,14 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
   return (
     <article className="mx-auto max-w-3xl pb-16">
       {/* Reading progress */}
-      <div className="fixed left-0 right-0 top-0 z-[60] h-[2px] bg-transparent">
+      <div className="fixed left-0 right-0 top-0 z-[60] h-[3px] bg-[rgba(255,255,255,0.04)]">
         <div
           className="h-full transition-[width] duration-150"
-          style={{ width: `${progress}%`, background: categoryColor }}
+          style={{
+            width: `${progress}%`,
+            background: categoryColor,
+            boxShadow: `0 0 8px ${categoryColor}66`,
+          }}
         />
       </div>
 
@@ -237,33 +241,32 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
         </div>
       )}
 
-      {/* Telegram subscribe nudge — lower-friction than email opt-in */}
-      <section className="mt-10 overflow-hidden rounded-[8px] border border-[rgba(42,171,238,0.18)] bg-gradient-to-br from-[rgba(42,171,238,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-5 md:p-6">
-        <div className="flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#2AABEE] to-[#229ED9]">
-              <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.147l4.012 1.484 1.48 4.012a2.25 2.25 0 004.148.126l7.5-16.5a2.25 2.25 0 00-.217-2.022 2.25 2.25 0 00-1.527-.962z" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-[14px] font-bold text-[#E8E8E8]">AI-н шинэ мэдээ миний Telegram рүү</div>
-              <div className="text-[11px] text-[#888]">Antaqor community-д нэгдэж өдрийн шинэ мэдээ аваарай</div>
-            </div>
+      {/* Author bio — trust signal */}
+      <section className="mt-12 flex items-start gap-4 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] p-5">
+        {article.authorAvatar ? (
+          <img src={article.authorAvatar} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.12)] text-[16px] font-black text-[#EF2C58]">
+            {article.authorName.charAt(0)}
           </div>
-          <Link
-            href="/chat"
-            className="shrink-0 rounded-[8px] bg-[#2AABEE] px-5 py-2.5 text-[13px] font-bold text-white transition hover:shadow-[0_0_24px_rgba(42,171,238,0.4)]"
-          >
-            Нэгдэх
-          </Link>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#666]">Зохиолч</span>
+            <span className="text-[#2A2A2A]">·</span>
+            <span className="text-[10px] text-[#555]">Antaqor редактор</span>
+          </div>
+          <div className="mt-0.5 text-[15px] font-bold text-[#E8E8E8]">{article.authorName}</div>
+          <p className="mt-1 text-[12px] leading-relaxed text-[#888]">
+            AI, LLM, агентуудын талаарх Монгол хэл дээрх контентыг өдөр бүр редактораар шүүж нийтэлдэг.
+          </p>
         </div>
       </section>
 
-      {/* Membership CTA — direct to 49k payment */}
-      <section className="mt-5 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-7">
+      {/* Single conversion block — primary membership, secondary Telegram */}
+      <section className="mt-5 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.10)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-7">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
+          <div className="min-w-0">
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">CYBER EMPIRE</div>
             <h3 className="mt-1.5 text-[20px] font-bold leading-tight text-[#E8E8E8] md:text-[22px]">
               Бүх контент · Бүх хичээл · Хязгааргүй
@@ -281,6 +284,15 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          </Link>
+        </div>
+        <div className="mt-4 flex items-center gap-2 border-t border-[rgba(255,255,255,0.05)] pt-4 text-[11px] text-[#777]">
+          <svg className="h-3.5 w-3.5 text-[#2AABEE]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.147l4.012 1.484 1.48 4.012a2.25 2.25 0 004.148.126l7.5-16.5a2.25 2.25 0 00-.217-2.022 2.25 2.25 0 00-1.527-.962z" />
+          </svg>
+          Үнэгүй Telegram сувагт нэгдэх үү?
+          <Link href="/chat" className="font-semibold text-[#2AABEE] transition hover:text-[#5BC0F8]">
+            t.me/antaqor →
           </Link>
         </div>
       </section>

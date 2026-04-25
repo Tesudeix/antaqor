@@ -50,6 +50,10 @@ function formatRelative(iso: string): string {
   return new Date(iso).toLocaleDateString("mn-MN", { month: "short", day: "numeric" });
 }
 
+function isFresh(iso: string): boolean {
+  return Date.now() - new Date(iso).getTime() < 24 * 60 * 60 * 1000;
+}
+
 function CategoryChip({ cat, size = "sm" }: { cat: Exclude<Category, "All">; size?: "sm" | "xs" }) {
   const color = CATEGORY_COLORS[cat];
   const sz = size === "xs" ? "text-[9px] px-1.5 py-0.5" : "text-[10px] px-2 py-0.5";
@@ -170,8 +174,15 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          <div className="absolute top-2.5 left-2.5">
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
             <CategoryChip cat={item.category} />
+            {isFresh(item.publishedAt) && (
+              <span className="relative inline-flex items-center gap-1 rounded-full bg-[#EF2C58] px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
+                <span className="absolute -left-0.5 -top-0.5 h-1.5 w-1.5 animate-ping rounded-full bg-[#EF2C58]/70" />
+                <span className="relative h-1 w-1 rounded-full bg-white" />
+                NEW
+              </span>
+            )}
           </div>
           <div className="absolute right-2.5 top-2.5 rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
             {item.readingMinutes}m
@@ -323,34 +334,47 @@ export default function NewsFeed({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Хайх — LLM, Agent, Claude..."
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-3 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-9 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
             />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Цэвэрлэх"
+                className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-[#555] transition hover:bg-[#1A1A1A] hover:text-[#E8E8E8]"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            )}
           </div>
         </div>
       </section>
 
       {/* Category chips */}
-      <div className="mb-6 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-1.5 pb-1">
-          {CATEGORIES.map((c) => {
-            const active = category === c;
-            const color = c === "All" ? "#EF2C58" : CATEGORY_COLORS[c as Exclude<Category, "All">];
-            return (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
-                style={{
-                  background: active ? color : "rgba(255,255,255,0.04)",
-                  color: active ? "#FFFFFF" : "#888888",
-                  boxShadow: active ? `0 0 20px ${color}26` : "none",
-                }}
-              >
-                {c === "All" ? "Бүгд" : c}
-              </button>
-            );
-          })}
+      <div className="relative mb-6">
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1.5 pb-1 pr-6">
+            {CATEGORIES.map((c) => {
+              const active = category === c;
+              const color = c === "All" ? "#EF2C58" : CATEGORY_COLORS[c as Exclude<Category, "All">];
+              return (
+                <button
+                  key={c}
+                  onClick={() => setCategory(c)}
+                  className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
+                  style={{
+                    background: active ? color : "rgba(255,255,255,0.04)",
+                    color: active ? "#FFFFFF" : "#888888",
+                    boxShadow: active ? `0 0 20px ${color}26` : "none",
+                  }}
+                >
+                  {c === "All" ? "Бүгд" : c}
+                </button>
+              );
+            })}
+          </div>
         </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#0a0a0a] to-transparent md:hidden" />
       </div>
 
       {loading ? (
@@ -373,17 +397,43 @@ export default function NewsFeed({
 
           <div className="mt-6 mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-[2px] w-4 bg-[#EF2C58]" />
+              <div
+                className="h-[2px] w-4"
+                style={{
+                  background:
+                    category === "All"
+                      ? "#EF2C58"
+                      : CATEGORY_COLORS[category as Exclude<Category, "All">],
+                }}
+              />
               <span className="text-[11px] font-bold tracking-[0.12em] text-[#E8E8E8]">
-                {category === "All" && !query ? "СҮҮЛИЙН ҮЕИЙН" : "ҮР ДҮН"}
+                {query
+                  ? `"${query}" ҮР ДҮН`
+                  : category === "All"
+                    ? "СҮҮЛИЙН ҮЕИЙН"
+                    : `${category.toUpperCase()} · СҮҮЛИЙН ҮЕИЙН`}
               </span>
             </div>
             <span className="text-[10px] text-[#555]">{filtered.length}+ мэдээ</span>
           </div>
 
           {filtered.length === 0 ? (
-            <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-14 text-center text-[12px] text-[#555]">
-              "{query}"-д тохирох мэдээ олдсонгүй
+            <div className="flex flex-col items-center gap-4 rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-12 px-6 text-center">
+              <div className="text-[13px] text-[#999]">
+                <span className="text-[#EF2C58]">"{query}"</span>-д тохирох мэдээ олдсонгүй
+              </div>
+              <div className="text-[11px] text-[#555]">Эдгээр ангилалаас үзвэл үү:</div>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {(["AI", "LLM", "Agents", "Бизнес"] as Exclude<Category, "All">[]).map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => { setQuery(""); setCategory(c); }}
+                    className="rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] px-3 py-1 text-[11px] font-semibold text-[#AAA] transition hover:border-[rgba(239,44,88,0.35)] hover:text-[#EF2C58]"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
