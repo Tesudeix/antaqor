@@ -7,11 +7,32 @@ import { Suspense, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Tightened to 4 chips that fit one row on mobile.
-const AI_LEVELS = [
-  { value: "beginner", label: "Шинэхэн", icon: "🌱" },
-  { value: "intermediate", label: "Дунд", icon: "⚡" },
-  { value: "advanced", label: "Ахисан", icon: "🚀" },
-  { value: "expert", label: "Мэргэжилтэн", icon: "🧠" },
+// Icons map semantically: sprout (beginner) → bolt (intermediate) → rocket (advanced) → atom (expert).
+const AI_LEVELS: { value: string; label: string; iconPath: string }[] = [
+  {
+    value: "beginner",
+    label: "Шинэхэн",
+    // academic cap — student
+    iconPath: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342",
+  },
+  {
+    value: "intermediate",
+    label: "Дунд",
+    // lightning bolt
+    iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
+  },
+  {
+    value: "advanced",
+    label: "Ахисан",
+    // double chevron up = levelling up
+    iconPath: "M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5",
+  },
+  {
+    value: "expert",
+    label: "Мэргэжилтэн",
+    // sparkle / mastery
+    iconPath: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z",
+  },
 ];
 
 export default function SignUpPage() {
@@ -162,13 +183,21 @@ function SignUp() {
                     type="button"
                     whileTap={{ scale: 0.96 }}
                     onClick={() => setAiLevel(lvl.value)}
-                    className={`flex flex-col items-center gap-0.5 rounded-[8px] border py-2 transition ${
+                    className={`flex flex-col items-center gap-1.5 rounded-[8px] border py-2.5 transition ${
                       active
                         ? "border-[#EF2C58] bg-[rgba(239,44,88,0.08)]"
                         : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] hover:border-[rgba(239,44,88,0.3)]"
                     }`}
                   >
-                    <span className="text-[18px] leading-none">{lvl.icon}</span>
+                    <svg
+                      className={`h-4 w-4 transition ${active ? "text-[#EF2C58]" : "text-[#888]"}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.6}
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d={lvl.iconPath} />
+                    </svg>
                     <span className={`text-[10px] font-bold ${active ? "text-[#EF2C58]" : "text-[#CCC]"}`}>
                       {lvl.label}
                     </span>

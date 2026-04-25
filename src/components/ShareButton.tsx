@@ -107,9 +107,8 @@ export default function ShareButton({
     }
   };
 
-  const h = size === "md" ? "h-9" : "h-7";
-  const padX = size === "md" ? "px-3.5" : "px-2.5";
-  const text = size === "md" ? "text-[12px]" : "text-[11px]";
+  const dim = size === "md" ? "h-9 w-9" : "h-7 w-7";
+  const iconSize = size === "md" ? "h-4 w-4" : "h-3.5 w-3.5";
 
   return (
     <div className={`relative inline-flex items-center ${className}`}>
@@ -117,12 +116,20 @@ export default function ShareButton({
         type="button"
         onClick={() => doShare("native")}
         disabled={busy}
-        className={`group inline-flex items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] ${padX} ${h} font-semibold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50 ${text}`}
-        aria-label="Хуваалцаж кредит олох"
+        title={flash || "Хуваалцах"}
+        aria-label={flash || "Хуваалцаж кредит олох"}
+        className={`group inline-flex items-center justify-center rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] ${dim} text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50`}
       >
-        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-        {flash || "Хуваалц"}
+        {/* Refined share-arrow icon (square + outgoing arrow) — clearer than the abstract dots */}
+        <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 8l4-4m0 0h-5m5 0v5M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5" />
+        </svg>
       </button>
+      {flash && (
+        <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1A1A1A] px-2 py-0.5 text-[10px] font-bold text-[#EF2C58] shadow-lg">
+          {flash}
+        </span>
+      )}
     </div>
   );
 }
