@@ -685,6 +685,130 @@ function MembersPreview({ guest = false }: { guest?: boolean }) {
   );
 }
 
+// ─── Classroom Preview (drives signup intent: show value before paywall) ───
+interface CoursePreview {
+  _id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  lessonsCount: number;
+  requiredLevel: number;
+}
+
+const PREVIEW_TEASERS: { title: string; description: string; emoji: string }[] = [
+  { emoji: "🧠", title: "Промпт инженеринг", description: "ChatGPT/Claude-аас 10x илүү гаргах" },
+  { emoji: "🤖", title: "AI Agent барих", description: "Бизнесийн процессыг автоматжуулах" },
+  { emoji: "💸", title: "AI-аар орлого", description: "Freelance, tool, дижитал бүтээгдэхүүн" },
+];
+
+function ClassroomPreview({ guest = false }: { guest?: boolean }) {
+  const [courses, setCourses] = useState<CoursePreview[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/classroom/courses")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.courses)) setCourses(d.courses); })
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, []);
+
+  if (!loaded) return null;
+
+  const hasReal = courses.length > 0;
+  const items = hasReal ? courses.slice(0, 4) : [];
+  const ctaHref = guest ? "/auth/signup" : "/classroom";
+
+  return (
+    <div>
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="h-[2px] w-4 bg-[#EF2C58]" />
+          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">AI ХИЧЭЭЛ</span>
+          {hasReal && (
+            <span className="rounded-full border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 text-[9px] font-black text-[#22C55E]">
+              {courses.length} курс
+            </span>
+          )}
+        </div>
+        <Link href={ctaHref} className="text-[11px] font-bold text-[#666] transition hover:text-[#EF2C58]">
+          {hasReal ? "Бүгдийг үзэх →" : "Эхлэх →"}
+        </Link>
+      </div>
+
+      {hasReal ? (
+        <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
+          {items.map((c) => (
+            <Link
+              key={c._id}
+              href={ctaHref}
+              className="group flex w-[180px] shrink-0 flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition hover:border-[rgba(239,44,88,0.3)]"
+            >
+              <div className="relative aspect-video w-full overflow-hidden bg-[#0A0A0A]">
+                {c.thumbnail ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={c.thumbnail}
+                    alt={c.title}
+                    className="h-full w-full object-cover transition group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[28px]">🎓</div>
+                )}
+                <div className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-[4px] bg-black/70 px-1.5 py-0.5 backdrop-blur">
+                  <svg className="h-2.5 w-2.5 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span className="text-[9px] font-bold text-white">{c.lessonsCount} хичээл</span>
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col gap-1 p-2.5">
+                <div className="line-clamp-2 text-[12px] font-bold leading-tight text-[#E8E8E8]">
+                  {c.title}
+                </div>
+                {c.description && (
+                  <div className="line-clamp-2 text-[10px] leading-tight text-[#666]">
+                    {c.description}
+                  </div>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        // Coming-soon teaser — keeps energy up while admin builds the catalog
+        <div className="rounded-[10px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B] p-4">
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.08)] px-2 py-0.5 text-[9px] font-black tracking-[0.14em] text-[#EF2C58]">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
+            ТУН УДАХГҮЙ
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {PREVIEW_TEASERS.map((t) => (
+              <div
+                key={t.title}
+                className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3"
+              >
+                <div className="text-[20px] leading-none">{t.emoji}</div>
+                <div className="mt-1.5 text-[12px] font-bold text-[#E8E8E8]">{t.title}</div>
+                <div className="mt-0.5 text-[10px] leading-tight text-[#666]">{t.description}</div>
+              </div>
+            ))}
+          </div>
+          <Link
+            href={ctaHref}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-3.5 py-2 text-[11px] font-black text-white transition hover:bg-[#D4264E]"
+          >
+            Эхэлсэн үед мэдэгдэх
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Hero Landing (for non-members) ───
 function HeroLanding() {
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -765,6 +889,7 @@ function HeroLanding() {
       />
 
       <StatsBar />
+      <ClassroomPreview guest />
       <LatestNews />
       <ValueProps />
       <ShowcaseGallery guest />

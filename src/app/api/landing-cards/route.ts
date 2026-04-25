@@ -11,18 +11,24 @@ const DEFAULTS = [
     description: "Промпт инженеринг, автоматжуулалт, AI бизнес",
     icon: "ai",
     order: 0,
+    ctaLabel: "Хичээл үзэх",
+    ctaHref: "/classroom",
   },
   {
     title: "Орлого олох",
     description: "Дижитал бүтээгдэхүүн, freelance, AI tool бизнес",
     icon: "money",
     order: 1,
+    ctaLabel: "Market харах",
+    ctaHref: "/market",
   },
   {
     title: "Community",
     description: "Бүтээгчдийн нийгэмлэг, хамтын ажиллагаа",
     icon: "community",
     order: 2,
+    ctaLabel: "Гишүүд",
+    ctaHref: "/members",
   },
 ];
 
