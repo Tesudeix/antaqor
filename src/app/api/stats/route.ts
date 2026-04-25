@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
-const GOAL = 10000;
+const GOAL = 1000;
 
 export async function GET() {
   try {

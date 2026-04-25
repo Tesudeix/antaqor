@@ -694,10 +694,10 @@ interface CoursePreview {
   requiredLevel: number;
 }
 
-const PREVIEW_TEASERS: { title: string; description: string; emoji: string }[] = [
-  { emoji: "🧠", title: "Промпт инженеринг", description: "ChatGPT/Claude-аас 10x илүү гаргах" },
-  { emoji: "🤖", title: "AI Agent барих", description: "Бизнесийн процессыг автоматжуулах" },
-  { emoji: "💸", title: "AI-аар орлого", description: "Freelance, tool, дижитал бүтээгдэхүүн" },
+const PREVIEW_TEASERS: { title: string; description: string; iconKey: string }[] = [
+  { iconKey: "ai", title: "Промпт инженеринг", description: "ChatGPT/Claude-аас 10x илүү гаргах" },
+  { iconKey: "rocket", title: "AI Agent барих", description: "Бизнесийн процессыг автоматжуулах" },
+  { iconKey: "money", title: "AI-аар орлого", description: "Freelance, tool, дижитал бүтээгдэхүүн" },
 ];
 
 function ClassroomPreview({ guest = false }: { guest?: boolean }) {
@@ -782,16 +782,23 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
             ТУН УДАХГҮЙ
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {PREVIEW_TEASERS.map((t) => (
-              <div
-                key={t.title}
-                className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3"
-              >
-                <div className="text-[20px] leading-none">{t.emoji}</div>
-                <div className="mt-1.5 text-[12px] font-bold text-[#E8E8E8]">{t.title}</div>
-                <div className="mt-0.5 text-[10px] leading-tight text-[#666]">{t.description}</div>
-              </div>
-            ))}
+            {PREVIEW_TEASERS.map((t) => {
+              const iconPath = LANDING_ICON_PATHS[t.iconKey] || LANDING_ICON_PATHS.ai;
+              return (
+                <div
+                  key={t.title}
+                  className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3"
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
+                    <svg className="h-4 w-4 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPath} />
+                    </svg>
+                  </div>
+                  <div className="mt-2 text-[12px] font-bold text-[#E8E8E8]">{t.title}</div>
+                  <div className="mt-0.5 text-[10px] leading-tight text-[#666]">{t.description}</div>
+                </div>
+              );
+            })}
           </div>
           <Link
             href={ctaHref}
@@ -895,17 +902,14 @@ function HeroLanding() {
       <LatestTanilts />
       <Leaderboard />
 
-      {/* Final CTA — short closer */}
+      {/* Final CTA */}
       <div className="rounded-[10px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-6 text-center">
-        <h3 className="text-[18px] font-black leading-tight text-[#E8E8E8]">
-          14 хоног туршаад<br />
-          <span className="text-[#22C55E]">таалагдахгүй бол буцаана</span>
-        </h3>
+        <h3 className="text-[20px] font-black leading-tight text-[#E8E8E8]">Үнэгүй нэгдэх</h3>
         <Link
           href="/auth/signup"
           className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
         >
-          Нэгдэх · ₮49,000
+          Эхлэх
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
         </Link>
       </div>
