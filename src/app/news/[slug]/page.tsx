@@ -122,14 +122,22 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       tags: article.tags,
       section: article.category,
       images: article.coverImage
-        ? [{ url: article.coverImage, alt: article.title }]
-        : ["/opengraph-image"],
+        ? [{
+            url: article.coverImage,
+            alt: article.title,
+            width: 1200,
+            height: 630,
+            type: "image/webp",
+          }]
+        : [{ url: "/opengraph-image", width: 1200, height: 630, alt: article.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description,
       images: article.coverImage ? [article.coverImage] : ["/opengraph-image"],
+      creator: "@antaqor",
+      site: "@antaqor",
     },
   };
 }

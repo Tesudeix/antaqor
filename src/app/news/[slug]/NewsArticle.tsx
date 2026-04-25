@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useMembership } from "@/lib/useMembership";
+import { formatDistanceToNow } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
 
 export type Category = "AI" | "LLM" | "Agents" | "Research" | "Бизнес" | "Tool" | "Монгол";
@@ -297,6 +300,9 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
         </div>
       </section>
 
+      {/* Comments */}
+      <NewsComments slug={article.slug} />
+
       {/* Related */}
       {related.length > 0 && (
         <section className="mt-12">
@@ -409,5 +415,193 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
         }
       `}</style>
     </article>
+  );
+}
+
+interface CommentItem {
+  _id: string;
+  content: string;
+  createdAt: string;
+  author?: { _id: string; name: string; avatar?: string; clan?: string };
+}
+
+function NewsComments({ slug }: { slug: string }) {
+  const { data: session } = useSession();
+  const { isMember, isAdmin } = useMembership();
+  const myId = (session?.user as { id?: string } | undefined)?.id;
+  const canPost = isMember || isAdmin;
+
+  const [comments, setComments] = useState<CommentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancel = false;
+    fetch(`/api/news/${encodeURIComponent(slug)}/comments`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancel && d.comments) setComments(d.comments); })
+      .catch(() => {})
+      .finally(() => { if (!cancel) setLoading(false); });
+    return () => { cancel = true; };
+  }, [slug]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim() || sending) return;
+    setSending(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/news/${encodeURIComponent(slug)}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Илгээх боломжгүй");
+        return;
+      }
+      setComments((prev) => [data.comment, ...prev]);
+      setText("");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Сэтгэгдэл устгах уу?")) return;
+    const res = await fetch(`/api/news/comments/${id}`, { method: "DELETE" });
+    if (res.ok) setComments((prev) => prev.filter((c) => c._id !== id));
+  };
+
+  return (
+    <section className="mt-12">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <div className="h-[2px] w-4 bg-[#EF2C58]" />
+          <span className="text-[11px] font-bold tracking-[0.12em] text-[#E8E8E8]">СЭТГЭГДЭЛ</span>
+          <span className="rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[10px] font-bold text-[#888]">
+            {comments.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Composer */}
+      {!session ? (
+        <div className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-4 text-center">
+          <p className="text-[13px] text-[#888]">Сэтгэгдэл бичихийн тулд нэвтэрнэ үү.</p>
+          <Link href="/auth/signin" className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+            Нэвтрэх
+          </Link>
+        </div>
+      ) : !canPost ? (
+        <div className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-r from-[rgba(239,44,88,0.08)] to-[#0D0D0D] p-4">
+          <div className="text-[13px] text-[#E8E8E8]">
+            Зөвхөн <span className="font-bold text-[#EF2C58]">Cyber Empire гишүүд</span> сэтгэгдэл бичих эрхтэй.
+          </div>
+          <Link href="/clan?pay=1" className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+            Cyber Empire нэгдэх
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          </Link>
+        </div>
+      ) : (
+        <form onSubmit={submit} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Бодлоо хуваалц..."
+            maxLength={1000}
+            rows={3}
+            className="w-full resize-y rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+          />
+          {error && (
+            <div className="mt-2 rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-1.5 text-[11px] text-[#EF4444]">
+              {error}
+            </div>
+          )}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="text-[10px] text-[#555]">{text.length}/1000</span>
+            <button
+              type="submit"
+              disabled={!text.trim() || sending}
+              className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#EF2C58] px-4 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+            >
+              {sending ? "Илгээж байна..." : "Илгээх"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* List */}
+      <div className="mt-4 space-y-2.5">
+        {loading ? (
+          <div className="py-6 text-center">
+            <div className="inline-block h-2 w-2 animate-pulse rounded-[4px] bg-[#EF2C58]" />
+          </div>
+        ) : comments.length === 0 ? (
+          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] py-8 text-center text-[12px] text-[#555]">
+            Эхний сэтгэгдлийг үлдээгээрэй
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            {comments.map((c) => {
+              const initial = c.author?.name?.charAt(0) || "?";
+              const canDelete = c.author?._id === myId || isAdmin;
+              return (
+                <motion.div
+                  key={c._id}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -8 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-3"
+                >
+                  <div className="shrink-0">
+                    {c.author?.avatar ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.author.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+                    ) : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(239,44,88,0.12)] text-[12px] font-bold text-[#EF2C58]">
+                        {initial}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={c.author?._id ? `/profile/${c.author._id}` : "#"}
+                        className="text-[12px] font-bold text-[#E8E8E8] hover:text-[#EF2C58]"
+                      >
+                        {c.author?.name || "Хэрэглэгч"}
+                      </Link>
+                      {c.author?.clan && (
+                        <span className="rounded-full bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">
+                          MEMBER
+                        </span>
+                      )}
+                      <span className="text-[10px] text-[#555]">{formatDistanceToNow(c.createdAt)}</span>
+                      {canDelete && (
+                        <button
+                          onClick={() => remove(c._id)}
+                          className="ml-auto rounded px-1.5 py-0.5 text-[10px] text-[#555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]"
+                          aria-label="Устгах"
+                        >
+                          Устгах
+                        </button>
+                      )}
+                    </div>
+                    <p className="mt-1 whitespace-pre-wrap break-words text-[13px] leading-relaxed text-[#CCC]">
+                      {c.content}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        )}
+      </div>
+    </section>
   );
 }
