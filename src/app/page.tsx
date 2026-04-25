@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
-import ReferralBanner from "@/components/ReferralBanner";
 import Testimonials from "@/components/Testimonials";
 
 interface Post {
@@ -1026,10 +1025,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <FreeTierBanner visible={isFreeUser} />
-      <ReferralBanner />
       <LatestNews />
-      <ShowcaseGallery />
-      <MembersPreview />
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
           {([
