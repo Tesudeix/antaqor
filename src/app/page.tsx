@@ -903,11 +903,10 @@ function HeroLanding() {
       <Leaderboard />
 
       {/* Final CTA */}
-      <div className="rounded-[10px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-6 text-center">
-        <h3 className="text-[20px] font-black leading-tight text-[#E8E8E8]">Үнэгүй нэгдэх</h3>
+      <div className="rounded-[10px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-5 text-center">
         <Link
           href="/auth/signup"
-          className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
+          className="inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
         >
           Эхлэх
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>

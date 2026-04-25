@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,7 +36,7 @@ const CYBER_EMPIRE = {
   color: "#EF2C58",
 };
 
-type Step = "pricing" | "payment" | "receipt" | "pending";
+type Step = "pricing" | "payment" | "pending";
 
 interface PaymentState {
   _id?: string;
@@ -59,10 +59,6 @@ export default function ClanPage() {
   // New payment-flow state
   const [step, setStep] = useState<Step>("pricing");
   const [payment, setPayment] = useState<PaymentState>({});
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [receiptPreview, setReceiptPreview] = useState<string>("");
-  const [uploading, setUploading] = useState(false);
-  const receiptInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     checkMembership();
@@ -136,65 +132,15 @@ export default function ClanPage() {
           amount: data.amount,
         });
         setShowPayment(true);
-        setStep(data.hasReceipt ? "pending" : "payment");
+        setStep(data.status === "pending" ? "pending" : "payment");
       }
     } catch { /* ignore */ }
     finally { setSubmitting(false); }
   };
 
   const handleTransferred = () => {
-    // User says they've done the transfer — advance to receipt upload
-    setStep("receipt");
-  };
-
-  const handleReceiptPick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      alert("Зураг дэндүү том (10MB max)");
-      return;
-    }
-    setReceiptFile(file);
-    const reader = new FileReader();
-    reader.onload = (ev) => setReceiptPreview(String(ev.target?.result || ""));
-    reader.readAsDataURL(file);
-  };
-
-  const handleReceiptSubmit = async () => {
-    if (!receiptFile || uploading) return;
-    setUploading(true);
-    try {
-      // Step 1: upload the image to /api/upload (secured, rate-limited, magic-byte checked)
-      const fd = new FormData();
-      fd.append("file", receiptFile);
-      const upRes = await fetch("/api/upload", { method: "POST", body: fd });
-      const upData = await upRes.json();
-      if (!upRes.ok) {
-        alert("Зураг байршуулж чадсангүй: " + (upData.error || "unknown"));
-        setUploading(false);
-        return;
-      }
-
-      // Step 2: attach URL to the Payment
-      const attachRes = await fetch("/api/clan/receipt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ receiptImage: upData.url, paymentId: payment._id }),
-      });
-      const attachData = await attachRes.json();
-      if (!attachRes.ok) {
-        alert("Баримт холбож чадсангүй: " + (attachData.error || "unknown"));
-        setUploading(false);
-        return;
-      }
-
-      setPayment((p) => ({ ...p, receiptImage: upData.url }));
-      setStep("pending");
-    } catch {
-      alert("Сүлжээний алдаа. Дахин оролдоорой.");
-    } finally {
-      setUploading(false);
-    }
+    // User says they've done the transfer — go straight to pending; admin auto-matches via SMS reference code.
+    setStep("pending");
   };
 
   const copyToClipboard = (text: string, field: string) => {
@@ -254,9 +200,9 @@ export default function ClanPage() {
                 <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#FFC107]" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFC107]">ХҮЛЭЭЖ БАЙНА</span>
               </div>
-              <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Баримтыг шалгаж байна</h1>
+              <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Төлбөрийг шалгаж байна</h1>
               <p className="mt-1.5 text-[13px] text-[#888]">
-                Админ танигдахад ~5 минут. Идэвхжсэний мэдэгдэл ирнэ.
+                Гүйлгээний утган дээрх кодоор автоматаар таних. Идэвхжсэний дараа мэдэгдэл ирнэ.
               </p>
 
               {payment.receiptImage && (
@@ -382,190 +328,18 @@ export default function ClanPage() {
           onClick={handleTransferred}
           className="group relative mt-5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-4 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.4)]"
         >
-          <span className="relative z-10">Төлбөр шилжүүлсэн · Үргэлжлүүлэх</span>
+          <span className="relative z-10">Шилжүүллээ — Идэвхжүүлэх</span>
           <svg className="relative z-10 h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </button>
 
         <p className="mt-2 text-center text-[10px] text-[#666]">
-          Дараагийн алхам: гүйлгээний баримтын зураг оруулах
+          Гүйлгээний утга дээрх <strong className="text-[#EF2C58]">{payment.referenceCode || "—"}</strong> кодоор автоматаар таних
         </p>
       </div>
     );
   }
 
-  // ─── Step: receipt upload ───
-  if (showPayment && session && step === "receipt") {
-    return (
-      <div className="mx-auto max-w-md py-4">
-        <button onClick={() => setStep("payment")} className="mb-4 text-[11px] text-[#666] hover:text-[#EF2C58]">
-          ← Буцах
-        </button>
-
-        <div className="mb-1 flex items-center gap-2">
-          <span className="inline-flex h-2 w-2 rounded-full bg-[#22C55E]" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#22C55E]">АЛХАМ 2 / 2</span>
-        </div>
-        <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Баримтын зураг оруул</h1>
-        <p className="mt-1.5 text-[13px] text-[#888]">
-          Банкны апп-аас гүйлгээний screenshot татаад оруулбал{" "}
-          <span className="font-bold text-[#22C55E]">5 минутад</span> идэвхжинэ.
-        </p>
-
-        <div className="mt-4 rounded-[8px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.05)] px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-[#EF2C58]">Таны код</div>
-              <div className="mt-0.5 text-[18px] font-black tracking-[0.12em] text-[#EF2C58]">{payment.referenceCode || "—"}</div>
-            </div>
-            <div className="text-right">
-              <div className="text-[10px] uppercase tracking-wider text-[#666]">Дүн</div>
-              <div className="mt-0.5 text-[14px] font-bold text-[#E8E8E8]">₮{(payment.amount || tier.price).toLocaleString()}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Upload zone — futuristic scanner + skeleton during upload */}
-        <div className="mt-5">
-          <input
-            ref={receiptInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleReceiptPick}
-            className="hidden"
-          />
-          {receiptPreview ? (
-            <div className="relative overflow-hidden rounded-[12px] border border-[rgba(34,197,94,0.2)] bg-[#0A0A0A]">
-              {/* The image itself; gets blur + tint during upload, scanner line runs across */}
-              <img
-                src={receiptPreview}
-                alt="Receipt preview"
-                className={`h-full w-full object-contain max-h-[400px] transition-all duration-500 ${
-                  uploading ? "scale-[1.01] blur-[1.5px] brightness-90 saturate-150" : ""
-                }`}
-              />
-
-              {/* Overlay during upload — scanner line + grid + status */}
-              {uploading && (
-                <>
-                  {/* Neon-grid overlay */}
-                  <div className="pointer-events-none absolute inset-0 opacity-40"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(rgba(34,197,94,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.18) 1px, transparent 1px)",
-                      backgroundSize: "24px 24px",
-                    }}
-                  />
-                  {/* Corner brackets */}
-                  <Bracket pos="tl" />
-                  <Bracket pos="tr" />
-                  <Bracket pos="bl" />
-                  <Bracket pos="br" />
-                  {/* Scan line */}
-                  <div className="pointer-events-none absolute inset-x-0 h-[2px] animate-[scanLine_2.2s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#22C55E] to-transparent shadow-[0_0_24px_rgba(34,197,94,0.8)]" />
-                  {/* Status bar at bottom */}
-                  <div className="pointer-events-none absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-[8px] border border-[rgba(34,197,94,0.3)] bg-black/70 px-3 py-2 backdrop-blur-md">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-[#22C55E] shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#22C55E]">Шалгаж байна</span>
-                    <div className="ml-auto flex h-1 w-20 overflow-hidden rounded-full bg-[rgba(34,197,94,0.15)]">
-                      <div className="h-full w-full origin-left animate-[progressPulse_1.2s_ease-in-out_infinite] bg-[#22C55E]" />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Replace button (hidden during upload) */}
-              {!uploading && (
-                <button
-                  onClick={() => { setReceiptFile(null); setReceiptPreview(""); }}
-                  className="absolute right-2 top-2 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur hover:bg-black/90"
-                >
-                  Солих
-                </button>
-              )}
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => receiptInputRef.current?.click()}
-              className="group relative flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[12px] border-2 border-dashed border-[rgba(255,255,255,0.15)] bg-gradient-to-br from-[#0A0A0A] via-[#0A0A0A] to-[rgba(239,44,88,0.04)] py-12 text-center transition hover:border-[rgba(239,44,88,0.4)] hover:from-[#0F0F0F]"
-            >
-              {/* Subtle animated shimmer on the empty state */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(239,44,88,0.6)] to-transparent opacity-40 group-hover:opacity-80" />
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(239,44,88,0.1)] shadow-[0_0_28px_rgba(239,44,88,0.12)] transition group-hover:shadow-[0_0_36px_rgba(239,44,88,0.28)]">
-                <svg className="h-7 w-7 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-[14px] font-bold text-[#E8E8E8]">Зургийн сангаас сонгох</div>
-                <div className="mt-1 text-[11px] text-[#666]">Screenshot / banking app-ын гүйлгээний дэлгэц · max 10MB</div>
-              </div>
-            </button>
-          )}
-        </div>
-
-        {/* Integrated funnel ladder — shows the user exactly what's coming */}
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <FunnelStep n={1} label="Оруулах" active={!!receiptFile && !uploading} done={uploading} />
-          <FunnelStep n={2} label="Шалгалт" active={uploading} done={false} pulse={uploading} />
-          <FunnelStep n={3} label="Идэвхжилт" active={false} done={false} />
-        </div>
-
-        <button
-          onClick={handleReceiptSubmit}
-          disabled={!receiptFile || uploading}
-          className="group relative mt-5 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[12px] bg-gradient-to-r from-[#22C55E] to-[#16A34A] py-4 text-[14px] font-black text-white shadow-[0_0_28px_rgba(34,197,94,0.3)] transition hover:shadow-[0_0_48px_rgba(34,197,94,0.55)] disabled:opacity-40 disabled:shadow-none"
-        >
-          {uploading ? (
-            <>
-              <span className="relative z-10 inline-flex items-center gap-2">
-                <span className="relative inline-flex h-4 w-4">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-white/60" />
-                  <span className="relative inline-flex h-full w-full rounded-full bg-white" />
-                </span>
-                AI-гээр шалгаж идэвхжүүлж байна...
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="relative z-10">Баримт илгээх → Идэвхжүүлэх</span>
-              <svg className="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            </>
-          )}
-        </button>
-
-        <div className="mt-3 flex items-center justify-center gap-4 text-[10px] text-[#666]">
-          <span className="flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-[#22C55E]" /> Шифрлэгдсэн</span>
-          <span className="flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-[#22C55E]" /> 5 мин идэвхжилт</span>
-          <span className="flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-[#22C55E]" /> 14 хоног буцаалт</span>
-        </div>
-
-        {/* Scanner/progress keyframes */}
-        <style jsx>{`
-          @keyframes scanLine {
-            0% { top: -2px; opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { top: calc(100% + 2px); opacity: 0; }
-          }
-          @keyframes progressPulse {
-            0%, 100% { transform: scaleX(0.25); }
-            50% { transform: scaleX(1); }
-          }
-        `}</style>
-        <button
-          onClick={() => setStep("pending")}
-          className="mt-1 block w-full text-center text-[10px] text-[#444] hover:text-[#666]"
-        >
-          Одоогоор алгасах
-        </button>
-      </div>
-    );
-  }
 
   // ─── Single-tier focused landing ───
   return (
@@ -732,54 +506,3 @@ function CopyBtn({
   );
 }
 
-// ─── Corner bracket used in scanner overlay ───
-function Bracket({ pos }: { pos: "tl" | "tr" | "bl" | "br" }) {
-  const base = "pointer-events-none absolute h-6 w-6 border-[#22C55E]";
-  const map = {
-    tl: "top-2 left-2 border-t-2 border-l-2 rounded-tl-[6px]",
-    tr: "top-2 right-2 border-t-2 border-r-2 rounded-tr-[6px]",
-    bl: "bottom-12 left-2 border-b-2 border-l-2 rounded-bl-[6px]",
-    br: "bottom-12 right-2 border-b-2 border-r-2 rounded-br-[6px]",
-  };
-  return <div className={`${base} ${map[pos]}`} />;
-}
-
-// ─── Funnel step indicator (the 3-dot ladder above the submit button) ───
-function FunnelStep({
-  n, label, active, done, pulse,
-}: { n: number; label: string; active: boolean; done: boolean; pulse?: boolean }) {
-  const isActiveState = active || pulse;
-  return (
-    <div
-      className={`relative overflow-hidden rounded-[8px] border p-2.5 text-center transition ${
-        done
-          ? "border-[rgba(34,197,94,0.35)] bg-[rgba(34,197,94,0.1)]"
-          : isActiveState
-            ? "border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.06)] shadow-[0_0_20px_rgba(34,197,94,0.15)]"
-            : "border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]"
-      }`}
-    >
-      {pulse && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] animate-pulse bg-gradient-to-r from-transparent via-[#22C55E] to-transparent" />
-      )}
-      <div className={`flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-[0.08em] ${
-        done ? "text-[#22C55E]" : isActiveState ? "text-[#22C55E]" : "text-[#555]"
-      }`}>
-        <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
-          done
-            ? "bg-[#22C55E] text-white"
-            : isActiveState
-              ? "bg-[rgba(34,197,94,0.2)] text-[#22C55E]"
-              : "bg-[rgba(255,255,255,0.05)] text-[#666]"
-        }`}>
-          {done ? (
-            <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-          ) : (
-            n
-          )}
-        </span>
-        <span>{label}</span>
-      </div>
-    </div>
-  );
-}
