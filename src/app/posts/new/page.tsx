@@ -239,12 +239,14 @@ function NewPostContent() {
       )}
 
       <form id="new-post-form" onSubmit={handleSubmit} className="space-y-4">
-        {/* Intent picker — visual tiles */}
+        {/* Category picker — chips on mobile, tiles on desktop */}
         <div>
           <div className="mb-2 text-[10px] uppercase tracking-[1.5px] text-[#555555]">
-            1. Юу хуваалцах вэ?
+            Категори
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+
+          {/* Mobile: 1-line horizontal scroll, no orphan tile */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide sm:hidden">
             {CATEGORIES.map((cat) => {
               const isActive = category === cat.key;
               return (
@@ -252,30 +254,50 @@ function NewPostContent() {
                   key={cat.key}
                   type="button"
                   onClick={() => setCategory(cat.key)}
-                  className="group relative flex flex-col items-start gap-1.5 rounded-[6px] border p-3 text-left transition-all duration-200"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 transition-all duration-200"
+                  style={{
+                    borderColor: isActive ? cat.color : "rgba(255,255,255,0.08)",
+                    background: isActive ? cat.tint : "#141414",
+                    color: isActive ? cat.color : "#CCCCCC",
+                  }}
+                >
+                  <span className="flex h-4 w-4 items-center justify-center" style={{ color: cat.color }}>
+                    {cat.icon}
+                  </span>
+                  <span className="text-[12px] font-bold">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Desktop: equal-width tiles */}
+          <div className="hidden gap-2 sm:grid sm:grid-cols-5">
+            {CATEGORIES.map((cat) => {
+              const isActive = category === cat.key;
+              return (
+                <button
+                  key={cat.key}
+                  type="button"
+                  onClick={() => setCategory(cat.key)}
+                  className="flex flex-col items-center gap-1.5 rounded-[6px] border px-2 py-3 transition-all duration-200"
                   style={{
                     borderColor: isActive ? cat.color : "rgba(255,255,255,0.08)",
                     background: isActive ? cat.tint : "#141414",
                     boxShadow: isActive ? `0 0 0 1px ${cat.color} inset` : "none",
                   }}
                 >
-                  <div
+                  <span
                     className="flex h-8 w-8 items-center justify-center rounded-[4px]"
                     style={{ background: cat.tint, color: cat.color }}
                   >
                     {cat.icon}
-                  </div>
-                  <div>
-                    <div
-                      className="text-[12px] font-bold"
-                      style={{ color: isActive ? cat.color : "#E8E8E8" }}
-                    >
-                      {cat.label}
-                    </div>
-                    <div className="text-[10px] leading-tight text-[#888888]">
-                      {cat.blurb}
-                    </div>
-                  </div>
+                  </span>
+                  <span
+                    className="text-[12px] font-bold"
+                    style={{ color: isActive ? cat.color : "#E8E8E8" }}
+                  >
+                    {cat.label}
+                  </span>
                 </button>
               );
             })}

@@ -7,7 +7,7 @@ export interface IPost extends Document {
   content: string;
   image: string;
   visibility: "free" | "members";
-  category: "мэдээлэл" | "ялалт";
+  category: "мэдээлэл" | "ялалт" | "промт" | "бүтээл" | "танилцуулга";
   taskId?: mongoose.Types.ObjectId;
   likes: mongoose.Types.ObjectId[];
   reactions: Map<string, mongoose.Types.ObjectId[]>;
@@ -46,7 +46,7 @@ const PostSchema = new Schema<IPost>(
     },
     category: {
       type: String,
-      enum: ["мэдээлэл", "ялалт"],
+      enum: ["мэдээлэл", "ялалт", "промт", "бүтээл", "танилцуулга"],
       default: "мэдээлэл",
     },
     taskId: {
