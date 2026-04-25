@@ -220,6 +220,56 @@ export default function AdminDashboard() {
     finally { setHeroUploading(false); }
   };
 
+  const MAX_VIDEO_SECONDS = 20;
+  const probeVideoDuration = (file: File): Promise<number> =>
+    new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.muted = true;
+      const cleanup = () => URL.revokeObjectURL(video.src);
+      video.onloadedmetadata = () => {
+        const d = video.duration;
+        cleanup();
+        if (Number.isFinite(d)) resolve(d);
+        else reject(new Error("Видеоны уртыг тогтоож чадсангүй"));
+      };
+      video.onerror = () => { cleanup(); reject(new Error("Видео файл уншигдсангүй")); };
+      video.src = URL.createObjectURL(file);
+    });
+
+  const handleHeroVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      flash("Зөвхөн видео файл сонгоно уу");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      flash("Видео 50MB-аас бага байх ёстой");
+      e.target.value = "";
+      return;
+    }
+    setHeroUploading(true);
+    try {
+      const duration = await probeVideoDuration(file);
+      if (duration > MAX_VIDEO_SECONDS + 0.5) {
+        flash(`Видео хэт урт байна (${duration.toFixed(1)}с) — хамгийн ихдээ ${MAX_VIDEO_SECONDS} секунд`);
+        return;
+      }
+      const fd = new FormData(); fd.append("file", file);
+      const res = await fetch("/api/hero/slides", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) { setHeroSlides(data.slides); flash(`Видео нэмэгдлээ (${duration.toFixed(1)}с)`); }
+      else flash("Алдаа: " + (data.error || "Upload failed"));
+    } catch (err) {
+      flash(err instanceof Error ? err.message : "Алдаа");
+    } finally {
+      setHeroUploading(false);
+      e.target.value = "";
+    }
+  };
+
   const handleHeroSlideDelete = async (index: number) => {
     const res = await fetch("/api/hero/slides", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ index }) });
     const data = await res.json();
@@ -417,16 +467,23 @@ export default function AdminDashboard() {
                 <input type="file" accept="image/*" onChange={handleHeroImageUpload} disabled={heroUploading}
                   className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#D4264E]" />
               </div>
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-[#555555]">
+                  Видео файл нэмэх <span className="text-[#22C55E]">· макс 20 секунд</span>
+                </label>
+                <input type="file" accept="video/*" onChange={handleHeroVideoUpload} disabled={heroUploading}
+                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#22C55E] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#16A34A]" />
+              </div>
               <div className="flex items-end gap-2">
                 <div>
-                  <label className="mb-1 block text-[11px] font-medium text-[#555555]">Видео URL</label>
+                  <label className="mb-1 block text-[11px] font-medium text-[#555555]">Видео URL (заавал биш)</label>
                   <input
                     type="text"
                     value={heroVideoUrl}
                     onChange={e => setHeroVideoUrl(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") handleHeroVideoAdd(); }}
                     placeholder="https://example.com/video.mp4"
-                    className="w-[260px] rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                    className="w-[240px] rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
                   />
                 </div>
                 <button onClick={handleHeroVideoAdd} disabled={!heroVideoUrl.trim() || heroUploading}
@@ -435,6 +492,9 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+            <p className="mt-2 text-[11px] text-[#555]">
+              Зураг 15MB, видео 50MB / 20с хүртэл. Видео уртыг browser-ээс шалгаад илгээдэг — урт бол шууд татгалзана.
+            </p>
             {heroUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#555555]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" /> Байршуулж байна...</div>}
           </div>
 
