@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"hero" | "tasks" | "announcements">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "cards" | "tasks" | "announcements">("hero");
 
   const [announcements, setAnnouncements] = useState<{_id:string;title:string;content:string;image?:string;tag:string;pinned:boolean;published:boolean;createdAt:string}[]>([]);
   const [annForm, setAnnForm] = useState({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
@@ -44,6 +44,24 @@ export default function AdminDashboard() {
   const [heroMusicEnabled, setHeroMusicEnabled] = useState(true);
   const [musicUploading, setMusicUploading] = useState(false);
 
+  const [cards, setCards] = useState<{_id:string;title:string;description:string;icon:string;order:number;enabled:boolean;ctaLabel?:string;ctaHref?:string}[]>([]);
+  const [cardForm, setCardForm] = useState({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""});
+  const [cardEditing, setCardEditing] = useState<string|null>(null);
+  const [cardSaving, setCardSaving] = useState(false);
+
+  const CARD_ICON_OPTIONS = [
+    { value: "ai", label: "🧠 AI / Brain" },
+    { value: "money", label: "💰 Money" },
+    { value: "community", label: "👥 Community" },
+    { value: "lightning", label: "⚡ Lightning" },
+    { value: "target", label: "🎯 Target" },
+    { value: "growth", label: "📈 Growth" },
+    { value: "rocket", label: "🚀 Rocket" },
+    { value: "tool", label: "🛠️ Tool" },
+    { value: "shield", label: "🛡️ Shield" },
+    { value: "spark", label: "✨ Spark" },
+  ];
+
   const flash = (msg: string) => {
     setSaveStatus(msg);
     setTimeout(() => setSaveStatus(null), 3000);
@@ -51,20 +69,69 @@ export default function AdminDashboard() {
 
   const loadData = useCallback(async () => {
     try {
-      const [statsRes, annRes, taskRes, heroRes, musicRes] = await Promise.all([
+      const [statsRes, annRes, taskRes, heroRes, musicRes, cardsRes] = await Promise.all([
         fetch("/api/admin/stats"),
         fetch("/api/announcements?limit=50"),
         fetch("/api/tasks"),
         fetch("/api/hero/slides"),
         fetch("/api/hero/music"),
+        fetch("/api/landing-cards"),
       ]);
       if (statsRes.ok) setStats(await statsRes.json());
       if (annRes.ok) { const d = await annRes.json(); setAnnouncements(d.announcements || []); }
       if (taskRes.ok) { const d = await taskRes.json(); setTasks(d.tasks || []); }
       if (heroRes.ok) { const d = await heroRes.json(); setHeroSlides(d.slides || []); }
       if (musicRes.ok) { const d = await musicRes.json(); setHeroMusicUrl(d.url || "/fire-again.mp3"); setHeroMusicEnabled(d.enabled !== false); }
+      if (cardsRes.ok) { const d = await cardsRes.json(); setCards(d.cards || []); }
     } catch {} finally { setLoading(false); }
   }, []);
+
+  const handleCardSave = async () => {
+    if (!cardForm.title.trim() || !cardForm.description.trim() || cardSaving) return;
+    setCardSaving(true);
+    try {
+      const isEdit = !!cardEditing;
+      const res = await fetch(isEdit ? `/api/landing-cards/${cardEditing}` : "/api/landing-cards", {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cardForm),
+      });
+      if (res.ok) {
+        flash(isEdit ? "Шинэчиллээ" : "Карт нэмлээ");
+        setCardForm({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""});
+        setCardEditing(null);
+        loadData();
+      }
+    } finally { setCardSaving(false); }
+  };
+
+  const handleCardDelete = async (id: string) => {
+    if (!confirm("Картыг устгах уу?")) return;
+    const res = await fetch(`/api/landing-cards/${id}`, { method: "DELETE" });
+    if (res.ok) { flash("Устгалаа"); loadData(); }
+  };
+
+  const handleCardToggle = async (id: string, enabled: boolean) => {
+    const res = await fetch(`/api/landing-cards/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled: !enabled }),
+    });
+    if (res.ok) loadData();
+  };
+
+  const handleCardReorder = async (id: string, direction: "up" | "down") => {
+    const idx = cards.findIndex((c) => c._id === id);
+    if (idx < 0) return;
+    const swap = direction === "up" ? idx - 1 : idx + 1;
+    if (swap < 0 || swap >= cards.length) return;
+    const a = cards[idx], b = cards[swap];
+    await Promise.all([
+      fetch(`/api/landing-cards/${a._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: b.order }) }),
+      fetch(`/api/landing-cards/${b._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: a.order }) }),
+    ]);
+    loadData();
+  };
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -202,6 +269,7 @@ export default function AdminDashboard() {
 
   const tabs = [
     { key: "hero" as const, label: "Hero & Хөгжим", count: heroSlides.length },
+    { key: "cards" as const, label: "Hero картууд", count: cards.length },
     { key: "tasks" as const, label: "Даалгавар", count: tasks.length },
     { key: "announcements" as const, label: "Мэдэгдэл", count: announcements.length },
   ];
@@ -402,6 +470,149 @@ export default function AdminDashboard() {
               )}
             </div>
             {musicUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#555555]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" /> Байршуулж байна...</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Hero Cards Tab */}
+      {activeTab === "cards" && (
+        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+          <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Нүүр хуудасны картууд</div>
+          <div className="mb-4 text-[11px] text-[#555555]">«ЯАГААД ANTAQOR» хэсэгт харагддаг үнэ цэнийн картууд. Дараалал чухал — захиалагч нь дээрээс нь уншдаг.</div>
+
+          {/* Form */}
+          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+            <input
+              value={cardForm.title}
+              onChange={(e) => setCardForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="Гарчиг (ж: AI Сургалт)"
+              maxLength={80}
+              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+            />
+            <textarea
+              value={cardForm.description}
+              onChange={(e) => setCardForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Тайлбар (1-2 өгүүлбэр, үнэ цэнийг тодорхой бич)"
+              maxLength={240}
+              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[60px] resize-y"
+            />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#555555]">Айкон</label>
+                <select
+                  value={cardForm.icon}
+                  onChange={(e) => setCardForm((f) => ({ ...f, icon: e.target.value }))}
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none"
+                >
+                  {CARD_ICON_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#555555]">CTA текст (заавал биш)</label>
+                <input
+                  value={cardForm.ctaLabel}
+                  onChange={(e) => setCardForm((f) => ({ ...f, ctaLabel: e.target.value }))}
+                  placeholder="Хичээл үзэх"
+                  maxLength={60}
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#555555]">CTA холбоос</label>
+                <input
+                  value={cardForm.ctaHref}
+                  onChange={(e) => setCardForm((f) => ({ ...f, ctaHref: e.target.value }))}
+                  placeholder="/classroom"
+                  maxLength={240}
+                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCardSave}
+                disabled={!cardForm.title.trim() || !cardForm.description.trim() || cardSaving}
+                className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+              >
+                {cardSaving ? "..." : cardEditing ? "Шинэчлэх" : "+ Карт нэмэх"}
+              </button>
+              {cardEditing && (
+                <button
+                  onClick={() => { setCardEditing(null); setCardForm({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""}); }}
+                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]"
+                >
+                  Болих
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="space-y-2">
+            {cards.length === 0 && (
+              <div className="py-8 text-center text-[12px] text-[#555555]">Карт байхгүй — анхны 3 карт автоматаар үүснэ</div>
+            )}
+            {cards.map((c, i) => (
+              <div
+                key={c._id}
+                className={`flex items-start gap-3 rounded-[8px] border p-3 transition ${
+                  c.enabled ? "border-[rgba(255,255,255,0.06)]" : "border-[rgba(255,255,255,0.04)] opacity-50"
+                }`}
+              >
+                <div className="flex shrink-0 flex-col items-center gap-1">
+                  <button
+                    onClick={() => handleCardReorder(c._id, "up")}
+                    disabled={i === 0}
+                    className="rounded p-0.5 text-[#555555] transition hover:text-[#EF2C58] disabled:opacity-20"
+                    aria-label="Дээш"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                  </button>
+                  <span className="text-[10px] font-bold text-[#666666]">#{i+1}</span>
+                  <button
+                    onClick={() => handleCardReorder(c._id, "down")}
+                    disabled={i === cards.length - 1}
+                    className="rounded p-0.5 text-[#555555] transition hover:text-[#EF2C58] disabled:opacity-20"
+                    aria-label="Доош"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58] uppercase">{c.icon}</span>
+                    <span className="text-[13px] font-bold text-[#E8E8E8] truncate">{c.title}</span>
+                    {!c.enabled && <span className="rounded-full bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[9px] font-bold text-[#555555]">DISABLED</span>}
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-[#666666] line-clamp-2">{c.description}</div>
+                  {c.ctaLabel && c.ctaHref && (
+                    <div className="mt-1 text-[10px] text-[#555555]">→ {c.ctaLabel} ({c.ctaHref})</div>
+                  )}
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    onClick={() => handleCardToggle(c._id, c.enabled)}
+                    className="rounded-[6px] border border-[rgba(255,255,255,0.08)] px-2 py-1 text-[10px] font-bold text-[#666666] transition hover:text-[#E8E8E8]"
+                  >
+                    {c.enabled ? "Нуух" : "Идэвхжүүлэх"}
+                  </button>
+                  <button
+                    onClick={() => { setCardEditing(c._id); setCardForm({title:c.title,description:c.description,icon:c.icon,ctaLabel:c.ctaLabel||"",ctaHref:c.ctaHref||""}); setActiveTab("cards"); }}
+                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]"
+                  >
+                    Засах
+                  </button>
+                  <button
+                    onClick={() => handleCardDelete(c._id)}
+                    className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]"
+                  >
+                    Устгах
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -548,47 +548,86 @@ function SocialProof({ stats }: { stats: StatsData | null }) {
 }
 
 // ─── Value Proposition Cards ───
+// Icon registry — admin picks a name; SVG path lives here so the visual stays on-brand.
+const LANDING_ICON_PATHS: Record<string, string> = {
+  ai: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
+  money: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+  community: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
+  lightning: "M13 10V3L4 14h7v7l9-11h-7z",
+  target: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z",
+  growth: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
+  rocket: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
+  tool: "M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.121 2.121 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z",
+  shield: "M12 2L3 7v6c0 5 4 9 9 10 5-1 9-5 9-10V7l-9-5z",
+  spark: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
+};
+
+interface LandingCardData {
+  _id: string;
+  title: string;
+  description: string;
+  icon: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
 function ValueProps() {
-  const props = [
-    {
-      icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
-      title: "AI Сургалт",
-      desc: "Промпт инженеринг, автоматжуулалт, AI бизнес",
-    },
-    {
-      icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-      title: "Орлого олох",
-      desc: "Дижитал бүтээгдэхүүн, freelance, AI tool бизнес",
-    },
-    {
-      icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
-      title: "Community",
-      desc: "Бүтээгчдийн нийгэмлэг, хамтын ажиллагаа",
-    },
-  ];
+  const [cards, setCards] = useState<LandingCardData[]>([]);
+
+  useEffect(() => {
+    fetch("/api/landing-cards")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d.cards)) setCards(d.cards); })
+      .catch(() => {});
+  }, []);
+
+  if (cards.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      {props.map((p, i) => (
-        <motion.div
-          key={p.title}
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: i * 0.1 }}
-          viewport={{ once: true }}
-          className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4"
-        >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
-            <svg className="h-4.5 w-4.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={p.icon} />
-            </svg>
-          </div>
-          <div>
-            <div className="text-[13px] font-bold text-[#E8E8E8]">{p.title}</div>
-            <div className="mt-0.5 text-[12px] text-[#666666]">{p.desc}</div>
-          </div>
-        </motion.div>
-      ))}
+    <div>
+      <div className="mb-3 flex items-center gap-2">
+        <div className="h-[2px] w-4 bg-[#EF2C58]" />
+        <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">ЯАГААД ANTAQOR</span>
+      </div>
+      <div className="space-y-2">
+        {cards.map((p, i) => {
+          const iconPath = LANDING_ICON_PATHS[p.icon] || LANDING_ICON_PATHS.ai;
+          const Inner = (
+            <div className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4 transition group-hover:border-[rgba(239,44,88,0.3)]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
+                <svg className="h-4.5 w-4.5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPath} />
+                </svg>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[13px] font-bold text-[#E8E8E8]">{p.title}</div>
+                <div className="mt-0.5 text-[12px] text-[#666666]">{p.description}</div>
+                {p.ctaLabel && p.ctaHref && (
+                  <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-[#EF2C58]">
+                    {p.ctaLabel}
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+
+          return (
+            <motion.div
+              key={p._id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              {p.ctaHref ? <Link href={p.ctaHref}>{Inner}</Link> : Inner}
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -646,6 +685,62 @@ function MembersPreview({ guest = false }: { guest?: boolean }) {
   );
 }
 
+// ─── Value Stack (price-anchoring block) ───
+// Stacks perceived monthly value vs the actual ₮49k price. Classic offer-stack pattern:
+// list the components, sum a "comparable" value, then drop the real price visibly lower.
+function ValueStack() {
+  const items = [
+    { label: "Сар бүр шинэ AI хичээл", value: "₮199,000" },
+    { label: "Бүтээгчдийн чат + community", value: "₮99,000" },
+    { label: "Промпт + automation сан", value: "₮79,000" },
+    { label: "Market & freelance орчин", value: "₮69,000" },
+  ];
+  const totalValue = "₮446,000";
+
+  return (
+    <div className="overflow-hidden rounded-[10px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B]">
+      <div className="border-b border-[rgba(255,255,255,0.05)] px-4 py-2 text-center">
+        <span className="text-[9px] font-bold tracking-[0.18em] text-[#EF2C58]">ТАНЫ АВАХ ҮНЭ ЦЭНЭ</span>
+      </div>
+
+      <ul className="divide-y divide-[rgba(255,255,255,0.04)] px-4">
+        {items.map((it) => (
+          <li key={it.label} className="flex items-center justify-between py-2">
+            <span className="inline-flex items-center gap-2 text-[12px] text-[#CCC]">
+              <svg className="h-3.5 w-3.5 shrink-0 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              {it.label}
+            </span>
+            <span className="text-[11px] font-semibold text-[#666] line-through">{it.value}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.05)] bg-[rgba(0,0,0,0.25)] px-4 py-2.5">
+        <span className="text-[11px] font-bold tracking-[0.05em] text-[#888]">Нийт үнэ цэнэ</span>
+        <span className="text-[13px] font-black text-[#888] line-through">{totalValue}</span>
+      </div>
+
+      <div className="flex items-end justify-between gap-3 px-4 py-3.5">
+        <div>
+          <div className="text-[10px] font-bold tracking-[0.12em] text-[#22C55E]">ТА ӨНӨӨДӨР ТӨЛНӨ</div>
+          <div className="mt-0.5 flex items-baseline gap-1.5">
+            <span className="text-[26px] font-black leading-none text-[#E8E8E8]">₮49,000</span>
+            <span className="text-[12px] font-semibold text-[#666]">/ сар</span>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-2 py-0.5 text-[9px] font-black text-[#22C55E]">
+            89% ХЭМНЭЛТ
+          </div>
+          <div className="mt-1 text-[10px] text-[#666]">14 хоног · 100% буцаалт</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Hero Landing (for non-members) ───
 function HeroLanding() {
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -662,43 +757,87 @@ function HeroLanding() {
       <HeroSlider />
       <SocialProof stats={stats} />
 
-      {/* Hero copy — outcome-led */}
+      {/* ─── Hero copy — outcome-led, value-anchored ─── */}
       <div className="text-center">
-        <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
+        {/* Live ribbon */}
+        <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
           <span className="text-[9px] font-bold tracking-[0.12em] text-[#22C55E]">LIVE · MONGOLIA</span>
+          {stats?.paidMembers ? (
+            <>
+              <span className="text-[#333]">·</span>
+              <span className="text-[9px] font-bold tracking-[0.08em] text-[#22C55E]">
+                {stats.paidMembers}+ ИДЭВХТЭЙ
+              </span>
+            </>
+          ) : null}
         </div>
-        <h2 className="text-[20px] font-black leading-tight text-[#E8E8E8] md:text-[24px]">
-          AI-г эзэмшиж,<br />орлогоо өсгө
-        </h2>
-        <p className="mt-2 text-[13px] text-[#888]">
-          Монголын AI бүтээгчдийн #1 нийгэмлэг — Чат · Хичээл · Market
-        </p>
 
-        {/* Price + guarantee */}
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[#111] px-3 py-1.5">
-          <span className="text-[11px] text-[#888]">₮49,000</span>
-          <span className="text-[#333]">·</span>
-          <span className="text-[11px] text-[#888]">/ сар</span>
-          <span className="text-[#333]">·</span>
-          <span className="text-[11px] font-bold text-[#22C55E]">14 хоног буцаан олго</span>
-        </div>
+        {/* Outcome-led headline */}
+        <h2 className="text-[24px] font-black leading-[1.1] text-[#E8E8E8] md:text-[30px]">
+          AI-аар <span className="text-[#EF2C58]">орлого</span> олох<br />
+          бодит систем
+        </h2>
+        <p className="mx-auto mt-2.5 max-w-[340px] text-[13px] leading-relaxed text-[#999]">
+          Сард <span className="font-bold text-[#E8E8E8]">8+ хичээл</span>, бүтээгчдийн чат,
+          ажиллаж байгаа промпт, automation tool — нэг бүртгэлээр.
+        </p>
       </div>
 
-      {/* Primary CTA — consolidated */}
-      <Link
-        href="/auth/signup"
-        className="group relative block w-full overflow-hidden rounded-[8px] bg-gradient-to-r from-[#EF2C58] to-[#ff4e77] py-4 text-center text-[14px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_48px_rgba(239,44,88,0.4)]"
-      >
-        <span className="relative z-10">Cyber Empire нэгдэх · ₮49k</span>
-        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-      </Link>
-      <p className="text-center text-[11px] text-[#555] -mt-2">
-        Гишүүн үү?{" "}
-        <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
-          Нэвтрэх
+      {/* ─── Value Stack — anchors ₮49k against perceived ₮400k+ value ─── */}
+      <ValueStack />
+
+      {/* ─── Primary CTA ─── */}
+      <div className="space-y-2">
+        <Link
+          href="/auth/signup"
+          className="group relative block w-full overflow-hidden rounded-[10px] bg-gradient-to-r from-[#EF2C58] to-[#ff4e77] py-4 text-center text-[15px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.3)] transition hover:shadow-[0_0_56px_rgba(239,44,88,0.5)] hover:-translate-y-[1px]"
+        >
+          <span className="relative z-10 inline-flex items-center gap-2">
+            ₮49к-аар нэгдэх
+            <svg className="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </Link>
-      </p>
+
+        {/* Trust micro-row */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-[#777]">
+          <span className="inline-flex items-center gap-1">
+            <svg className="h-3 w-3 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+            14 хоног буцаан олголт
+          </span>
+          <span className="text-[#333]">·</span>
+          <span className="inline-flex items-center gap-1">
+            <svg className="h-3 w-3 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+            30 секундэд бүртгэл
+          </span>
+          <span className="text-[#333]">·</span>
+          <span className="inline-flex items-center gap-1">
+            <svg className="h-3 w-3 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Хүссэн үедээ цуцлах
+          </span>
+        </div>
+
+        {/* Payment trust strip */}
+        <div className="flex items-center justify-center gap-2 pt-1 text-[10px] font-bold tracking-wider text-[#555]">
+          <span>QPAY</span>
+          <span className="text-[#222]">·</span>
+          <span>SOCIALPAY</span>
+          <span className="text-[#222]">·</span>
+          <span>ХААН</span>
+          <span className="text-[#222]">·</span>
+          <span>VISA</span>
+        </div>
+
+        <p className="pt-1 text-center text-[11px] text-[#555]">
+          Гишүүн үү?{" "}
+          <Link href="/auth/signin" className="font-bold text-[#EF2C58] hover:underline">
+            Нэвтрэх
+          </Link>
+        </p>
+      </div>
 
       {/* Social proof — faces + results */}
       <Testimonials
@@ -715,20 +854,28 @@ function HeroLanding() {
       <LatestTanilts />
       <Leaderboard />
 
-      {/* Final CTA — tight, includes price + guarantee */}
-      <div className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 text-center md:p-7">
-        <div className="mb-1 text-[10px] font-bold tracking-[0.18em] text-[#EF2C58]">ХҮЛЭЭГДЭЛГҮЙ</div>
-        <h3 className="text-[18px] font-black text-[#E8E8E8] md:text-[20px]">Өнөөдөр AI-г эзэмшиж эхэл</h3>
-        <p className="mt-1.5 text-[12px] text-[#888]">
-          ₮49k/сар · Community · Хичээл · 14 хоног буцаан олголт
+      {/* Final CTA — risk-reversal closer */}
+      <div className="overflow-hidden rounded-[10px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 text-center md:p-7">
+        <div className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5 text-[9px] font-black tracking-[0.14em] text-[#22C55E]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
+          ЭРСДЭЛГҮЙ
+        </div>
+        <h3 className="mt-2 text-[20px] font-black leading-tight text-[#E8E8E8] md:text-[22px]">
+          14 хоног туршаад,<br />таалагдахгүй бол <span className="text-[#22C55E]">100% буцаана</span>
+        </h3>
+        <p className="mx-auto mt-2 max-w-[300px] text-[12px] leading-relaxed text-[#888]">
+          ₮49k төлөөд бүх хичээл, community, tool-ыг туршаарай. Дургүй бол асуухгүйгээр буцаана.
         </p>
         <Link
           href="/auth/signup"
-          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-[#EF2C58] px-8 py-3 text-[13px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_36px_rgba(239,44,88,0.4)]"
+          className="group mt-4 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3.5 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:shadow-[0_0_44px_rgba(239,44,88,0.5)] hover:-translate-y-[1px]"
         >
-          Нэгдэх
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          ₮49к-аар эхлэх
+          <svg className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
         </Link>
+        <div className="mt-3 text-[10px] font-bold tracking-wider text-[#555]">
+          QPAY · SOCIALPAY · ХААН · VISA
+        </div>
       </div>
 
       {/* Members Танилцуулга */}
