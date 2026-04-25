@@ -9,13 +9,23 @@ type Params = Promise<{ slug: string }>;
 
 async function loadArticle(slug: string, increment: boolean): Promise<{ article: Article; related: Article[] } | null> {
   await dbConnect();
+
+  // Next.js 16 may pass the dynamic segment URL-encoded for non-ASCII slugs.
+  // Try decoded form first; fall back to raw if decoding fails or doesn't match.
+  let decoded = slug;
+  try { decoded = decodeURIComponent(slug); } catch { /* keep raw */ }
+  const candidates = Array.from(new Set([
+    decoded.toLowerCase(),
+    slug.toLowerCase(),
+  ]));
+
   const raw = increment
     ? await News.findOneAndUpdate(
-        { slug: slug.toLowerCase(), published: true },
+        { slug: { $in: candidates }, published: true },
         { $inc: { views: 1 } },
         { new: true }
       ).lean()
-    : await News.findOne({ slug: slug.toLowerCase(), published: true }).lean();
+    : await News.findOne({ slug: { $in: candidates }, published: true }).lean();
 
   if (!raw) return null;
 

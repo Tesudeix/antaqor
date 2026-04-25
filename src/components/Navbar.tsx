@@ -105,7 +105,7 @@ export default function Navbar() {
         },
         { href: "/market", label: "Market", check: (p: string) => p.startsWith("/market") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
-        { href: "/news", label: "Блог", check: (p: string) => p.startsWith("/news") },
+        { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") },
       ];
 
   return (
