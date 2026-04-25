@@ -34,6 +34,7 @@ function SignUp() {
 
   const [aiLevel, setAiLevel] = useState<string>("intermediate");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -57,6 +58,7 @@ function SignUp() {
 
   const validate = (): string | null => {
     if (!name.trim()) return "Нэрээ оруулна уу";
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 8) return "Утасны дугаар 8 оронтой байх ёстой";
     if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) return "Имэйл буруу байна";
     if (!password || password.length < 6) return "Нууц үг 6+ тэмдэгт байх ёстой";
     return null;
@@ -75,6 +77,7 @@ function SignUp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
+          phone: phone.trim(),
           email: email.trim(),
           password,
           aiExperience: aiLevel,
@@ -142,7 +145,7 @@ function SignUp() {
             Бүртгүүлэх
           </h1>
           <p className="mt-1 text-[12px] text-[#666]">
-            3 талбар. 1 товч. Тэгээд community-д орно.
+            4 талбар. 1 товч. Тэгээд community-д орно.
           </p>
 
           {/* AI level chips — segmented control */}
@@ -178,6 +181,7 @@ function SignUp() {
           {/* Fields */}
           <div className="mt-4 space-y-2.5">
             <Field label="Нэр" value={name} onChange={setName} placeholder="Жишээ: Болд" autoFocus />
+            <Field label="Утас" value={phone} onChange={(v) => setPhone(v.replace(/[^\d+\-\s]/g, ""))} placeholder="99112233" type="tel" />
             <Field label="Имэйл" value={email} onChange={setEmail} placeholder="you@example.com" type="email" />
             <Field label="Нууц үг" value={password} onChange={setPassword} placeholder="6+ тэмдэгт" type="password" />
           </div>
