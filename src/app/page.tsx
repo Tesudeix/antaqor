@@ -631,59 +631,6 @@ function ValueProps() {
   );
 }
 
-// ─── Members Preview ───
-function MembersPreview({ guest = false }: { guest?: boolean }) {
-  const [members, setMembers] = useState<{ _id: string; name: string; avatar?: string; aiLevel?: string }[]>([]);
-
-  useEffect(() => {
-    fetch("/api/members?limit=8")
-      .then((r) => r.json())
-      .then((d) => { if (d.members) setMembers(d.members); })
-      .catch(() => {});
-  }, []);
-
-  if (members.length === 0) return null;
-
-  const memberHref = (id: string) => guest ? "/auth/signup" : `/profile/${id}`;
-
-  return (
-    <div>
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">ИДЭВХТЭЙ ГИШҮҮД</span>
-        </div>
-        <Link href="/members" className="text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
-          Бүгдийг үзэх
-        </Link>
-      </div>
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {members.map((m) => (
-          <Link
-            key={m._id}
-            href={memberHref(m._id)}
-            className="flex w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-3 transition hover:border-[rgba(239,44,88,0.3)]"
-          >
-            {m.avatar ? (
-              <img src={m.avatar} alt={m.name} className="h-10 w-10 rounded-[4px] object-cover" />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)] text-[14px] font-bold text-[#EF2C58]">
-                {m.name.charAt(0)}
-              </div>
-            )}
-            <span className="w-full truncate text-center text-[10px] font-semibold text-[#E8E8E8]">{m.name.split(" ")[0]}</span>
-            {m.aiLevel && (
-              <span className="rounded-[4px] bg-[#1A1A1A] px-1.5 py-0.5 text-[8px] font-bold text-[#666]">
-                {m.aiLevel === "beginner" ? "Эхлэгч" : m.aiLevel === "intermediate" ? "Дунд" : "Ахисан"}
-              </span>
-            )}
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Classroom Preview (drives signup intent: show value before paywall) ───
 interface CoursePreview {
   _id: string;
@@ -833,14 +780,6 @@ function HeroLanding() {
 
       {/* ─── Hero copy — clean Mongolian style, minimal text ─── */}
       <div className="text-center">
-        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
-          <span className="text-[9px] font-bold tracking-[0.14em] text-[#22C55E]">
-            МОНГОЛ
-            {stats?.paidMembers ? ` · ${stats.paidMembers} ГИШҮҮН` : ""}
-          </span>
-        </div>
-
         <h2 className="text-[26px] font-black leading-[1.05] text-[#E8E8E8] md:text-[32px]">
           AI-аар орлого олох<br />
           <span className="text-[#EF2C58]">Монгол community</span>
@@ -859,7 +798,7 @@ function HeroLanding() {
           className="group relative block w-full overflow-hidden rounded-[10px] bg-[#EF2C58] py-4 text-center text-[15px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_48px_rgba(239,44,88,0.5)]"
         >
           <span className="relative z-10 inline-flex items-center gap-2">
-            Нэгдэх
+            Cyber Empire нэгдэх
             <svg className="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
@@ -908,13 +847,10 @@ function HeroLanding() {
           href="/auth/signup"
           className="inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
         >
-          Эхлэх
+          Cyber Empire нэгдэх
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
         </Link>
       </div>
-
-      {/* Members Танилцуулга */}
-      <MembersPreview guest />
     </div>
   );
 }
@@ -961,7 +897,7 @@ function FeedPaywall() {
           className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_44px_rgba(239,44,88,0.5)]"
         >
           <span className="relative z-10 inline-flex items-center gap-2">
-            ₮49,000-аар нэгдэх
+            Cyber Empire нэгдэх · ₮49к
             <svg className="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
