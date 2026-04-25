@@ -171,8 +171,9 @@ function SignUp() {
 
           {/* AI level chips — segmented control */}
           <div className="mt-5">
-            <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">
-              AI түвшин
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">AI түвшин</span>
+              <span className="text-[10px] text-[#555]">дараа өөрчилж болно</span>
             </div>
             <div className="grid grid-cols-4 gap-1.5">
               {AI_LEVELS.map((lvl) => {
@@ -210,9 +211,33 @@ function SignUp() {
           {/* Fields */}
           <div className="mt-4 space-y-2.5">
             <Field label="Нэр" value={name} onChange={setName} placeholder="Жишээ: Болд" autoFocus />
-            <Field label="Утас" value={phone} onChange={(v) => setPhone(v.replace(/[^\d+\-\s]/g, ""))} placeholder="99112233" type="tel" />
-            <Field label="Имэйл" value={email} onChange={setEmail} placeholder="you@example.com" type="email" />
-            <Field label="Нууц үг" value={password} onChange={setPassword} placeholder="6+ тэмдэгт" type="password" />
+            <Field
+              label="Утас"
+              value={phone}
+              onChange={(v) => setPhone(v.replace(/\D/g, "").slice(0, 8))}
+              placeholder="99112233"
+              type="tel"
+              inputMode="numeric"
+              maxLength={8}
+              hint="8 оронтой"
+            />
+            <Field
+              label="Имэйл"
+              value={email}
+              onChange={setEmail}
+              placeholder="you@example.com"
+              type="email"
+              inputMode="email"
+            />
+            <Field
+              label="Нууц үг"
+              value={password}
+              onChange={setPassword}
+              placeholder="Доод тал нь 6 тэмдэгт"
+              type="password"
+              hint={password ? `${password.length} / 6+ тэмдэгт` : "6+ тэмдэгт"}
+              hintTone={password && password.length < 6 ? "warn" : "muted"}
+            />
           </div>
 
           <AnimatePresence>
@@ -273,6 +298,10 @@ function Field({
   placeholder,
   type = "text",
   autoFocus,
+  inputMode,
+  maxLength,
+  hint,
+  hintTone = "muted",
 }: {
   label: string;
   value: string;
@@ -280,17 +309,30 @@ function Field({
   placeholder?: string;
   type?: string;
   autoFocus?: boolean;
+  inputMode?: "text" | "email" | "tel" | "numeric" | "decimal" | "url" | "search" | "none";
+  maxLength?: number;
+  hint?: string;
+  hintTone?: "muted" | "warn" | "ok";
 }) {
+  const hintColor =
+    hintTone === "warn" ? "text-[#FFB020]" : hintTone === "ok" ? "text-[#22C55E]" : "text-[#555]";
   return (
     <label className="block">
-      <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">{label}</div>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">{label}</span>
+        {hint && <span className={`text-[10px] font-semibold ${hintColor}`}>{hint}</span>}
+      </div>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         type={type}
         autoFocus={autoFocus}
-        autoComplete={type === "password" ? "new-password" : type === "email" ? "email" : "off"}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        autoComplete={
+          type === "password" ? "new-password" : type === "email" ? "email" : type === "tel" ? "tel" : "off"
+        }
         className="w-full rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
       />
     </label>

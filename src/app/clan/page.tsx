@@ -202,7 +202,7 @@ export default function ClanPage() {
               </div>
               <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Төлбөрийг шалгаж байна</h1>
               <p className="mt-1.5 text-[13px] text-[#888]">
-                Гүйлгээний утган дээрх кодоор автоматаар таних. Идэвхжсэний дараа мэдэгдэл ирнэ.
+                Ердийн нөхцөлд <strong className="text-[#E8E8E8]">5–15 минутад</strong> идэвхжинэ. Энэ хуудсыг хаасан ч гэсэн идэвхжсэний мэдэгдэл утас/имэйлд ирнэ.
               </p>
 
               {payment.receiptImage && (
@@ -234,11 +234,34 @@ export default function ClanPage() {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-4 text-center text-[11px] text-[#666]">
-                Лавлах:&nbsp;
-                <a href="tel:94641031" className="font-bold text-[#EF2C58]">94641031</a>
-                {" · "}
-                <a href="mailto:antaqor@gmail.com" className="font-bold text-[#EF2C58]">antaqor@gmail.com</a>
+              {/* Stronger contact fallback — most common reason for "stuck pending" is wrong reference code */}
+              <div className="mt-4 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] p-4">
+                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFB020]">
+                  30 минутаас удвал
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-[#888]">
+                  Гүйлгээний утганд код буруу бичсэн байж болзошгүй. Гүйлгээний баримтын screenshot-г илгээ:
+                </p>
+                <div className="mt-2.5 grid grid-cols-2 gap-2">
+                  <a
+                    href="tel:94641031"
+                    className="flex items-center justify-center gap-1.5 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                    94641031
+                  </a>
+                  <a
+                    href="mailto:antaqor@gmail.com?subject=Төлбөр идэвхжээгүй"
+                    className="flex items-center justify-center gap-1.5 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    Имэйл
+                  </a>
+                </div>
               </div>
             </motion.div>
           )}
@@ -296,24 +319,44 @@ export default function ClanPage() {
         <div className="divide-y divide-[rgba(255,255,255,0.06)] rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] overflow-hidden">
           <PayRow label="Банк" value={BANK_NAME} copyText={BANK_NAME} field="bank" copied={copied} onCopy={copyToClipboard} />
           <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
-          <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} />
+          <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} subtitle="Antaqor үүсгэн байгуулагч · хувийн данс" />
           <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={String(tier.price)} field="amount" copied={copied} onCopy={copyToClipboard} mono />
-          <div className="flex items-center justify-between border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.08)] px-4 py-4">
-            <div>
+          {/* Reference code — biggest, most copy-friendly element on the screen */}
+          <button
+            type="button"
+            onClick={() => copyToClipboard(payment.referenceCode || "", "ref")}
+            className="group flex w-full items-center justify-between gap-3 border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.08)] px-4 py-4 text-left transition hover:bg-[rgba(239,44,88,0.12)]"
+          >
+            <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
-              <div className="mt-1 text-[22px] font-black tracking-[0.1em] text-[#EF2C58]">
-                {payment.referenceCode || "—"}
+              <div className="mt-1 text-[26px] font-black tracking-[0.18em] text-[#EF2C58]">
+                {payment.referenceCode || "——"}
               </div>
-              <div className="mt-0.5 text-[10px] text-[#999]">6 тэмдэгт — банкны reference талбар</div>
+              <div className="mt-0.5 text-[10px] text-[#999]">Дэлгэцийг хүртэл хуулна — энд дарж хуулна уу</div>
             </div>
-            <CopyBtn text={payment.referenceCode || ""} field="ref" copied={copied} onCopy={copyToClipboard} accent />
-          </div>
+            <span
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black tracking-wider transition ${
+                copied === "ref" ? "bg-[#22C55E] text-white" : "bg-[#EF2C58] text-white group-hover:bg-[#D4264E]"
+              }`}
+            >
+              {copied === "ref" ? "ХУУЛСАН ✓" : "ХУУЛАХ"}
+            </span>
+          </button>
         </div>
 
-        <div className="mt-3 rounded-[4px] bg-[rgba(239,44,88,0.08)] border border-[rgba(239,44,88,0.15)] px-4 py-2.5">
-          <p className="text-[11px] text-[#999999]">
-            Гүйлгээний утга дээр <strong className="text-[#EF2C58]">{payment.referenceCode || "—"}</strong> кодыг заавал бичнэ үү — үгүй бол идэвхжилт саатана.
-          </p>
+        {/* Strong inline reminder — the #1 cause of failed payments is forgetting this code */}
+        <div className="mt-3 rounded-[6px] border-2 border-[#EF2C58] bg-[rgba(239,44,88,0.1)] px-4 py-3">
+          <div className="flex items-start gap-2">
+            <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-[12px] leading-relaxed text-[#E8E8E8]">
+              Банкны апп дотор <strong className="text-[#EF2C58]">"Гүйлгээний утга"</strong> эсвэл{" "}
+              <strong className="text-[#EF2C58]">"Reference"</strong> талбарт{" "}
+              <strong className="font-mono tracking-wider text-[#EF2C58]">{payment.referenceCode || "——"}</strong>{" "}
+              гэж яг үсэг үсгээр нь бичнэ үү. <strong className="text-[#FFB020]">Бичээгүй бол идэвхжилт саатана.</strong>
+            </p>
+          </div>
         </div>
 
         <div className="mt-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-3 flex items-center justify-between">
@@ -461,18 +504,19 @@ export default function ClanPage() {
 }
 
 function PayRow({
-  label, value, copyText, field, copied, onCopy, mono,
+  label, value, copyText, field, copied, onCopy, mono, subtitle,
 }: {
   label: string; value: string; copyText: string; field: string;
-  copied: string | null; onCopy: (t: string, f: string) => void; mono?: boolean;
+  copied: string | null; onCopy: (t: string, f: string) => void; mono?: boolean; subtitle?: string;
 }) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <div>
+      <div className="min-w-0 flex-1">
         <div className="text-[10px] uppercase tracking-[1px] text-[#666666]">{label}</div>
         <div className={`mt-0.5 font-semibold text-[#E8E8E8] ${mono ? "text-[16px] tracking-wider" : "text-[14px]"}`}>
           {value}
         </div>
+        {subtitle && <div className="mt-0.5 text-[10px] text-[#666]">{subtitle}</div>}
       </div>
       <CopyBtn text={copyText} field={field} copied={copied} onCopy={onCopy} />
     </div>
