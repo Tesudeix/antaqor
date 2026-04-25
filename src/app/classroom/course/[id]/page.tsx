@@ -5,6 +5,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useMembership } from "@/lib/useMembership";
 import { motion } from "framer-motion";
+import PaywallGate from "@/components/PaywallGate";
 
 interface Course {
   _id: string;
@@ -27,7 +28,15 @@ interface Lesson {
   createdAt: string;
 }
 
-export default function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function CourseDetailPageWrapper({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <PaywallGate>
+      <CourseDetailPage params={params} />
+    </PaywallGate>
+  );
+}
+
+function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session } = useSession();
   const { loading: memberLoading, isMember, isAdmin: admin } = useMembership();

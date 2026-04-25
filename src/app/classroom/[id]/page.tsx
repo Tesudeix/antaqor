@@ -6,6 +6,7 @@ import Link from "next/link";
 import { isAdminEmail } from "@/lib/adminClient";
 import { formatDistanceToNow } from "@/lib/utils";
 import { motion } from "framer-motion";
+import PaywallGate from "@/components/PaywallGate";
 
 interface ReactionData {
   count: number;
@@ -60,7 +61,15 @@ function buildReactionsFromLesson(lesson: LessonData, userId: string | null): Re
   return result;
 }
 
-export default function LessonPage({ params }: { params: Promise<{ id: string }> }) {
+export default function LessonPageWrapper({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <PaywallGate>
+      <LessonPage params={params} />
+    </PaywallGate>
+  );
+}
+
+function LessonPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session } = useSession();
   const [lesson, setLesson] = useState<LessonData | null>(null);

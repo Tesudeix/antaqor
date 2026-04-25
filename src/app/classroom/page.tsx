@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useMembership } from "@/lib/useMembership";
 import { getLevelTitle } from "@/lib/xpClient";
 import { motion, AnimatePresence } from "framer-motion";
+import PaywallGate from "@/components/PaywallGate";
 
 // ─── Types ───
 interface Course {
@@ -323,7 +324,15 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () 
 }
 
 // ─── Main Page ───
-export default function ClassroomPage() {
+export default function ClassroomPageWrapper() {
+  return (
+    <PaywallGate>
+      <ClassroomPage />
+    </PaywallGate>
+  );
+}
+
+function ClassroomPage() {
   const { data: session } = useSession();
   const { loading: memberLoading, isMember, isAdmin: admin } = useMembership();
   const [courses, setCourses] = useState<Course[]>([]);
