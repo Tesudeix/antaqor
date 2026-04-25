@@ -919,32 +919,66 @@ function HeroLanding() {
   );
 }
 
-// ─── Upgrade banner for logged-in free users ───
-function FreeTierBanner({ visible }: { visible: boolean }) {
-  if (!visible) return null;
+// ─── Paywall view shown to logged-in free users in place of the feed ───
+function FeedPaywall() {
+  const [stats, setStats] = useState<StatsData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((d) => { if (d.totalUsers) setStats(d); })
+      .catch(() => {});
+  }, []);
+
   return (
-    <Link
-      href="/clan?pay=1"
-      className="group relative flex items-center gap-3 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-r from-[rgba(239,44,88,0.1)] via-[#111] to-[#111] p-3 transition hover:border-[rgba(239,44,88,0.5)]"
-    >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)]">
-        <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-        </svg>
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[13px] font-bold text-[#E8E8E8]">Cyber Empire нэгдэх</span>
-          <span className="rounded-full bg-[#EF2C58] px-1.5 py-0.5 text-[9px] font-black text-white">₮49k</span>
+    <div className="mx-auto max-w-lg space-y-5 pb-8 pt-4">
+      {/* Lock card */}
+      <div className="overflow-hidden rounded-[12px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center md:p-8">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[12px] bg-[rgba(239,44,88,0.12)] shadow-[0_0_28px_rgba(239,44,88,0.18)]">
+          <svg className="h-6 w-6 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
         </div>
-        <div className="mt-0.5 text-[11px] text-[#888]">
-          Хязгааргүй пост · Бүх хичээл · 1.5× XP · Level дээшлүүл
+        <div className="text-[10px] font-bold tracking-[0.18em] text-[#EF2C58]">CYBER EMPIRE</div>
+        <h1 className="mt-2 text-[22px] font-black leading-tight text-[#E8E8E8] md:text-[26px]">
+          Feed нь гишүүдэд<br />зориулсан
+        </h1>
+        <p className="mx-auto mt-2 max-w-[320px] text-[13px] leading-relaxed text-[#888]">
+          Бүх пост, хичээл, community болон ажиллаж байгаа промптуудыг нэгдсэн нэг газраас.
+        </p>
+
+        {stats?.paidMembers ? (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
+            <span className="text-[10px] font-bold tracking-[0.1em] text-[#22C55E]">
+              {stats.paidMembers}+ ИДЭВХТЭЙ ГИШҮҮН
+            </span>
+          </div>
+        ) : null}
+
+        <Link
+          href="/clan?pay=1"
+          className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_44px_rgba(239,44,88,0.5)]"
+        >
+          <span className="relative z-10 inline-flex items-center gap-2">
+            ₮49,000-аар нэгдэх
+            <svg className="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+        </Link>
+        <div className="mt-2 text-[10px] text-[#666]">
+          14 хоног буцаалт · QPay · SocialPay · Хаан
         </div>
       </div>
-      <svg className="h-4 w-4 shrink-0 text-[#EF2C58] transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-      </svg>
-    </Link>
+
+      {/* What you unlock — uses the same admin-editable cards */}
+      <ValueProps />
+
+      {/* Free editorial — stays accessible so the page isn't a wall */}
+      <LatestNews />
+    </div>
   );
 }
 
@@ -1018,16 +1052,19 @@ export default function Home() {
     );
   }
 
-  // Anonymous visitors only — logged-in free users drop to the feed below.
+  // Anonymous visitors → guest landing.
   if (!isLoggedIn) {
     return <HeroLanding />;
   }
 
-  const isFreeUser = isLoggedIn && !isMember && !isAdmin;
+  // Logged-in but unpaid → paywall view, no feed.
+  if (!isMember && !isAdmin) {
+    return <FeedPaywall />;
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <FreeTierBanner visible={isFreeUser} />
+      <LatestNews />
       <LatestNews />
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
