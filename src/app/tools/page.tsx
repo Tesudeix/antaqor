@@ -31,12 +31,26 @@ const TOOLS: ToolDef[] = [
     ),
   },
   {
+    href: "/tools/compose",
+    title: "Зураг хослуулах · Workflow",
+    blurb: "2–5 зургийг label-тайгаар холбоод нэг шинэ зураг бүтээ. Subject + product + background + style гэх мэт чөлөөтэй recipe.",
+    cost: "10₵ / workflow",
+    costTone: "neon",
+    tag: "ШИНЭ",
+    accent: "from-[#A855F7] via-[#EF2C58] to-[#FFB3C5]",
+    icon: (
+      <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 7.5h16.5M3.75 12h16.5M3.75 16.5h16.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 7.5L8 4M5 12l3-3M5 16.5L8 19.5M19 7.5L16 4M19 12l-3-3M19 16.5L16 19.5" opacity=".5" />
+      </svg>
+    ),
+  },
+  {
     href: "/tools/swap-product",
     title: "Бүтээгдэхүүн солих",
     blurb: "Хүний барьж байгаа бараа болон шинэ бүтээгдэхүүнийг AI-аар солино. Influencer marketing, brand deal-д бэлэн.",
     cost: "10₵ / swap",
     costTone: "neon",
-    tag: "ШИНЭ",
     accent: "from-[#A855F7] via-[#EF2C58] to-[#3B82F6]",
     icon: (
       <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
