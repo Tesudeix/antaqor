@@ -6,6 +6,15 @@ import { useMembership } from "@/lib/useMembership";
 import { motion, AnimatePresence } from "framer-motion";
 import PaywallGate from "@/components/PaywallGate";
 
+// Strip extension + tidy filename → human-readable title
+function titleFromFilename(name: string): string {
+  return name
+    .replace(/\.[a-z0-9]{1,5}$/i, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 // ─── Types matching /api/classroom/courses/[id]/tree response ───
 interface TaskSummary {
   _id: string;
@@ -360,6 +369,7 @@ function AddLessonInline({
       setVideoUrl(data.url);
       setVideoName(file.name);
       setVideoSize(file.size);
+      setTitle((t) => t.trim() || titleFromFilename(file.name));
     } finally {
       setVideoUploading(false);
       if (videoRef.current) videoRef.current.value = "";
@@ -378,6 +388,7 @@ function AddLessonInline({
         const data = await res.json();
         if (res.ok && data.url) {
           setPdfs((p) => [...p, { url: data.url, name: file.name, size: file.size }]);
+          setTitle((t) => t.trim() || titleFromFilename(file.name));
         }
       }
     } finally {
@@ -422,7 +433,7 @@ function AddLessonInline({
 
   return (
     <div className="mt-2 space-y-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Хичээлийн нэр" autoFocus
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Хичээлийн нэр (файл сонгоход автомат)" autoFocus
         className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
 
       {/* Video file upload */}
@@ -522,6 +533,7 @@ function AddTaskInline({ lessonId, onAdded }: { lessonId: string; onAdded: () =>
         const data = await res.json();
         if (res.ok && data.url) {
           setPdfs((p) => [...p, { url: data.url, name: file.name, size: file.size }].slice(0, 3));
+          setTitle((t) => t.trim() || titleFromFilename(file.name));
         }
       }
     } finally {
@@ -550,7 +562,7 @@ function AddTaskInline({ lessonId, onAdded }: { lessonId: string; onAdded: () =>
   );
   return (
     <div className="space-y-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2.5">
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Даалгаврын нэр" autoFocus
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Даалгаврын нэр (PDF сонгоход автомат)" autoFocus
         className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
 
       {/* Task PDF — main content of the task */}
