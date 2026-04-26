@@ -83,7 +83,7 @@ export default function Navbar() {
           check: (p: string) =>
             p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
-        { href: "/market", label: "Market", check: (p: string) => p.startsWith("/market") },
+        { href: "/calendar", label: "Календар", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
@@ -103,7 +103,7 @@ export default function Navbar() {
           label: "Нүүр",
           check: (p: string) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
         },
-        { href: "/market", label: "Market", check: (p: string) => p.startsWith("/market") },
+        { href: "/calendar", label: "Календар", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") },
       ];
