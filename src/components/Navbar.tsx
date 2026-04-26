@@ -105,7 +105,7 @@ export default function Navbar() {
         },
         { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
-        { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") },
+        { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
       ];
 
   return (

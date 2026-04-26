@@ -133,10 +133,10 @@ export default function BottomBar() {
         match: (p) => p.startsWith("/classroom"),
       },
       {
-        href: "/services",
-        label: "Үйлчилгээ",
+        href: "/community",
+        label: "Community",
         icon: iconServices,
-        match: (p) => p.startsWith("/services"),
+        match: (p) => p.startsWith("/community"),
       },
       {
         href: "/auth/signup",
