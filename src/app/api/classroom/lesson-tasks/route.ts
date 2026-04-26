@@ -6,36 +6,51 @@ import dbConnect from "@/lib/mongodb";
 import LessonTask from "@/models/LessonTask";
 import Subsection from "@/models/Subsection";
 
-// GET — list tasks (?subsectionId= or ?courseId=)
+// GET — list tasks (?sectionId= or ?subsectionId= or ?courseId=)
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  const sectionId = searchParams.get("sectionId");
   const subsectionId = searchParams.get("subsectionId");
   const courseId = searchParams.get("courseId");
   await dbConnect();
   const q: Record<string, unknown> = {};
-  if (subsectionId) q.subsection = subsectionId;
+  if (sectionId) q.section = sectionId;
+  else if (subsectionId) q.subsection = subsectionId;
   else if (courseId) q.course = courseId;
   else return NextResponse.json({ tasks: [] });
   const tasks = await LessonTask.find(q).lean();
   return NextResponse.json({ tasks });
 }
 
-// POST — admin creates task on subsection
+// POST — admin creates task on a section (or legacy subsection)
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user || !isAdmin(session.user.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { subsection, title, description, deadline, maxScore } = await req.json();
-  if (!subsection || !title?.trim()) {
-    return NextResponse.json({ error: "subsection + title required" }, { status: 400 });
+  const { section, subsection, title, description, deadline, maxScore } = await req.json();
+  if ((!section && !subsection) || !title?.trim()) {
+    return NextResponse.json({ error: "section + title required" }, { status: 400 });
   }
   await dbConnect();
-  const parent = await Subsection.findById(subsection).select("course").lean();
-  if (!parent) return NextResponse.json({ error: "Subsection not found" }, { status: 404 });
+
+  // Resolve course either via section or legacy subsection parent
+  let courseId: unknown;
+  if (section) {
+    const Section = (await import("@/models/Section")).default;
+    const parent = await Section.findById(section).select("course").lean();
+    if (!parent) return NextResponse.json({ error: "Section not found" }, { status: 404 });
+    courseId = parent.course;
+  } else {
+    const parent = await Subsection.findById(subsection).select("course").lean();
+    if (!parent) return NextResponse.json({ error: "Subsection not found" }, { status: 404 });
+    courseId = parent.course;
+  }
+
   const task = await LessonTask.create({
-    subsection,
-    course: parent.course,
+    section: section || undefined,
+    subsection: subsection || undefined,
+    course: courseId,
     title: title.trim(),
     description: description?.trim() || "",
     deadline: deadline ? new Date(deadline) : undefined,

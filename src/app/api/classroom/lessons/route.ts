@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    const { course, subsection, title, description, content, videoUrl, videoType, thumbnail, order, requiredLevel, attachments } =
+    const { course, section, subsection, title, description, content, videoUrl, videoType, thumbnail, order, requiredLevel, attachments } =
       await req.json();
 
     if (!course || !title?.trim()) {
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
     const lesson = await Lesson.create({
       course,
+      section: section || undefined,
       subsection: subsection || undefined,
       title: title.trim(),
       description: description?.trim() || "",

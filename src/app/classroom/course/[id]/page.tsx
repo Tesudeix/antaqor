@@ -22,20 +22,13 @@ interface TaskSummary {
   maxScore: number;
   deadline?: string;
 }
-interface SubsectionNode {
+interface SectionNode {
   _id: string;
   title: string;
   description: string;
   order: number;
   lessons: LessonSummary[];
   task: TaskSummary | null;
-}
-interface SectionNode {
-  _id: string;
-  title: string;
-  description: string;
-  order: number;
-  subsections: SubsectionNode[];
 }
 interface CourseInfo {
   _id: string;
@@ -62,7 +55,6 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   const [orphanLessons, setOrphanLessons] = useState<LessonSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const [openSub, setOpenSub] = useState<Set<string>>(new Set());
 
   const fetchTree = async () => {
     const res = await fetch(`/api/classroom/courses/${id}/tree`);
@@ -78,13 +70,6 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   useEffect(() => { fetchTree(); }, [id]);
 
   const toggleSection = (sid: string) => setOpenSection((s) => (s === sid ? null : sid));
-  const toggleSub = (id: string) => {
-    setOpenSub((s) => {
-      const n = new Set(s);
-      if (n.has(id)) n.delete(id); else n.add(id);
-      return n;
-    });
-  };
 
   if (loading) {
     return (
@@ -133,7 +118,7 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
         </div>
       )}
 
-      {/* Sections — Шат 2: collapsed by default, click to expand */}
+      {/* Sections — collapsed by default, click to expand → lessons + task */}
       <div className="space-y-2">
         {sections.length === 0 && orphanLessons.length === 0 ? (
           <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center">
@@ -159,11 +144,13 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
                   <div className="text-[14px] font-bold text-[#E8E8E8]">{sec.title}</div>
                   {sec.description && <div className="mt-0.5 text-[11px] text-[#666]">{sec.description}</div>}
                 </div>
-                <span className="text-[10px] font-bold text-[#666]">{sec.subsections.length} дэд бүлэг</span>
+                <span className="text-[10px] font-bold text-[#666]">
+                  {sec.lessons.length} хичээл{sec.task ? " · 📝" : ""}
+                </span>
                 {admin && <SectionAdminMenu sectionId={sec._id} title={sec.title} onChange={fetchTree} />}
               </button>
 
-              {/* Subsections — Шат 3: visible after section expand */}
+              {/* Lessons + Task — visible after section expand */}
               <AnimatePresence initial={false}>
                 {isOpen && (
                   <motion.div
@@ -173,22 +160,38 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]"
                   >
-                    <div className="space-y-1.5 p-3 pl-6">
-                      {sec.subsections.map((sub) => (
-                        <SubsectionBlock
-                          key={sub._id}
-                          subsection={sub}
-                          isOpen={openSub.has(sub._id)}
-                          onToggle={() => toggleSub(sub._id)}
-                          admin={admin}
-                          courseId={id}
-                          onChange={fetchTree}
-                        />
-                      ))}
-                      {admin && <AddSubsectionInline sectionId={sec._id} nextOrder={sec.subsections.length} onAdded={fetchTree} />}
-                      {sec.subsections.length === 0 && !admin && (
-                        <div className="px-2 py-3 text-center text-[11px] text-[#555]">Дэд бүлэг хараахан байхгүй</div>
+                    <div className="space-y-1 p-3 pl-6">
+                      {sec.lessons.map((l) => <LessonRow key={l._id} lesson={l} />)}
+                      {sec.lessons.length === 0 && !admin && !sec.task && (
+                        <div className="px-2 py-3 text-center text-[11px] text-[#555]">Хичээл хараахан байхгүй</div>
                       )}
+                      {admin && (
+                        <AddLessonInline
+                          courseId={id}
+                          sectionId={sec._id}
+                          nextOrder={sec.lessons.length}
+                          onAdded={fetchTree}
+                        />
+                      )}
+                      {/* Task at the bottom */}
+                      {sec.task ? (
+                        <Link
+                          href={`/classroom/task/${sec.task._id}`}
+                          className="mt-2 flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
+                        >
+                          <span className="text-[14px]">📝</span>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[11px] font-black text-[#EF2C58]">ДААЛГАВАР</div>
+                            <div className="text-[12px] font-bold text-[#E8E8E8]">{sec.task.title}</div>
+                          </div>
+                          <span className="text-[10px] text-[#666]">{sec.task.maxScore} оноо</span>
+                        </Link>
+                      ) : admin ? (
+                        <AddTaskInline
+                          sectionId={sec._id}
+                          onAdded={fetchTree}
+                        />
+                      ) : null}
                     </div>
                   </motion.div>
                 )}
@@ -213,88 +216,7 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
-// ─── Subsection block — Шат 4: arrow на right opens lessons + task ───
-function SubsectionBlock({
-  subsection, isOpen, onToggle, admin, courseId, onChange,
-}: {
-  subsection: SubsectionNode;
-  isOpen: boolean;
-  onToggle: () => void;
-  admin: boolean;
-  courseId: string;
-  onChange: () => void;
-}) {
-  return (
-    <div className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition hover:bg-[rgba(255,255,255,0.02)]"
-      >
-        <span className="text-[#EF2C58] text-[14px] leading-none">▸</span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[12px] font-bold text-[#E8E8E8]">{subsection.title}</div>
-          {subsection.description && (
-            <div className="mt-0.5 text-[10px] text-[#666]">{subsection.description}</div>
-          )}
-        </div>
-        <span className="text-[10px] text-[#666]">
-          {subsection.lessons.length} хичээл{subsection.task ? " · 📝" : ""}
-        </span>
-        {admin && <SubsectionAdminMenu subsectionId={subsection._id} onChange={onChange} />}
-        <Chevron open={isOpen} small />
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]"
-          >
-            <div className="space-y-1 p-2 pl-5">
-              {subsection.lessons.map((l) => <LessonRow key={l._id} lesson={l} />)}
-              {subsection.lessons.length === 0 && !admin && (
-                <div className="py-2 text-center text-[10px] text-[#555]">Хичээл хараахан байхгүй</div>
-              )}
-              {admin && (
-                <AddLessonInline
-                  courseId={courseId}
-                  subsectionId={subsection._id}
-                  nextOrder={subsection.lessons.length}
-                  onAdded={onChange}
-                />
-              )}
-              {/* Task at the bottom — Шат 6 */}
-              {subsection.task ? (
-                <Link
-                  href={`/classroom/task/${subsection.task._id}`}
-                  className="mt-2 flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
-                >
-                  <span className="text-[14px]">📝</span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[11px] font-black text-[#EF2C58]">ДААЛГАВАР</div>
-                    <div className="text-[12px] font-bold text-[#E8E8E8]">{subsection.task.title}</div>
-                  </div>
-                  <span className="text-[10px] text-[#666]">{subsection.task.maxScore} оноо</span>
-                </Link>
-              ) : admin ? (
-                <AddTaskInline
-                  subsectionId={subsection._id}
-                  onAdded={onChange}
-                />
-              ) : null}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ─── Lesson row — Шат 5: click → /classroom/[id] (existing lesson view) ───
+// ─── Lesson row — click → /classroom/[id] (existing lesson view) ───
 function LessonRow({ lesson }: { lesson: LessonSummary }) {
   const pdfCount = lesson.attachments?.length || 0;
   return (
@@ -373,44 +295,10 @@ function AddSectionInline({ courseId, nextOrder, onAdded }: { courseId: string; 
   );
 }
 
-function AddSubsectionInline({ sectionId, nextOrder, onAdded }: { sectionId: string; nextOrder: number; onAdded: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [busy, setBusy] = useState(false);
-  const submit = async () => {
-    if (!title.trim()) return;
-    setBusy(true);
-    try {
-      const res = await fetch("/api/classroom/subsections", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ section: sectionId, title, order: nextOrder }),
-      });
-      if (res.ok) { setTitle(""); setOpen(false); onAdded(); }
-    } finally { setBusy(false); }
-  };
-  if (!open) return (
-    <button onClick={() => setOpen(true)} className="mt-1 inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-3 py-1.5 text-[11px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
-      + Дэд бүлэг нэмэх
-    </button>
-  );
-  return (
-    <div className="mt-1 flex items-center gap-1.5">
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Шинэ дэд бүлэг" autoFocus
-        onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") setOpen(false); }}
-        className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
-      <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
-        {busy ? "..." : "Нэмэх"}
-      </button>
-      <button onClick={() => { setOpen(false); setTitle(""); }} className="text-[11px] text-[#666]">×</button>
-    </div>
-  );
-}
-
 function AddLessonInline({
-  courseId, subsectionId, nextOrder, onAdded,
+  courseId, sectionId, nextOrder, onAdded,
 }: {
-  courseId: string; subsectionId: string; nextOrder: number; onAdded: () => void;
+  courseId: string; sectionId: string; nextOrder: number; onAdded: () => void;
 }) {
   const videoRef = useRef<HTMLInputElement>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
@@ -487,7 +375,7 @@ function AddLessonInline({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           course: courseId,
-          subsection: subsectionId,
+          section: sectionId,
           title,
           videoUrl: videoUrl,
           videoType: "upload",
@@ -591,7 +479,7 @@ function AddLessonInline({
   );
 }
 
-function AddTaskInline({ subsectionId, onAdded }: { subsectionId: string; onAdded: () => void }) {
+function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () => void }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -605,7 +493,7 @@ function AddTaskInline({ subsectionId, onAdded }: { subsectionId: string; onAdde
       const res = await fetch("/api/classroom/lesson-tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subsection: subsectionId, title, description: desc, maxScore, deadline: deadline || undefined }),
+        body: JSON.stringify({ section: sectionId, title, description: desc, maxScore, deadline: deadline || undefined }),
       });
       if (res.ok) { setTitle(""); setDesc(""); setMaxScore(10); setDeadline(""); setOpen(false); onAdded(); }
     } finally { setBusy(false); }
@@ -646,27 +534,13 @@ function AddTaskInline({ subsectionId, onAdded }: { subsectionId: string; onAdde
 function SectionAdminMenu({ sectionId, title, onChange }: { sectionId: string; title: string; onChange: () => void }) {
   const onDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); e.preventDefault();
-    if (!confirm(`"${title}" бүлэг + бүх дэд бүлэг + хичээл устах. Үргэлжлүүлэх үү?`)) return;
+    if (!confirm(`"${title}" бүлэг + бүх хичээл + даалгавар устах. Үргэлжлүүлэх үү?`)) return;
     await fetch(`/api/classroom/sections/${sectionId}`, { method: "DELETE" });
     onChange();
   };
   return (
     <button onClick={onDelete} className="ml-1 rounded-[4px] p-1 text-[#666] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]" aria-label="Устгах">
       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9M19.228 5.79L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M7.5 5.79h9" /></svg>
-    </button>
-  );
-}
-
-function SubsectionAdminMenu({ subsectionId, onChange }: { subsectionId: string; onChange: () => void }) {
-  const onDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation(); e.preventDefault();
-    if (!confirm("Дэд бүлэг + бүх хичээл + даалгавар устах. Үргэлжлүүлэх үү?")) return;
-    await fetch(`/api/classroom/subsections/${subsectionId}`, { method: "DELETE" });
-    onChange();
-  };
-  return (
-    <button onClick={onDelete} className="ml-1 rounded-[4px] p-1 text-[#666] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]" aria-label="Устгах">
-      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
     </button>
   );
 }

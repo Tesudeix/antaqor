@@ -1,10 +1,11 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// Даалгавар — дэд бүлгийн төгсгөлд (нэг subsection-д нэг task)
+// Даалгавар — section-ы төгсгөлд (нэг section-д нэг task)
 export interface ILessonTask extends Document {
   _id: mongoose.Types.ObjectId;
-  subsection: mongoose.Types.ObjectId;
-  course: mongoose.Types.ObjectId; // duplicated for fast course-level queries
+  section?: mongoose.Types.ObjectId;     // active 2-level hierarchy
+  subsection?: mongoose.Types.ObjectId;  // legacy
+  course: mongoose.Types.ObjectId;
   title: string;
   description: string;
   deadline?: Date;
@@ -15,7 +16,8 @@ export interface ILessonTask extends Document {
 
 const LessonTaskSchema = new Schema<ILessonTask>(
   {
-    subsection: { type: Schema.Types.ObjectId, ref: "Subsection", required: true, index: true },
+    section: { type: Schema.Types.ObjectId, ref: "Section", index: true },
+    subsection: { type: Schema.Types.ObjectId, ref: "Subsection", index: true },
     course: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
     title: { type: String, required: true, trim: true, maxlength: 200 },
     description: { type: String, default: "", maxlength: 5000 },

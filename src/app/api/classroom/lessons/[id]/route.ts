@@ -59,6 +59,7 @@ export async function PUT(
         ...(body.videoType && { videoType: body.videoType }),
         ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
         ...(body.order !== undefined && { order: body.order }),
+        ...(body.section !== undefined && { section: body.section || null }),
         ...(body.subsection !== undefined && { subsection: body.subsection || null }),
         ...(safeAttachments !== undefined && { attachments: safeAttachments }),
       },

@@ -10,7 +10,8 @@ export interface ILessonAttachment {
 export interface ILesson extends Document {
   _id: mongoose.Types.ObjectId;
   course: mongoose.Types.ObjectId;
-  subsection?: mongoose.Types.ObjectId;  // optional хүртэл backward-compat
+  section?: mongoose.Types.ObjectId;     // active 2-level hierarchy
+  subsection?: mongoose.Types.ObjectId;  // legacy — kept for backward compat
   title: string;
   description: string;
   content: string;
@@ -34,6 +35,11 @@ const LessonSchema = new Schema<ILesson>(
       type: Schema.Types.ObjectId,
       ref: "Course",
       required: true,
+    },
+    section: {
+      type: Schema.Types.ObjectId,
+      ref: "Section",
+      index: true,
     },
     subsection: {
       type: Schema.Types.ObjectId,

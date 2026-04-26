@@ -6,8 +6,10 @@ import Subsection from "@/models/Subsection";
 import Lesson from "@/models/Lesson";
 import LessonTask from "@/models/LessonTask";
 
-// GET — return the full nested tree for a single course
-//   course → sections[] → subsections[] → { lessons[], task? }
+// GET — flat 2-level tree:
+//   course → sections[] → { lessons[], task? }
+// Backwards-compat: lessons/tasks tied to a subsection are remapped
+// to that subsection's parent section so legacy data still renders.
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await dbConnect();
@@ -16,43 +18,58 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   const [sections, subsections, lessons, tasks] = await Promise.all([
     Section.find({ course: id }).sort({ order: 1 }).lean(),
-    Subsection.find({ course: id }).sort({ order: 1 }).lean(),
+    Subsection.find({ course: id }).select("_id section").lean(),
     Lesson.find({ course: id }).sort({ order: 1 }).select(
-      "_id title description subsection videoUrl thumbnail order requiredLevel attachments"
+      "_id title description section subsection videoUrl thumbnail order requiredLevel attachments"
     ).lean(),
     LessonTask.find({ course: id }).lean(),
   ]);
 
-  // Build nested tree
-  const tasksBySubsection = new Map<string, typeof tasks[number]>();
-  tasks.forEach((t) => tasksBySubsection.set(String(t.subsection), t));
+  // subsection→section lookup table for legacy data
+  const subToSection = new Map<string, string>();
+  subsections.forEach((s) => subToSection.set(String(s._id), String(s.section)));
 
-  const lessonsBySubsection = new Map<string, typeof lessons>();
-  lessons.forEach((l) => {
-    const k = String(l.subsection || "");
-    if (!k) return;
-    if (!lessonsBySubsection.has(k)) lessonsBySubsection.set(k, []);
-    lessonsBySubsection.get(k)!.push(l);
+  const resolveSectionId = (lesson: { section?: unknown; subsection?: unknown }): string | null => {
+    if (lesson.section) return String(lesson.section);
+    if (lesson.subsection) {
+      const parentSec = subToSection.get(String(lesson.subsection));
+      if (parentSec) return parentSec;
+    }
+    return null;
+  };
+
+  // Group lessons by section
+  const lessonsBySection = new Map<string, typeof lessons>();
+  for (const l of lessons) {
+    const sid = resolveSectionId(l);
+    if (!sid) continue;
+    if (!lessonsBySection.has(sid)) lessonsBySection.set(sid, []);
+    lessonsBySection.get(sid)!.push(l);
+  }
+
+  // Pick task per section (one section → one task)
+  const taskBySection = new Map<string, (typeof tasks)[number]>();
+  for (const t of tasks) {
+    const sid = resolveSectionId(t);
+    if (!sid) continue;
+    // Prefer most-recent if multiple
+    const existing = taskBySection.get(sid);
+    if (!existing || +new Date(t.createdAt) > +new Date(existing.createdAt)) {
+      taskBySection.set(sid, t);
+    }
+  }
+
+  const tree = sections.map((sec) => ({
+    ...sec,
+    lessons: lessonsBySection.get(String(sec._id)) || [],
+    task: taskBySection.get(String(sec._id)) || null,
+  }));
+
+  // Orphan lessons that aren't tied to any section (or section was deleted)
+  const orphanLessons = lessons.filter((l) => {
+    const sid = resolveSectionId(l);
+    return !sid || !sections.find((s) => String(s._id) === sid);
   });
-
-  const subsBySection = new Map<string, typeof subsections>();
-  subsections.forEach((s) => {
-    const k = String(s.section);
-    if (!subsBySection.has(k)) subsBySection.set(k, []);
-    subsBySection.get(k)!.push(s);
-  });
-
-  const tree = sections.map((sec) => {
-    const subs = (subsBySection.get(String(sec._id)) || []).map((sub) => ({
-      ...sub,
-      lessons: lessonsBySubsection.get(String(sub._id)) || [],
-      task: tasksBySubsection.get(String(sub._id)) || null,
-    }));
-    return { ...sec, subsections: subs };
-  });
-
-  // Orphan lessons that aren't tied to a subsection (legacy / pre-migration)
-  const orphanLessons = lessons.filter((l) => !l.subsection);
 
   return NextResponse.json({ course, sections: tree, orphanLessons });
 }
