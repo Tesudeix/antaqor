@@ -37,6 +37,7 @@ interface AdminUser {
   subscriptionExpiresAt?: string;
   role?: string;
   createdAt: string;
+  credits?: number;
 }
 
 interface AiLevelCount {
@@ -63,6 +64,41 @@ export default function AdminMembersPage() {
   const [grantModal, setGrantModal] = useState<AdminUser | null>(null);
   const [grantDays, setGrantDays] = useState(30);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  // Credit grant modal
+  const [creditModal, setCreditModal] = useState<AdminUser | null>(null);
+  const [creditAmount, setCreditAmount] = useState<number>(50);
+  const [creditNote, setCreditNote] = useState<string>("");
+  const [creditBusy, setCreditBusy] = useState(false);
+
+  const grantCredits = async () => {
+    if (!creditModal || creditBusy || !creditAmount) return;
+    setCreditBusy(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/admin/credits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: creditModal._id,
+          amount: creditAmount,
+          note: creditNote.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const newBal = typeof data.balance === "number" ? data.balance : (creditModal.credits || 0) + creditAmount;
+        setMessage(`${creditModal.name}: ${creditAmount > 0 ? "+" : ""}${creditAmount}₵ → шинэ үлдэгдэл ${newBal}₵`);
+        setUsers((prev) => prev.map((u) => u._id === creditModal._id ? { ...u, credits: newBal } : u));
+        setCreditModal(null);
+        setCreditAmount(50);
+        setCreditNote("");
+      } else {
+        setMessage(data.error || "Алдаа гарлаа");
+      }
+    } finally {
+      setCreditBusy(false);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -334,6 +370,17 @@ export default function AdminMembersPage() {
                       </span>
                     )}
 
+                    {/* Credits chip — always visible, click to grant */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setCreditModal(user); setCreditAmount(50); setCreditNote(""); }}
+                      title="Кредит олгох"
+                      className="inline-flex items-center gap-1 px-2 py-1.5 text-[10px] font-bold tracking-tight border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+                    >
+                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>
+                      {(user.credits ?? 0).toLocaleString()}₵
+                      <span className="text-[#888] font-normal ml-0.5">+</span>
+                    </button>
+
                     {!member ? (
                       <button
                         onClick={(e) => { e.stopPropagation(); setGrantModal(user); setGrantDays(30); }}
@@ -491,6 +538,116 @@ export default function AdminMembersPage() {
               </button>
               <button onClick={() => setGrantModal(null)} className="btn-ghost !py-2 !px-5 !text-[10px]">
                 Цуцлах
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Credit Grant Modal */}
+      {creditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => !creditBusy && setCreditModal(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0F0F10] to-[#0F0F10] p-6 shadow-[0_0_28px_rgba(239,44,88,0.15)]">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <span className="text-[9px] font-black uppercase tracking-[0.18em] text-[#EF2C58]">КРЕДИТ ОЛГОХ</span>
+                <h2 className="mt-1 text-[18px] font-black text-[#E8E8E8]">{creditModal.name}</h2>
+                <p className="mt-0.5 text-[11px] text-[#888]">{creditModal.email}</p>
+                <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-0.5 text-[10px] font-bold text-[#888]">
+                  Одоогийн үлдэгдэл: <span className="text-[#EF2C58]">{(creditModal.credits ?? 0).toLocaleString()}₵</span>
+                </div>
+              </div>
+              <button
+                onClick={() => !creditBusy && setCreditModal(null)}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[#666] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#E8E8E8]"
+                aria-label="Хаах"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            <div className="mb-3">
+              <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#888]">Хэмжээ</div>
+              <div className="flex flex-wrap gap-1.5">
+                {[10, 50, 100, 200, 500, 1000].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setCreditAmount(n)}
+                    className={`rounded-[4px] px-3 py-1.5 text-[11px] font-black transition ${
+                      creditAmount === n
+                        ? "bg-[#EF2C58] text-white shadow-[0_0_12px_rgba(239,44,88,0.4)]"
+                        : "border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#CCC] hover:border-[rgba(239,44,88,0.4)]"
+                    }`}
+                  >
+                    +{n}₵
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  type="number"
+                  value={creditAmount}
+                  onChange={(e) => setCreditAmount(parseInt(e.target.value) || 0)}
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[14px] font-black text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]"
+                  placeholder="Эсвэл өөрөө бичих..."
+                />
+                <button
+                  type="button"
+                  onClick={() => setCreditAmount(-Math.abs(creditAmount))}
+                  title="Сөрөг (хасах)"
+                  className="shrink-0 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] font-bold text-[#888] transition hover:border-[#EF4444] hover:text-[#EF4444]"
+                >
+                  ±
+                </button>
+              </div>
+              <p className="mt-1.5 text-[10px] text-[#666]">
+                Эерэг тоо → нэмнэ. Сөрөг тоо → хасна (-50 гэх мэт).
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#888]">
+                Тэмдэглэл <span className="text-[#555] normal-case font-normal tracking-normal">(заавал биш)</span>
+              </div>
+              <input
+                value={creditNote}
+                onChange={(e) => setCreditNote(e.target.value)}
+                placeholder="Жнь: Хүндэт гишүүн bonus, alpha tester reward..."
+                maxLength={200}
+                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]"
+              />
+            </div>
+
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 text-[11px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[#888]">{creditAmount >= 0 ? "Нэмэх" : "Хасах"}:</span>
+                <span className={`font-black ${creditAmount >= 0 ? "text-[#EF2C58]" : "text-[#EF4444]"}`}>
+                  {creditAmount >= 0 ? "+" : ""}{creditAmount.toLocaleString()}₵
+                </span>
+              </div>
+              <div className="mt-1 flex items-center justify-between">
+                <span className="text-[#888]">Шинэ үлдэгдэл:</span>
+                <span className="font-black text-[#E8E8E8]">
+                  {Math.max(0, (creditModal.credits ?? 0) + creditAmount).toLocaleString()}₵
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={grantCredits}
+                disabled={creditBusy || !creditAmount}
+                className="flex flex-1 items-center justify-center rounded-[4px] bg-[#EF2C58] py-2.5 text-[12px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.35)] transition hover:bg-[#D4264E] disabled:opacity-40 disabled:shadow-none"
+              >
+                {creditBusy ? "Хадгалж байна..." : creditAmount >= 0 ? "Олгох" : "Хасах"}
+              </button>
+              <button
+                onClick={() => setCreditModal(null)}
+                disabled={creditBusy}
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#888] transition hover:text-[#E8E8E8] disabled:opacity-40"
+              >
+                Болих
               </button>
             </div>
           </div>
