@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
 import NextEventCountdown from "@/components/NextEventCountdown";
+import Founding100Badge from "@/components/Founding100Badge";
+import RecentPaidMembers from "@/components/RecentPaidMembers";
 import Testimonials from "@/components/Testimonials";
 
 interface Post {
@@ -779,6 +781,8 @@ function HeroLanding() {
       <NextEventCountdown />
       <HeroSlider />
       <SocialProof stats={stats} />
+      <Founding100Badge variant="hero" />
+      <RecentPaidMembers limit={5} />
 
       {/* ─── Hero copy — clean Mongolian style, minimal text ─── */}
       <div className="text-center">
@@ -859,6 +863,9 @@ function FeedPaywall() {
 
   return (
     <div className="mx-auto max-w-lg space-y-5 pb-8 pt-4">
+      <Founding100Badge variant="hero" />
+      <RecentPaidMembers limit={5} />
+
       {/* Lock card */}
       <div className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center md:p-8">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] shadow-[0_0_28px_rgba(239,44,88,0.18)]">

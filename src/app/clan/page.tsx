@@ -6,6 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Testimonials from "@/components/Testimonials";
+import Founding100Badge from "@/components/Founding100Badge";
+import RecentPaidMembers from "@/components/RecentPaidMembers";
 
 const BANK_ACCOUNT = "5926153085";
 const BANK_NAME = "Хаан банк";
@@ -198,19 +200,13 @@ export default function ClanPage() {
             </motion.div>
           ) : (
             <motion.div key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <button
-                onClick={() => setStep("payment")}
-                className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]"
-              >
-                ← Банкны мэдээлэл харах
-              </button>
               <div className="flex items-center gap-2 mb-2">
                 <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#FFC107]" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFC107]">ХҮЛЭЭЖ БАЙНА</span>
               </div>
               <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Төлбөрийг шалгаж байна</h1>
               <p className="mt-1.5 text-[13px] text-[#888]">
-                Ердийн нөхцөлд <strong className="text-[#E8E8E8]">5–15 минутад</strong> идэвхжинэ. Энэ хуудсыг хаасан ч гэсэн идэвхжсэний мэдэгдэл утас/имэйлд ирнэ.
+                Ердийн нөхцөлд <strong className="text-[#E8E8E8]">5–15 минутад</strong> идэвхжинэ. Хуудсыг хаасан ч мэдэгдэл утас/имэйлд ирнэ.
               </p>
 
               {payment.receiptImage && (
@@ -219,57 +215,61 @@ export default function ClanPage() {
                 </a>
               )}
 
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-3">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-[#666]">Код</div>
-                    <div className="mt-0.5 text-[16px] font-black tracking-[0.1em] text-[#EF2C58]">
-                      {payment.referenceCode || "—"}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-wider text-[#666]">Дүн</div>
-                    <div className="mt-0.5 text-[14px] font-bold text-[#E8E8E8]">₮{(payment.amount || tier.price).toLocaleString()}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] px-4 py-3 text-[11px]">
-                  <span className="text-[#666]">Статус 10 сек тутам шалгана</span>
-                  <div className="flex items-center gap-1.5 text-[#AAA]">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
-                    <span>live</span>
-                  </div>
+              {/* Live status badge */}
+              <div className="mt-4 flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] px-4 py-3 text-[11px]">
+                <span className="text-[#666]">Статус 10 сек тутам шалгана</span>
+                <div className="flex items-center gap-1.5 text-[#AAA]">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
+                  <span>live</span>
                 </div>
               </div>
 
-              {/* Stronger contact fallback — most common reason for "stuck pending" is wrong reference code */}
-              <div className="mt-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] p-4">
-                <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFB020]">
-                  30 минутаас удвал
+              {/* Bank info recap — auto-show because user is unpaid; the #1 reason
+                   they stay pending is forgetting how/where to pay */}
+              <div className="mt-4 rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-[rgba(239,44,88,0.04)] p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#EF2C58]">
+                    Төлбөр шилжүүлэх мэдээлэл
+                  </span>
                 </div>
-                <p className="mt-1 text-[11px] leading-relaxed text-[#888]">
-                  Гүйлгээний утганд код буруу бичсэн байж болзошгүй. Гүйлгээний баримтын screenshot-г илгээ:
-                </p>
-                <div className="mt-2.5 grid grid-cols-2 gap-2">
-                  <a
-                    href="tel:94641031"
-                    className="flex items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                    94641031
-                  </a>
-                  <a
-                    href="mailto:antaqor@gmail.com?subject=Төлбөр идэвхжээгүй"
-                    className="flex items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                    </svg>
-                    Имэйл
-                  </a>
+                <div className="space-y-2">
+                  <PendingBankRow label="Банк" value={BANK_NAME} field="p-bank" copied={copied} onCopy={copyToClipboard} />
+                  <PendingBankRow label="Данс" value={BANK_ACCOUNT} field="p-account" copied={copied} onCopy={copyToClipboard} mono />
+                  <PendingBankRow label="Хүлээн авагч" value={BANK_RECIPIENT} field="p-recipient" copied={copied} onCopy={copyToClipboard} />
+                  <PendingBankRow label="Дүн" value={`₮${(payment.amount || tier.price).toLocaleString()}`} copyText={String(payment.amount || tier.price)} field="p-amount" copied={copied} onCopy={copyToClipboard} mono />
+                  <PendingBankRow label="Гүйлгээний утга" value={userEmail || "—"} field="p-ref" copied={copied} onCopy={copyToClipboard} accent />
                 </div>
+                <button
+                  onClick={() => setStep("payment")}
+                  className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#D4264E]"
+                >
+                  Бүтэн төлбөрийн хуудас үзэх
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Help fallback — neutral, no scary "wrong code" framing */}
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <a
+                  href="tel:94641031"
+                  className="flex items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-3 py-2.5 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                  Утас 94641031
+                </a>
+                <a
+                  href="mailto:antaqor@gmail.com?subject=Төлбөрийн тусламж"
+                  className="flex items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-3 py-2.5 text-[12px] font-bold text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.4)]"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                  Имэйл
+                </a>
               </div>
             </motion.div>
           )}
@@ -389,6 +389,12 @@ export default function ClanPage() {
   // ─── Single-tier focused landing ───
   return (
     <div className="mx-auto max-w-md py-4">
+      <div className="mb-4">
+        <Founding100Badge variant="default" />
+      </div>
+      <div className="mb-4">
+        <RecentPaidMembers limit={6} />
+      </div>
       <div className="mb-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -494,6 +500,49 @@ export default function ClanPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Compact 1-line bank info row for the pending screen recap
+function PendingBankRow({
+  label, value, copyText, field, copied, onCopy, mono, accent,
+}: {
+  label: string; value: string; copyText?: string; field: string;
+  copied: string | null; onCopy: (t: string, f: string) => void;
+  mono?: boolean; accent?: boolean;
+}) {
+  const text = copyText ?? value;
+  const done = copied === field;
+  return (
+    <button
+      type="button"
+      onClick={() => onCopy(text, field)}
+      className={`group flex w-full items-center justify-between gap-3 rounded-[4px] border px-3 py-2 text-left transition ${
+        accent
+          ? "border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] hover:bg-[rgba(239,44,88,0.1)]"
+          : "border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] hover:border-[rgba(255,255,255,0.12)]"
+      }`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className={`text-[9px] font-bold uppercase tracking-wider ${accent ? "text-[#EF2C58]" : "text-[#666]"}`}>
+          {label}
+        </div>
+        <div
+          className={`mt-0.5 truncate font-bold ${
+            mono ? "font-mono tracking-wider" : ""
+          } ${accent ? "text-[14px] text-[#EF2C58]" : "text-[12px] text-[#E8E8E8]"}`}
+        >
+          {value}
+        </div>
+      </div>
+      <span
+        className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black tracking-wider transition ${
+          done ? "bg-[#22C55E] text-white" : "bg-[#1A1A1A] text-[#888] group-hover:bg-[#EF2C58] group-hover:text-white"
+        }`}
+      >
+        {done ? "ХУУЛСАН" : "ХУУЛАХ"}
+      </span>
+    </button>
   );
 }
 
