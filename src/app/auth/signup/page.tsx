@@ -614,7 +614,7 @@ function SignUp() {
 
         {/* Fields */}
         <div className="mt-4 space-y-2.5">
-          <Field label="Нэр" value={name} onChange={setName} placeholder="Жишээ: Болд" autoFocus />
+          <Field label="Нэр" value={name} onChange={setName} placeholder="Antaqor" autoFocus />
           <Field
             label="Утас"
             value={phone}
