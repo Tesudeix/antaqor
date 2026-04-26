@@ -187,17 +187,28 @@ export default function CreditsPage() {
       )}
 
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <div className="h-[2px] w-5 bg-[#EF2C58]" />
-          <span className="text-[11px] font-bold tracking-[0.2em] text-[#EF2C58]">CREDITS · REFERRAL</span>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="h-[2px] w-5 bg-[#EF2C58]" />
+            <span className="text-[11px] font-bold tracking-[0.2em] text-[#EF2C58]">CREDITS · REFERRAL</span>
+          </div>
+          <h1 className="mt-2 text-[26px] font-black leading-tight tracking-tight text-[#E8E8E8] md:text-[32px]">
+            Найзаа урьж, гишүүнчлэлээ <span className="text-[#EF2C58]">үнэгүй</span> авч болно
+          </h1>
+          <p className="mt-1.5 max-w-xl text-[13px] text-[#666]">
+            2 найз Cyber Empire-д нэгдэхэд 1 сарын гишүүнчлэл үнэгүй. Зөвхөн найз урьснаас гадна пост/мэдээ хуваалцаж ч кредит хуримтлуулах боломжтой.
+          </p>
         </div>
-        <h1 className="mt-2 text-[26px] font-black leading-tight tracking-tight text-[#E8E8E8] md:text-[32px]">
-          Найзаа урьж, гишүүнчлэлээ <span className="text-[#EF2C58]">үнэгүй</span> авч болно
-        </h1>
-        <p className="mt-1.5 max-w-xl text-[13px] text-[#666]">
-          2 найз Cyber Empire-д нэгдэхэд 1 сарын гишүүнчлэл үнэгүй. Зөвхөн найз урьснаас гадна пост/мэдээ хуваалцаж ч кредит хуримтлуулах боломжтой.
-        </p>
+        <Link
+          href="/credits/buy"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-[4px] bg-gradient-to-r from-[#EF2C58] to-[#A855F7] px-4 py-2.5 text-[12px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.45)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.7)]"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Кредит худалдаж авах
+        </Link>
       </div>
 
       {/* Balance + referral widgets */}

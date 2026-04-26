@@ -8,14 +8,13 @@ import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { pushToUser } from "@/lib/push";
 import { maybeAwardReferralPayment } from "@/lib/credits";
+import CreditTx from "@/models/CreditTx";
 
 type Params = Promise<{ id: string }>;
 
-// POST — one-click approve:
-// 1. Mark Payment paid
-// 2. Grant/extend user's subscription by 30 days
-// 3. Fire referral-paid reward (idempotent)
-// 4. Push to user: "You're in!"
+// POST — one-click approve. Behaviour depends on Payment.kind:
+//  - "membership" (default): grant/extend subscription, fire referral reward
+//  - "credits":              atomically $inc user.credits, log a CreditTx
 export async function POST(
   req: Request,
   { params }: { params: Params }
@@ -43,10 +42,50 @@ export async function POST(
     payment.paidAt = new Date();
     await payment.save();
 
-    // Grant / extend subscription
     const user = await User.findById(payment.user);
     if (!user) return NextResponse.json({ error: "User gone" }, { status: 404 });
 
+    // ─── Branch: credits purchase ─────────────────────────────────────────
+    if (payment.kind === "credits") {
+      const grant = Math.max(1, Math.min(100_000, Number(payment.creditAmount) || 0));
+      if (grant <= 0) {
+        return NextResponse.json({ error: "Payment has no creditAmount" }, { status: 400 });
+      }
+      // Atomic increment so concurrent admin clicks don't double-credit
+      const updated = await User.findByIdAndUpdate(
+        user._id,
+        { $inc: { credits: grant, creditsLifetime: grant } },
+        { new: true, projection: { credits: 1 } }
+      ).lean();
+      const balanceAfter = (updated as unknown as { credits?: number } | null)?.credits || 0;
+
+      await CreditTx.create({
+        user: user._id,
+        kind: "earn",
+        amount: grant,
+        reason: "PURCHASE",
+        xpAwarded: 0,
+        ref: String(payment._id),
+        balanceAfter,
+        meta: { packageId: payment.packageId, amount: payment.amount },
+      });
+
+      pushToUser(String(user._id), {
+        title: `+${grant}₵ нэмэгдлээ`,
+        body: `${grant} кредит данс руу шилжлээ. Шинэ үлдэгдэл: ${balanceAfter}₵`,
+        url: "/credits",
+        tag: `credits-purchase-${payment._id}`,
+      }).catch(() => {});
+
+      return NextResponse.json({
+        ok: true,
+        kind: "credits",
+        payment: { _id: payment._id, status: payment.status, paidAt: payment.paidAt },
+        user: { _id: user._id, credits: balanceAfter },
+      });
+    }
+
+    // ─── Branch: membership (default) ─────────────────────────────────────
     const now = new Date();
     const base =
       user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now
@@ -60,10 +99,8 @@ export async function POST(
     if (!user.clanJoinedAt) user.clanJoinedAt = now;
     await user.save();
 
-    // Fire referral-paid reward if applicable (non-blocking, idempotent)
     maybeAwardReferralPayment(String(user._id)).catch(() => {});
 
-    // Notify user (non-blocking)
     pushToUser(String(user._id), {
       title: "Cyber Empire идэвхжлээ 🚀",
       body: `${days} хоногийн гишүүнчлэл амжилттай. Тавтай морил!`,
@@ -73,6 +110,7 @@ export async function POST(
 
     return NextResponse.json({
       ok: true,
+      kind: "membership",
       payment: { _id: payment._id, status: payment.status, paidAt: payment.paidAt },
       user: { _id: user._id, subscriptionExpiresAt: user.subscriptionExpiresAt, clan: user.clan },
     });

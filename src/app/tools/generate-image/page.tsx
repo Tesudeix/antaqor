@@ -158,7 +158,7 @@ export default function GenerateImagePage() {
             <div className="text-[12px] font-bold text-[#EF2C58]">Кредит дутуу</div>
             <div className="text-[11px] text-[#888]">Танд {balance}₵ байна, {COST}₵ шаардлагатай.</div>
           </div>
-          <Link href="/credits" className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.5)]">
+          <Link href="/credits/buy" className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.5)]">
             Кредит авах →
           </Link>
         </div>

@@ -8,6 +8,11 @@ export interface IPayment extends Document {
   referenceCode: string;
   amount: number;
   description: string;
+  // What this payment is for. Defaults to "membership" so legacy rows keep
+  // working (clan join). "credits" → award creditAmount on approval.
+  kind: "membership" | "credits";
+  creditAmount: number; // populated when kind === "credits"
+  packageId: string;    // optional id of the credit package, e.g. "popular"
   status: "pending" | "paid" | "failed";
   qrImage: string;
   qrText: string;
@@ -46,6 +51,20 @@ const PaymentSchema = new Schema<IPayment>(
       required: true,
     },
     description: {
+      type: String,
+      default: "",
+    },
+    kind: {
+      type: String,
+      enum: ["membership", "credits"],
+      default: "membership",
+      index: true,
+    },
+    creditAmount: {
+      type: Number,
+      default: 0,
+    },
+    packageId: {
       type: String,
       default: "",
     },

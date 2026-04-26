@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // EXECUTE — mark paid, extend subscription, fire referral + push
+      // EXECUTE — mark paid, then branch by Payment.kind
       try {
         payment.status = "paid";
         payment.paidAt = new Date();
@@ -158,25 +158,57 @@ export async function POST(req: NextRequest) {
 
         const user = await User.findById(payment.user);
         if (user) {
-          const now = new Date();
-          const base =
-            user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now
-              ? new Date(user.subscriptionExpiresAt)
-              : now;
-          const expiresAt = new Date(base);
-          expiresAt.setDate(expiresAt.getDate() + days);
-          user.subscriptionExpiresAt = expiresAt;
-          if (!user.clan) user.clan = "antaqor";
-          if (!user.clanJoinedAt) user.clanJoinedAt = now;
-          await user.save();
+          if (payment.kind === "credits") {
+            const grant = Math.max(1, Math.min(100_000, Number(payment.creditAmount) || 0));
+            if (grant > 0) {
+              const updated = await User.findByIdAndUpdate(
+                user._id,
+                { $inc: { credits: grant, creditsLifetime: grant } },
+                { new: true, projection: { credits: 1 } }
+              ).lean();
+              const balanceAfter = (updated as unknown as { credits?: number } | null)?.credits || 0;
 
-          maybeAwardReferralPayment(String(user._id)).catch(() => {});
-          pushToUser(String(user._id), {
-            title: "Cyber Empire идэвхжлээ 🚀",
-            body: `${days} хоногийн гишүүнчлэл амжилттай. Тавтай морил!`,
-            url: "/",
-            tag: "membership-activated",
-          }).catch(() => {});
+              const { default: CreditTx } = await import("@/models/CreditTx");
+              await CreditTx.create({
+                user: user._id,
+                kind: "earn",
+                amount: grant,
+                reason: "PURCHASE",
+                xpAwarded: 0,
+                ref: String(payment._id),
+                balanceAfter,
+                meta: { packageId: payment.packageId, amount: payment.amount, source: "auto-match" },
+              });
+
+              pushToUser(String(user._id), {
+                title: `+${grant}₵ нэмэгдлээ`,
+                body: `Кредит данс руу шилжлээ. Шинэ үлдэгдэл: ${balanceAfter}₵`,
+                url: "/credits",
+                tag: `credits-purchase-${payment._id}`,
+              }).catch(() => {});
+            }
+          } else {
+            // membership (default)
+            const now = new Date();
+            const base =
+              user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now
+                ? new Date(user.subscriptionExpiresAt)
+                : now;
+            const expiresAt = new Date(base);
+            expiresAt.setDate(expiresAt.getDate() + days);
+            user.subscriptionExpiresAt = expiresAt;
+            if (!user.clan) user.clan = "antaqor";
+            if (!user.clanJoinedAt) user.clanJoinedAt = now;
+            await user.save();
+
+            maybeAwardReferralPayment(String(user._id)).catch(() => {});
+            pushToUser(String(user._id), {
+              title: "Cyber Empire идэвхжлээ 🚀",
+              body: `${days} хоногийн гишүүнчлэл амжилттай. Тавтай морил!`,
+              url: "/",
+              tag: "membership-activated",
+            }).catch(() => {});
+          }
         }
 
         outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "approved", payment: { ...paymentSummary, status: "paid" } });
