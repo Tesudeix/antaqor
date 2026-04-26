@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import LessonTask from "@/models/LessonTask";
 import Subsection from "@/models/Subsection";
+import mongoose from "mongoose";
 
 // GET — list tasks (?sectionId= or ?subsectionId= or ?courseId=)
 export async function GET(req: NextRequest) {
@@ -35,16 +36,16 @@ export async function POST(req: NextRequest) {
   await dbConnect();
 
   // Resolve course either via section or legacy subsection parent
-  let courseId: unknown;
+  let courseId: mongoose.Types.ObjectId;
   if (section) {
     const Section = (await import("@/models/Section")).default;
     const parent = await Section.findById(section).select("course").lean();
     if (!parent) return NextResponse.json({ error: "Section not found" }, { status: 404 });
-    courseId = parent.course;
+    courseId = parent.course as mongoose.Types.ObjectId;
   } else {
     const parent = await Subsection.findById(subsection).select("course").lean();
     if (!parent) return NextResponse.json({ error: "Subsection not found" }, { status: 404 });
-    courseId = parent.course;
+    courseId = parent.course as mongoose.Types.ObjectId;
   }
 
   const task = await LessonTask.create({
