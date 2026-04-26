@@ -2,18 +2,14 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 
-const FALLBACK_SLIDES: { url: string; type: "image" | "video" }[] = [
-  { url: "/hero-1.jpg", type: "image" },
-  { url: "/hero-2.jpg", type: "image" },
-];
-
 interface Slide {
   url: string;
   type: "image" | "video";
 }
 
 export default function HeroSlider() {
-  const [slides, setSlides] = useState<Slide[]>(FALLBACK_SLIDES);
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [musicUrl, setMusicUrl] = useState("/fire-again.mp3");
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [current, setCurrent] = useState(0);
@@ -28,11 +24,10 @@ export default function HeroSlider() {
     fetch("/api/hero/slides")
       .then((r) => r.json())
       .then((d) => {
-        if (d.slides && d.slides.length > 0) {
-          setSlides(d.slides);
-        }
+        if (Array.isArray(d.slides)) setSlides(d.slides);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
     fetch("/api/hero/music")
       .then((r) => r.json())
       .then((d) => {
@@ -121,6 +116,41 @@ export default function HeroSlider() {
       resetTimer();
     }
   };
+
+  // Skeleton — shown while fetching, OR if admin has set zero slides.
+  // Replaces the old duplicated /hero-1.jpg fallback with a clean shimmer.
+  if (!loaded || slides.length === 0) {
+    return (
+      <div className="w-full">
+        <div
+          className="relative w-full overflow-hidden rounded-[4px] bg-[#141414] shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
+          style={{ aspectRatio: "3/4" }}
+        >
+          {/* Base shimmer layer */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#161616] via-[#0F0F0F] to-[#161616]" />
+          {/* Sweeping shimmer */}
+          <div
+            className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.04)] to-transparent"
+            style={{ animation: "antaqorShimmer 1.6s ease-in-out infinite" }}
+          />
+          {/* Brand watermark */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex items-center gap-3 opacity-30">
+              <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-[#666]">ANTAQOR</span>
+              <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
+            </div>
+          </div>
+          <style jsx>{`
+            @keyframes antaqorShimmer {
+              0%   { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
