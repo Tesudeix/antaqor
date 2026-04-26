@@ -132,7 +132,9 @@ export default function ClanPage() {
           amount: data.amount,
         });
         setShowPayment(true);
-        setStep(data.status === "pending" ? "pending" : "payment");
+        // Always land on the payment step — user must SEE bank info to actually transfer.
+        // They advance to "pending" themselves by clicking "Шилжүүллээ" after sending.
+        setStep("payment");
       }
     } catch { /* ignore */ }
     finally { setSubmitting(false); }
@@ -196,6 +198,12 @@ export default function ClanPage() {
             </motion.div>
           ) : (
             <motion.div key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <button
+                onClick={() => setStep("payment")}
+                className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]"
+              >
+                ← Банкны мэдээлэл харах
+              </button>
               <div className="flex items-center gap-2 mb-2">
                 <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#FFC107]" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFC107]">ХҮЛЭЭЖ БАЙНА</span>
