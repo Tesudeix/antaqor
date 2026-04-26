@@ -23,33 +23,33 @@ interface Question {
 const QUESTIONS: Question[] = [
   {
     id: "q1",
-    label: "Промпт инженерингийн туршлага",
+    label: "AI-тай харьцаж байсан туршлага",
     iconPath:
       "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
     options: [
       {
         value: "none",
-        label: "Анх удаа санаж байна",
+        label: "Анх удаа суралцаж байна",
         // academic-cap (student)
         iconPath:
           "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84",
       },
       {
         value: "basic",
-        label: "ChatGPT-д энгийн асуулт бичиж байсан",
+        label: "ChatGPT-ээс заримдаа асуулт асуудаг",
         // chat bubble
         iconPath:
           "M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z",
       },
       {
         value: "intermediate",
-        label: "System prompt, chain-of-thought ашигладаг",
+        label: "Сайн промпт бичиж AI-аар ажил хийлгэдэг",
         // bolt
         iconPath: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z",
       },
       {
         value: "advanced",
-        label: "Few-shot, RAG, function calling",
+        label: "AI-г өгөгдөлдөө холбож, автомат workflow зохиодог",
         // chevron-double-up = mastery climb
         iconPath: "M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5",
       },
@@ -57,34 +57,34 @@ const QUESTIONS: Question[] = [
   },
   {
     id: "q2",
-    label: "AI хэрэгслийн мэдлэг",
+    label: "Аль AI хэрэгслүүдийг ашигладаг вэ?",
     iconPath:
       "M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75",
     options: [
       {
         value: "none",
-        label: "Ямар ч AI ашиглаж үзээгүй",
+        label: "Хараахан нэгийг ч ашиглаж үзээгүй",
         // closed package box
         iconPath:
           "M21 8.25v7.5a2.25 2.25 0 01-1.183 1.981l-6.75 3.6a2.25 2.25 0 01-2.134 0l-6.75-3.6A2.25 2.25 0 013 15.75v-7.5m18 0a2.25 2.25 0 00-1.183-1.981L13.067 2.67a2.25 2.25 0 00-2.134 0L4.183 6.27A2.25 2.25 0 003 8.25M21 8.25l-9 4.875M3 8.25l9 4.875m0 0V21",
       },
       {
         value: "chatgpt",
-        label: "Зөвхөн ChatGPT",
+        label: "ChatGPT эсвэл Gemini шиг чат AI",
         // cpu (chip)
         iconPath:
           "M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25",
       },
       {
         value: "multiple",
-        label: "Claude, Midjourney, Cursor зэрэг 2+",
+        label: "Зураг/видео үүсгэгч AI (Midjourney, Sora г.м)",
         // squares-2x2 (multiple apps)
         iconPath:
           "M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z",
       },
       {
         value: "api",
-        label: "API дээр өөрөө апп бүтээсэн",
+        label: "Програмчилж AI-г өөрийн апп-д холбосон",
         // code brackets
         iconPath:
           "M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z",
@@ -93,33 +93,33 @@ const QUESTIONS: Question[] = [
   },
   {
     id: "q3",
-    label: "Та юу хийхийг хүсэж байна?",
+    label: "AI-аар юу хийхийг зорьж байна вэ?",
     iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
     options: [
       {
         value: "learn",
-        label: "AI-г ойлгож сурах",
+        label: "AI-г үндсээс нь ойлгож сурах",
         // book-open
         iconPath:
           "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25",
       },
       {
         value: "use",
-        label: "Ажилдаа AI ашиглах",
+        label: "Өдөр тутмын ажилдаа AI ашиглаж хурдтай болох",
         // briefcase
         iconPath:
           "M20.25 14.15v4.073a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25v-4.072m16.5 0a24.301 24.301 0 01-4.5.659 24.317 24.317 0 01-4.5-.659m16.5 0v-2.073A2.25 2.25 0 0017.999 9.75h-12A2.25 2.25 0 003.75 12.077v2.073M12 9.75v.008v-.008zm0 0h0M16.5 9.75v-.75A2.25 2.25 0 0014.25 6.75h-4.5A2.25 2.25 0 007.5 9v.75",
       },
       {
         value: "build",
-        label: "AI-р бүтээгдэхүүн бүтээх",
+        label: "AI-аар програм, апп бүтээж сурах",
         // wrench-screwdriver
         iconPath:
           "M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085",
       },
       {
         value: "business",
-        label: "AI бизнес эхлүүлж орлого олох",
+        label: "AI-аар бизнес босгож орлого олох",
         // currency
         iconPath:
           "M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
@@ -128,8 +128,8 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-type Answers = Record<AnswerKey, string>;
-const EMPTY_ANSWERS: Answers = { q1: "", q2: "", q3: "" };
+type Answers = Record<AnswerKey, string[]>;
+const EMPTY_ANSWERS: Answers = { q1: [], q2: [], q3: [] };
 
 const LEVEL_CONFIG: Record<
   string,
@@ -170,18 +170,15 @@ const LEVEL_CONFIG: Record<
   },
 };
 
+// Multi-select answers — take the highest-scoring option per question (peak ability)
 function calculateLevel(answers: Answers): "beginner" | "intermediate" | "advanced" {
-  let score = 0;
-  if (answers.q1 === "basic") score += 1;
-  else if (answers.q1 === "intermediate") score += 2;
-  else if (answers.q1 === "advanced") score += 3;
-  if (answers.q2 === "chatgpt") score += 1;
-  else if (answers.q2 === "multiple") score += 2;
-  else if (answers.q2 === "api") score += 3;
-  if (answers.q3 === "use") score += 1;
-  else if (answers.q3 === "build") score += 2;
-  else if (answers.q3 === "business") score += 3;
+  const Q1: Record<string, number> = { none: 0, basic: 1, intermediate: 2, advanced: 3 };
+  const Q2: Record<string, number> = { none: 0, chatgpt: 1, multiple: 2, api: 3 };
+  const Q3: Record<string, number> = { learn: 0, use: 1, build: 2, business: 3 };
+  const peak = (vals: string[], map: Record<string, number>) =>
+    vals.reduce((m, v) => Math.max(m, map[v] ?? 0), 0);
 
+  const score = peak(answers.q1, Q1) + peak(answers.q2, Q2) + peak(answers.q3, Q3);
   if (score <= 2) return "beginner";
   if (score <= 5) return "intermediate";
   return "advanced";
@@ -242,17 +239,21 @@ function SignUp() {
       .catch(() => {});
   }, [searchParams]);
 
-  const pickOption = (qId: AnswerKey, value: string) => {
-    const next = { ...answers, [qId]: value };
-    setAnswers(next);
-    setTimeout(() => {
-      if (currentQ < QUESTIONS.length - 1) {
-        setCurrentQ((c) => c + 1);
-      } else {
-        setAiLevel(calculateLevel(next));
-        setStep("result");
-      }
-    }, 280);
+  const toggleOption = (qId: AnswerKey, value: string) => {
+    setAnswers((prev) => {
+      const cur = prev[qId];
+      const next = cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value];
+      return { ...prev, [qId]: next };
+    });
+  };
+
+  const goNext = () => {
+    if (currentQ < QUESTIONS.length - 1) {
+      setCurrentQ((c) => c + 1);
+    } else {
+      setAiLevel(calculateLevel(answers));
+      setStep("result");
+    }
   };
 
   const handleAvatarFile = (file: File | undefined | null) => {
@@ -342,7 +343,9 @@ function SignUp() {
   if (step === "quiz") {
     const q = QUESTIONS[currentQ];
     const current = answers[q.id];
-    const pct = ((currentQ + (current ? 1 : 0)) / QUESTIONS.length) * 100;
+    const hasPick = current.length > 0;
+    const isLast = currentQ === QUESTIONS.length - 1;
+    const pct = ((currentQ + (hasPick ? 1 : 0)) / QUESTIONS.length) * 100;
 
     return (
       <div className="mx-auto flex min-h-[70vh] w-full max-w-[460px] flex-col px-4 py-6">
@@ -379,6 +382,7 @@ function SignUp() {
             >
               {q.label}
             </motion.h1>
+            <p className="mt-1 text-[11px] text-[#888]">Хэд хэдийг сонгож болно</p>
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -390,7 +394,7 @@ function SignUp() {
                 className="mt-5 space-y-2"
               >
                 {q.options.map((opt, i) => {
-                  const selected = current === opt.value;
+                  const selected = current.includes(opt.value);
                   return (
                     <motion.button
                       key={opt.value}
@@ -399,7 +403,7 @@ function SignUp() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.22, delay: i * 0.05 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => pickOption(q.id, opt.value)}
+                      onClick={() => toggleOption(q.id, opt.value)}
                       className={`flex w-full items-center gap-3 rounded-[4px] border px-3.5 py-3 text-left transition ${
                         selected
                           ? "border-[#EF2C58] bg-[rgba(239,44,88,0.08)]"
@@ -418,26 +422,34 @@ function SignUp() {
                       <span className={`flex-1 text-[13px] ${selected ? "font-bold text-[#E8E8E8]" : "text-[#CCC]"}`}>
                         {opt.label}
                       </span>
-                      {selected && (
-                        <motion.svg
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="h-4 w-4 text-[#EF2C58]"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </motion.svg>
-                      )}
+                      <span
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] border transition ${
+                          selected
+                            ? "border-[#EF2C58] bg-[#EF2C58] text-white"
+                            : "border-[rgba(255,255,255,0.15)] bg-transparent"
+                        }`}
+                      >
+                        {selected && (
+                          <motion.svg
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="h-3 w-3"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={3.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </motion.svg>
+                        )}
+                      </span>
                     </motion.button>
                   );
                 })}
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-5 flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => currentQ > 0 && setCurrentQ((c) => c - 1)}
@@ -448,10 +460,11 @@ function SignUp() {
               </button>
               <button
                 type="button"
-                onClick={() => { setAiLevel(calculateLevel({ ...answers, q1: answers.q1 || "none", q2: answers.q2 || "none", q3: answers.q3 || "learn" })); setStep("result"); }}
-                className="text-[11px] font-semibold text-[#666] transition hover:text-[#EF2C58]"
+                onClick={goNext}
+                disabled={!hasPick}
+                className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
               >
-                Алгасах →
+                {isLast ? "Үр дүнгээ үзэх" : "Дараах →"}
               </button>
             </div>
           </div>
