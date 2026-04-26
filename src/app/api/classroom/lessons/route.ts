@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    const { course, title, description, content, videoUrl, videoType, thumbnail, order, requiredLevel } =
+    const { course, subsection, title, description, content, videoUrl, videoType, thumbnail, order, requiredLevel, attachments } =
       await req.json();
 
     if (!course || !title?.trim()) {
@@ -22,8 +22,20 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
+    const safeAttachments = Array.isArray(attachments)
+      ? attachments
+          .filter((a: { url?: string; name?: string }) => a?.url && a?.name)
+          .map((a: { url: string; name: string; size?: number }) => ({
+            url: String(a.url),
+            name: String(a.name),
+            size: typeof a.size === "number" ? a.size : undefined,
+          }))
+          .slice(0, 10)
+      : [];
+
     const lesson = await Lesson.create({
       course,
+      subsection: subsection || undefined,
       title: title.trim(),
       description: description?.trim() || "",
       content: content?.trim() || "",
@@ -32,6 +44,7 @@ export async function POST(req: NextRequest) {
       thumbnail: thumbnail?.trim() || "",
       order: order ?? 0,
       requiredLevel: requiredLevel ?? 0,
+      attachments: safeAttachments,
     });
 
     await Course.findByIdAndUpdate(course, { $inc: { lessonsCount: 1 } });

@@ -38,6 +38,17 @@ export async function PUT(
     const body = await req.json();
 
     await dbConnect();
+    const safeAttachments = Array.isArray(body.attachments)
+      ? body.attachments
+          .filter((a: { url?: string; name?: string }) => a?.url && a?.name)
+          .map((a: { url: string; name: string; size?: number }) => ({
+            url: String(a.url),
+            name: String(a.name),
+            size: typeof a.size === "number" ? a.size : undefined,
+          }))
+          .slice(0, 10)
+      : undefined;
+
     const lesson = await Lesson.findByIdAndUpdate(
       id,
       {
@@ -48,6 +59,8 @@ export async function PUT(
         ...(body.videoType && { videoType: body.videoType }),
         ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
         ...(body.order !== undefined && { order: body.order }),
+        ...(body.subsection !== undefined && { subsection: body.subsection || null }),
+        ...(safeAttachments !== undefined && { attachments: safeAttachments }),
       },
       { new: true, runValidators: true }
     );

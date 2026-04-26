@@ -21,6 +21,7 @@ interface LessonData {
   videoUrl: string;
   videoType: string;
   requiredLevel: number;
+  attachments?: { url: string; name: string; size?: number }[];
   completedBy: string[];
   likes: string[];
   reactions?: Record<string, string[]>;
@@ -295,6 +296,43 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
           <h1 className="text-[24px] font-bold leading-tight tracking-[-0.02em] text-[#E8E8E8] sm:text-[32px]">{lesson.title}</h1>
           {lesson.description && (
             <p className="mt-3 text-[16px] leading-relaxed text-[#999999]">{lesson.description}</p>
+          )}
+
+          {/* PDF / slide attachments */}
+          {lesson.attachments && lesson.attachments.length > 0 && (
+            <div className="mt-5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <svg className="h-3.5 w-3.5 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#888]">
+                  Хавсралт материал · {lesson.attachments.length}
+                </span>
+              </div>
+              <ul className="space-y-1">
+                {lesson.attachments.map((att, i) => (
+                  <li key={i}>
+                    <a
+                      href={att.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download={att.name}
+                      className="group flex items-center gap-2.5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2 transition hover:border-[rgba(239,44,88,0.3)]"
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] text-[9px] font-black text-[#EF2C58]">
+                        PDF
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-[12px] font-bold text-[#E8E8E8] group-hover:text-[#EF2C58]">
+                        {att.name}
+                      </span>
+                      <svg className="h-3.5 w-3.5 text-[#666] group-hover:text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {/* Actions row */}

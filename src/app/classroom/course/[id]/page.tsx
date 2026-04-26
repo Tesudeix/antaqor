@@ -1,13 +1,43 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import { useMembership } from "@/lib/useMembership";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import PaywallGate from "@/components/PaywallGate";
 
-interface Course {
+// ─── Types matching /api/classroom/courses/[id]/tree response ───
+interface LessonSummary {
+  _id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  thumbnail: string;
+  attachments?: { url: string; name: string; size?: number }[];
+  order: number;
+}
+interface TaskSummary {
+  _id: string;
+  title: string;
+  maxScore: number;
+  deadline?: string;
+}
+interface SubsectionNode {
+  _id: string;
+  title: string;
+  description: string;
+  order: number;
+  lessons: LessonSummary[];
+  task: TaskSummary | null;
+}
+interface SectionNode {
+  _id: string;
+  title: string;
+  description: string;
+  order: number;
+  subsections: SubsectionNode[];
+}
+interface CourseInfo {
   _id: string;
   title: string;
   description: string;
@@ -15,458 +45,536 @@ interface Course {
   lessonsCount: number;
 }
 
-interface Lesson {
-  _id: string;
-  title: string;
-  description: string;
-  videoUrl: string;
-  thumbnail: string;
-  requiredLevel: number;
-  completedBy: string[];
-  likes: string[];
-  commentsCount: number;
-  createdAt: string;
-}
-
 export default function CourseDetailPageWrapper({ params }: { params: Promise<{ id: string }> }) {
   return (
     <PaywallGate>
-      <CourseDetailPage params={params} />
+      <CourseDetail params={params} />
     </PaywallGate>
   );
 }
 
-function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data: session } = useSession();
-  const { loading: memberLoading, isMember, isAdmin: admin } = useMembership();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const { isAdmin: admin } = useMembership();
+
+  const [course, setCourse] = useState<CourseInfo | null>(null);
+  const [sections, setSections] = useState<SectionNode[]>([]);
+  const [orphanLessons, setOrphanLessons] = useState<LessonSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userLevel, setUserLevel] = useState(1);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [openSub, setOpenSub] = useState<Set<string>>(new Set());
 
-  // Admin: new lesson
-  const [showNewLesson, setShowNewLesson] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: "", description: "", content: "", videoUrl: "", videoType: "link" as "link" | "upload", requiredLevel: 0 });
-  const [creatingLesson, setCreatingLesson] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploading, setUploading] = useState(false);
-
-  // Admin: edit course
-  const [editingCourse, setEditingCourse] = useState(false);
-  const [editCourse, setEditCourse] = useState({ title: "", description: "" });
-  const [savingCourse, setSavingCourse] = useState(false);
-
-  useEffect(() => {
-    if (!memberLoading && isMember) {
-      fetchCourseData();
-      if (session?.user) {
-        const uid = (session.user as { id?: string }).id;
-        if (uid) {
-          fetch(`/api/users/${uid}`)
-            .then((r) => r.json())
-            .then((d) => { if (d.user?.level) setUserLevel(d.user.level); })
-            .catch(() => {});
-        }
-      }
-    } else if (!memberLoading) {
-      setLoading(false);
+  const fetchTree = async () => {
+    const res = await fetch(`/api/classroom/courses/${id}/tree`);
+    const data = await res.json();
+    if (res.ok) {
+      setCourse(data.course);
+      setSections(data.sections || []);
+      setOrphanLessons(data.orphanLessons || []);
     }
-  }, [memberLoading, isMember, session, id]);
-
-  const fetchCourseData = async () => {
-    try {
-      const res = await fetch(`/api/classroom/courses/${id}`);
-      const data = await res.json();
-      if (res.ok) {
-        setCourse(data.course);
-        setLessons(data.lessons || []);
-        setEditCourse({ title: data.course.title, description: data.course.description || "" });
-      }
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
-  const handleCreateLesson = async () => {
-    if (!newLesson.title.trim() || creatingLesson) return;
-    setCreatingLesson(true);
-    try {
-      const res = await fetch("/api/classroom/lessons", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newLesson, course: id, order: lessons.length }),
-      });
-      if (res.ok) {
-        setNewLesson({ title: "", description: "", content: "", videoUrl: "", videoType: "link", requiredLevel: 0 });
-        setShowNewLesson(false);
-        fetchCourseData();
-      }
-    } finally {
-      setCreatingLesson(false);
-    }
+  useEffect(() => { fetchTree(); }, [id]);
+
+  const toggleSection = (sid: string) => setOpenSection((s) => (s === sid ? null : sid));
+  const toggleSub = (id: string) => {
+    setOpenSub((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
   };
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const isVideo = file.type.startsWith("video/");
-    const isImage = file.type.startsWith("image/");
-    if (!isVideo && !isImage) { alert("Зөвхөн видео эсвэл зураг файл оруулна уу"); return; }
-    if (isVideo && file.size > 500 * 1024 * 1024) { alert("Видео файл 500MB-аас хэтэрсэн байна"); return; }
-
-    setUploading(true);
-    setUploadProgress(0);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const endpoint = isVideo ? "/api/upload/video" : "/api/upload";
-      const xhr = new XMLHttpRequest();
-      const result = await new Promise<{ url: string }>((resolve, reject) => {
-        xhr.upload.addEventListener("progress", (ev) => {
-          if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
-        });
-        xhr.addEventListener("load", () => {
-          if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
-          else { const err = JSON.parse(xhr.responseText); reject(new Error(err.error || "Upload failed")); }
-        });
-        xhr.addEventListener("error", () => reject(new Error("Upload failed")));
-        xhr.open("POST", endpoint);
-        xhr.send(formData);
-      });
-      setNewLesson((p) => ({ ...p, videoUrl: result.url, videoType: isVideo ? "upload" : "link" }));
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Файл оруулахад алдаа гарлаа");
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-    }
-  };
-
-  const toggleComplete = async (lessonId: string) => {
-    const res = await fetch(`/api/classroom/lessons/${lessonId}/complete`, { method: "POST" });
-    if (res.ok) fetchCourseData();
-  };
-
-  const handleDeleteLesson = async (lessonId: string) => {
-    if (!confirm("Энэ хичээлийг устгах уу?")) return;
-    await fetch(`/api/classroom/lessons/${lessonId}`, { method: "DELETE" });
-    fetchCourseData();
-  };
-
-  const handleSaveCourse = async () => {
-    setSavingCourse(true);
-    try {
-      const res = await fetch(`/api/classroom/courses/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editCourse),
-      });
-      if (res.ok) {
-        fetchCourseData();
-        setEditingCourse(false);
-      }
-    } finally {
-      setSavingCourse(false);
-    }
-  };
-
-  const userId = session?.user ? (session.user as { id?: string }).id ?? null : null;
-  const completedCount = userId ? lessons.filter((l) => l.completedBy.includes(userId)).length : 0;
-  const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
-
-  // Find current lesson (first uncompleted)
-  const currentLessonIndex = userId
-    ? lessons.findIndex((l) => !l.completedBy.includes(userId) && ((l.requiredLevel || 0) <= userLevel || admin))
-    : 0;
-
-  if (memberLoading || loading) {
+  if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#EF2C58]" />
+        <div className="h-3 w-3 animate-pulse rounded-[4px] bg-[#EF2C58]" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="py-16 text-center">
-        <p className="text-[15px] text-[#999999]">Курс олдсонгүй</p>
-        <Link href="/classroom" className="mt-4 inline-block text-[13px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">← Буцах</Link>
-      </div>
+      <div className="py-20 text-center text-[14px] text-[#888]">Курс олдсонгүй</div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-[900px]">
-      {/* Back nav */}
-      <Link href="/classroom" className="mb-8 inline-flex items-center gap-2 text-[13px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-        </svg>
-        Хичээлийн танхим
+    <div className="mx-auto max-w-[900px] pb-12">
+      {/* Back */}
+      <Link href="/classroom" className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]">
+        ← Бүх курс
       </Link>
 
-      {/* ─── Hero Section ─── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-        className="mb-8"
-      >
-        {editingCourse ? (
-          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
-            <input value={editCourse.title} onChange={(e) => setEditCourse((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-            <textarea value={editCourse.description} onChange={(e) => setEditCourse((p) => ({ ...p, description: e.target.value }))} rows={3} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
-            <div className="flex gap-3">
-              <button onClick={handleSaveCourse} disabled={savingCourse} className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-50">{savingCourse ? "..." : "Хадгалах"}</button>
-              <button onClick={() => setEditingCourse(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Цуцлах</button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <span className="meta-label text-[#999999]">Курс</span>
-              <h1 className="mt-1 text-[28px] font-bold tracking-[-0.02em] text-[#E8E8E8] sm:text-[36px]">{course.title}</h1>
-              {course.description && (
-                <p className="mt-3 text-[15px] leading-relaxed text-[#999999]">{course.description}</p>
-              )}
-              <div className="mt-4 flex items-center gap-4 text-[13px] text-[#999999]">
-                <span>{lessons.length} хичээл</span>
-                {completedCount > 0 && (
-                  <span className="flex items-center gap-1.5 font-bold text-[#EF2C58]">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {completedCount} дуусгасан
-                  </span>
-                )}
-              </div>
-            </div>
-            {admin && (
-              <button onClick={() => setEditingCourse(true)} className="shrink-0 rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:border-[rgba(239,44,88,0.4)] hover:text-[#E8E8E8]">
-                Засах
-              </button>
-            )}
-          </div>
+      {/* Course header */}
+      <div className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
+        {course.thumbnail && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={course.thumbnail} alt={course.title} className="h-48 w-full object-cover sm:h-64" />
         )}
-      </motion.div>
-
-      {/* ─── Progress Journey Bar ─── */}
-      {lessons.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, ease: "easeOut", delay: 0.05 }}
-          className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6"
-        >
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-[13px] font-medium text-[#999999]">Аялал</span>
-            <span className="text-[13px] font-bold text-[#EF2C58]">{completedCount}/{lessons.length}</span>
-          </div>
-          {/* Journey dots */}
-          <div className="flex items-center gap-1">
-            {lessons.map((lesson, i) => {
-              const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
-              const isCurrent = i === currentLessonIndex;
-              return (
-                <div
-                  key={lesson._id}
-                  className="flex-1 h-2 rounded-full transition-all duration-200"
-                  style={{
-                    background: isCompleted
-                      ? "#EF2C58"
-                      : isCurrent
-                        ? "rgba(239,44,88,0.3)"
-                        : "rgba(255,255,255,0.06)",
-                  }}
-                />
-              );
-            })}
-          </div>
-          <p className="mt-3 text-[12px] text-[#999999]">
-            {progressPercent === 100
-              ? "Баяр хүргэе! Бүх хичээлийг дуусгасан"
-              : progressPercent > 0
-                ? `${progressPercent}% дууссан — үргэлжлүүлээрэй`
-                : "Аянаа эхлүүлээрэй"}
-          </p>
-        </motion.div>
-      )}
-
-      {/* ─── Admin: add lesson ─── */}
-      {admin && (
-        <div className="mb-8">
-          {showNewLesson ? (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="overflow-hidden"
-            >
-              <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
-                <input value={newLesson.title} onChange={(e) => setNewLesson((p) => ({ ...p, title: e.target.value }))} placeholder="Хичээлийн нэр" className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-                <textarea value={newLesson.description} onChange={(e) => setNewLesson((p) => ({ ...p, description: e.target.value }))} placeholder="Богино тайлбар" rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" />
-                <textarea value={newLesson.content} onChange={(e) => setNewLesson((p) => ({ ...p, content: e.target.value }))} placeholder="Хичээлийн агуулга (текст)" rows={5} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" />
-                <div className="flex items-center gap-3">
-                  <input value={newLesson.videoUrl} onChange={(e) => setNewLesson((p) => ({ ...p, videoUrl: e.target.value, videoType: "link" }))} placeholder="YouTube/Vimeo URL" className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-                  <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:border-[rgba(239,44,88,0.4)] hover:text-[#E8E8E8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-                    {uploading ? `${uploadProgress}%` : "Файл"}
-                    <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleVideoUpload} className="hidden" disabled={uploading} />
-                  </label>
-                </div>
-                {uploading && (
-                  <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
-                    <div className="h-full rounded-full bg-[#EF2C58] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
-                  </div>
-                )}
-                {newLesson.videoUrl && !uploading && (
-                  <p className="text-[12px] font-bold text-[#EF2C58]">{newLesson.videoType === "upload" ? "Файл оруулсан" : "Линк оруулсан"}</p>
-                )}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[12px] text-[#999999]">Түвшин:</span>
-                    <input
-                      type="number" min={0} max={100}
-                      value={newLesson.requiredLevel}
-                      onChange={(e) => setNewLesson((p) => ({ ...p, requiredLevel: parseInt(e.target.value) || 0 }))}
-                      className="w-16 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-center text-[12px] text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <button onClick={() => setShowNewLesson(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Цуцлах</button>
-                    <button onClick={handleCreateLesson} disabled={creatingLesson} className="rounded-[4px] bg-[#EF2C58] px-6 py-2 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-50">
-                      {creatingLesson ? "..." : "Нэмэх"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ) : (
-            <button onClick={() => setShowNewLesson(true)} className="w-full rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.2)] px-4 py-4 text-[13px] font-bold text-[#999999] transition-all duration-200 hover:border-[#EF2C58] hover:text-[#EF2C58]">
-              + Хичээл нэмэх
-            </button>
+        <div className="p-5 sm:p-6">
+          <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8] sm:text-[28px]">{course.title}</h1>
+          {course.description && (
+            <p className="mt-2 text-[13px] leading-relaxed text-[#888]">{course.description}</p>
           )}
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#666]">
+            <span>{sections.length} бүлэг</span>
+            <span className="text-[#333]">·</span>
+            <span>{course.lessonsCount} хичээл</span>
+          </div>
         </div>
-      )}
-
-      {/* ─── Lesson List ─── */}
-      <div className="mb-4 flex items-center gap-2">
-        <div className="h-[2px] w-6 bg-[#EF2C58]" />
-        <h2 className="meta-label">Хичээлүүд</h2>
       </div>
 
-      {lessons.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.2)] py-16 text-center">
-          <p className="text-[14px] text-[#999999]">Хичээл байхгүй байна</p>
-          {admin && (
-            <button onClick={() => setShowNewLesson(true)} className="mt-4 rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[13px] font-bold text-[#F8F8F6]">
-              Эхний хичээлээ нэм
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {lessons.map((lesson, index) => {
-            const isCompleted = userId ? lesson.completedBy.includes(userId) : false;
-            const isLocked = (lesson.requiredLevel || 0) > userLevel && !admin;
-            const isCurrent = index === currentLessonIndex;
-
-            return (
-              <motion.div
-                key={lesson._id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.03 }}
-                className={`group flex items-center gap-4 rounded-[4px] border px-5 py-4 transition-all duration-200 ${
-                  isLocked
-                    ? "border-[rgba(255,255,255,0.03)] bg-[rgba(20,20,20,0.5)] opacity-40"
-                    : isCurrent
-                      ? "border-[rgba(239,44,88,0.3)] bg-[#141414] shadow-[0_0_24px_rgba(239,44,88,0.05)]"
-                      : isCompleted
-                        ? "border-[rgba(255,255,255,0.08)] bg-[#141414]"
-                        : "border-[rgba(255,255,255,0.08)] bg-[#141414] hover:-translate-y-[2px] hover:border-[rgba(239,44,88,0.3)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"
-                }`}
-              >
-                {/* Status indicator */}
-                {isLocked ? (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(255,255,255,0.03)]">
-                    <svg className="h-4 w-4 text-[#999999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => toggleComplete(lesson._id)}
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] transition-all duration-200 ${
-                      isCompleted
-                        ? "bg-[#EF2C58] text-[#F8F8F6]"
-                        : isCurrent
-                          ? "border-2 border-[#EF2C58] bg-transparent text-[#EF2C58]"
-                          : "bg-[rgba(255,255,255,0.04)] text-[#999999] hover:bg-[rgba(239,44,88,0.1)] hover:text-[#EF2C58]"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <span className="text-[13px] font-bold">{index + 1}</span>
-                    )}
-                  </button>
-                )}
-
-                {/* Content */}
-                <div className="min-w-0 flex-1">
-                  {isLocked ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[15px] font-medium text-[#999999]">{lesson.title}</span>
-                      <span className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[10px] font-bold text-[#EF2C58]">LV.{lesson.requiredLevel}</span>
-                    </div>
-                  ) : (
-                    <Link href={`/classroom/${lesson._id}`} className="block">
-                      <span className={`text-[15px] font-medium transition-colors duration-200 ${
-                        isCompleted
-                          ? "text-[#999999] line-through"
-                          : isCurrent
-                            ? "text-[#E8E8E8]"
-                            : "text-[#999999] group-hover:text-[#E8E8E8]"
-                      }`}>
-                        {lesson.title}
-                      </span>
-                      {lesson.description && (
-                        <p className="mt-0.5 text-[13px] text-[#999999] line-clamp-1">{lesson.description}</p>
-                      )}
-                    </Link>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 shrink-0">
-                  {lesson.videoUrl && !isLocked && (
-                    <Link href={`/classroom/${lesson._id}`} className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[rgba(255,255,255,0.04)] text-[#999999] transition-all duration-200 group-hover:bg-[rgba(239,44,88,0.1)] group-hover:text-[#EF2C58]" aria-label="Видео тоглуулах">
-                      <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </Link>
-                  )}
-                  {admin && (
-                    <button
-                      onClick={() => handleDeleteLesson(lesson._id)}
-                      className="hidden h-8 w-8 items-center justify-center rounded-[4px] text-[#999999] transition-colors duration-200 hover:text-red-400 group-hover:flex"
-                      aria-label="Хичээл устгах"
-                    >
-                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
+      {/* Admin section toolbar */}
+      {admin && (
+        <div className="mb-3 flex items-center justify-end">
+          <AddSectionInline courseId={id} nextOrder={sections.length} onAdded={fetchTree} />
         </div>
       )}
+
+      {/* Sections — Шат 2: collapsed by default, click to expand */}
+      <div className="space-y-2">
+        {sections.length === 0 && orphanLessons.length === 0 ? (
+          <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center">
+            <p className="text-[13px] font-bold text-[#E8E8E8]">Бүлэг хараахан нэмэгдээгүй</p>
+            {admin && (
+              <p className="mt-1.5 text-[11px] text-[#666]">Дээрх "+ Бүлэг" товчоор эхэл</p>
+            )}
+          </div>
+        ) : null}
+
+        {sections.map((sec) => {
+          const isOpen = openSection === sec._id;
+          return (
+            <div key={sec._id} className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
+              {/* Section header */}
+              <button
+                type="button"
+                onClick={() => toggleSection(sec._id)}
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-[rgba(255,255,255,0.02)]"
+              >
+                <Chevron open={isOpen} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[14px] font-bold text-[#E8E8E8]">{sec.title}</div>
+                  {sec.description && <div className="mt-0.5 text-[11px] text-[#666]">{sec.description}</div>}
+                </div>
+                <span className="text-[10px] font-bold text-[#666]">{sec.subsections.length} дэд бүлэг</span>
+                {admin && <SectionAdminMenu sectionId={sec._id} title={sec.title} onChange={fetchTree} />}
+              </button>
+
+              {/* Subsections — Шат 3: visible after section expand */}
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]"
+                  >
+                    <div className="space-y-1.5 p-3 pl-6">
+                      {sec.subsections.map((sub) => (
+                        <SubsectionBlock
+                          key={sub._id}
+                          subsection={sub}
+                          isOpen={openSub.has(sub._id)}
+                          onToggle={() => toggleSub(sub._id)}
+                          admin={admin}
+                          courseId={id}
+                          onChange={fetchTree}
+                        />
+                      ))}
+                      {admin && <AddSubsectionInline sectionId={sec._id} nextOrder={sec.subsections.length} onAdded={fetchTree} />}
+                      {sec.subsections.length === 0 && !admin && (
+                        <div className="px-2 py-3 text-center text-[11px] text-[#555]">Дэд бүлэг хараахан байхгүй</div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+
+        {/* Orphan lessons (legacy migration leftover — still browsable) */}
+        {orphanLessons.length > 0 && (
+          <div className="overflow-hidden rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
+            <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Бусад хичээл</div>
+            <div className="space-y-1">
+              {orphanLessons.map((l) => (
+                <LessonRow key={l._id} lesson={l} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
+  );
+}
+
+// ─── Subsection block — Шат 4: arrow на right opens lessons + task ───
+function SubsectionBlock({
+  subsection, isOpen, onToggle, admin, courseId, onChange,
+}: {
+  subsection: SubsectionNode;
+  isOpen: boolean;
+  onToggle: () => void;
+  admin: boolean;
+  courseId: string;
+  onChange: () => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition hover:bg-[rgba(255,255,255,0.02)]"
+      >
+        <span className="text-[#EF2C58] text-[14px] leading-none">▸</span>
+        <div className="min-w-0 flex-1">
+          <div className="text-[12px] font-bold text-[#E8E8E8]">{subsection.title}</div>
+          {subsection.description && (
+            <div className="mt-0.5 text-[10px] text-[#666]">{subsection.description}</div>
+          )}
+        </div>
+        <span className="text-[10px] text-[#666]">
+          {subsection.lessons.length} хичээл{subsection.task ? " · 📝" : ""}
+        </span>
+        {admin && <SubsectionAdminMenu subsectionId={subsection._id} onChange={onChange} />}
+        <Chevron open={isOpen} small />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]"
+          >
+            <div className="space-y-1 p-2 pl-5">
+              {subsection.lessons.map((l) => <LessonRow key={l._id} lesson={l} />)}
+              {subsection.lessons.length === 0 && !admin && (
+                <div className="py-2 text-center text-[10px] text-[#555]">Хичээл хараахан байхгүй</div>
+              )}
+              {admin && (
+                <AddLessonInline
+                  courseId={courseId}
+                  subsectionId={subsection._id}
+                  nextOrder={subsection.lessons.length}
+                  onAdded={onChange}
+                />
+              )}
+              {/* Task at the bottom — Шат 6 */}
+              {subsection.task ? (
+                <Link
+                  href={`/classroom/task/${subsection.task._id}`}
+                  className="mt-2 flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
+                >
+                  <span className="text-[14px]">📝</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[11px] font-black text-[#EF2C58]">ДААЛГАВАР</div>
+                    <div className="text-[12px] font-bold text-[#E8E8E8]">{subsection.task.title}</div>
+                  </div>
+                  <span className="text-[10px] text-[#666]">{subsection.task.maxScore} оноо</span>
+                </Link>
+              ) : admin ? (
+                <AddTaskInline
+                  subsectionId={subsection._id}
+                  onAdded={onChange}
+                />
+              ) : null}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Lesson row — Шат 5: click → /classroom/[id] (existing lesson view) ───
+function LessonRow({ lesson }: { lesson: LessonSummary }) {
+  const pdfCount = lesson.attachments?.length || 0;
+  return (
+    <Link
+      href={`/classroom/${lesson._id}`}
+      className="group flex items-center gap-2 rounded-[4px] px-2 py-1.5 transition hover:bg-[rgba(239,44,88,0.06)]"
+    >
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] text-[#EF2C58]">
+        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+      </span>
+      <span className="min-w-0 flex-1 truncate text-[12px] text-[#CCC] transition group-hover:text-[#EF2C58]">
+        {lesson.title}
+      </span>
+      {pdfCount > 0 && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[9px] font-bold text-[#888]">
+          <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+          {pdfCount}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function Chevron({ open, small = false }: { open: boolean; small?: boolean }) {
+  return (
+    <svg
+      className={`shrink-0 text-[#666] transition-transform duration-200 ${small ? "h-3 w-3" : "h-4 w-4"} ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
+// ═══════ ADMIN INLINE FORMS ═══════════════════════════════════════════════
+
+function AddSectionInline({ courseId, nextOrder, onAdded }: { courseId: string; nextOrder: number; onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    if (!title.trim()) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/classroom/sections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ course: courseId, title, order: nextOrder }),
+      });
+      if (res.ok) { setTitle(""); setOpen(false); onAdded(); }
+    } finally { setBusy(false); }
+  };
+
+  if (!open) return (
+    <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1 rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white transition hover:bg-[#D4264E]">
+      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+      Бүлэг
+    </button>
+  );
+  return (
+    <div className="flex items-center gap-1.5">
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Шинэ бүлэг" autoFocus
+        onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") setOpen(false); }}
+        className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+        {busy ? "..." : "Нэмэх"}
+      </button>
+      <button onClick={() => { setOpen(false); setTitle(""); }} className="text-[11px] text-[#666]">×</button>
+    </div>
+  );
+}
+
+function AddSubsectionInline({ sectionId, nextOrder, onAdded }: { sectionId: string; nextOrder: number; onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    if (!title.trim()) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/classroom/subsections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ section: sectionId, title, order: nextOrder }),
+      });
+      if (res.ok) { setTitle(""); setOpen(false); onAdded(); }
+    } finally { setBusy(false); }
+  };
+  if (!open) return (
+    <button onClick={() => setOpen(true)} className="mt-1 inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-3 py-1.5 text-[11px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
+      + Дэд бүлэг нэмэх
+    </button>
+  );
+  return (
+    <div className="mt-1 flex items-center gap-1.5">
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Шинэ дэд бүлэг" autoFocus
+        onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") setOpen(false); }}
+        className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+        {busy ? "..." : "Нэмэх"}
+      </button>
+      <button onClick={() => { setOpen(false); setTitle(""); }} className="text-[11px] text-[#666]">×</button>
+    </div>
+  );
+}
+
+function AddLessonInline({
+  courseId, subsectionId, nextOrder, onAdded,
+}: {
+  courseId: string; subsectionId: string; nextOrder: number; onAdded: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [pdfs, setPdfs] = useState<{ url: string; name: string; size?: number }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const handlePdfPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          setPdfs((p) => [...p, { url: data.url, name: file.name, size: file.size }]);
+        }
+      }
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const submit = async () => {
+    if (!title.trim()) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/classroom/lessons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          course: courseId,
+          subsection: subsectionId,
+          title,
+          videoUrl: videoUrl.trim(),
+          videoType: videoUrl.trim() ? "link" : "upload",
+          order: nextOrder,
+          attachments: pdfs,
+        }),
+      });
+      if (res.ok) { setTitle(""); setVideoUrl(""); setPdfs([]); setOpen(false); onAdded(); }
+    } finally { setBusy(false); }
+  };
+
+  if (!open) return (
+    <button onClick={() => setOpen(true)} className="mt-1 inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(255,255,255,0.1)] px-3 py-1.5 text-[10px] font-bold text-[#666] hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]">
+      + Хичээл нэмэх
+    </button>
+  );
+  return (
+    <div className="mt-2 space-y-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-2">
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Хичээлийн нэр" autoFocus
+        className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Видеоны URL (YouTube эсвэл upload-ын линк)"
+        className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <div>
+        <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50">
+          {uploading ? "Хадгалж байна..." : "+ PDF/Slide хавсаргах"}
+        </button>
+        <input ref={fileRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePdfPick} className="hidden" />
+        {pdfs.length > 0 && (
+          <ul className="mt-1.5 space-y-0.5">
+            {pdfs.map((p, i) => (
+              <li key={i} className="flex items-center gap-1.5 text-[10px] text-[#888]">
+                <span className="rounded-[3px] bg-[#1A1A1A] px-1 py-0.5 text-[8px] font-black text-[#EF2C58]">PDF</span>
+                <span className="truncate">{p.name}</span>
+                <button onClick={() => setPdfs((arr) => arr.filter((_, j) => j !== i))} className="ml-auto text-[#555] hover:text-[#EF4444]">×</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex items-center gap-1.5">
+        <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+          {busy ? "Үүсгэж байна..." : "Үүсгэх"}
+        </button>
+        <button onClick={() => { setOpen(false); setTitle(""); setVideoUrl(""); setPdfs([]); }} className="text-[11px] text-[#666]">Болих</button>
+      </div>
+    </div>
+  );
+}
+
+function AddTaskInline({ subsectionId, onAdded }: { subsectionId: string; onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [maxScore, setMaxScore] = useState(10);
+  const [deadline, setDeadline] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    if (!title.trim()) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/classroom/lesson-tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subsection: subsectionId, title, description: desc, maxScore, deadline: deadline || undefined }),
+      });
+      if (res.ok) { setTitle(""); setDesc(""); setMaxScore(10); setDeadline(""); setOpen(false); onAdded(); }
+    } finally { setBusy(false); }
+  };
+  if (!open) return (
+    <button onClick={() => setOpen(true)} className="mt-2 inline-flex items-center gap-1.5 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.4)] px-3 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
+      📝 Даалгавар нэмэх
+    </button>
+  );
+  return (
+    <div className="mt-2 space-y-1.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2">
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Даалгаврын нэр" autoFocus
+        className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Тайлбар / шаардлага"
+        className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[11px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+      <div className="flex items-center gap-2">
+        <label className="flex items-center gap-1 text-[10px] text-[#888]">
+          Хамгийн их оноо:
+          <input type="number" min={1} max={1000} value={maxScore} onChange={(e) => setMaxScore(parseInt(e.target.value) || 10)}
+            className="w-14 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-1.5 py-0.5 text-center text-[11px] text-[#E8E8E8]" />
+        </label>
+        <label className="flex items-center gap-1 text-[10px] text-[#888]">
+          Дедлайн:
+          <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)}
+            className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-1.5 py-0.5 text-[11px] text-[#E8E8E8]" />
+        </label>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+          {busy ? "..." : "Үүсгэх"}
+        </button>
+        <button onClick={() => setOpen(false)} className="text-[11px] text-[#666]">Болих</button>
+      </div>
+    </div>
+  );
+}
+
+function SectionAdminMenu({ sectionId, title, onChange }: { sectionId: string; title: string; onChange: () => void }) {
+  const onDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); e.preventDefault();
+    if (!confirm(`"${title}" бүлэг + бүх дэд бүлэг + хичээл устах. Үргэлжлүүлэх үү?`)) return;
+    await fetch(`/api/classroom/sections/${sectionId}`, { method: "DELETE" });
+    onChange();
+  };
+  return (
+    <button onClick={onDelete} className="ml-1 rounded-[4px] p-1 text-[#666] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]" aria-label="Устгах">
+      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9M19.228 5.79L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M7.5 5.79h9" /></svg>
+    </button>
+  );
+}
+
+function SubsectionAdminMenu({ subsectionId, onChange }: { subsectionId: string; onChange: () => void }) {
+  const onDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); e.preventDefault();
+    if (!confirm("Дэд бүлэг + бүх хичээл + даалгавар устах. Үргэлжлүүлэх үү?")) return;
+    await fetch(`/api/classroom/subsections/${subsectionId}`, { method: "DELETE" });
+    onChange();
+  };
+  return (
+    <button onClick={onDelete} className="ml-1 rounded-[4px] p-1 text-[#666] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]" aria-label="Устгах">
+      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
   );
 }

@@ -1,8 +1,16 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+// PDF/slide хавсралт — Lesson-ы доор олон pdf хадгална
+export interface ILessonAttachment {
+  url: string;        // /uploads/foo.pdf эсвэл external URL
+  name: string;       // user-facing нэр (lecture_notes.pdf)
+  size?: number;      // bytes
+}
+
 export interface ILesson extends Document {
   _id: mongoose.Types.ObjectId;
   course: mongoose.Types.ObjectId;
+  subsection?: mongoose.Types.ObjectId;  // optional хүртэл backward-compat
   title: string;
   description: string;
   content: string;
@@ -11,6 +19,7 @@ export interface ILesson extends Document {
   thumbnail: string;
   order: number;
   requiredLevel: number;
+  attachments: ILessonAttachment[];
   completedBy: mongoose.Types.ObjectId[];
   likes: mongoose.Types.ObjectId[];
   reactions: Map<string, mongoose.Types.ObjectId[]>;
@@ -26,6 +35,19 @@ const LessonSchema = new Schema<ILesson>(
       ref: "Course",
       required: true,
     },
+    subsection: {
+      type: Schema.Types.ObjectId,
+      ref: "Subsection",
+      index: true,
+    },
+    attachments: [
+      {
+        url: { type: String, required: true },
+        name: { type: String, required: true },
+        size: { type: Number },
+        _id: false,
+      },
+    ],
     title: {
       type: String,
       required: [true, "Lesson title is required"],
