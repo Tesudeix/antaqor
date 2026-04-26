@@ -480,12 +480,36 @@ function AddLessonInline({
 }
 
 function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () => void }) {
+  const pdfRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [maxScore, setMaxScore] = useState(10);
   const [deadline, setDeadline] = useState("");
+  const [pdfs, setPdfs] = useState<{ url: string; name: string; size?: number }[]>([]);
+  const [pdfUploading, setPdfUploading] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const handlePdfPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setPdfUploading(true);
+    try {
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/classroom/upload-pdf", { method: "POST", body: fd });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          setPdfs((p) => [...p, { url: data.url, name: file.name, size: file.size }].slice(0, 3));
+        }
+      }
+    } finally {
+      setPdfUploading(false);
+      if (pdfRef.current) pdfRef.current.value = "";
+    }
+  };
+
   const submit = async () => {
     if (!title.trim()) return;
     setBusy(true);
@@ -493,21 +517,43 @@ function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () 
       const res = await fetch("/api/classroom/lesson-tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ section: sectionId, title, description: desc, maxScore, deadline: deadline || undefined }),
+        body: JSON.stringify({ section: sectionId, title, description: desc, maxScore, deadline: deadline || undefined, attachments: pdfs }),
       });
-      if (res.ok) { setTitle(""); setDesc(""); setMaxScore(10); setDeadline(""); setOpen(false); onAdded(); }
+      if (res.ok) { setTitle(""); setDesc(""); setMaxScore(10); setDeadline(""); setPdfs([]); setOpen(false); onAdded(); }
     } finally { setBusy(false); }
   };
+
   if (!open) return (
     <button onClick={() => setOpen(true)} className="mt-2 inline-flex items-center gap-1.5 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.4)] px-3 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
       📝 Даалгавар нэмэх
     </button>
   );
   return (
-    <div className="mt-2 space-y-1.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2">
+    <div className="mt-2 space-y-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2.5">
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Даалгаврын нэр" autoFocus
         className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
-      <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Тайлбар / шаардлага"
+
+      {/* Task PDF — main content of the task */}
+      <div>
+        <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Даалгаврын PDF <span className="text-[#555] normal-case font-normal tracking-normal">(заавар, асуултууд)</span></div>
+        <button type="button" onClick={() => pdfRef.current?.click()} disabled={pdfUploading || pdfs.length >= 3} className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50">
+          {pdfUploading ? "Хадгалж байна..." : "+ PDF нэмэх"}
+        </button>
+        <input ref={pdfRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePdfPick} className="hidden" />
+        {pdfs.length > 0 && (
+          <ul className="mt-1.5 space-y-0.5">
+            {pdfs.map((p, i) => (
+              <li key={i} className="flex items-center gap-1.5 text-[10px] text-[#888]">
+                <span className="rounded-[3px] bg-[#1A1A1A] px-1 py-0.5 text-[8px] font-black text-[#EF2C58]">PDF</span>
+                <span className="truncate">{p.name}</span>
+                <button onClick={() => setPdfs((arr) => arr.filter((_, j) => j !== i))} className="ml-auto text-[#555] hover:text-[#EF4444]">×</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Богино тайлбар (заавал биш)"
         className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[11px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
       <div className="flex items-center gap-2">
         <label className="flex items-center gap-1 text-[10px] text-[#888]">
@@ -522,7 +568,7 @@ function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () 
         </label>
       </div>
       <div className="flex items-center gap-1.5">
-        <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+        <button onClick={submit} disabled={!title.trim() || busy || pdfUploading} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
           {busy ? "..." : "Үүсгэх"}
         </button>
         <button onClick={() => setOpen(false)} className="text-[11px] text-[#666]">Болих</button>

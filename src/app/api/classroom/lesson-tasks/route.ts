@@ -29,11 +29,22 @@ export async function POST(req: NextRequest) {
   if (!session?.user || !isAdmin(session.user.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { section, subsection, title, description, deadline, maxScore } = await req.json();
+  const { section, subsection, title, description, deadline, maxScore, attachments } = await req.json();
   if ((!section && !subsection) || !title?.trim()) {
     return NextResponse.json({ error: "section + title required" }, { status: 400 });
   }
   await dbConnect();
+
+  const safeAttachments = Array.isArray(attachments)
+    ? attachments
+        .filter((a: { url?: string; name?: string }) => a?.url && a?.name)
+        .map((a: { url: string; name: string; size?: number }) => ({
+          url: String(a.url),
+          name: String(a.name),
+          size: typeof a.size === "number" ? a.size : undefined,
+        }))
+        .slice(0, 5)
+    : [];
 
   // Resolve course either via section or legacy subsection parent
   let courseId: mongoose.Types.ObjectId;
@@ -54,6 +65,7 @@ export async function POST(req: NextRequest) {
     course: courseId,
     title: title.trim(),
     description: description?.trim() || "",
+    attachments: safeAttachments,
     deadline: deadline ? new Date(deadline) : undefined,
     maxScore: typeof maxScore === "number" && maxScore > 0 ? maxScore : 10,
   });

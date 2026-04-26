@@ -26,6 +26,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (typeof body.description === "string") update.description = body.description.trim();
   if (typeof body.maxScore === "number") update.maxScore = body.maxScore;
   if (body.deadline !== undefined) update.deadline = body.deadline ? new Date(body.deadline) : null;
+  if (Array.isArray(body.attachments)) {
+    update.attachments = body.attachments
+      .filter((a: { url?: string; name?: string }) => a?.url && a?.name)
+      .map((a: { url: string; name: string; size?: number }) => ({
+        url: String(a.url),
+        name: String(a.name),
+        size: typeof a.size === "number" ? a.size : undefined,
+      }))
+      .slice(0, 5);
+  }
   const task = await LessonTask.findByIdAndUpdate(id, update, { new: true });
   if (!task) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ task });

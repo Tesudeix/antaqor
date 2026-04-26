@@ -10,6 +10,7 @@ interface Task {
   _id: string;
   title: string;
   description: string;
+  attachments?: { url: string; name: string; size?: number }[];
   deadline?: string;
   maxScore: number;
   course: string;
@@ -165,6 +166,36 @@ function TaskPage({ params }: { params: Promise<{ id: string }> }) {
         {task.description && (
           <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-[#AAA]">{task.description}</p>
         )}
+
+        {/* Task PDF — main content (instructions, questions) */}
+        {task.attachments && task.attachments.length > 0 && (
+          <div className="mt-4 space-y-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">Даалгаврын файл</div>
+            {task.attachments.map((a, i) => (
+              <a
+                key={i}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2.5 transition hover:bg-[rgba(239,44,88,0.12)]"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.18)] text-[#EF2C58]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6M7 21h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1 leading-tight">
+                  <span className="block truncate text-[13px] font-bold text-[#E8E8E8]">{a.name}</span>
+                  <span className="block text-[10px] text-[#888]">PDF · нээх / татах</span>
+                </span>
+                <svg className="h-3.5 w-3.5 shrink-0 text-[#666]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        )}
+
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-[#888]">
           <span>Хамгийн их оноо: <strong className="text-[#E8E8E8]">{task.maxScore}</strong></span>
           {task.deadline && (

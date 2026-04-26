@@ -8,6 +8,7 @@ export interface ILessonTask extends Document {
   course: mongoose.Types.ObjectId;
   title: string;
   description: string;
+  attachments: { url: string; name: string; size?: number }[];
   deadline?: Date;
   maxScore: number;
   createdAt: Date;
@@ -21,6 +22,7 @@ const LessonTaskSchema = new Schema<ILessonTask>(
     course: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
     title: { type: String, required: true, trim: true, maxlength: 200 },
     description: { type: String, default: "", maxlength: 5000 },
+    attachments: [{ url: String, name: String, size: Number, _id: false }],
     deadline: { type: Date },
     maxScore: { type: Number, default: 10 },
   },
