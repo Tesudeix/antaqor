@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { rateLimit, LIMITS } from "@/lib/rateLimit";
 import { spendCredits, refundCredits } from "@/lib/credits";
+import { buildFinalPrompt, findStyle, findAspect } from "@/lib/imageGen";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -36,6 +37,9 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({} as Record<string, unknown>));
   const promptRaw = String((body as { prompt?: unknown }).prompt || "").trim();
+  const styleId = String((body as { style?: unknown }).style || "auto");
+  const aspectId = String((body as { aspectRatio?: unknown }).aspectRatio || "1:1");
+
   if (!promptRaw) {
     return NextResponse.json({ error: "Промпт оруулна уу" }, { status: 400 });
   }
@@ -45,14 +49,17 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  const prompt = promptRaw;
+
+  const style = findStyle(styleId);
+  const aspect = findAspect(aspectId);
+  const prompt = buildFinalPrompt(promptRaw, style.id, aspect.id);
 
   // Atomic credit deduction BEFORE the upstream call
   const charged = await spendCredits({
     userId,
     amount: COST_PER_IMAGE,
     reason: REASON,
-    meta: { prompt: prompt.slice(0, 200) },
+    meta: { prompt: promptRaw.slice(0, 200), style: style.id, aspectRatio: aspect.id },
   });
   if (!charged.ok) {
     return NextResponse.json(
@@ -123,6 +130,8 @@ export async function POST(req: NextRequest) {
     url: `/uploads/${filename}`,
     cost: COST_PER_IMAGE,
     balance: charged.balance,
+    style: style.id,
+    aspectRatio: aspect.id,
   });
 }
 

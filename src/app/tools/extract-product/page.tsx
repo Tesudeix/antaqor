@@ -89,8 +89,8 @@ function ExtractProductPage() {
   return (
     <div className="mx-auto max-w-[820px] pb-16">
       {/* Back */}
-      <Link href="/" className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]">
-        ← Нүүр
+      <Link href="/tools" className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]">
+        ← Бүх хэрэгсэл
       </Link>
 
       {/* Header */}
