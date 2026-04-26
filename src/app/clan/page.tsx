@@ -61,6 +61,7 @@ export default function ClanPage() {
   // New payment-flow state
   const [step, setStep] = useState<Step>("pricing");
   const [payment, setPayment] = useState<PaymentState>({});
+  const [paymentStartedAt, setPaymentStartedAt] = useState<number>(0);
 
   useEffect(() => {
     checkMembership();
@@ -144,6 +145,7 @@ export default function ClanPage() {
 
   const handleTransferred = () => {
     // User says they've done the transfer — go straight to pending; admin auto-matches via SMS reference code.
+    setPaymentStartedAt(Date.now());
     setStep("pending");
   };
 
@@ -206,8 +208,12 @@ export default function ClanPage() {
               </div>
               <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8]">Төлбөрийг шалгаж байна</h1>
               <p className="mt-1.5 text-[13px] text-[#888]">
-                Ердийн нөхцөлд <strong className="text-[#E8E8E8]">5–15 минутад</strong> идэвхжинэ. Хуудсыг хаасан ч мэдэгдэл утас/имэйлд ирнэ.
+                Ердийн нөхцөлд <strong className="text-[#E8E8E8]">5 минутад</strong> идэвхжинэ. Хуудсыг хаасан ч мэдэгдэл утас/имэйлд ирнэ.
               </p>
+
+              {/* Live 5-min countdown — pulses red as time runs out */}
+              <PendingCountdown startedAt={paymentStartedAt} totalSeconds={300} />
+
 
               {payment.receiptImage && (
                 <a href={payment.receiptImage} target="_blank" rel="noopener noreferrer" className="mt-4 block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
@@ -367,10 +373,6 @@ export default function ClanPage() {
           <svg className="relative z-10 h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </button>
-
-        <p className="mt-2 text-center text-[10px] text-[#666]">
-          Гүйлгээний утга дээрх <strong className="text-[#EF2C58]">{payment.referenceCode || "—"}</strong> кодоор автоматаар таних
-        </p>
       </div>
     );
   }
@@ -498,6 +500,42 @@ export default function ClanPage() {
             <Link href="/auth/signin" className="text-[#EF2C58]">Нэвтрэх</Link>
           </p>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Live ticking countdown for the pending screen — drives urgency ("5 min")
+function PendingCountdown({ startedAt, totalSeconds }: { startedAt: number; totalSeconds: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  if (!startedAt) return null;
+  const elapsed = Math.floor((now - startedAt) / 1000);
+  const left = Math.max(0, totalSeconds - elapsed);
+  const min = Math.floor(left / 60);
+  const sec = left % 60;
+  const pct = Math.min(100, (elapsed / totalSeconds) * 100);
+  const danger = left <= 60; // last minute → angrier red
+
+  return (
+    <div className={`mt-3 overflow-hidden rounded-[4px] border bg-[rgba(239,44,88,0.06)] p-3 ${danger ? "border-[#EF2C58]" : "border-[rgba(239,44,88,0.3)]"}`}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">
+          <span className={`h-1.5 w-1.5 rounded-full bg-[#EF2C58] ${danger ? "animate-ping" : "animate-pulse"}`} />
+          {left > 0 ? "Идэвхжих хүртэл" : "Удаж байна — холбогдоно уу"}
+        </span>
+        <span className={`font-mono text-[16px] font-black tabular-nums ${danger ? "text-[#EF2C58]" : "text-[#E8E8E8]"}`} style={danger ? { textShadow: "0 0 12px rgba(239,44,88,0.6)" } : undefined}>
+          {String(min).padStart(2, "0")}:{String(sec).padStart(2, "0")}
+        </span>
+      </div>
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-[#EF2C58] to-[#ff4e77] transition-all duration-1000"
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );

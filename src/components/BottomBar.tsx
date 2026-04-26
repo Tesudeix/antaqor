@@ -94,6 +94,12 @@ export default function BottomBar() {
           match: (p) => p.startsWith("/classroom"),
         },
         {
+          href: "/community",
+          label: "Community",
+          icon: iconServices,
+          match: (p) => p.startsWith("/community"),
+        },
+        {
           href: "/chat",
           label: "Чат",
           icon: iconChat,
