@@ -104,203 +104,6 @@ function StatsBar() {
   );
 }
 
-// ─── Latest AI News (public, editorial) ───
-interface NewsItem {
-  _id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  coverImage: string;
-  category: "AI" | "LLM" | "Agents" | "Research" | "Бизнес" | "Tool" | "Монгол";
-  tags: string[];
-  authorName: string;
-  readingMinutes: number;
-  publishedAt: string;
-  views: number;
-}
-
-const NEWS_CATEGORY_COLORS: Record<NewsItem["category"], string> = {
-  AI: "#EF2C58",
-  LLM: "#A855F7",
-  Agents: "#EF2C58",
-  Research: "#3B82F6",
-  "Бизнес": "#F59E0B",
-  Tool: "#06B6D4",
-  "Монгол": "#EC4899",
-};
-
-function newsRelative(iso: string): string {
-  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
-  const m = Math.floor(diff / 60_000);
-  if (m < 1) return "сая";
-  if (m < 60) return `${m}мин`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}ц`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `${d} өдөр`;
-  return new Date(iso).toLocaleDateString("mn-MN", { month: "short", day: "numeric" });
-}
-
-function LatestNews() {
-  const [items, setItems] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/news?limit=4")
-      .then((r) => r.json())
-      .then((d) => setItems(d.items || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div>
-        <div className="mb-3 flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">AI МЭДЭЭ</span>
-        </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F]">
-              <div className="aspect-[16/9] animate-pulse bg-[#181818]" />
-              <div className="space-y-2 p-3">
-                <div className="h-3 w-3/4 animate-pulse rounded bg-[#181818]" />
-                <div className="h-3 w-1/2 animate-pulse rounded bg-[#181818]" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (items.length === 0) return null;
-
-  const [featured, ...rest] = items;
-
-  return (
-    <div>
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#EF2C58]" />
-          <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">AI МЭДЭЭ</span>
-          <span className="flex items-center gap-1 rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">
-            <span className="h-1 w-1 animate-pulse rounded-full bg-[#EF2C58]" />
-            LIVE
-          </span>
-        </div>
-        <Link href="/news" className="text-[11px] font-bold text-[#666] transition hover:text-[#EF2C58]">
-          Бүх мэдээ →
-        </Link>
-      </div>
-
-      {/* Featured hero */}
-      <Link
-        href={`/news/${featured.slug}`}
-        className="group relative block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] transition hover:border-[rgba(239,44,88,0.25)]"
-      >
-        <div className="relative aspect-[16/9] bg-[#1A1A1A]">
-          {featured.coverImage ? (
-            <img
-              src={featured.coverImage}
-              alt={featured.title}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#181818] to-[#0D0D0D]">
-              <span className="text-[10px] tracking-[0.3em] text-[#333]">ANTAQOR · AI</span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-            <span
-              className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
-              style={{ background: `${NEWS_CATEGORY_COLORS[featured.category]}F2`, color: "#FFF" }}
-            >
-              {featured.category}
-            </span>
-            <span className="rounded-full bg-black/60 px-2 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
-              {featured.readingMinutes} мин
-            </span>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="line-clamp-2 text-[16px] font-bold leading-tight text-white md:text-[18px]">
-              {featured.title}
-            </h3>
-            {featured.excerpt && (
-              <p className="mt-1.5 line-clamp-2 text-[11px] text-white/70">{featured.excerpt}</p>
-            )}
-            <div className="mt-2 flex items-center gap-2 text-[10px] text-white/60">
-              <span className="font-semibold text-white/80">{featured.authorName}</span>
-              <span className="text-white/30">·</span>
-              <span>{newsRelative(featured.publishedAt)}</span>
-            </div>
-          </div>
-        </div>
-      </Link>
-
-      {/* Sub-cards */}
-      {rest.length > 0 && (
-        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          {rest.slice(0, 3).map((n) => {
-            const color = NEWS_CATEGORY_COLORS[n.category];
-            return (
-              <Link
-                key={n._id}
-                href={`/news/${n.slug}`}
-                className="group flex gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-2 transition hover:border-[rgba(239,44,88,0.25)] sm:flex-col sm:gap-0 sm:p-0"
-              >
-                <div className="relative h-[68px] w-[96px] shrink-0 overflow-hidden rounded-[4px] bg-[#1A1A1A] sm:h-auto sm:w-full sm:aspect-[16/10] sm:rounded-b-none">
-                  {n.coverImage ? (
-                    <img
-                      src={n.coverImage}
-                      alt=""
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D]">
-                      <span className="text-[8px] tracking-[0.3em] text-[#2A2A2A]">ANT.</span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 hidden bg-gradient-to-t from-black/40 via-transparent to-transparent sm:block" />
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col justify-between gap-1 sm:p-3">
-                  <div>
-                    <div className="mb-1 flex items-center gap-1.5">
-                      <span className="text-[9px] font-black uppercase tracking-wider" style={{ color }}>
-                        {n.category}
-                      </span>
-                      <span className="text-[#2A2A2A]">·</span>
-                      <span className="text-[9px] text-[#555]">{newsRelative(n.publishedAt)}</span>
-                    </div>
-                    <h4 className="line-clamp-2 text-[12px] font-bold leading-snug text-[#E8E8E8] transition-colors group-hover:text-white">
-                      {n.title}
-                    </h4>
-                  </div>
-                  <div className="flex items-center gap-1 text-[9px] text-[#555]">
-                    <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {n.readingMinutes} мин
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      <Link
-        href="/news"
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 text-[12px] font-bold text-[#888] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
-      >
-        AI мэдээний блог үзэх
-        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </Link>
-    </div>
-  );
-}
 
 // ─── Latest Танилцуулга Posts ───
 function LatestTanilts() {
@@ -830,7 +633,6 @@ function HeroLanding() {
 
       <StatsBar />
       <ClassroomPreview guest />
-      <LatestNews />
       <ValueProps />
       <ShowcaseGallery guest />
       <LatestTanilts />
@@ -909,9 +711,6 @@ function FeedPaywall() {
 
       {/* Upcoming live/course — drives FOMO toward upgrade */}
       <NextEventCountdown />
-
-      {/* Free editorial — stays accessible so the page isn't a wall */}
-      <LatestNews />
     </div>
   );
 }
@@ -999,7 +798,6 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <NextEventCountdown />
-      <LatestNews />
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
           {([
