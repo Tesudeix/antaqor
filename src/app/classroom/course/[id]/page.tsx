@@ -412,18 +412,56 @@ function AddLessonInline({
 }: {
   courseId: string; subsectionId: string; nextOrder: number; onAdded: () => void;
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
+  const pdfRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [videoName, setVideoName] = useState("");
+  const [videoSize, setVideoSize] = useState(0);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoError, setVideoError] = useState("");
   const [pdfs, setPdfs] = useState<{ url: string; name: string; size?: number }[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [pdfUploading, setPdfUploading] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const handleVideoPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setVideoError("");
+    if (!file.type.startsWith("video/")) {
+      setVideoError("Зөвхөн видео файл (mp4, webm, mov)");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 200 * 1024 * 1024) {
+      setVideoError("Видео 200MB-аас бага байх ёстой");
+      e.target.value = "";
+      return;
+    }
+    setVideoUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/classroom/upload-video", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        setVideoError(data.error || "Upload алдаа");
+        return;
+      }
+      setVideoUrl(data.url);
+      setVideoName(file.name);
+      setVideoSize(file.size);
+    } finally {
+      setVideoUploading(false);
+      if (videoRef.current) videoRef.current.value = "";
+    }
+  };
 
   const handlePdfPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    setUploading(true);
+    setPdfUploading(true);
     try {
       for (const file of files) {
         const fd = new FormData();
@@ -435,8 +473,8 @@ function AddLessonInline({
         }
       }
     } finally {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = "";
+      setPdfUploading(false);
+      if (pdfRef.current) pdfRef.current.value = "";
     }
   };
 
@@ -451,14 +489,21 @@ function AddLessonInline({
           course: courseId,
           subsection: subsectionId,
           title,
-          videoUrl: videoUrl.trim(),
-          videoType: videoUrl.trim() ? "link" : "upload",
+          videoUrl: videoUrl,
+          videoType: "upload",
           order: nextOrder,
           attachments: pdfs,
         }),
       });
-      if (res.ok) { setTitle(""); setVideoUrl(""); setPdfs([]); setOpen(false); onAdded(); }
+      if (res.ok) {
+        setTitle(""); setVideoUrl(""); setVideoName(""); setVideoSize(0); setPdfs([]); setOpen(false); onAdded();
+      }
     } finally { setBusy(false); }
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   };
 
   if (!open) return (
@@ -466,17 +511,63 @@ function AddLessonInline({
       + Хичээл нэмэх
     </button>
   );
+
   return (
-    <div className="mt-2 space-y-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-2">
+    <div className="mt-2 space-y-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Хичээлийн нэр" autoFocus
         className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
-      <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Видеоны URL (YouTube эсвэл upload-ын линк)"
-        className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
+
+      {/* Video file upload */}
       <div>
-        <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50">
-          {uploading ? "Хадгалж байна..." : "+ PDF/Slide хавсаргах"}
+        <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Видео файл</div>
+        {videoUrl ? (
+          <div className="flex items-center gap-2 rounded-[4px] border border-[rgba(34,197,94,0.25)] bg-[rgba(239,44,88,0.04)] px-2.5 py-2">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.15)] text-[#EF2C58]">
+              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </span>
+            <div className="min-w-0 flex-1 leading-tight">
+              <div className="truncate text-[11px] font-bold text-[#E8E8E8]">{videoName || "video"}</div>
+              <div className="text-[10px] text-[#666]">{formatSize(videoSize)} · хадгалагдсан</div>
+            </div>
+            <button onClick={() => { setVideoUrl(""); setVideoName(""); setVideoSize(0); }} className="text-[#666] hover:text-[#EF4444]" aria-label="Устгах">
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => videoRef.current?.click()}
+            disabled={videoUploading}
+            className="flex w-full items-center gap-2.5 rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.3)] bg-[#0A0A0A] px-3 py-2.5 text-left transition hover:border-[rgba(239,44,88,0.5)] disabled:opacity-50"
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)] text-[#EF2C58]">
+              {videoUploading ? (
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+              ) : (
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              )}
+            </span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="block text-[12px] font-bold text-[#E8E8E8]">
+                {videoUploading ? "Хадгалж байна..." : "Видео сонгох"}
+              </span>
+              <span className="block text-[10px] text-[#666]">MP4 / WebM / MOV · 200MB хүртэл</span>
+            </span>
+          </button>
+        )}
+        <input ref={videoRef} type="file" accept="video/*" onChange={handleVideoPick} className="hidden" />
+        {videoError && <div className="mt-1 text-[10px] text-[#EF4444]">{videoError}</div>}
+      </div>
+
+      {/* PDF attachments */}
+      <div>
+        <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">PDF / Slide хавсралт</div>
+        <button type="button" onClick={() => pdfRef.current?.click()} disabled={pdfUploading} className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50">
+          {pdfUploading ? "Хадгалж байна..." : "+ PDF нэмэх"}
         </button>
-        <input ref={fileRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePdfPick} className="hidden" />
+        <input ref={pdfRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePdfPick} className="hidden" />
         {pdfs.length > 0 && (
           <ul className="mt-1.5 space-y-0.5">
             {pdfs.map((p, i) => (
@@ -489,11 +580,12 @@ function AddLessonInline({
           </ul>
         )}
       </div>
-      <div className="flex items-center gap-1.5">
-        <button onClick={submit} disabled={!title.trim() || busy} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
+
+      <div className="flex items-center gap-1.5 pt-1">
+        <button onClick={submit} disabled={!title.trim() || busy || videoUploading} className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white disabled:opacity-40">
           {busy ? "Үүсгэж байна..." : "Үүсгэх"}
         </button>
-        <button onClick={() => { setOpen(false); setTitle(""); setVideoUrl(""); setPdfs([]); }} className="text-[11px] text-[#666]">Болих</button>
+        <button onClick={() => { setOpen(false); setTitle(""); setVideoUrl(""); setVideoName(""); setVideoSize(0); setPdfs([]); setVideoError(""); }} className="text-[11px] text-[#666]">Болих</button>
       </div>
     </div>
   );
