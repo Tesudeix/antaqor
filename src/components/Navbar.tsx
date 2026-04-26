@@ -121,23 +121,35 @@ export default function Navbar() {
         </Link>
 
         {/* Center pill tabs - desktop */}
-        <div className="hidden items-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-1 md:flex">
-          {tabs.map((tab) => {
-            const active = tab.check(pathname);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
-                  active
-                    ? "bg-[#EF2C58] text-white"
-                    : "text-[#AAAAAA] hover:text-[#E8E8E8]"
-                }`}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
+        <div className="hidden items-center gap-2 md:flex">
+          <div className="flex items-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-1">
+            {tabs.map((tab) => {
+              const active = tab.check(pathname);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                    active
+                      ? "bg-[#EF2C58] text-white"
+                      : "text-[#AAAAAA] hover:text-[#E8E8E8]"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </div>
+          {/* Neon AI Generate — distinct, glowing CTA on desktop */}
+          <Link
+            href="/tools/generate-image"
+            className="group inline-flex items-center gap-1.5 rounded-[4px] bg-gradient-to-r from-[#EF2C58] to-[#A855F7] px-3 py-1.5 text-[12px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.45)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.7)]"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+            AI
+          </Link>
         </div>
 
         {/* Right side */}

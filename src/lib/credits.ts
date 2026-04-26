@@ -299,6 +299,82 @@ export async function maybeAwardReferralPayment(refereeUserId: string): Promise<
   return true;
 }
 
+// ─── Atomic spend ─── decrements balance only if it's >= amount.
+// Returns { ok: false, balance } if not enough, otherwise records a CreditTx
+// and returns { ok: true, balance } with the new balance.
+export async function spendCredits(args: {
+  userId: string;
+  amount: number;
+  reason: string;       // free-form for tool spends ("AI_IMAGE_GEN", "AI_EXTRACT", etc.)
+  ref?: string;
+  meta?: Record<string, unknown>;
+}): Promise<{ ok: boolean; balance: number; required: number }> {
+  const { userId, amount, reason, ref, meta } = args;
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Invalid spend amount");
+  }
+  await dbConnect();
+
+  // Atomic: only deduct if balance >= amount
+  const updated = await User.findOneAndUpdate(
+    { _id: userId, credits: { $gte: amount } },
+    { $inc: { credits: -amount } },
+    { new: true, projection: { credits: 1 } }
+  ).lean();
+
+  if (!updated) {
+    const current = await User.findById(userId).select("credits").lean();
+    return {
+      ok: false,
+      balance: (current as unknown as { credits?: number } | null)?.credits || 0,
+      required: amount,
+    };
+  }
+
+  const balanceAfter = (updated as unknown as { credits: number }).credits;
+  await CreditTx.create({
+    user: userId,
+    kind: "spend",
+    amount,
+    reason,
+    xpAwarded: 0,
+    ref: ref || "",
+    balanceAfter,
+    meta: meta || {},
+  });
+
+  return { ok: true, balance: balanceAfter, required: amount };
+}
+
+// ─── Refund: gives credits back atomically (e.g. when AI call fails post-charge) ───
+export async function refundCredits(args: {
+  userId: string;
+  amount: number;
+  reason: string;
+  ref?: string;
+}): Promise<{ balance: number }> {
+  const { userId, amount, reason, ref } = args;
+  if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid refund");
+  await dbConnect();
+  const updated = await User.findByIdAndUpdate(
+    userId,
+    { $inc: { credits: amount } },
+    { new: true, projection: { credits: 1 } }
+  ).lean();
+  const balanceAfter = (updated as unknown as { credits?: number } | null)?.credits || 0;
+  await CreditTx.create({
+    user: userId,
+    kind: "earn",
+    amount,
+    reason: `${reason}_REFUND`,
+    xpAwarded: 0,
+    ref: ref || "",
+    balanceAfter,
+    meta: {},
+  });
+  return { balance: balanceAfter };
+}
+
 // ─── Admin: manual adjust (positive or negative) ───
 export async function adminAdjustCredits(
   userId: string,
