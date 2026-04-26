@@ -15,6 +15,12 @@ function titleFromFilename(name: string): string {
     .trim();
 }
 
+// Stable pink-leaning gradient when no thumbnail (mirrors listing page)
+function gradientFor(seed: string) {
+  const hash = Array.from(seed).reduce((a, c) => a + c.charCodeAt(0), 0);
+  return `linear-gradient(${hash % 360}deg, #EF2C58 0%, #0A0A0A 80%)`;
+}
+
 // ─── Types matching /api/classroom/courses/[id]/tree response ───
 interface TaskSummary {
   _id: string;
@@ -102,21 +108,42 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
         ← Бүх курс
       </Link>
 
-      {/* Course header */}
-      <div className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
-        {course.thumbnail && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={course.thumbnail} alt={course.title} className="h-48 w-full object-cover sm:h-64" />
-        )}
-        <div className="p-5 sm:p-6">
-          <h1 className="text-[22px] font-black leading-tight text-[#E8E8E8] sm:text-[28px]">{course.title}</h1>
-          {course.description && (
-            <p className="mt-2 text-[13px] leading-relaxed text-[#888]">{course.description}</p>
+      {/* Course hero — image-led, no double cropping */}
+      <div
+        className="relative mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]"
+        style={!course.thumbnail ? { background: gradientFor(course._id) } : undefined}
+      >
+        {/* 3:2 aspect — matches the listing card so the image never gets re-cropped */}
+        <div className="relative aspect-[3/2] w-full">
+          {course.thumbnail && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={course.thumbnail}
+              alt={course.title}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
           )}
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#666]">
-            <span>{sections.length} бүлэг</span>
-            <span className="text-[#333]">·</span>
-            <span>{course.lessonsCount} хичээл</span>
+          {/* Bottom fade so the title is always legible */}
+          <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black via-black/55 to-transparent" />
+
+          {/* Admin cover swap — single floating control */}
+          {admin && <CourseCoverEditButton courseId={id} onUpdate={fetchTree} />}
+
+          {/* Title block — overlaid */}
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+            <h1 className="text-[22px] font-black leading-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] sm:text-[28px]">
+              {course.title}
+            </h1>
+            {course.description && (
+              <p className="mt-1.5 line-clamp-2 max-w-[640px] text-[12px] leading-relaxed text-white/75 sm:text-[13px]">
+                {course.description}
+              </p>
+            )}
+            <div className="mt-2.5 flex items-center gap-2 text-[11px] font-bold text-white/70">
+              <span>{sections.length} бүлэг</span>
+              <span className="text-white/30">·</span>
+              <span>{course.lessonsCount} хичээл</span>
+            </div>
           </div>
         </div>
       </div>
@@ -620,5 +647,54 @@ function SectionAdminMenu({ sectionId, title, onChange }: { sectionId: string; t
     <button onClick={onDelete} className="ml-1 rounded-[4px] p-1 text-[#666] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]" aria-label="Устгах">
       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9M19.228 5.79L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M7.5 5.79h9" /></svg>
     </button>
+  );
+}
+
+function CourseCoverEditButton({ courseId, onUpdate }: { courseId: string; onUpdate: () => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd });
+      const upData = await up.json();
+      if (!up.ok || !upData.url) return;
+      await fetch(`/api/classroom/courses/${courseId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ thumbnail: upData.url }),
+      });
+      onUpdate();
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        disabled={busy}
+        title="Cover солих"
+        className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md transition hover:bg-[#EF2C58] disabled:opacity-50"
+      >
+        {busy ? (
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        ) : (
+          <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+          </svg>
+        )}
+        Cover
+      </button>
+      <input ref={fileRef} type="file" accept="image/*" onChange={onPick} className="hidden" />
+    </>
   );
 }
