@@ -540,10 +540,7 @@ function SignUp() {
 
       <form onSubmit={handleSubmit} className="rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-5 md:p-6">
         <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2 py-0.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
-            <span className="text-[9px] font-bold tracking-[0.14em] text-[#22C55E]">30 СЕКУНД</span>
-          </div>
+          <span className="text-[14px] font-black tracking-[3px] text-[#E8E8E8]">ANTAQOR</span>
           <button
             type="button"
             onClick={() => setStep("result")}
@@ -552,7 +549,7 @@ function SignUp() {
             ← Буцах
           </button>
         </div>
-        <h1 className="mt-2 text-[24px] font-black leading-tight text-[#E8E8E8] md:text-[28px]">Бүртгүүлэх</h1>
+        <h1 className="mt-3 text-[24px] font-black leading-tight text-[#E8E8E8] md:text-[28px]">Бүртгүүлэх</h1>
         <p className="mt-1 text-[12px] text-[#666]">
           {LEVEL_CONFIG[aiLevel].label} түвшин · 4 талбар бөглөөд community-д орно
         </p>
@@ -622,7 +619,7 @@ function SignUp() {
             label="Утас"
             value={phone}
             onChange={(v) => setPhone(v.replace(/\D/g, "").slice(0, 8))}
-            placeholder="99112233"
+            placeholder="Утасны дугаараа оруулна"
             type="tel"
             inputMode="numeric"
             maxLength={8}

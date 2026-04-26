@@ -17,12 +17,14 @@ import { maybeAwardReferralPayment } from "@/lib/credits";
 interface ParsedTx {
   rawLine: string;
   refCode: string;
+  email?: string;
   amount: number;
 }
 
 // Our refCodes are 6 chars drawn from ABCDEFGHJKMNPQRSTUVWXYZ23456789 (no 0/1/I/L/O).
 // First char must be a letter (common prefix in random; avoids matching trailing numbers).
 const REF_CODE_RX = /(?<![A-Z0-9])([A-HJ-NP-Z][A-HJ-NP-Z2-9]{5,6})(?![A-Z0-9])/;
+const EMAIL_RX = /\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/;
 const AMOUNT_RX = /([\d]{1,3}(?:[,.\s][\d]{3})+|[\d]{4,7})(?:[.,]\d{1,2})?/g;
 
 function parseAmountToken(token: string): number {
@@ -39,9 +41,10 @@ function parseStatement(text: string): ParsedTx[] {
 
   for (const line of lines) {
     const refMatch = line.match(REF_CODE_RX);
-    if (!refMatch) continue;
+    const emailMatch = line.match(EMAIL_RX);
+    // Either signal is enough to attempt a lookup
+    if (!refMatch && !emailMatch) continue;
 
-    // Harvest all numeric tokens → pick the one that's plausibly MNT (1000–2,000,000)
     const amountTokens = line.match(AMOUNT_RX) || [];
     const amounts = amountTokens
       .map(parseAmountToken)
@@ -49,13 +52,12 @@ function parseStatement(text: string): ParsedTx[] {
 
     if (amounts.length === 0) continue;
 
-    // Pick the amount closest to the expected MNT range — if multiple, pick the largest
-    // (balance totals won't match refCode lines typically)
     const amount = Math.max(...amounts);
 
     out.push({
       rawLine: line,
-      refCode: refMatch[1].toUpperCase(),
+      refCode: refMatch ? refMatch[1].toUpperCase() : "",
+      email: emailMatch ? emailMatch[1].toLowerCase() : undefined,
       amount,
     });
   }
@@ -101,13 +103,25 @@ export async function POST(req: NextRequest) {
     const outcomes: Outcome[] = [];
 
     for (const tx of parsed) {
-      // De-dupe — same refCode twice in one statement means the second one is a balance/echo
-      if (seenCodes.has(tx.refCode)) continue;
-      seenCodes.add(tx.refCode);
+      // De-dupe by whichever signal we have
+      const dedupeKey = tx.refCode || tx.email || "";
+      if (dedupeKey && seenCodes.has(dedupeKey)) continue;
+      if (dedupeKey) seenCodes.add(dedupeKey);
 
-      const payment = await Payment.findOne({ referenceCode: tx.refCode }).populate("user", "name email avatar");
+      // Try refCode first; fall back to user email lookup → most recent pending payment.
+      let payment = tx.refCode
+        ? await Payment.findOne({ referenceCode: tx.refCode }).populate("user", "name email avatar")
+        : null;
+      if (!payment && tx.email) {
+        const user = await User.findOne({ email: tx.email }).select("_id").lean();
+        if (user) {
+          payment = await Payment.findOne({ user: user._id, status: "pending" })
+            .sort({ createdAt: -1 })
+            .populate("user", "name email avatar");
+        }
+      }
       if (!payment) {
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "no-match" });
+        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode || tx.email || "—", parsedAmount: tx.amount, status: "no-match" });
         continue;
       }
 

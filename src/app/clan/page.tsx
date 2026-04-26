@@ -329,16 +329,16 @@ export default function ClanPage() {
           <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
           <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} subtitle="Antaqor үүсгэн байгуулагч · хувийн данс" />
           <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={String(tier.price)} field="amount" copied={copied} onCopy={copyToClipboard} mono />
-          {/* Reference code — same row pattern as Bank/Account, accent border for emphasis */}
+          {/* Reference — user's email, easier to remember than a random 6-char code */}
           <button
             type="button"
-            onClick={() => copyToClipboard(payment.referenceCode || "", "ref")}
+            onClick={() => copyToClipboard(userEmail, "ref")}
             className="group flex w-full items-center justify-between gap-3 border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.06)] px-4 py-3 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
           >
             <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
-              <div className="mt-0.5 font-mono text-[16px] font-black tracking-[0.12em] text-[#EF2C58]">
-                {payment.referenceCode || "——"}
+              <div className="mt-0.5 truncate font-mono text-[14px] font-bold text-[#EF2C58]">
+                {userEmail || "——"}
               </div>
             </div>
             <span

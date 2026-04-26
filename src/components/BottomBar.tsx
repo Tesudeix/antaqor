@@ -101,7 +101,7 @@ export default function BottomBar() {
         },
         {
           href: myId ? `/profile/${myId}` : "/credits",
-          label: "Би",
+          label: "Profile",
           icon: iconMe,
           match: (p) =>
             p.startsWith("/profile") ||
@@ -140,7 +140,7 @@ export default function BottomBar() {
       },
       {
         href: "/auth/signup",
-        label: "Би",
+        label: "Profile",
         icon: iconJoin,
         match: (p) => p.startsWith("/auth"),
       },
