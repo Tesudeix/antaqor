@@ -298,13 +298,16 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
         </div>
 
         <div className="flex items-center gap-1">
-          <ShareButton
-            kind="post"
-            resourceId={post._id}
-            path={`/posts/${post._id}`}
-            title={post.author?.name ? `${post.author.name} · Antaqor` : "Antaqor"}
-            excerpt={post.content?.slice(0, 140) || ""}
-          />
+          {/* Share button is mobile-only — desktop users have native browser share/copy */}
+          <span className="md:hidden">
+            <ShareButton
+              kind="post"
+              resourceId={post._id}
+              path={`/posts/${post._id}`}
+              title={post.author?.name ? `${post.author.name} · Antaqor` : "Antaqor"}
+              excerpt={post.content?.slice(0, 140) || ""}
+            />
+          </span>
           <Link
             href={`/posts/${post._id}`}
             className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[#555555] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#999999]"

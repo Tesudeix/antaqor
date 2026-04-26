@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -46,11 +47,21 @@ function timeAgo(iso: string): string {
 
 export default function CommunityPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<Post | null>(null);
+
+  // Guests browse the gallery freely but tapping a tile pushes them to sign in
+  const handleOpen = (p: Post) => {
+    if (!session) {
+      router.push("/auth/signin?next=/community");
+      return;
+    }
+    setOpen(p);
+  };
 
   useEffect(() => {
     let cancel = false;
@@ -97,25 +108,11 @@ export default function CommunityPage() {
         <h1 className="mt-2 text-[26px] font-black leading-tight text-[#E8E8E8] sm:text-[32px]">
           Бүтээлүүд
         </h1>
-        <p className="mt-1 text-[13px] text-[#888]">
-          Гишүүдийн AI-аар үүсгэсэн зураг, промпт, бүтээлүүд — бодит ажил
-        </p>
       </div>
 
-      {/* Members strip — logged-in only */}
+      {/* Members strip — logged-in only, headerless avatar carousel */}
       {session && members.length > 0 && (
         <div className="mb-5">
-          <div className="mb-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]">ИДЭВХТЭЙ ГИШҮҮД</span>
-              <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[10px] font-black text-[#EF2C58]">
-                {members.length}
-              </span>
-            </div>
-            <Link href="/members" className="text-[10px] font-bold text-[#666] transition hover:text-[#EF2C58]">
-              Бүгдийг үзэх →
-            </Link>
-          </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {members.map((m) => (
               <Link
@@ -180,7 +177,7 @@ export default function CommunityPage() {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
           {posts.map((p, i) => (
-            <GalleryCard key={p._id} post={p} index={i} onOpen={setOpen} />
+            <GalleryCard key={p._id} post={p} index={i} onOpen={handleOpen} />
           ))}
         </div>
       )}
