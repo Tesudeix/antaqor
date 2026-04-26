@@ -96,6 +96,9 @@ export const LIMITS = {
   USER_PUT_PER_HOUR: { max: 20, windowMs: 60 * 60_000 },
   SHARE_PER_MINUTE: { max: 20, windowMs: 60_000 },
   GLOBAL_PER_IP_PER_MIN: { max: 300, windowMs: 60_000 },      // abuse floor
-  AI_TOOL_PER_MINUTE: { max: 2, windowMs: 60_000 },           // burst cap on Gemini-backed tools
-  AI_TOOL_PER_DAY: { max: 20, windowMs: 24 * 60 * 60_000 },   // generous daily cap so one user can't drain the key
+  // AI tools — credit balance is the real cost gate, so per-minute is
+  // mainly to stop runaway loops/scripts. 6/min lets a creator iterate
+  // 4–5 prompts in a row without bouncing.
+  AI_TOOL_PER_MINUTE: { max: 6, windowMs: 60_000 },
+  AI_TOOL_PER_DAY: { max: 200, windowMs: 24 * 60 * 60_000 },
 } as const;

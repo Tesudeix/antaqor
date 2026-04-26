@@ -57,19 +57,19 @@ export default function BuyCreditsPage() {
     refresh();
   }, [status, refresh]);
 
-  // Poll status while a pending purchase has a receipt — admin should approve in minutes
+  // Poll status while a pending purchase has a receipt. Slower poll (15s)
+  // — admin batch-approves anyway, no need to hammer the API.
   useEffect(() => {
     if (!pending || !pending.hasReceipt || paid) return;
     const t = setInterval(async () => {
       const r = await fetch("/api/credits/purchase");
       const d = await r.json();
       if (r.ok && !d.pending) {
-        // Pending row is gone → it was approved (status moved to paid)
         setPaid(true);
         setGrantedCredits(pending.credits);
         clearInterval(t);
       }
-    }, 8000);
+    }, 15_000);
     return () => clearInterval(t);
   }, [pending, paid]);
 
