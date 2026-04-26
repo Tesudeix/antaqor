@@ -329,42 +329,26 @@ export default function ClanPage() {
           <PayRow label="Данс" value={BANK_ACCOUNT} copyText={BANK_ACCOUNT} field="account" copied={copied} onCopy={copyToClipboard} mono />
           <PayRow label="Хүлээн авагч" value={BANK_RECIPIENT} copyText={BANK_RECIPIENT} field="recipient" copied={copied} onCopy={copyToClipboard} subtitle="Antaqor үүсгэн байгуулагч · хувийн данс" />
           <PayRow label="Дүн" value={`₮${displayPrice}`} copyText={String(tier.price)} field="amount" copied={copied} onCopy={copyToClipboard} mono />
-          {/* Reference code — biggest, most copy-friendly element on the screen */}
+          {/* Reference code — same row pattern as Bank/Account, accent border for emphasis */}
           <button
             type="button"
             onClick={() => copyToClipboard(payment.referenceCode || "", "ref")}
-            className="group flex w-full items-center justify-between gap-3 border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.08)] px-4 py-4 text-left transition hover:bg-[rgba(239,44,88,0.12)]"
+            className="group flex w-full items-center justify-between gap-3 border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.06)] px-4 py-3 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
           >
             <div className="min-w-0 flex-1">
               <div className="text-[10px] uppercase tracking-[1px] text-[#EF2C58]">Гүйлгээний утга</div>
-              <div className="mt-1 text-[26px] font-black tracking-[0.18em] text-[#EF2C58]">
+              <div className="mt-0.5 font-mono text-[16px] font-black tracking-[0.12em] text-[#EF2C58]">
                 {payment.referenceCode || "——"}
               </div>
-              <div className="mt-0.5 text-[10px] text-[#999]">Дэлгэцийг хүртэл хуулна — энд дарж хуулна уу</div>
             </div>
             <span
-              className={`shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black tracking-wider transition ${
+              className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black tracking-wider transition ${
                 copied === "ref" ? "bg-[#22C55E] text-white" : "bg-[#EF2C58] text-white group-hover:bg-[#D4264E]"
               }`}
             >
-              {copied === "ref" ? "ХУУЛСАН ✓" : "ХУУЛАХ"}
+              {copied === "ref" ? "ХУУЛСАН" : "ХУУЛАХ"}
             </span>
           </button>
-        </div>
-
-        {/* Strong inline reminder — the #1 cause of failed payments is forgetting this code */}
-        <div className="mt-3 rounded-[6px] border-2 border-[#EF2C58] bg-[rgba(239,44,88,0.1)] px-4 py-3">
-          <div className="flex items-start gap-2">
-            <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <p className="text-[12px] leading-relaxed text-[#E8E8E8]">
-              Банкны апп дотор <strong className="text-[#EF2C58]">"Гүйлгээний утга"</strong> эсвэл{" "}
-              <strong className="text-[#EF2C58]">"Reference"</strong> талбарт{" "}
-              <strong className="font-mono tracking-wider text-[#EF2C58]">{payment.referenceCode || "——"}</strong>{" "}
-              гэж яг үсэг үсгээр нь бичнэ үү. <strong className="text-[#FFB020]">Бичээгүй бол идэвхжилт саатана.</strong>
-            </p>
-          </div>
         </div>
 
         <div className="mt-3 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-3 flex items-center justify-between">
@@ -392,6 +376,16 @@ export default function ClanPage() {
   }
 
 
+  // If user landed via ?pay=1, suppress the pricing landing while handleJoin runs —
+  // otherwise the headline flashes for a beat before the bank-info screen swaps in.
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pay") === "1") {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-3 w-3 animate-pulse rounded-[4px] bg-[#EF2C58]" />
+      </div>
+    );
+  }
+
   // ─── Single-tier focused landing ───
   return (
     <div className="mx-auto max-w-md py-4">
@@ -399,22 +393,14 @@ export default function ClanPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]"
+          className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]"
         >
           CYBER EMPIRE
         </motion.div>
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-[26px] font-black leading-tight text-[#E8E8E8] md:text-[30px]"
-        >
-          AI бүтээгчдийн<br />нийгэмлэгт нэгд
-        </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.1 }}
           className="mt-2 text-[13px] text-[#888]"
         >
           Хичээл · Чат · Пост · Market · Level system — бүгд нэг газар
