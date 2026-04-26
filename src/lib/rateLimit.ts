@@ -96,4 +96,6 @@ export const LIMITS = {
   USER_PUT_PER_HOUR: { max: 20, windowMs: 60 * 60_000 },
   SHARE_PER_MINUTE: { max: 20, windowMs: 60_000 },
   GLOBAL_PER_IP_PER_MIN: { max: 300, windowMs: 60_000 },      // abuse floor
+  AI_TOOL_PER_MINUTE: { max: 2, windowMs: 60_000 },           // burst cap on Gemini-backed tools
+  AI_TOOL_PER_DAY: { max: 20, windowMs: 24 * 60 * 60_000 },   // generous daily cap so one user can't drain the key
 } as const;
