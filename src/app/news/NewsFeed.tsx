@@ -27,7 +27,7 @@ interface NewsItem {
 const CATEGORY_COLORS: Record<Exclude<Category, "All">, string> = {
   AI: "#EF2C58",
   LLM: "#A855F7",
-  Agents: "#22C55E",
+  Agents: "#EF2C58",
   Research: "#3B82F6",
   "Бизнес": "#F59E0B",
   Tool: "#06B6D4",
@@ -72,7 +72,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
   return (
     <Link
       href={`/news/${item.slug}`}
-      className="group relative block overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0D0D0D]"
+      className="group relative block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0D0D0D]"
     >
       <div className="grid md:grid-cols-[1.15fr_1fr]">
         <div className="relative aspect-[16/10] md:aspect-auto md:h-full bg-[#1A1A1A]">
@@ -158,7 +158,7 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
     >
       <Link
         href={`/news/${item.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition duration-300 hover:border-[rgba(239,44,88,0.25)] hover:bg-[#131313]"
+        className="group flex h-full flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition duration-300 hover:border-[rgba(239,44,88,0.25)] hover:bg-[#131313]"
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-[#1A1A1A]">
           {item.coverImage ? (
@@ -220,7 +220,7 @@ function Skeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F]">
+        <div key={i} className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F]">
           <div className="aspect-[16/10] animate-pulse bg-[#181818]" />
           <div className="space-y-2 p-4">
             <div className="h-3 w-3/4 animate-pulse rounded bg-[#181818]" />
@@ -334,7 +334,7 @@ export default function NewsFeed({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Хайх — LLM, Agent, Claude..."
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-9 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-9 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
             />
             {query && (
               <button
@@ -380,7 +380,7 @@ export default function NewsFeed({
       {loading ? (
         <Skeleton />
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-20 text-center">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-20 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(239,44,88,0.08)]">
             <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2zM7 8h10M7 12h10M7 16h6" />
@@ -418,7 +418,7 @@ export default function NewsFeed({
           </div>
 
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-12 px-6 text-center">
+            <div className="flex flex-col items-center gap-4 rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-12 px-6 text-center">
               <div className="text-[13px] text-[#999]">
                 <span className="text-[#EF2C58]">"{query}"</span>-д тохирох мэдээ олдсонгүй
               </div>
@@ -468,7 +468,7 @@ export default function NewsFeed({
       )}
 
       {/* Footer CTA — nudge non-users */}
-      <section className="mt-12 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
+      <section className="mt-12 overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
         <div className="flex flex-col items-start gap-5 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">COMMUNITY</div>
@@ -481,7 +481,7 @@ export default function NewsFeed({
           </div>
           <Link
             href="/auth/signup"
-            className="group relative overflow-hidden rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white shadow-[0_0_32px_rgba(239,44,88,0.15)] transition hover:shadow-[0_0_44px_rgba(239,44,88,0.35)]"
+            className="group relative overflow-hidden rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white shadow-[0_0_32px_rgba(239,44,88,0.15)] transition hover:shadow-[0_0_44px_rgba(239,44,88,0.35)]"
           >
             <span className="relative z-10">Нэгдэх →</span>
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />

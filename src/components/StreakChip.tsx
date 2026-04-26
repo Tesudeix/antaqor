@@ -79,7 +79,7 @@ export default function StreakChip() {
             exit={{ opacity: 0, y: -10 }}
             className="fixed inset-x-3 top-3 z-[80] mx-auto max-w-md"
           >
-            <div className="relative overflow-hidden rounded-[12px] border border-[rgba(249,115,22,0.4)] bg-gradient-to-br from-[rgba(249,115,22,0.15)] via-[#111] to-[#0D0D0D] p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+            <div className="relative overflow-hidden rounded-[4px] border border-[rgba(249,115,22,0.4)] bg-gradient-to-br from-[rgba(249,115,22,0.15)] via-[#111] to-[#0D0D0D] p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
               <div className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-30"
                 style={{ background: "radial-gradient(circle, #F97316AA, transparent 70%)" }}
               />
@@ -91,7 +91,7 @@ export default function StreakChip() {
                   <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#F97316]">STREAK · {toast.days} ӨДӨР</div>
                   <div className="text-[14px] font-black text-[#E8E8E8]">{toast.label}</div>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px] font-bold">
-                    <span className="text-[#22C55E]">+{toast.credits} credit</span>
+                    <span className="text-[#EF2C58]">+{toast.credits} credit</span>
                     {toast.xp > 0 && <span className="text-[#A855F7]">+{toast.xp} XP</span>}
                   </div>
                 </div>

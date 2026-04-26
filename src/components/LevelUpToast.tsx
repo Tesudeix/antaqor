@@ -17,7 +17,7 @@ function levelColor(lvl: number): string {
   if (lvl >= 81) return "#FF4473";
   if (lvl >= 61) return "#A855F7";
   if (lvl >= 41) return "#EF2C58";
-  if (lvl >= 26) return "#22C55E";
+  if (lvl >= 26) return "#EF2C58";
   if (lvl >= 16) return "#0F81CA";
   if (lvl >= 6) return "#3B82F6";
   return "#999999";
@@ -109,7 +109,7 @@ export default function LevelUpToast() {
           className="fixed inset-x-3 top-3 z-[80] mx-auto max-w-md"
         >
           <div
-            className="relative overflow-hidden rounded-[12px] border bg-gradient-to-br p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
+            className="relative overflow-hidden rounded-[4px] border bg-gradient-to-br p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
             style={{
               borderColor: `${color}66`,
               backgroundImage: `linear-gradient(135deg, ${color}22, #111 40%, #0F0F0F)`,
@@ -151,7 +151,7 @@ export default function LevelUpToast() {
               <Link
                 href="/clan?pay=1"
                 onClick={() => setToast(null)}
-                className="mt-3 flex items-center justify-between rounded-[8px] border border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.08)] px-3 py-2 transition hover:bg-[rgba(239,44,88,0.14)]"
+                className="mt-3 flex items-center justify-between rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.08)] px-3 py-2 transition hover:bg-[rgba(239,44,88,0.14)]"
               >
                 <div className="text-[11px] text-[#CCC]">
                   {nudgeUnlockCap ? (

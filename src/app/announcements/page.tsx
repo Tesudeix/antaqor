@@ -14,7 +14,7 @@ interface AnnouncementData {
 
 const TAG_STYLES: Record<string, { bg: string; text: string }> = {
   "мэдэгдэл": { bg: "bg-[rgba(239,44,88,0.12)]", text: "text-[#EF2C58]" },
-  "шинэчлэл": { bg: "bg-[rgba(34,197,94,0.12)]", text: "text-green-400" },
+  "шинэчлэл": { bg: "bg-[rgba(239,44,88,0.12)]", text: "text-green-400" },
   "AI": { bg: "bg-[rgba(99,102,241,0.12)]", text: "text-indigo-400" },
   "эвент": { bg: "bg-[rgba(239,44,88,0.12)]", text: "text-[#EF2C58]" },
   "бусад": { bg: "bg-[rgba(0,0,0,0.08)]", text: "text-[#999999]" },

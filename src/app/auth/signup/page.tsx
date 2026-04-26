@@ -144,7 +144,7 @@ const LEVEL_CONFIG: Record<
       "Бэлэн promt template-ээр ажил хөнгөвчлөх",
       "Эхлэгчдийн challenge — XP цуглуулах",
     ],
-    ringColor: "#22C55E",
+    ringColor: "#EF2C58",
   },
   intermediate: {
     label: "Дунд",
@@ -347,7 +347,7 @@ function SignUp() {
     return (
       <div className="mx-auto flex min-h-[70vh] w-full max-w-[460px] flex-col px-4 py-6">
         {referrer && <ReferrerBanner referrer={referrer} />}
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
+        <div className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
           {/* Progress */}
           <div className="h-[3px] bg-[#1A1A1A]">
             <motion.div
@@ -360,7 +360,7 @@ function SignUp() {
 
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-[rgba(239,44,88,0.1)]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
                 <svg className="h-3.5 w-3.5 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={q.iconPath} />
                 </svg>
@@ -400,14 +400,14 @@ function SignUp() {
                       transition={{ duration: 0.22, delay: i * 0.05 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => pickOption(q.id, opt.value)}
-                      className={`flex w-full items-center gap-3 rounded-[8px] border px-3.5 py-3 text-left transition ${
+                      className={`flex w-full items-center gap-3 rounded-[4px] border px-3.5 py-3 text-left transition ${
                         selected
                           ? "border-[#EF2C58] bg-[rgba(239,44,88,0.08)]"
                           : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] hover:border-[rgba(239,44,88,0.3)]"
                       }`}
                     >
                       <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] transition ${
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] transition ${
                           selected ? "bg-[#EF2C58] text-white" : "bg-[#141414] text-[#888]"
                         }`}
                       >
@@ -475,7 +475,7 @@ function SignUp() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35 }}
-          className="rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-6 text-center md:p-7"
+          className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-6 text-center md:p-7"
         >
           {/* Trophy ring */}
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full" style={{ background: `${cfg.ringColor}15`, boxShadow: `0 0 28px ${cfg.ringColor}30` }}>
@@ -486,7 +486,7 @@ function SignUp() {
 
           <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#888]">ТАНЫ AI ТҮВШИН</div>
           <h2
-            className="mt-2 inline-block rounded-[8px] px-5 py-2 text-[22px] font-black"
+            className="mt-2 inline-block rounded-[4px] px-5 py-2 text-[22px] font-black"
             style={{ background: `${cfg.ringColor}14`, border: `1px solid ${cfg.ringColor}40`, color: cfg.ringColor }}
           >
             {cfg.label}
@@ -494,7 +494,7 @@ function SignUp() {
           <p className="mx-auto mt-3 max-w-[340px] text-[12px] leading-relaxed text-[#999]">{cfg.sub}</p>
 
           {/* Path */}
-          <div className="mt-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-4 text-left">
+          <div className="mt-5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-4 text-left">
             <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#888]">ТАНД ТОХИРОХ ЗАМ</div>
             <ul className="mt-2.5 space-y-1.5">
               {cfg.paths.map((p, i) => (
@@ -514,9 +514,9 @@ function SignUp() {
 
           <button
             onClick={() => setStep("register")}
-            className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.25)] transition hover:bg-[#D4264E]"
+            className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.25)] transition hover:bg-[#D4264E]"
           >
-            Одоо эхлэх
+            Cyber Empire нэгдэх
             <svg className="h-4 w-4 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
@@ -538,7 +538,7 @@ function SignUp() {
     <div className="mx-auto flex min-h-[70vh] w-full max-w-[440px] flex-col px-4 py-6">
       {referrer && <ReferrerBanner referrer={referrer} />}
 
-      <form onSubmit={handleSubmit} className="rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-5 md:p-6">
+      <form onSubmit={handleSubmit} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-5 md:p-6">
         <div className="flex items-center justify-between">
           <span className="text-[14px] font-black tracking-[3px] text-[#E8E8E8]">ANTAQOR</span>
           <button
@@ -565,7 +565,7 @@ function SignUp() {
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={(e) => { e.preventDefault(); setDragOver(false); handleAvatarFile(e.dataTransfer.files?.[0]); }}
-            className={`group relative flex cursor-pointer items-center gap-3.5 rounded-[10px] border-2 border-dashed p-3 transition ${
+            className={`group relative flex cursor-pointer items-center gap-3.5 rounded-[4px] border-2 border-dashed p-3 transition ${
               dragOver
                 ? "border-[#EF2C58] bg-[rgba(239,44,88,0.05)]"
                 : "border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] hover:border-[rgba(239,44,88,0.4)]"
@@ -583,7 +583,7 @@ function SignUp() {
                 </div>
               )}
               {avatarPreview && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#22C55E] ring-2 ring-[#0F0F10]">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF2C58] ring-2 ring-[#0F0F10]">
                   <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -643,7 +643,7 @@ function SignUp() {
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-3 rounded-[6px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] text-[#EF4444]"
+              className="mt-3 rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] text-[#EF4444]"
             >
               {error}
             </motion.div>
@@ -653,7 +653,7 @@ function SignUp() {
         <button
           type="submit"
           disabled={loading}
-          className="group relative mt-4 w-full overflow-hidden rounded-[10px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_44px_rgba(239,44,88,0.4)] disabled:opacity-70"
+          className="group relative mt-4 w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_44px_rgba(239,44,88,0.4)] disabled:opacity-70"
         >
           <span className="relative z-10 inline-flex items-center gap-2">
             {loading ? progress || "Үүсгэж байна..." : "Эхлэх"}
@@ -687,7 +687,7 @@ function ReferrerBanner({ referrer }: { referrer: { name: string; avatar?: strin
     <motion.div
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-3 flex items-center gap-2.5 rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-[rgba(239,44,88,0.06)] p-2.5"
+      className="mb-3 flex items-center gap-2.5 rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-[rgba(239,44,88,0.06)] p-2.5"
     >
       {referrer.avatar ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -729,7 +729,7 @@ function Field({
   hintTone?: "muted" | "warn" | "ok";
 }) {
   const hintColor =
-    hintTone === "warn" ? "text-[#FFB020]" : hintTone === "ok" ? "text-[#22C55E]" : "text-[#555]";
+    hintTone === "warn" ? "text-[#FFB020]" : hintTone === "ok" ? "text-[#EF2C58]" : "text-[#555]";
   return (
     <label className="block">
       <div className="mb-1 flex items-center justify-between gap-2">
@@ -747,7 +747,7 @@ function Field({
         autoComplete={
           type === "password" ? "new-password" : type === "email" ? "email" : type === "tel" ? "tel" : "off"
         }
-        className="w-full rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+        className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
       />
     </label>
   );

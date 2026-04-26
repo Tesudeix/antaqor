@@ -169,7 +169,7 @@ export default function AdminTestimonialsPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
       )}
 
       <div className="flex items-start justify-between gap-4">
@@ -177,13 +177,13 @@ export default function AdminTestimonialsPage() {
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Testimonials</h1>
           <p className="mt-0.5 text-[12px] text-[#555]">Гишүүдийн үр дүн · Homepage + /clan-д social proof</p>
         </div>
-        <Link href="/" target="_blank" className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white">
+        <Link href="/" target="_blank" className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white">
           Homepage харах
         </Link>
       </div>
 
       {/* Editor */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-4 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">
             {editingId ? "Засварлаж байна" : "Шинэ testimonial"}
@@ -228,24 +228,24 @@ export default function AdminTestimonialsPage() {
         <div className="space-y-2.5">
           <div className="grid gap-2.5 sm:grid-cols-2">
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Нэр · жишээ: Болор Б."
-              className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={100} />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={100} />
             <input value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} placeholder="Role · жишээ: AI freelancer"
-              className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={100} />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={100} />
           </div>
           <input value={form.result} onChange={(e) => setForm((f) => ({ ...f, result: e.target.value }))}
             placeholder='Result headline · жишээ: "Сард ₮2m нэмж олсон"'
-            className="w-full rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={160} />
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={160} />
           <textarea value={form.quote} onChange={(e) => setForm((f) => ({ ...f, quote: e.target.value }))}
             placeholder='Quote body (заавал биш) · Нарийн тайлбар'
-            rows={3} className="w-full resize-y rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={1000} />
+            rows={3} className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" maxLength={1000} />
           <div className="grid gap-2.5 sm:grid-cols-2">
             <input value={form.tagsRaw} onChange={(e) => setForm((f) => ({ ...f, tagsRaw: e.target.value }))} placeholder="Tags (comma: ai, automation)"
-              className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
             <input value={form.link} onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))} placeholder="Social / profile link (optional)"
-              className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
             <input type="number" value={form.order} onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) || 0 }))} placeholder="Order (lower = earlier)"
-              className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
-            <div className="flex items-center gap-4 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5">
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]" />
+            <div className="flex items-center gap-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5">
               <label className="flex cursor-pointer items-center gap-1.5 text-[12px] text-[#AAA]">
                 <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#EF2C58]" />
                 Featured
@@ -258,14 +258,14 @@ export default function AdminTestimonialsPage() {
           </div>
 
           <button onClick={save} disabled={!form.name.trim() || !form.result.trim() || saving}
-            className="w-full rounded-[8px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
+            className="w-full rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
             {saving ? "..." : editingId ? "Шинэчлэх" : "Нэмэх"}
           </button>
         </div>
       </div>
 
       {/* List */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-4 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Бүх testimonial ({items.length})</span>
           <button onClick={load} className="text-[11px] text-[#666] hover:text-[#EF2C58]">Шинэчлэх</button>
@@ -279,7 +279,7 @@ export default function AdminTestimonialsPage() {
         ) : (
           <div className="space-y-2">
             {items.map((t) => (
-              <div key={t._id} className="flex items-start gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+              <div key={t._id} className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
                 {t.avatar ? (
                   <img src={t.avatar} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
                 ) : (
@@ -300,13 +300,13 @@ export default function AdminTestimonialsPage() {
                 </div>
                 <div className="flex shrink-0 gap-1.5">
                   <button onClick={() => toggleFeatured(t)} title={t.featured ? "Unfeature" : "Feature"}
-                    className="rounded-[6px] px-2 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
+                    className="rounded-[4px] px-2 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
                   <button onClick={() => togglePublished(t)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]">{t.published ? "Нуух" : "Нийтлэх"}</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]">{t.published ? "Нуух" : "Нийтлэх"}</button>
                   <button onClick={() => edit(t)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]">Засах</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]">Засах</button>
                   <button onClick={() => remove(t._id)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] text-[#555] transition hover:bg-[rgba(239,68,68,0.08)] hover:text-[#EF4444]">Устгах</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] text-[#555] transition hover:bg-[rgba(239,68,68,0.08)] hover:text-[#EF4444]">Устгах</button>
                 </div>
               </div>
             ))}

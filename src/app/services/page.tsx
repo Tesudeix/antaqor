@@ -49,7 +49,7 @@ const TOOLS: ServiceData[] = [
   },
 ];
 
-const ACCENT_PALETTE = ["#EF2C58", "#0F81CA", "#22C55E", "#A855F7", "#FF4473", "#EC4899"];
+const ACCENT_PALETTE = ["#EF2C58", "#0F81CA", "#EF2C58", "#A855F7", "#FF4473", "#EC4899"];
 function getAccent(name: string): string {
   return ACCENT_PALETTE[name.charCodeAt(0) % ACCENT_PALETTE.length];
 }
@@ -132,7 +132,7 @@ export default function ServicesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Үйлчилгээ хайх…"
-            className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] py-2.5 pl-9 pr-3 text-[13px] text-[#E8E8E8] placeholder-[#555] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] py-2.5 pl-9 pr-3 text-[13px] text-[#E8E8E8] placeholder-[#555] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
           />
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function ServicesPage() {
       ) : null}
 
       {/* ─── Partner CTA ─── */}
-      <div className="mt-10 overflow-hidden rounded-[10px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center">
+      <div className="mt-10 overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center">
         <div className="text-[10px] font-bold tracking-[0.18em] text-[#EF2C58]">PARTNERSHIP</div>
         <h2 className="mt-2 text-[18px] font-black text-[#E8E8E8]">Бизнесээ Antaqor-т нэгтгэх үү?</h2>
         <p className="mx-auto mt-1 max-w-md text-[12px] leading-relaxed text-[#888]">
@@ -177,7 +177,7 @@ export default function ServicesPage() {
         </p>
         <a
           href="mailto:antaqor@gmail.com?subject=Partnership"
-          className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-black text-white transition hover:bg-[#D4264E]"
+          className="mt-4 inline-flex items-center gap-2 rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-black text-white transition hover:bg-[#D4264E]"
         >
           Хамтрах хүсэлт илгээх
           <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -226,17 +226,17 @@ function FeaturedCard({ service }: { service: ServiceData }) {
   const isExternal =
     !!service.url && !service.url.startsWith("/") && !service.url.startsWith("https://antaqor.com");
   const className =
-    "group relative grid gap-4 overflow-hidden rounded-[12px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B] p-5 transition hover:border-[rgba(239,44,88,0.4)] sm:grid-cols-[200px_1fr] sm:p-6";
+    "group relative grid gap-4 overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B] p-5 transition hover:border-[rgba(239,44,88,0.4)] sm:grid-cols-[200px_1fr] sm:p-6";
 
   const inner = (
     <>
       {service.coverImage ? (
-          <div className="relative aspect-video overflow-hidden rounded-[8px] bg-[#0A0A0A] sm:aspect-square">
+          <div className="relative aspect-video overflow-hidden rounded-[4px] bg-[#0A0A0A] sm:aspect-square">
             <Image src={service.coverImage} alt={service.name} fill className="object-cover transition group-hover:scale-105" sizes="(max-width:640px) 100vw, 200px" />
           </div>
         ) : (
           <div
-            className="flex aspect-video items-center justify-center rounded-[8px] sm:aspect-square"
+            className="flex aspect-video items-center justify-center rounded-[4px] sm:aspect-square"
             style={{ backgroundColor: `${accent}14` }}
           >
             <span className="text-[40px] font-black" style={{ color: accent }}>
@@ -246,7 +246,7 @@ function FeaturedCard({ service }: { service: ServiceData }) {
         )}
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            {service.status === "active" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />}
+            {service.status === "active" && <span className="h-1.5 w-1.5 rounded-full bg-[#EF2C58]" />}
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#666]">{service.category}</span>
           </div>
           <h2 className="mt-1.5 text-[20px] font-black text-[#E8E8E8] transition group-hover:text-[#EF2C58]">
@@ -337,11 +337,11 @@ function ServiceCard({ service }: { service: ServiceData }) {
       <div className="p-3.5">
         <div className="flex items-start gap-2.5">
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px] text-[14px] font-black"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] text-[14px] font-black"
             style={{ backgroundColor: `${accent}18`, color: accent }}
           >
             {service.logo ? (
-              <Image src={service.logo} alt="" width={36} height={36} className="rounded-[6px]" />
+              <Image src={service.logo} alt="" width={36} height={36} className="rounded-[4px]" />
             ) : (
               service.name.charAt(0)
             )}
@@ -352,7 +352,7 @@ function ServiceCard({ service }: { service: ServiceData }) {
                 {service.name}
               </h2>
               {service.status === "active" && (
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#22C55E]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#EF2C58]" />
               )}
             </div>
             <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-[#666]">
@@ -380,7 +380,7 @@ function ServiceCard({ service }: { service: ServiceData }) {
     </>
   );
 
-  const baseClass = `group block overflow-hidden rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] transition-all ${
+  const baseClass = `group block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] transition-all ${
     interactive ? "hover:border-[rgba(239,44,88,0.25)] hover:-translate-y-[1px]" : "cursor-default opacity-60"
   }`;
 
@@ -406,7 +406,7 @@ function ServiceCard({ service }: { service: ServiceData }) {
 function EmptyState({ query }: { query: string }) {
   return (
     <div className="flex flex-col items-center py-16 text-center">
-      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10]">
         <svg className="h-5 w-5 text-[#666]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d={DEFAULT_ICON} />
         </svg>

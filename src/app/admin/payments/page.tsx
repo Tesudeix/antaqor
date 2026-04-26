@@ -207,7 +207,7 @@ export default function AdminPaymentsPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -223,7 +223,7 @@ export default function AdminPaymentsPage() {
 
       {rejectingId && (
         <div onClick={() => setRejectingId(null)} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 p-4">
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#111] p-5">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#111] p-5">
             <h3 className="text-[16px] font-bold text-[#E8E8E8]">Татгалзах шалтгаан</h3>
             <p className="mt-1 text-[12px] text-[#888]">Хэрэглэгчид энэ мессеж push-аар очино.</p>
             <textarea
@@ -232,11 +232,11 @@ export default function AdminPaymentsPage() {
               placeholder='Жишээ: "Дүн таарсангүй", "Reference код тохирсонгүй"'
               rows={3}
               maxLength={500}
-              className="mt-3 w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]"
+              className="mt-3 w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]"
             />
             <div className="mt-3 flex gap-2">
-              <button onClick={() => setRejectingId(null)} className="flex-1 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[13px] font-bold text-[#AAA]">Болих</button>
-              <button onClick={reject} disabled={processingId === rejectingId} className="flex-1 rounded-[8px] bg-[#EF4444] py-2.5 text-[13px] font-bold text-white transition hover:bg-[#DC3737] disabled:opacity-50">
+              <button onClick={() => setRejectingId(null)} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[13px] font-bold text-[#AAA]">Болих</button>
+              <button onClick={reject} disabled={processingId === rejectingId} className="flex-1 rounded-[4px] bg-[#EF4444] py-2.5 text-[13px] font-bold text-white transition hover:bg-[#DC3737] disabled:opacity-50">
                 {processingId === rejectingId ? "..." : "Татгалзах"}
               </button>
             </div>
@@ -252,28 +252,28 @@ export default function AdminPaymentsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => load(status)} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] text-[#AAA] hover:text-[#EF2C58]">
+          <button onClick={() => load(status)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[12px] text-[#AAA] hover:text-[#EF2C58]">
             Шинэчлэх
           </button>
         </div>
       </div>
 
       {/* Auto-match bank statement */}
-      <div className="overflow-hidden rounded-[10px] border border-[rgba(34,197,94,0.2)] bg-gradient-to-br from-[rgba(34,197,94,0.05)] via-[#111] to-[#111]">
+      <div className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#111] to-[#111]">
         <button
           onClick={() => setAutoMatchOpen(!autoMatchOpen)}
-          className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[rgba(34,197,94,0.04)]"
+          className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[rgba(239,44,88,0.04)]"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(34,197,94,0.15)]">
-              <svg className="h-5 w-5 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)]">
+              <svg className="h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
               </svg>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-bold text-[#E8E8E8]">Банкны хуулга copy → auto-match</span>
-                <span className="rounded-full bg-[#22C55E] px-1.5 py-0.5 text-[9px] font-black uppercase text-white">BETA</span>
+                <span className="rounded-full bg-[#EF2C58] px-1.5 py-0.5 text-[9px] font-black uppercase text-white">BETA</span>
               </div>
               <div className="mt-0.5 text-[11px] text-[#888]">
                 {BANK_NAME} · {BANK_ACCOUNT} · refCode + дүн таарвал autoapprove
@@ -292,7 +292,7 @@ export default function AdminPaymentsPage() {
               onChange={(e) => setStatementText(e.target.value)}
               placeholder={"Банкны апп-аас copy → энд paste.\nСистем автоматаар refCode + дүнгээр таарна.\n\nЖишээ мөр:\n+49,000₮ · AB7K9X · Bayanbileg B\n[2026.04.25 14:30] ₮49,000 · XY9K2M · Bold"}
               rows={7}
-              className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#22C55E]"
+              className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none focus:border-[#EF2C58]"
             />
             <p className="-mt-1 text-[10px] text-[#555]">
               Paste хийхэд автоматаар таарал шалгана. Баталгаажуулахын тулд зөвхөн дээрх ногоон товчийг дар.
@@ -300,8 +300,8 @@ export default function AdminPaymentsPage() {
 
             <div className="flex flex-wrap items-center gap-2">
               {autoMatching && (
-                <div className="flex items-center gap-1.5 rounded-[8px] bg-[#0A0A0A] px-3 py-2 text-[11px] text-[#888]">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#22C55E]" />
+                <div className="flex items-center gap-1.5 rounded-[4px] bg-[#0A0A0A] px-3 py-2 text-[11px] text-[#888]">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
                   Хуулга шалгаж байна...
                 </div>
               )}
@@ -309,7 +309,7 @@ export default function AdminPaymentsPage() {
                 <button
                   onClick={() => runAutoMatch(statementText, true)}
                   disabled={autoApproving}
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[8px] bg-[#22C55E] px-6 py-2.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(34,197,94,0.25)] transition hover:shadow-[0_0_40px_rgba(34,197,94,0.45)] disabled:opacity-40"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.45)] disabled:opacity-40"
                 >
                   <span className="relative z-10">
                     {autoApproving ? "Идэвхжүүлж..." : `✓ ${autoMatchResult.summary.matches} тохирлыг идэвхжүүлэх`}
@@ -321,7 +321,7 @@ export default function AdminPaymentsPage() {
                 </button>
               )}
               {autoMatchResult?.executed && (
-                <div className="flex items-center gap-2 rounded-[8px] bg-[rgba(34,197,94,0.1)] px-3 py-2 text-[12px] font-bold text-[#22C55E]">
+                <div className="flex items-center gap-2 rounded-[4px] bg-[rgba(239,44,88,0.1)] px-3 py-2 text-[12px] font-bold text-[#EF2C58]">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   {autoMatchResult.summary.approved} төлбөр идэвхжсэн
                 </div>
@@ -345,15 +345,15 @@ export default function AdminPaymentsPage() {
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                   {[
                     { k: "parsedLines", label: "Олсон", color: "#888" },
-                    { k: "matches", label: "Тохирсон", color: "#22C55E" },
-                    { k: "approved", label: "Идэвхжсэн", color: "#22C55E" },
+                    { k: "matches", label: "Тохирсон", color: "#EF2C58" },
+                    { k: "approved", label: "Идэвхжсэн", color: "#EF2C58" },
                     { k: "amountMismatches", label: "Дүн таарсангүй", color: "#FFC107" },
                     { k: "noMatches", label: "Тохироогүй", color: "#666" },
                     { k: "alreadyPaid", label: "Өмнө нь", color: "#3B82F6" },
                   ].map((x) => {
                     const value = (autoMatchResult.summary as unknown as Record<string, number>)[x.k];
                     return (
-                      <div key={x.k} className="rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-2 text-center">
+                      <div key={x.k} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-2 text-center">
                         <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: x.color }}>{x.label}</div>
                         <div className="mt-0.5 text-[16px] font-black text-[#E8E8E8]">{value}</div>
                       </div>
@@ -362,10 +362,10 @@ export default function AdminPaymentsPage() {
                 </div>
 
                 {/* Per-line outcomes */}
-                <div className="divide-y divide-[rgba(255,255,255,0.04)] rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#111]">
+                <div className="divide-y divide-[rgba(255,255,255,0.04)] rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111]">
                   {autoMatchResult.outcomes.map((o, i) => {
                     const colorMap: Record<OutcomeStatus, string> = {
-                      match: "#22C55E", approved: "#22C55E", "amount-mismatch": "#FFC107",
+                      match: "#EF2C58", approved: "#EF2C58", "amount-mismatch": "#FFC107",
                       "no-match": "#666", "already-paid": "#3B82F6", failed: "#EF4444",
                     };
                     const labelMap: Record<OutcomeStatus, string> = {
@@ -401,12 +401,12 @@ export default function AdminPaymentsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
+      <div className="flex gap-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
         {(["pending", "paid", "failed"] as Status[]).map((s) => (
           <button
             key={s}
             onClick={() => setStatus(s)}
-            className={`flex-1 rounded-[6px] px-4 py-2 text-[12px] font-bold transition ${
+            className={`flex-1 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
               status === s ? "bg-[#EF2C58] text-white" : "text-[#AAA] hover:text-[#E8E8E8]"
             }`}
           >
@@ -425,7 +425,7 @@ export default function AdminPaymentsPage() {
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-16 text-center text-[13px] text-[#555]">
+        <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-16 text-center text-[13px] text-[#555]">
           {status === "pending" ? "Хүлээгдэж буй төлбөр алга" : "Байхгүй"}
         </div>
       ) : (
@@ -434,7 +434,7 @@ export default function AdminPaymentsPage() {
             const hasReceipt = !!p.receiptImage;
             const claimed = !!p.claimedAt;
             return (
-              <div key={p._id} className="overflow-hidden rounded-[10px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
+              <div key={p._id} className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
                 <div className="flex">
                   {/* Receipt thumb — image-first scannability */}
                   <div className="w-[140px] shrink-0 bg-[#0A0A0A] sm:w-[180px]">
@@ -490,7 +490,7 @@ export default function AdminPaymentsPage() {
                     </div>
 
                     {/* Amount + Code */}
-                    <div className="my-2 flex items-center justify-between gap-2 rounded-[6px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.05)] px-2.5 py-1.5">
+                    <div className="my-2 flex items-center justify-between gap-2 rounded-[4px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.05)] px-2.5 py-1.5">
                       <div>
                         <div className="text-[8px] uppercase tracking-wider text-[#666]">Код</div>
                         <div className="text-[13px] font-black tracking-[0.1em] text-[#EF2C58]">{p.referenceCode || "—"}</div>
@@ -510,13 +510,13 @@ export default function AdminPaymentsPage() {
                       {claimed && (
                         <div className="flex items-center justify-between">
                           <span>Шилжүүлсэн гэсэн</span>
-                          <span className="font-bold text-[#22C55E]">{relative(p.claimedAt)}</span>
+                          <span className="font-bold text-[#EF2C58]">{relative(p.claimedAt)}</span>
                         </div>
                       )}
                       {p.receiptUploadedAt && (
                         <div className="flex items-center justify-between">
                           <span>Баримт оруулсан</span>
-                          <span className="font-bold text-[#22C55E]">{relative(p.receiptUploadedAt)}</span>
+                          <span className="font-bold text-[#EF2C58]">{relative(p.receiptUploadedAt)}</span>
                         </div>
                       )}
                       {p.adminNote && (
@@ -530,25 +530,25 @@ export default function AdminPaymentsPage() {
                         <button
                           onClick={() => approve(p)}
                           disabled={processingId === p._id}
-                          className="flex-1 rounded-[6px] bg-[#22C55E] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-50"
+                          className="flex-1 rounded-[4px] bg-[#EF2C58] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-50"
                         >
                           {processingId === p._id ? "..." : "✓ Батлах · 30 хоног"}
                         </button>
                         <button
                           onClick={() => { setRejectingId(p._id); setRejectNote(""); }}
                           disabled={processingId === p._id}
-                          className="rounded-[6px] border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] font-black text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.15)] disabled:opacity-50"
+                          className="rounded-[4px] border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] font-black text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.15)] disabled:opacity-50"
                         >
                           ✕
                         </button>
                       </div>
                     ) : p.status === "paid" ? (
-                      <div className="flex items-center justify-between rounded-[6px] bg-[rgba(34,197,94,0.08)] px-3 py-2 text-[11px]">
-                        <span className="font-black text-[#22C55E]">✓ Баталсан</span>
+                      <div className="flex items-center justify-between rounded-[4px] bg-[rgba(239,44,88,0.08)] px-3 py-2 text-[11px]">
+                        <span className="font-black text-[#EF2C58]">✓ Баталсан</span>
                         <span className="text-[10px] text-[#666]">{relative(p.paidAt)}</span>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between rounded-[6px] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px]">
+                      <div className="flex items-center justify-between rounded-[4px] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px]">
                         <span className="font-black text-[#EF4444]">✕ Татгалзсан</span>
                       </div>
                     )}

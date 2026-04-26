@@ -325,7 +325,7 @@ export default function AdminDashboard() {
   ];
 
   const statusColors: Record<string, string> = {
-    open: "bg-[rgba(34,197,94,0.15)] text-[#22C55E]",
+    open: "bg-[rgba(239,44,88,0.15)] text-[#EF2C58]",
     submitted: "bg-[rgba(239,44,88,0.08)] text-[rgba(239,44,88,0.75)]",
     accepted: "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]",
     rejected: "bg-[rgba(239,68,68,0.15)] text-[#EF4444]",
@@ -336,8 +336,8 @@ export default function AdminDashboard() {
     <div className="space-y-5 pb-6">
       {/* Save toast */}
       {saveStatus && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-[8px] bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
-          <svg className="h-4 w-4 text-[#22C55E] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-[4px] bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
+          <svg className="h-4 w-4 text-[#EF2C58] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           <span className="text-[13px] text-[#E8E8E8]">{saveStatus}</span>
         </div>
       )}
@@ -351,12 +351,12 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setLoading(true); loadData(); }}
-            className="flex items-center gap-1.5 rounded-[8px] border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
+            className="flex items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             Шинэчлэх
           </button>
-          <Link href="/" target="_blank" className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+          <Link href="/" target="_blank" className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
             Сайт харах
           </Link>
         </div>
@@ -369,9 +369,9 @@ export default function AdminDashboard() {
             { label: "Хэрэглэгч", value: stats.totalUsers, color: "text-[#E8E8E8]" },
             { label: "Клан гишүүд", value: stats.totalMembers, color: "text-[#EF2C58]" },
             { label: "Нийтлэл", value: stats.totalPosts, color: "text-[#E8E8E8]" },
-            { label: "Шинэ (7 хоног)", value: stats.recentSignups, color: "text-[#22C55E]" },
+            { label: "Шинэ (7 хоног)", value: stats.recentSignups, color: "text-[#EF2C58]" },
           ].map(s => (
-            <div key={s.label} className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+            <div key={s.label} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
               <div className="text-[10px] font-medium uppercase tracking-wider text-[#555555]">{s.label}</div>
               <div className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value.toLocaleString()}</div>
             </div>
@@ -382,7 +382,7 @@ export default function AdminDashboard() {
       {/* AI Level + Top XP */}
       {stats && (
         <div className="grid gap-3 lg:grid-cols-2">
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">AI Түвшин</span>
               <Link href="/admin/members" className="text-[10px] text-[#555555] hover:text-[#EF2C58]">Бүгд →</Link>
@@ -401,11 +401,11 @@ export default function AdminDashboard() {
               })}
             </div>
           </div>
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
             <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Шилдэг XP</div>
             <div className="space-y-1">
               {(stats.topXPUsers || []).slice(0, 5).map((u, i) => (
-                <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-2 rounded-[8px] py-1.5 px-2 transition hover:bg-[rgba(255,255,255,0.04)]">
+                <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-2 rounded-[4px] py-1.5 px-2 transition hover:bg-[rgba(255,255,255,0.04)]">
                   <span className={`w-5 text-center text-[11px] font-bold ${i < 3 ? "text-[#EF2C58]" : "text-[#555555]"}`}>{i+1}</span>
                   {u.avatar ? <img src={u.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1A1A1A] text-[9px] font-bold text-[#666666]">{u.name?.charAt(0)}</div>}
                   <span className="flex-1 text-[12px] text-[#CCCCCC] truncate">{u.name}</span>
@@ -418,12 +418,12 @@ export default function AdminDashboard() {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
+      <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
         {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-[6px] px-4 py-2.5 text-[13px] font-semibold transition ${
+            className={`flex-1 rounded-[4px] px-4 py-2.5 text-[13px] font-semibold transition ${
               activeTab === tab.key ? "bg-[#EF2C58] text-white" : "text-[#666666] hover:text-[#999999] hover:bg-[rgba(255,255,255,0.04)]"
             }`}
           >
@@ -436,13 +436,13 @@ export default function AdminDashboard() {
       {/* Hero & Music Tab */}
       {activeTab === "hero" && (
         <div className="space-y-4">
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
             <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#555555]">Hero Slider</div>
 
             {heroSlides.length > 0 ? (
               <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
                 {heroSlides.map((slide, i) => (
-                  <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
+                  <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
                     {slide.type === "video" ? (
                       <video src={slide.url} muted loop playsInline className="h-full w-full object-cover" />
                     ) : (
@@ -458,21 +458,21 @@ export default function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="mb-4 rounded-[8px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center text-[12px] text-[#555555]">Слайд байхгүй — fallback зураг ашиглагдана</div>
+              <div className="mb-4 rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center text-[12px] text-[#555555]">Слайд байхгүй — fallback зураг ашиглагдана</div>
             )}
 
             <div className="flex flex-wrap items-end gap-4">
               <div>
                 <label className="mb-1 block text-[11px] font-medium text-[#555555]">Зураг нэмэх</label>
                 <input type="file" accept="image/*" onChange={handleHeroImageUpload} disabled={heroUploading}
-                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#D4264E]" />
+                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[4px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#D4264E]" />
               </div>
               <div>
                 <label className="mb-1 block text-[11px] font-medium text-[#555555]">
-                  Видео файл нэмэх <span className="text-[#22C55E]">· макс 20 секунд</span>
+                  Видео файл нэмэх <span className="text-[#EF2C58]">· макс 20 секунд</span>
                 </label>
                 <input type="file" accept="video/*" onChange={handleHeroVideoUpload} disabled={heroUploading}
-                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#22C55E] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#16A34A]" />
+                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[4px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#D4264E]" />
               </div>
               <div className="flex items-end gap-2">
                 <div>
@@ -483,11 +483,11 @@ export default function AdminDashboard() {
                     onChange={e => setHeroVideoUrl(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") handleHeroVideoAdd(); }}
                     placeholder="https://example.com/video.mp4"
-                    className="w-[240px] rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                    className="w-[240px] rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
                   />
                 </div>
                 <button onClick={handleHeroVideoAdd} disabled={!heroVideoUrl.trim() || heroUploading}
-                  className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
+                  className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
                   Нэмэх
                 </button>
               </div>
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Music */}
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#555555]">Арын хөгжим</span>
               <button
@@ -510,7 +510,7 @@ export default function AdminDashboard() {
               </button>
             </div>
             <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-2 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] px-3 py-2">
+              <div className="flex items-center gap-2 rounded-[4px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] px-3 py-2">
                 <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
                 <span className="text-[12px] text-[#999999] max-w-[200px] truncate">{heroMusicUrl === "/fire-again.mp3" ? "fire-again.mp3 (default)" : heroMusicUrl.split("/").pop()}</span>
               </div>
@@ -520,11 +520,11 @@ export default function AdminDashboard() {
               <div>
                 <label className="mb-1 block text-[11px] font-medium text-[#555555]">Хөгжим солих</label>
                 <input type="file" accept="audio/*" onChange={handleMusicUpload} disabled={musicUploading}
-                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer" />
+                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[4px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer" />
               </div>
               {heroMusicUrl !== "/fire-again.mp3" && (
                 <button onClick={handleMusicReset} disabled={musicUploading}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]">
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]">
                   Default сэргээх
                 </button>
               )}
@@ -536,25 +536,25 @@ export default function AdminDashboard() {
 
       {/* Hero Cards Tab */}
       {activeTab === "cards" && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Нүүр хуудасны картууд</div>
           <div className="mb-4 text-[11px] text-[#555555]">«ЯАГААД ANTAQOR» хэсэгт харагддаг үнэ цэнийн картууд. Дараалал чухал — захиалагч нь дээрээс нь уншдаг.</div>
 
           {/* Form */}
-          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+          <div className="mb-5 space-y-3 rounded-[4px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
             <input
               value={cardForm.title}
               onChange={(e) => setCardForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="Гарчиг (ж: AI Сургалт)"
               maxLength={80}
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
             />
             <textarea
               value={cardForm.description}
               onChange={(e) => setCardForm((f) => ({ ...f, description: e.target.value }))}
               placeholder="Тайлбар (1-2 өгүүлбэр, үнэ цэнийг тодорхой бич)"
               maxLength={240}
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[60px] resize-y"
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[60px] resize-y"
             />
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
                 <select
                   value={cardForm.icon}
                   onChange={(e) => setCardForm((f) => ({ ...f, icon: e.target.value }))}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none"
                 >
                   {CARD_ICON_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -576,7 +576,7 @@ export default function AdminDashboard() {
                   onChange={(e) => setCardForm((f) => ({ ...f, ctaLabel: e.target.value }))}
                   placeholder="Хичээл үзэх"
                   maxLength={60}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
                 />
               </div>
               <div>
@@ -586,7 +586,7 @@ export default function AdminDashboard() {
                   onChange={(e) => setCardForm((f) => ({ ...f, ctaHref: e.target.value }))}
                   placeholder="/classroom"
                   maxLength={240}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
                 />
               </div>
             </div>
@@ -594,14 +594,14 @@ export default function AdminDashboard() {
               <button
                 onClick={handleCardSave}
                 disabled={!cardForm.title.trim() || !cardForm.description.trim() || cardSaving}
-                className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+                className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
               >
                 {cardSaving ? "..." : cardEditing ? "Шинэчлэх" : "+ Карт нэмэх"}
               </button>
               {cardEditing && (
                 <button
                   onClick={() => { setCardEditing(null); setCardForm({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""}); }}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]"
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]"
                 >
                   Болих
                 </button>
@@ -617,7 +617,7 @@ export default function AdminDashboard() {
             {cards.map((c, i) => (
               <div
                 key={c._id}
-                className={`flex items-start gap-3 rounded-[8px] border p-3 transition ${
+                className={`flex items-start gap-3 rounded-[4px] border p-3 transition ${
                   c.enabled ? "border-[rgba(255,255,255,0.06)]" : "border-[rgba(255,255,255,0.04)] opacity-50"
                 }`}
               >
@@ -654,19 +654,19 @@ export default function AdminDashboard() {
                 <div className="flex shrink-0 items-center gap-2">
                   <button
                     onClick={() => handleCardToggle(c._id, c.enabled)}
-                    className="rounded-[6px] border border-[rgba(255,255,255,0.08)] px-2 py-1 text-[10px] font-bold text-[#666666] transition hover:text-[#E8E8E8]"
+                    className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-2 py-1 text-[10px] font-bold text-[#666666] transition hover:text-[#E8E8E8]"
                   >
                     {c.enabled ? "Нуух" : "Идэвхжүүлэх"}
                   </button>
                   <button
                     onClick={() => { setCardEditing(c._id); setCardForm({title:c.title,description:c.description,icon:c.icon,ctaLabel:c.ctaLabel||"",ctaHref:c.ctaHref||""}); setActiveTab("cards"); }}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]"
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]"
                   >
                     Засах
                   </button>
                   <button
                     onClick={() => handleCardDelete(c._id)}
-                    className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]"
+                    className="rounded-[4px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]"
                   >
                     Устгах
                   </button>
@@ -679,25 +679,25 @@ export default function AdminDashboard() {
 
       {/* Tasks Tab */}
       {activeTab === "tasks" && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Даалгавар удирдлага</div>
-          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+          <div className="mb-5 space-y-3 rounded-[4px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <input value={taskForm.title} onChange={e => setTaskForm(f => ({...f, title: e.target.value}))} placeholder="Даалгаврын нэр"
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
               <input value={taskForm.xpReward} onChange={e => setTaskForm(f => ({...f, xpReward: e.target.value}))} placeholder="XP (200-5000)"
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" type="number" min={200} max={5000} />
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" type="number" min={200} max={5000} />
             </div>
             <input value={taskForm.description} onChange={e => setTaskForm(f => ({...f, description: e.target.value}))} placeholder="Тайлбар (заавал биш)"
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={2000} />
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={2000} />
             <button onClick={handleTaskCreate} disabled={!taskForm.title.trim() || taskSaving}
-              className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
+              className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
               {taskSaving ? "Нэмж байна..." : "+ Даалгавар нэмэх"}
             </button>
           </div>
           <div className="space-y-2">
             {tasks.map((t, i) => (
-              <div key={t._id} className="flex items-center justify-between gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+              <div key={t._id} className="flex items-center justify-between gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[12px] font-bold text-[#EF2C58]">#{i+1}</span>
@@ -710,11 +710,11 @@ export default function AdminDashboard() {
                 <div className="flex shrink-0 gap-2">
                   {t.status === "submitted" && (
                     <>
-                      <button onClick={() => handleTaskAction(t._id, "accept")} className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)]">Батлах</button>
-                      <button onClick={() => handleTaskAction(t._id, "reject")} className="rounded-[6px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)]">Татгалзах</button>
+                      <button onClick={() => handleTaskAction(t._id, "accept")} className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)]">Батлах</button>
+                      <button onClick={() => handleTaskAction(t._id, "reject")} className="rounded-[4px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)]">Татгалзах</button>
                     </>
                   )}
-                  <button onClick={() => handleTaskDelete(t._id)} className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
+                  <button onClick={() => handleTaskDelete(t._id)} className="rounded-[4px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
                 </div>
               </div>
             ))}
@@ -725,16 +725,16 @@ export default function AdminDashboard() {
 
       {/* Announcements Tab */}
       {activeTab === "announcements" && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Мэдэгдэл удирдлага</div>
-          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+          <div className="mb-5 space-y-3 rounded-[4px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
             <input value={annForm.title} onChange={e => setAnnForm(f => ({...f, title: e.target.value}))} placeholder="Гарчиг"
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
             <textarea value={annForm.content} onChange={e => setAnnForm(f => ({...f, content: e.target.value}))} placeholder="Агуулга..."
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[80px] resize-y" maxLength={5000} />
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[80px] resize-y" maxLength={5000} />
             <div className="flex flex-wrap items-center gap-3">
               <select value={annForm.tag} onChange={e => setAnnForm(f => ({...f, tag: e.target.value}))}
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none">
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none">
                 {["мэдэгдэл","шинэчлэл","AI","эвент","бусад"].map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
               </select>
               <label className="flex items-center gap-1.5 text-[12px] text-[#999999] cursor-pointer">
@@ -744,18 +744,18 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-2">
               <button onClick={handleAnnSave} disabled={!annForm.title.trim() || !annForm.content.trim() || annSaving}
-                className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
+                className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
                 {annSaving ? "..." : annEditing ? "Шинэчлэх" : "Нэмэх"}
               </button>
               {annEditing && (
                 <button onClick={() => { setAnnEditing(null); setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false}); }}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]">Болих</button>
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]">Болих</button>
               )}
             </div>
           </div>
           <div className="space-y-2">
             {announcements.map(a => (
-              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
                     {a.pinned && <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">PIN</span>}
@@ -766,9 +766,9 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <button onClick={() => { setAnnEditing(a._id); setAnnForm({title:a.title,content:a.content,image:a.image||"",tag:a.tag,pinned:a.pinned}); setActiveTab("announcements"); }}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]">Засах</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]">Засах</button>
                   <button onClick={() => handleAnnDelete(a._id)}
-                    className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
+                    className="rounded-[4px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
                 </div>
               </div>
             ))}

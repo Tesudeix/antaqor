@@ -8,7 +8,7 @@ type SearchParams = Promise<{ q?: string; category?: string }>;
 const CATEGORIES = [
   { key: "All", label: "Бүгд", color: "#EF2C58" },
   { key: "Prompt", label: "Prompt", color: "#A855F7" },
-  { key: "Course", label: "Курс", color: "#22C55E" },
+  { key: "Course", label: "Курс", color: "#EF2C58" },
   { key: "Template", label: "Template", color: "#06B6D4" },
   { key: "Agent", label: "AI Agent", color: "#F59E0B" },
   { key: "Service", label: "Сервис", color: "#EC4899" },
@@ -110,7 +110,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
         <div className="flex items-center gap-2">
           <div className="h-[2px] w-5 bg-[#EF2C58]" />
           <span className="text-[11px] font-bold tracking-[0.2em] text-[#EF2C58]">MARKET</span>
-          <span className="rounded-full bg-[rgba(34,197,94,0.12)] px-2 py-0.5 text-[9px] font-black uppercase text-[#22C55E]">Beta</span>
+          <span className="rounded-full bg-[rgba(239,44,88,0.12)] px-2 py-0.5 text-[9px] font-black uppercase text-[#EF2C58]">Beta</span>
         </div>
         <div className="mt-2.5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -129,7 +129,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
               name="q"
               defaultValue={q}
               placeholder="Хайх — prompt, course, agent..."
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-3 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] py-2.5 pl-9 pr-3 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
             />
           </form>
         </div>
@@ -170,7 +170,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
       {featuredItem && category === "All" && !q && (
         <Link
           href={`/market/${featuredItem.slug}`}
-          className="group relative block overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0D0D0D]"
+          className="group relative block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0D0D0D]"
         >
           <div className="grid md:grid-cols-[1.15fr_1fr]">
             <div className="relative aspect-[16/10] md:aspect-auto md:h-full bg-[#1A1A1A]">
@@ -226,7 +226,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
 
       {/* Grid / empty state */}
       {isEmpty ? (
-        <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-16 text-center">
+        <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0D0D0D] py-16 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(239,44,88,0.08)]">
             <svg className="h-6 w-6 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" /></svg>
           </div>
@@ -237,7 +237,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
             {q ? "Өөр түлхүүр үг эсвэл ангилал туршиж үзээрэй" : "Та эхний borloulaachy бол — 20% fee, шууд борлуулалт"}
           </div>
           {!q && (
-            <Link href="/auth/signup?ref=seller" className="mt-5 inline-block rounded-[8px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
+            <Link href="/auth/signup?ref=seller" className="mt-5 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
               Эхний seller болох →
             </Link>
           )}
@@ -261,7 +261,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
                 <Link
                   key={p._id}
                   href={`/market/${p.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
+                  className="group flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-[#1A1A1A]">
                     {p.coverImage ? (
@@ -282,7 +282,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
                       </span>
                     </div>
                     {hasDiscount && (
-                      <div className="absolute top-2 right-2 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-black text-[#22C55E] backdrop-blur">
+                      <div className="absolute top-2 right-2 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58] backdrop-blur">
                         −{Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100)}%
                       </div>
                     )}
@@ -319,7 +319,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
       )}
 
       {/* Become a seller CTA */}
-      <section className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
+      <section className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
         <div className="grid gap-5 md:grid-cols-[1.3fr_1fr] md:items-center">
           <div>
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">FOR CREATORS</div>
@@ -338,11 +338,11 @@ export default async function MarketPage({ searchParams }: { searchParams: Searc
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Link href="/credits" className="flex items-center justify-center gap-2 rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
+            <Link href="/credits" className="flex items-center justify-center gap-2 rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
               Эхний seller болох
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
             </Link>
-            <Link href="/news" className="flex items-center justify-center gap-2 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-6 py-3 text-[12px] font-bold text-[#AAA] transition hover:text-[#EF2C58]">
+            <Link href="/news" className="flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-6 py-3 text-[12px] font-bold text-[#AAA] transition hover:text-[#EF2C58]">
               Яаж эхлэх вэ? →
             </Link>
           </div>

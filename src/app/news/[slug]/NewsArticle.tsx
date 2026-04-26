@@ -31,7 +31,7 @@ export interface Article {
 const CATEGORY_COLORS: Record<Category, string> = {
   AI: "#EF2C58",
   LLM: "#A855F7",
-  Agents: "#22C55E",
+  Agents: "#EF2C58",
   Research: "#3B82F6",
   "Бизнес": "#F59E0B",
   Tool: "#06B6D4",
@@ -213,7 +213,7 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative mb-8 overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]"
+          className="relative mb-8 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]"
         >
           <div className="relative aspect-[16/9]">
             <img src={article.coverImage} alt={article.title} className="h-full w-full object-cover" />
@@ -245,7 +245,7 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
       )}
 
       {/* Author bio — trust signal */}
-      <section className="mt-12 flex items-start gap-4 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] p-5">
+      <section className="mt-12 flex items-start gap-4 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] p-5">
         {article.authorAvatar ? (
           <img src={article.authorAvatar} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
         ) : (
@@ -267,7 +267,7 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
       </section>
 
       {/* Single conversion block — primary membership, secondary Telegram */}
-      <section className="mt-5 overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.10)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-7">
+      <section className="mt-5 overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.10)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-7">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">CYBER EMPIRE</div>
@@ -280,7 +280,7 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
           </div>
           <Link
             href="/clan?pay=1"
-            className="group relative inline-flex shrink-0 items-center gap-2 overflow-hidden rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.4)]"
+            className="group relative inline-flex shrink-0 items-center gap-2 overflow-hidden rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_40px_rgba(239,44,88,0.4)]"
           >
             <span className="relative z-10">Нэгдэх · ₮49k</span>
             <svg className="relative z-10 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -315,7 +315,7 @@ export default function NewsArticleView({ article, related }: NewsArticleProps) 
               <Link
                 key={r._id}
                 href={`/news/${r.slug}`}
-                className="group overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
+                className="group overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
               >
                 <div className="relative aspect-[16/10] bg-[#1A1A1A]">
                   {r.coverImage ? (
@@ -490,31 +490,31 @@ function NewsComments({ slug }: { slug: string }) {
 
       {/* Composer */}
       {!session ? (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-4 text-center">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-4 text-center">
           <p className="text-[13px] text-[#888]">Сэтгэгдэл бичихийн тулд нэвтэрнэ үү.</p>
-          <Link href="/auth/signin" className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+          <Link href="/auth/signin" className="mt-3 inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
             Нэвтрэх
           </Link>
         </div>
       ) : !canPost ? (
-        <div className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-r from-[rgba(239,44,88,0.08)] to-[#0D0D0D] p-4">
+        <div className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-r from-[rgba(239,44,88,0.08)] to-[#0D0D0D] p-4">
           <div className="text-[13px] text-[#E8E8E8]">
             Зөвхөн <span className="font-bold text-[#EF2C58]">Cyber Empire гишүүд</span> сэтгэгдэл бичих эрхтэй.
           </div>
-          <Link href="/clan?pay=1" className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+          <Link href="/clan?pay=1" className="mt-3 inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
             Cyber Empire нэгдэх
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           </Link>
         </div>
       ) : (
-        <form onSubmit={submit} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
+        <form onSubmit={submit} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Бодлоо хуваалц..."
             maxLength={1000}
             rows={3}
-            className="w-full resize-y rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none transition focus:border-[rgba(239,44,88,0.4)]"
           />
           {error && (
             <div className="mt-2 rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-1.5 text-[11px] text-[#EF4444]">
@@ -526,7 +526,7 @@ function NewsComments({ slug }: { slug: string }) {
             <button
               type="submit"
               disabled={!text.trim() || sending}
-              className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#EF2C58] px-4 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
             >
               {sending ? "Илгээж байна..." : "Илгээх"}
             </button>
@@ -541,7 +541,7 @@ function NewsComments({ slug }: { slug: string }) {
             <div className="inline-block h-2 w-2 animate-pulse rounded-[4px] bg-[#EF2C58]" />
           </div>
         ) : comments.length === 0 ? (
-          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] py-8 text-center text-[12px] text-[#555]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] py-8 text-center text-[12px] text-[#555]">
             Эхний сэтгэгдлийг үлдээгээрэй
           </div>
         ) : (
@@ -556,7 +556,7 @@ function NewsComments({ slug }: { slug: string }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -8 }}
                   transition={{ duration: 0.18 }}
-                  className="flex gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-3"
+                  className="flex gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-3"
                 >
                   <div className="shrink-0">
                     {c.author?.avatar ? (

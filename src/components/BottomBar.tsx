@@ -83,7 +83,7 @@ export default function BottomBar() {
         },
         {
           href: "/calendar",
-          label: "Календар",
+          label: "Хуваарь",
           icon: iconCalendar,
           match: (p) => p.startsWith("/calendar"),
         },
@@ -122,7 +122,7 @@ export default function BottomBar() {
       },
       {
         href: "/calendar",
-        label: "Календар",
+        label: "Хуваарь",
         icon: iconCalendar,
         match: (p) => p.startsWith("/calendar"),
       },
@@ -162,7 +162,7 @@ export default function BottomBar() {
             >
               <div className="relative">
                 <div
-                  className={`flex h-[30px] w-[30px] items-center justify-center rounded-[8px] transition ${
+                  className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] transition ${
                     active ? "bg-[rgba(239,44,88,0.12)]" : "bg-transparent"
                   }`}
                 >

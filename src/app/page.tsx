@@ -119,7 +119,7 @@ interface NewsItem {
 const NEWS_CATEGORY_COLORS: Record<NewsItem["category"], string> = {
   AI: "#EF2C58",
   LLM: "#A855F7",
-  Agents: "#22C55E",
+  Agents: "#EF2C58",
   Research: "#3B82F6",
   "Бизнес": "#F59E0B",
   Tool: "#06B6D4",
@@ -182,8 +182,8 @@ function LatestNews() {
         <div className="flex items-center gap-2">
           <div className="h-[2px] w-4 bg-[#EF2C58]" />
           <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">AI МЭДЭЭ</span>
-          <span className="flex items-center gap-1 rounded-full bg-[rgba(34,197,94,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#22C55E]">
-            <span className="h-1 w-1 animate-pulse rounded-full bg-[#22C55E]" />
+          <span className="flex items-center gap-1 rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">
+            <span className="h-1 w-1 animate-pulse rounded-full bg-[#EF2C58]" />
             LIVE
           </span>
         </div>
@@ -404,7 +404,7 @@ function ShowcaseGallery({ guest = false }: { guest?: boolean }) {
     <div>
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#22C55E]" />
+          <div className="h-[2px] w-4 bg-[#EF2C58]" />
           <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">БҮТЭЭЛҮҮД</span>
         </div>
         <Link href={allHref} className="text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58]">
@@ -439,7 +439,7 @@ function ShowcaseGallery({ guest = false }: { guest?: boolean }) {
                 {post.author?.avatar ? (
                   <img src={post.author.avatar} alt="" className="h-4 w-4 rounded-[4px] object-cover" />
                 ) : (
-                  <div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-[rgba(34,197,94,0.2)] text-[7px] font-bold text-[#22C55E]">
+                  <div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.2)] text-[7px] font-bold text-[#EF2C58]">
                     {post.author?.name?.charAt(0) || "?"}
                   </div>
                 )}
@@ -672,7 +672,7 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
           <div className="h-[2px] w-4 bg-[#EF2C58]" />
           <span className="text-[12px] font-bold tracking-[0.1em] text-[#E8E8E8]">AI ХИЧЭЭЛ</span>
           {hasReal && (
-            <span className="rounded-full border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 text-[9px] font-black text-[#22C55E]">
+            <span className="rounded-full border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.08)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">
               {courses.length} курс
             </span>
           )}
@@ -688,7 +688,7 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
             <Link
               key={c._id}
               href={ctaHref}
-              className="group flex w-[180px] shrink-0 flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition hover:border-[rgba(239,44,88,0.3)]"
+              className="group flex w-[180px] shrink-0 flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] transition hover:border-[rgba(239,44,88,0.3)]"
             >
               <div className="relative aspect-video w-full overflow-hidden bg-[#0A0A0A]">
                 {c.thumbnail ? (
@@ -723,7 +723,7 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
         </div>
       ) : (
         // Coming-soon teaser — keeps energy up while admin builds the catalog
-        <div className="rounded-[10px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B] p-4">
+        <div className="rounded-[4px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.05)] via-[#0E0E0E] to-[#0B0B0B] p-4">
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.08)] px-2 py-0.5 text-[9px] font-black tracking-[0.14em] text-[#EF2C58]">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
             ТУН УДАХГҮЙ
@@ -734,7 +734,7 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
               return (
                 <div
                   key={t.title}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3"
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
                     <svg className="h-4 w-4 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -749,7 +749,7 @@ function ClassroomPreview({ guest = false }: { guest?: boolean }) {
           </div>
           <Link
             href={ctaHref}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-[8px] bg-[#EF2C58] px-3.5 py-2 text-[11px] font-black text-white transition hover:bg-[#D4264E]"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3.5 py-2 text-[11px] font-black text-white transition hover:bg-[#D4264E]"
           >
             Эхэлсэн үед мэдэгдэх
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -782,7 +782,7 @@ function HeroLanding() {
       <div className="text-center">
         <h2 className="text-[26px] font-black leading-[1.05] text-[#E8E8E8] md:text-[32px]">
           AI-аар орлого олох<br />
-          <span className="text-[#EF2C58]">Монгол community</span>
+          <span className="text-[#EF2C58]">community</span>
         </h2>
 
         <div className="mt-3 inline-flex items-baseline gap-2">
@@ -795,7 +795,7 @@ function HeroLanding() {
       <div className="space-y-3">
         <Link
           href="/auth/signup"
-          className="group relative block w-full overflow-hidden rounded-[10px] bg-[#EF2C58] py-4 text-center text-[15px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_48px_rgba(239,44,88,0.5)]"
+          className="group relative block w-full overflow-hidden rounded-[4px] bg-[#EF2C58] py-4 text-center text-[15px] font-black text-white shadow-[0_0_32px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_48px_rgba(239,44,88,0.5)]"
         >
           <span className="relative z-10 inline-flex items-center gap-2">
             Cyber Empire нэгдэх
@@ -805,17 +805,6 @@ function HeroLanding() {
           </span>
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </Link>
-
-        <div className="flex flex-wrap items-center justify-center gap-x-2 text-[10px] text-[#666]">
-          <span className="inline-flex items-center gap-1">
-            <svg className="h-3 w-3 text-[#22C55E]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            14 хоног буцаалт
-          </span>
-          <span className="text-[#333]">·</span>
-          <span>QPay · SocialPay · Хаан</span>
-        </div>
 
         <p className="text-center text-[11px] text-[#555]">
           Гишүүн үү?{" "}
@@ -842,10 +831,10 @@ function HeroLanding() {
       <Leaderboard />
 
       {/* Final CTA */}
-      <div className="rounded-[10px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-5 text-center">
+      <div className="rounded-[4px] border border-[rgba(239,44,88,0.22)] bg-gradient-to-br from-[rgba(239,44,88,0.06)] via-[#0D0D0D] to-[#0D0D0D] p-5 text-center">
         <Link
           href="/auth/signup"
-          className="inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
+          className="inline-flex items-center gap-2 rounded-[4px] bg-[#EF2C58] px-7 py-3 text-[13px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E]"
         >
           Cyber Empire нэгдэх
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -869,8 +858,8 @@ function FeedPaywall() {
   return (
     <div className="mx-auto max-w-lg space-y-5 pb-8 pt-4">
       {/* Lock card */}
-      <div className="overflow-hidden rounded-[12px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center md:p-8">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[12px] bg-[rgba(239,44,88,0.12)] shadow-[0_0_28px_rgba(239,44,88,0.18)]">
+      <div className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0E0E0E] to-[#0B0B0B] p-6 text-center md:p-8">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] shadow-[0_0_28px_rgba(239,44,88,0.18)]">
           <svg className="h-6 w-6 text-[#EF2C58]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
@@ -884,9 +873,9 @@ function FeedPaywall() {
         </p>
 
         {stats?.paidMembers ? (
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)] px-2.5 py-0.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
-            <span className="text-[10px] font-bold tracking-[0.1em] text-[#22C55E]">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.08)] px-2.5 py-0.5">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
+            <span className="text-[10px] font-bold tracking-[0.1em] text-[#EF2C58]">
               {stats.paidMembers}+ ИДЭВХТЭЙ ГИШҮҮН
             </span>
           </div>
@@ -894,7 +883,7 @@ function FeedPaywall() {
 
         <Link
           href="/clan?pay=1"
-          className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[10px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_44px_rgba(239,44,88,0.5)]"
+          className="group relative mt-5 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-[4px] bg-[#EF2C58] py-3.5 text-[14px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.3)] transition hover:bg-[#D4264E] hover:shadow-[0_0_44px_rgba(239,44,88,0.5)]"
         >
           <span className="relative z-10 inline-flex items-center gap-2">
             Cyber Empire нэгдэх · ₮49к
@@ -904,9 +893,6 @@ function FeedPaywall() {
           </span>
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </Link>
-        <div className="mt-2 text-[10px] text-[#666]">
-          14 хоног буцаалт · QPay · SocialPay · Хаан
-        </div>
       </div>
 
       {/* What you unlock — uses the same admin-editable cards */}
@@ -1007,7 +993,7 @@ export default function Home() {
           {([
             { key: "all" as CategoryFilter, label: "Бүгд", color: "#EF2C58" },
             { key: "промт" as CategoryFilter, label: "Промт", color: "#0F81CA" },
-            { key: "бүтээл" as CategoryFilter, label: "Бүтээл", color: "#22C55E" },
+            { key: "бүтээл" as CategoryFilter, label: "Бүтээл", color: "#EF2C58" },
             { key: "ялалт" as CategoryFilter, label: "Ялалт", color: "#EF2C58" },
             { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл", color: "#3B82F6" },
             { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга", color: "#A855F7" },

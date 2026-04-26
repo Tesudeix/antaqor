@@ -85,7 +85,7 @@ function Card({ testimonial: t, index }: { testimonial: Testimonial; index: numb
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.08 }}
-      className="relative flex h-full flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-gradient-to-br from-[#141414] to-[#0F0F0F] p-4"
+      className="relative flex h-full flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-gradient-to-br from-[#141414] to-[#0F0F0F] p-4"
     >
       {/* Quote glyph accent */}
       <svg className="absolute right-3 top-3 h-6 w-6 text-[#EF2C58]/15" fill="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@ function Card({ testimonial: t, index }: { testimonial: Testimonial; index: numb
 function HeroTestimonial({ testimonial: t, className }: { testimonial: Testimonial; className: string }) {
   return (
     <section className={className}>
-      <div className="relative overflow-hidden rounded-[12px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#111] to-[#0D0D0D] p-5 md:p-7">
+      <div className="relative overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#111] to-[#0D0D0D] p-5 md:p-7">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
           <div className="shrink-0">
             {t.avatar ? (
@@ -176,7 +176,7 @@ function SkeletonGrid({ count }: { count: number }) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="animate-pulse rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-4">
+        <div key={i} className="animate-pulse rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-4">
           <div className="mb-3 h-4 w-3/4 rounded bg-[#1A1A1A]" />
           <div className="mb-2 h-3 w-full rounded bg-[#1A1A1A]" />
           <div className="mb-4 h-3 w-5/6 rounded bg-[#1A1A1A]" />

@@ -60,7 +60,7 @@ function JoinEmpireChip() {
     <Link
       href="/clan?pay=1"
       title="Cyber Empire нэгдэх"
-      className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-[6px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_16px_rgba(239,44,88,0.3)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.5)]"
+      className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-[4px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_16px_rgba(239,44,88,0.3)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.5)]"
     >
       <span className="relative z-10">Empire</span>
       <span className="relative z-10 rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-black tracking-tight">₮49k</span>
@@ -83,7 +83,7 @@ export default function Navbar() {
           check: (p: string) =>
             p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
-        { href: "/calendar", label: "Календар", check: (p: string) => p.startsWith("/calendar") },
+        { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
@@ -103,7 +103,7 @@ export default function Navbar() {
           label: "Нүүр",
           check: (p: string) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
         },
-        { href: "/calendar", label: "Календар", check: (p: string) => p.startsWith("/calendar") },
+        { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") },
       ];

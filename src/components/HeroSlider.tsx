@@ -127,7 +127,7 @@ export default function HeroSlider() {
       {musicEnabled && <audio ref={audioRef} src={musicUrl} loop preload="auto" />}
 
       <div
-        className="relative w-full overflow-hidden rounded-[8px] bg-[#141414] shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
+        className="relative w-full overflow-hidden rounded-[4px] bg-[#141414] shadow-[0_2px_16px_rgba(0,0,0,0.3)]"
         style={{ aspectRatio: "3/4" }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

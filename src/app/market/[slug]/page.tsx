@@ -9,7 +9,7 @@ type Params = Promise<{ slug: string }>;
 
 const CATEGORY_COLORS: Record<string, string> = {
   Prompt: "#A855F7",
-  Course: "#22C55E",
+  Course: "#EF2C58",
   Template: "#06B6D4",
   Agent: "#F59E0B",
   Service: "#EC4899",
@@ -141,7 +141,7 @@ export default async function ProductPage({ params }: { params: Params }) {
       <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
         {/* Cover */}
         <div className="space-y-3">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]">
             {p.coverImage ? (
               <img src={p.coverImage} alt={p.title} className="h-full w-full object-cover" />
             ) : (
@@ -156,7 +156,7 @@ export default async function ProductPage({ params }: { params: Params }) {
           {p.gallery.length > 0 && (
             <div className="grid grid-cols-4 gap-2">
               {p.gallery.slice(0, 8).map((g, i) => (
-                <div key={i} className="aspect-square overflow-hidden rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]">
+                <div key={i} className="aspect-square overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#1A1A1A]">
                   <img src={g} alt="" className="h-full w-full object-cover" />
                 </div>
               ))}
@@ -177,7 +177,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             )}
             <span className="text-[28px] font-black text-[#EF2C58]">{fmtPrice(p.price)}</span>
             {hasDiscount && (
-              <span className="rounded-full bg-[rgba(34,197,94,0.12)] px-2 py-0.5 text-[10px] font-black text-[#22C55E]">
+              <span className="rounded-full bg-[rgba(239,44,88,0.12)] px-2 py-0.5 text-[10px] font-black text-[#EF2C58]">
                 −{Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100)}% off
               </span>
             )}
@@ -189,7 +189,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               href={p.externalUrl}
               target="_blank"
               rel="noopener noreferrer sponsored"
-              className="group relative mt-5 inline-flex items-center justify-center gap-2 overflow-hidden rounded-[8px] bg-[#EF2C58] px-6 py-3.5 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.2)] transition hover:shadow-[0_0_36px_rgba(239,44,88,0.35)]"
+              className="group relative mt-5 inline-flex items-center justify-center gap-2 overflow-hidden rounded-[4px] bg-[#EF2C58] px-6 py-3.5 text-[14px] font-black text-white shadow-[0_0_24px_rgba(239,44,88,0.2)] transition hover:shadow-[0_0_36px_rgba(239,44,88,0.35)]"
             >
               <span className="relative z-10">{p.price === 0 ? "Татаж авах" : "Худалдан авах"}</span>
               <svg className="relative z-10 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -197,7 +197,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             </a>
           ) : (
             <button
-              className="mt-5 inline-flex items-center justify-center gap-2 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-6 py-3.5 text-[13px] font-bold text-[#AAA]"
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F0F] px-6 py-3.5 text-[13px] font-bold text-[#AAA]"
               disabled
             >
               Удахгүй авах боломжтой
@@ -205,7 +205,7 @@ export default async function ProductPage({ params }: { params: Params }) {
           )}
 
           {/* Seller */}
-          <div className="mt-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-3">
+          <div className="mt-5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-3">
             <div className="text-[9px] font-bold uppercase tracking-wider text-[#555]">Seller</div>
             <div className="mt-1 flex items-center gap-2.5">
               {p.sellerAvatar ? (
@@ -237,7 +237,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       {/* Description */}
       {p.description && (
-        <section className="mt-10 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-5 md:p-7">
+        <section className="mt-10 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-5 md:p-7">
           <div className="mb-3 flex items-center gap-2">
             <div className="h-[2px] w-4 bg-[#EF2C58]" />
             <span className="text-[11px] font-bold tracking-[0.12em] text-[#E8E8E8]">ТАЙЛБАР</span>

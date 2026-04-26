@@ -103,7 +103,7 @@ export default function CreditsPage() {
       <div className="mx-auto max-w-md py-20 text-center">
         <h2 className="text-[22px] font-bold text-[#E8E8E8]">Нэвтрэх шаардлагатай</h2>
         <p className="mt-2 text-[13px] text-[#666]">Кредит, найзыг урих дэд самбарт хандахын тулд нэвтэрнэ үү.</p>
-        <Link href="/auth/signin" className="mt-6 inline-block rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white">
+        <Link href="/auth/signin" className="mt-6 inline-block rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white">
           Нэвтрэх
         </Link>
       </div>
@@ -181,7 +181,7 @@ export default function CreditsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-10">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -206,7 +206,7 @@ export default function CreditsPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#111] to-[#0D0D0D] p-5"
+          className="relative overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#111] to-[#0D0D0D] p-5"
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -257,7 +257,7 @@ export default function CreditsPage() {
                     key={opt.credits}
                     onClick={() => redeem(i)}
                     disabled={!canAfford || redeeming !== null}
-                    className={`relative rounded-[6px] border px-3 py-3 text-left transition ${
+                    className={`relative rounded-[4px] border px-3 py-3 text-left transition ${
                       canAfford
                         ? "border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.08)] hover:bg-[rgba(239,44,88,0.15)]"
                         : "border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] opacity-60"
@@ -284,7 +284,7 @@ export default function CreditsPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5"
+          className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5"
         >
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">Миний урилгын холбоос</div>
@@ -293,7 +293,7 @@ export default function CreditsPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-2">
+          <div className="flex items-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-2">
             <input
               readOnly
               value={inviteUrl}
@@ -310,17 +310,17 @@ export default function CreditsPage() {
 
           <button
             onClick={shareInvite}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] py-2.5 text-[12px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] py-2.5 text-[12px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
             Хуваалцах
           </button>
 
-          <div className="mt-5 space-y-2 rounded-[6px] bg-[#0A0A0A] p-3">
+          <div className="mt-5 space-y-2 rounded-[4px] bg-[#0A0A0A] p-3">
             <div className="flex items-center gap-2 text-[12px]">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(34,197,94,0.15)] text-[10px] font-black text-[#22C55E]">1</span>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)] text-[10px] font-black text-[#EF2C58]">1</span>
               <span className="text-[#CCC]">Холбоосоор найз бүртгүүлбэл</span>
-              <span className="ml-auto text-[11px] font-bold text-[#22C55E]">+50</span>
+              <span className="ml-auto text-[11px] font-bold text-[#EF2C58]">+50</span>
             </div>
             <div className="flex items-center gap-2 text-[12px]">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)] text-[10px] font-black text-[#EF2C58]">2</span>
@@ -338,15 +338,15 @@ export default function CreditsPage() {
 
       {/* Referrals list */}
       {data.referrals.length > 0 && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5">
           <div className="mb-3 flex items-center gap-2">
-            <div className="h-[2px] w-4 bg-[#22C55E]" />
+            <div className="h-[2px] w-4 bg-[#EF2C58]" />
             <span className="text-[11px] font-bold tracking-[0.12em] text-[#E8E8E8]">МИНИЙ УРИЛСАН</span>
             <span className="text-[10px] text-[#555]">({data.referrals.length})</span>
           </div>
           <div className="space-y-2">
             {data.referrals.map((r, i) => r.referee && (
-              <div key={i} className="flex items-center gap-3 rounded-[6px] bg-[#0A0A0A] p-3">
+              <div key={i} className="flex items-center gap-3 rounded-[4px] bg-[#0A0A0A] p-3">
                 {r.referee.avatar ? (
                   <img src={r.referee.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
                 ) : (
@@ -360,7 +360,7 @@ export default function CreditsPage() {
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   {r.awarded.signup && (
-                    <span className="rounded-full bg-[rgba(34,197,94,0.1)] px-2 py-0.5 text-[9px] font-bold text-[#22C55E]">
+                    <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[9px] font-bold text-[#EF2C58]">
                       +50 ✓
                     </span>
                   )}
@@ -385,7 +385,7 @@ export default function CreditsPage() {
       )}
 
       {/* Transaction history */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111] p-5">
         <div className="mb-3 flex items-center gap-2">
           <div className="h-[2px] w-4 bg-[#EF2C58]" />
           <span className="text-[11px] font-bold tracking-[0.12em] text-[#E8E8E8]">ГҮЙЛГЭЭНИЙ ТҮҮХ</span>
@@ -398,11 +398,11 @@ export default function CreditsPage() {
               <div key={h._id} className="flex items-center gap-3 py-2.5">
                 <div
                   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-                    h.kind === "earn" ? "bg-[rgba(34,197,94,0.1)]" : "bg-[rgba(239,44,88,0.1)]"
+                    h.kind === "earn" ? "bg-[rgba(239,44,88,0.1)]" : "bg-[rgba(239,44,88,0.1)]"
                   }`}
                 >
                   <svg
-                    className={`h-3.5 w-3.5 ${h.kind === "earn" ? "text-[#22C55E]" : "text-[#EF2C58]"}`}
+                    className={`h-3.5 w-3.5 ${h.kind === "earn" ? "text-[#EF2C58]" : "text-[#EF2C58]"}`}
                     fill="none" stroke="currentColor" viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -420,7 +420,7 @@ export default function CreditsPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-[13px] font-bold ${h.kind === "earn" ? "text-[#22C55E]" : "text-[#EF2C58]"}`}>
+                  <div className={`text-[13px] font-bold ${h.kind === "earn" ? "text-[#EF2C58]" : "text-[#EF2C58]"}`}>
                     {h.kind === "earn" ? "+" : "−"}{h.amount}
                   </div>
                   <div className="text-[9px] text-[#555]">үлд: {h.balanceAfter}</div>

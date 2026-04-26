@@ -192,7 +192,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   return (
     <div className="mx-auto max-w-2xl">
       {/* Profile Header Card */}
-      <div className="mb-5 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="mb-5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="flex items-start gap-4">
           {/* Avatar */}
           <div className="relative group shrink-0">
@@ -236,13 +236,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Нэр"
                 />
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58]"
                   placeholder="Утасны дугаар"
                 />
                 <textarea
@@ -250,7 +250,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={3}
                   maxLength={300}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58] resize-none"
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3.5 py-2.5 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition focus:border-[#EF2C58] resize-none"
                   placeholder="Богино намтар бичих..."
                 />
                 <div className="flex gap-2">
@@ -300,7 +300,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                           {capped && (
                             <Link
                               href="/clan?pay=1"
-                              className="mt-2.5 inline-flex items-center gap-1.5 rounded-[6px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-bold text-white shadow-[0_0_18px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.4)]"
+                              className="mt-2.5 inline-flex items-center gap-1.5 rounded-[4px] bg-gradient-to-r from-[#EF2C58] to-[#ff6685] px-3 py-1.5 text-[11px] font-bold text-white shadow-[0_0_18px_rgba(239,44,88,0.25)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.4)]"
                             >
                               Level 6+ нээх
                               <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
@@ -357,7 +357,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
       {/* Posts feed — same style as homepage */}
       {posts.length === 0 ? (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] py-12 text-center">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] py-12 text-center">
           <p className="text-[13px] text-[#555555]">Нийтлэл байхгүй байна.</p>
         </div>
       ) : (

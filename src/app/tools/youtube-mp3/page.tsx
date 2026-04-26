@@ -96,7 +96,7 @@ export default function YouTubeMp3Page() {
 
         {/* Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-[#EF2C58]">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#EF2C58]">
             <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
             </svg>
@@ -120,7 +120,7 @@ export default function YouTubeMp3Page() {
               />
               <button
                 onClick={handlePaste}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-[rgba(0,0,0,0.04)] px-2.5 py-1 text-[10px] font-bold text-[#888] transition hover:bg-[rgba(0,0,0,0.08)] hover:text-[#E8E8E8]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[4px] bg-[rgba(0,0,0,0.04)] px-2.5 py-1 text-[10px] font-bold text-[#888] transition hover:bg-[rgba(0,0,0,0.08)] hover:text-[#E8E8E8]"
               >
                 PASTE
               </button>
@@ -149,13 +149,13 @@ export default function YouTubeMp3Page() {
             <div className="mt-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4">
               <div className="flex items-center gap-3">
                 {info.thumbnail && (
-                  <img src={info.thumbnail} alt="" className="h-12 w-16 rounded-md object-cover" />
+                  <img src={info.thumbnail} alt="" className="h-12 w-16 rounded-[4px] object-cover" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold text-[#E8E8E8]">{info.title}</p>
                   <p className="text-[11px] text-[#888]">{info.duration}</p>
                 </div>
-                <svg className="h-5 w-5 shrink-0 text-[#22C55E]" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 shrink-0 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
               </div>

@@ -25,7 +25,7 @@ type ViewMode = "month" | "week" | "list";
 // ─── Constants ───
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   event:    { label: "Эвент",       color: "#EF2C58", bg: "rgba(239,44,88,0.15)",   icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
-  live:     { label: "LIVE хичээл", color: "#22C55E", bg: "rgba(34,197,94,0.15)",    icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
+  live:     { label: "LIVE хичээл", color: "#EF2C58", bg: "rgba(239,44,88,0.15)",    icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
   class:    { label: "Хичээл",     color: "#0F81CA", bg: "rgba(15,129,202,0.15)",   icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
   deadline: { label: "Дедлайн",    color: "#EF2C58", bg: "rgba(239,44,88,0.15)",    icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
   workshop: { label: "Воркшоп",    color: "#A855F7", bg: "rgba(168,85,247,0.15)",   icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" },
@@ -33,7 +33,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; ic
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   upcoming: { label: "Төлөвлөсөн", color: "#0F81CA" },
-  live:     { label: "LIVE",       color: "#22C55E" },
+  live:     { label: "LIVE",       color: "#EF2C58" },
   ended:    { label: "Дууссан",    color: "#666666" },
 };
 
@@ -236,8 +236,8 @@ export default function AdminCalendarPage() {
     <div className="space-y-5 pb-6">
       {/* Flash */}
       {flash && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-[8px] bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
-          <svg className="h-4 w-4 text-[#22C55E] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-[4px] bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
+          <svg className="h-4 w-4 text-[#EF2C58] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           <span className="text-[13px] text-[#E8E8E8]">{flash}</span>
         </div>
       )}
@@ -250,7 +250,7 @@ export default function AdminCalendarPage() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => { resetForm(); setShowForm(!showForm); setSelectedEvent(null); }}
-            className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+            className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
             {showForm ? "Цуцлах" : "+ Шинэ хуваарь"}
           </button>
         </div>
@@ -261,9 +261,9 @@ export default function AdminCalendarPage() {
         {[
           { label: "Энэ сар", value: thisMonthCount, color: "text-[#E8E8E8]" },
           { label: "Төлөвлөсөн", value: upcomingCount, color: "text-[#0F81CA]" },
-          { label: "LIVE", value: liveCount, color: "text-[#22C55E]" },
+          { label: "LIVE", value: liveCount, color: "text-[#EF2C58]" },
         ].map(s => (
-          <div key={s.label} className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-3">
+          <div key={s.label} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-3">
             <div className="text-[10px] font-medium uppercase tracking-wider text-[#555555]">{s.label}</div>
             <div className={`mt-0.5 text-xl font-bold ${s.color}`}>{s.value}</div>
           </div>
@@ -272,26 +272,26 @@ export default function AdminCalendarPage() {
 
       {/* Controls: View Mode + Navigation + Type Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-1 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
+        <div className="flex items-center gap-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
           {(["month", "week", "list"] as ViewMode[]).map(v => (
             <button key={v} onClick={() => setView(v)}
-              className={`rounded-[6px] px-3 py-1.5 text-[11px] font-semibold transition ${view === v ? "bg-[#EF2C58] text-white" : "text-[#666666] hover:text-[#999999]"}`}>
+              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${view === v ? "bg-[#EF2C58] text-white" : "text-[#666666] hover:text-[#999999]"}`}>
               {v === "month" ? "Сар" : v === "week" ? "7 хоног" : "Жагсаалт"}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="rounded-[6px] border border-[rgba(255,255,255,0.08)] p-1.5 text-[#666666] transition hover:text-[#E8E8E8]">
+          <button onClick={() => navigate(-1)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] p-1.5 text-[#666666] transition hover:text-[#E8E8E8]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button onClick={goToday} className="rounded-[6px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-semibold text-[#666666] transition hover:text-[#EF2C58] hover:border-[rgba(239,44,88,0.3)]">
+          <button onClick={goToday} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-semibold text-[#666666] transition hover:text-[#EF2C58] hover:border-[rgba(239,44,88,0.3)]">
             Өнөөдөр
           </button>
           <span className="min-w-[140px] text-center text-[14px] font-bold text-[#E8E8E8]">
             {year} {MN_MONTHS[month]}
           </span>
-          <button onClick={() => navigate(1)} className="rounded-[6px] border border-[rgba(255,255,255,0.08)] p-1.5 text-[#666666] transition hover:text-[#E8E8E8]">
+          <button onClick={() => navigate(1)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] p-1.5 text-[#666666] transition hover:text-[#E8E8E8]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </button>
         </div>
@@ -314,7 +314,7 @@ export default function AdminCalendarPage() {
 
       {/* Event form */}
       {showForm && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <h2 className="mb-4 text-[14px] font-bold text-[#E8E8E8]">
             {editingId ? "Хуваарь засах" : "Шинэ хуваарь"}
           </h2>
@@ -325,7 +325,7 @@ export default function AdminCalendarPage() {
               <div className="flex flex-wrap gap-2">
                 {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
                   <button key={key} type="button" onClick={() => setForm(f => ({ ...f, type: key }))}
-                    className={`flex items-center gap-1.5 rounded-[6px] px-3 py-2 text-[11px] font-semibold transition ${form.type === key ? "border-2" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}
+                    className={`flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-[11px] font-semibold transition ${form.type === key ? "border-2" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}
                     style={form.type === key ? { borderColor: cfg.color, background: cfg.bg, color: cfg.color } : {}}>
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={cfg.icon} /></svg>
                     {cfg.label}
@@ -336,22 +336,22 @@ export default function AdminCalendarPage() {
 
             <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="Гарчиг *" maxLength={200}
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
 
             <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Тайлбар" rows={2} maxLength={2000}
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] resize-none" />
+              className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] resize-none" />
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#555555]">Эхлэх *</label>
                 <input type="datetime-local" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#EF2C58]" />
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#EF2C58]" />
               </div>
               <div>
                 <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#555555]">Дуусах</label>
                 <input type="datetime-local" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))}
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#EF2C58]" />
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#EF2C58]" />
               </div>
             </div>
 
@@ -360,13 +360,13 @@ export default function AdminCalendarPage() {
                 <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#555555]">Live линк</label>
                 <input value={form.liveLink} onChange={e => setForm(f => ({ ...f, liveLink: e.target.value }))}
                   placeholder="https://zoom.us/j/..."
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
               </div>
               <div>
                 <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#555555]">Байршил</label>
                 <input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                   placeholder="Онлайн / Хаяг"
-                  className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" />
               </div>
             </div>
 
@@ -376,7 +376,7 @@ export default function AdminCalendarPage() {
               <div className="flex gap-2">
                 {([["none", "Нэг удаа"], ["daily", "Өдөр бүр"], ["weekly", "7 хоног бүр"], ["monthly", "Сар бүр"]] as const).map(([k, l]) => (
                   <button key={k} type="button" onClick={() => setForm(f => ({ ...f, recurring: k }))}
-                    className={`rounded-[6px] px-3 py-1.5 text-[11px] font-semibold transition ${form.recurring === k ? "bg-[rgba(239,44,88,0.15)] text-[#EF2C58] border border-[#EF2C58]" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}>
+                    className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${form.recurring === k ? "bg-[rgba(239,44,88,0.15)] text-[#EF2C58] border border-[#EF2C58]" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}>
                     {l}
                   </button>
                 ))}
@@ -390,7 +390,7 @@ export default function AdminCalendarPage() {
                 <div className="flex gap-2">
                   {(["upcoming", "live", "ended"] as const).map(s => (
                     <button key={s} type="button" onClick={() => setForm(f => ({ ...f, status: s }))}
-                      className={`rounded-[6px] px-3 py-1.5 text-[11px] font-semibold transition ${form.status === s ? "border border-current" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}
+                      className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${form.status === s ? "border border-current" : "border border-[rgba(255,255,255,0.08)] text-[#666666] hover:text-[#999999]"}`}
                       style={form.status === s ? { color: STATUS_CONFIG[s].color, background: `${STATUS_CONFIG[s].color}15` } : {}}>
                       {STATUS_CONFIG[s].label}
                     </button>
@@ -401,11 +401,11 @@ export default function AdminCalendarPage() {
 
             <div className="flex gap-2 pt-1">
               <button onClick={handleSave} disabled={saving || !form.title || !form.date}
-                className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
+                className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
                 {saving ? "..." : editingId ? "Хадгалах" : "Үүсгэх"}
               </button>
               <button onClick={resetForm}
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]">
+                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]">
                 Цуцлах
               </button>
             </div>
@@ -416,7 +416,7 @@ export default function AdminCalendarPage() {
       {/* Main Content */}
       <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
         {/* Calendar / List */}
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] overflow-hidden">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] overflow-hidden">
           {/* Month View */}
           {view === "month" && (
             <>
@@ -446,7 +446,7 @@ export default function AdminCalendarPage() {
                             <div key={ev._id} onClick={(e) => { e.stopPropagation(); setSelectedEvent(ev); setSelectedDate(day.date); }}
                               className="flex items-center gap-1 rounded-[3px] px-1 py-0.5 text-[9px] font-semibold leading-tight truncate cursor-pointer transition hover:brightness-125"
                               style={{ background: cfg.bg, color: cfg.color }}>
-                              {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />}
+                              {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#EF2C58] animate-pulse shrink-0" />}
                               <span className="truncate">{ev.title}</span>
                             </div>
                           );
@@ -491,7 +491,7 @@ export default function AdminCalendarPage() {
                             className="w-full rounded-[4px] p-2 text-left transition hover:brightness-125"
                             style={{ background: cfg.bg }}>
                             <div className="flex items-center gap-1">
-                              {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />}
+                              {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#EF2C58] animate-pulse shrink-0" />}
                               <span className="text-[9px] font-bold" style={{ color: cfg.color }}>{time}</span>
                             </div>
                             <div className="text-[10px] font-semibold text-[#E8E8E8] truncate mt-0.5">{ev.title}</div>
@@ -521,7 +521,7 @@ export default function AdminCalendarPage() {
                   return (
                     <div key={ev._id} className={`flex items-center gap-3 p-4 transition hover:bg-[rgba(255,255,255,0.02)] ${isPast ? "opacity-50" : ""}`}>
                       {/* Date badge */}
-                      <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-[8px] border border-[rgba(255,255,255,0.08)]">
+                      <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)]">
                         <span className="text-[10px] font-bold uppercase text-[#555555]">{MN_MONTHS[new Date(ev.date).getMonth()]}</span>
                         <span className="text-[16px] font-bold text-[#E8E8E8]">{new Date(ev.date).getDate()}</span>
                       </div>
@@ -530,7 +530,7 @@ export default function AdminCalendarPage() {
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className="rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
                           <span className="rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ color: st.color, background: `${st.color}15` }}>{st.label}</span>
-                          {ev.status === "live" && <span className="h-2 w-2 rounded-full bg-[#22C55E] animate-pulse" />}
+                          {ev.status === "live" && <span className="h-2 w-2 rounded-full bg-[#EF2C58] animate-pulse" />}
                         </div>
                         <div className="text-[13px] font-bold text-[#E8E8E8] truncate">{ev.title}</div>
                         <div className="text-[11px] text-[#555555]">
@@ -543,28 +543,28 @@ export default function AdminCalendarPage() {
                       <div className="flex shrink-0 items-center gap-1">
                         {ev.liveLink && (
                           <a href={ev.liveLink} target="_blank" rel="noopener noreferrer"
-                            className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2.5 py-1.5 text-[10px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)]">
+                            className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)]">
                             Нэгдэх
                           </a>
                         )}
                         {ev.status !== "live" && ev.status !== "ended" && (
                           <button onClick={() => handleStatusChange(ev._id, "live")}
-                            className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2 py-1.5 text-[10px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)]">
+                            className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2 py-1.5 text-[10px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)]">
                             LIVE
                           </button>
                         )}
                         {ev.status === "live" && (
                           <button onClick={() => handleStatusChange(ev._id, "ended")}
-                            className="rounded-[6px] bg-[rgba(102,102,102,0.1)] px-2 py-1.5 text-[10px] font-bold text-[#666666] transition hover:bg-[rgba(102,102,102,0.2)]">
+                            className="rounded-[4px] bg-[rgba(102,102,102,0.1)] px-2 py-1.5 text-[10px] font-bold text-[#666666] transition hover:bg-[rgba(102,102,102,0.2)]">
                             Дуусгах
                           </button>
                         )}
                         <button onClick={() => startEdit(ev)}
-                          className="rounded-[6px] p-1.5 text-[#555555] transition hover:text-[#E8E8E8]">
+                          className="rounded-[4px] p-1.5 text-[#555555] transition hover:text-[#E8E8E8]">
                           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
                         <button onClick={() => handleDelete(ev._id)}
-                          className="rounded-[6px] p-1.5 text-red-400/50 transition hover:text-red-400">
+                          className="rounded-[4px] p-1.5 text-red-400/50 transition hover:text-red-400">
                           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                       </div>
@@ -580,7 +580,7 @@ export default function AdminCalendarPage() {
         <div className="space-y-4">
           {/* Selected event detail */}
           {selectedEvent && (
-            <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <span className="rounded-full px-2 py-0.5 text-[9px] font-bold"
@@ -625,28 +625,28 @@ export default function AdminCalendarPage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {selectedEvent.liveLink && (
                   <a href={selectedEvent.liveLink} target="_blank" rel="noopener noreferrer"
-                    className="rounded-[6px] bg-[#22C55E] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#16A34A]">
+                    className="rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#D4264E]">
                     Live нэгдэх
                   </a>
                 )}
                 {selectedEvent.status !== "live" && selectedEvent.status !== "ended" && (
                   <button onClick={() => { handleStatusChange(selectedEvent._id, "live"); setSelectedEvent({ ...selectedEvent, status: "live" }); }}
-                    className="rounded-[6px] bg-[rgba(34,197,94,0.15)] px-3 py-1.5 text-[11px] font-bold text-[#22C55E]">
+                    className="rounded-[4px] bg-[rgba(239,44,88,0.15)] px-3 py-1.5 text-[11px] font-bold text-[#EF2C58]">
                     LIVE эхлүүлэх
                   </button>
                 )}
                 {selectedEvent.status === "live" && (
                   <button onClick={() => { handleStatusChange(selectedEvent._id, "ended"); setSelectedEvent({ ...selectedEvent, status: "ended" }); }}
-                    className="rounded-[6px] bg-[rgba(102,102,102,0.15)] px-3 py-1.5 text-[11px] font-bold text-[#666666]">
+                    className="rounded-[4px] bg-[rgba(102,102,102,0.15)] px-3 py-1.5 text-[11px] font-bold text-[#666666]">
                     Дуусгах
                   </button>
                 )}
                 <button onClick={() => startEdit(selectedEvent)}
-                  className="rounded-[6px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-bold text-[#888888] transition hover:text-[#E8E8E8]">
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] font-bold text-[#888888] transition hover:text-[#E8E8E8]">
                   Засах
                 </button>
                 <button onClick={() => handleDelete(selectedEvent._id)}
-                  className="rounded-[6px] border border-[rgba(239,68,68,0.2)] px-3 py-1.5 text-[11px] font-bold text-red-400/70 transition hover:text-red-400">
+                  className="rounded-[4px] border border-[rgba(239,68,68,0.2)] px-3 py-1.5 text-[11px] font-bold text-red-400/70 transition hover:text-red-400">
                   Устгах
                 </button>
               </div>
@@ -655,13 +655,13 @@ export default function AdminCalendarPage() {
 
           {/* Selected date events */}
           {selectedDate && !selectedEvent && (
-            <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+            <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[13px] font-bold text-[#E8E8E8]">
                   {selectedDate.toLocaleDateString("mn-MN", { month: "long", day: "numeric", weekday: "long" })}
                 </h3>
                 <button onClick={() => openFormForDate(selectedDate)}
-                  className="rounded-[6px] bg-[#EF2C58] px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-[#D4264E]">
+                  className="rounded-[4px] bg-[#EF2C58] px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-[#D4264E]">
                   + Нэмэх
                 </button>
               </div>
@@ -674,10 +674,10 @@ export default function AdminCalendarPage() {
                     const time = new Date(ev.date).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" });
                     return (
                       <button key={ev._id} onClick={() => setSelectedEvent(ev)}
-                        className="w-full rounded-[6px] p-3 text-left transition hover:brightness-110"
+                        className="w-full rounded-[4px] p-3 text-left transition hover:brightness-110"
                         style={{ background: cfg.bg }}>
                         <div className="flex items-center gap-2">
-                          {ev.status === "live" && <span className="h-2 w-2 rounded-full bg-[#22C55E] animate-pulse" />}
+                          {ev.status === "live" && <span className="h-2 w-2 rounded-full bg-[#EF2C58] animate-pulse" />}
                           <span className="text-[10px] font-bold" style={{ color: cfg.color }}>{time} · {cfg.label}</span>
                         </div>
                         <div className="text-[12px] font-semibold text-[#E8E8E8] mt-1">{ev.title}</div>
@@ -691,7 +691,7 @@ export default function AdminCalendarPage() {
           )}
 
           {/* Upcoming schedule */}
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
             <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Удахгүй болох</h3>
             {upcomingEvents.length === 0 ? (
               <p className="text-[12px] text-[#555555]">Төлөвлөсөн хуваарь байхгүй</p>
@@ -711,8 +711,8 @@ export default function AdminCalendarPage() {
 
                   return (
                     <button key={ev._id} onClick={() => { setSelectedEvent(ev); setSelectedDate(d); }}
-                      className="w-full flex items-center gap-3 rounded-[6px] p-2 transition hover:bg-[rgba(255,255,255,0.04)] text-left">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[6px]" style={{ background: cfg.bg }}>
+                      className="w-full flex items-center gap-3 rounded-[4px] p-2 transition hover:bg-[rgba(255,255,255,0.04)] text-left">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px]" style={{ background: cfg.bg }}>
                         <svg className="h-4 w-4" style={{ color: cfg.color }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={cfg.icon} />
                         </svg>
@@ -720,8 +720,8 @@ export default function AdminCalendarPage() {
                       <div className="min-w-0 flex-1">
                         <div className="text-[12px] font-semibold text-[#E8E8E8] truncate">{ev.title}</div>
                         <div className="flex items-center gap-1.5 text-[10px] text-[#555555]">
-                          {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />}
-                          <span style={ev.status === "live" ? { color: "#22C55E", fontWeight: 700 } : {}}>{timeLabel}</span>
+                          {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#EF2C58] animate-pulse" />}
+                          <span style={ev.status === "live" ? { color: "#EF2C58", fontWeight: 700 } : {}}>{timeLabel}</span>
                           <span>·</span>
                           <span>{d.toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" })}</span>
                         </div>

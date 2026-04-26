@@ -144,7 +144,7 @@ function StatusBadge({ status }: { status: "new" | "active" | "done" }) {
   const config = {
     new: { label: "ШИНЭ", bg: "rgba(15,129,202,0.2)", text: "#0F81CA" },
     active: { label: "ҮРГЭЛЖИЛЖ БУЙ", bg: "rgba(239,44,88,0.15)", text: "#EF2C58" },
-    done: { label: "ДУУССАН", bg: "rgba(34,197,94,0.15)", text: "#22c55e" },
+    done: { label: "ДУУССАН", bg: "rgba(239,44,88,0.15)", text: "#EF2C58" },
   };
   const c = config[status];
   return (
@@ -192,7 +192,7 @@ function CourseCard({
       <Link
         href={isLocked ? "#" : `/classroom/course/${course._id}`}
         onClick={isLocked ? (e: React.MouseEvent) => e.preventDefault() : undefined}
-        className={`group relative flex flex-col overflow-hidden rounded-[8px] border bg-[#141414] transition-all duration-200 ${
+        className={`group relative flex flex-col overflow-hidden rounded-[4px] border bg-[#141414] transition-all duration-200 ${
           isLocked
             ? "border-[rgba(255,255,255,0.04)] opacity-60 cursor-not-allowed"
             : "border-[rgba(255,255,255,0.08)] hover:-translate-y-[3px] hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.08)]"

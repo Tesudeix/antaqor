@@ -29,7 +29,7 @@ const CATEGORIES: Category[] = ["AI", "LLM", "Agents", "Research", "Бизнес
 const CATEGORY_COLORS: Record<Category, string> = {
   AI: "#EF2C58",
   LLM: "#A855F7",
-  Agents: "#22C55E",
+  Agents: "#EF2C58",
   Research: "#3B82F6",
   "Бизнес": "#F59E0B",
   Tool: "#06B6D4",
@@ -240,7 +240,7 @@ export default function AdminNewsPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -250,13 +250,13 @@ export default function AdminNewsPage() {
           <h1 className="text-2xl font-bold text-[#E8E8E8]">AI Мэдээ</h1>
           <p className="mt-0.5 text-[12px] text-[#555555]">Public блог/мэдээний удирдлага — нэвтрээгүй хэрэглэгчдэд ил</p>
         </div>
-        <Link href="/news" target="_blank" className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
+        <Link href="/news" target="_blank" className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
           Блог харах
         </Link>
       </div>
 
       {/* Editor */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-4 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">
             {editingSlug ? "Засварлаж байна" : "Шинэ мэдээ"}
@@ -274,7 +274,7 @@ export default function AdminNewsPage() {
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             placeholder="Гарчиг"
             maxLength={220}
-            className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
           />
           <textarea
             value={form.excerpt}
@@ -282,7 +282,7 @@ export default function AdminNewsPage() {
             placeholder="Excerpt (богино тайлбар)"
             maxLength={400}
             rows={2}
-            className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
           />
           <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-2 text-[10px] text-[#555]">
@@ -295,7 +295,7 @@ export default function AdminNewsPage() {
                   type="button"
                   onClick={() => inlineInputRef.current?.click()}
                   disabled={inlineUploading}
-                  className="flex items-center gap-1 rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
+                  className="flex items-center gap-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
                 >
                   {inlineUploading ? (
                     <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
@@ -319,12 +319,12 @@ export default function AdminNewsPage() {
               onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
               placeholder={"Үндсэн контент...\n\nДавхар мөр = шинэ параграф.\n\n# H2 гарчиг\n## H3 гарчиг\n> иш татсан үг\n**bold** эсвэл `code`\n\nЗураг оруулах: дээрх товчийг дар, автоматаар ![alt](url) тэмдэглэгээ орно"}
               rows={14}
-              className="w-full resize-y rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
             />
           </div>
 
           {/* Cover image */}
-          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
             <div className="mb-2 flex items-center justify-between gap-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#555]">Cover зураг</span>
               <div className="flex items-center gap-2">
@@ -332,7 +332,7 @@ export default function AdminNewsPage() {
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
                   disabled={coverUploading}
-                  className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-2.5 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-2.5 py-1 text-[10px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-50"
                 >
                   {coverUploading ? "Байршуулж байна..." : form.coverImage ? "Солих" : "Сонгох"}
                 </button>
@@ -355,7 +355,7 @@ export default function AdminNewsPage() {
               </div>
             </div>
             {form.coverImage ? (
-              <div className="relative aspect-[16/9] overflow-hidden rounded-[6px] bg-[#141414]">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-[4px] bg-[#141414]">
                 <img src={form.coverImage} alt="cover preview" className="h-full w-full object-cover" />
               </div>
             ) : (
@@ -368,7 +368,7 @@ export default function AdminNewsPage() {
               value={form.coverImage}
               onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))}
               placeholder="эсвэл URL оруул"
-              className="mt-2 w-full rounded-[6px] border border-[rgba(255,255,255,0.06)] bg-[#141414] px-2.5 py-1.5 text-[11px] text-[#AAA] placeholder-[#333] outline-none transition focus:border-[rgba(239,44,88,0.3)]"
+              className="mt-2 w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] px-2.5 py-1.5 text-[11px] text-[#AAA] placeholder-[#333] outline-none transition focus:border-[rgba(239,44,88,0.3)]"
             />
           </div>
 
@@ -376,7 +376,7 @@ export default function AdminNewsPage() {
             <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as Category }))}
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none focus:border-[#EF2C58]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none focus:border-[#EF2C58]"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -388,25 +388,25 @@ export default function AdminNewsPage() {
               value={form.tagsRaw}
               onChange={(e) => setForm((f) => ({ ...f, tagsRaw: e.target.value }))}
               placeholder="Tags (таслалаар салга: claude, opus, 4.7)"
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
             />
             <input
               value={form.source}
               onChange={(e) => setForm((f) => ({ ...f, source: e.target.value }))}
               placeholder="Эх сурвалжийн нэр (жишээ: Anthropic)"
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
             />
             <input
               value={form.sourceUrl}
               onChange={(e) => setForm((f) => ({ ...f, sourceUrl: e.target.value }))}
               placeholder="Эх сурвалжийн URL"
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
             />
             <input
               value={form.authorName}
               onChange={(e) => setForm((f) => ({ ...f, authorName: e.target.value }))}
               placeholder="Зохиогчийн нэр"
-              className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444] outline-none transition focus:border-[#EF2C58]"
             />
           </div>
 
@@ -423,7 +423,7 @@ export default function AdminNewsPage() {
             <button
               onClick={save}
               disabled={!form.title.trim() || saving}
-              className="rounded-[8px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+              className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
             >
               {saving ? "..." : editingSlug ? "Шинэчлэх" : "Нийтлэх"}
             </button>
@@ -432,7 +432,7 @@ export default function AdminNewsPage() {
       </div>
 
       {/* List */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-4 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Бүх мэдээ ({items.length})</span>
           <button
@@ -452,9 +452,9 @@ export default function AdminNewsPage() {
             {items.map((n) => (
               <div
                 key={n._id}
-                className="flex items-center gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]"
+                className="flex items-center gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]"
               >
-                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-[6px] bg-[#1A1A1A]">
+                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-[4px] bg-[#1A1A1A]">
                   {n.coverImage ? (
                     <img src={n.coverImage} alt="" className="h-full w-full object-cover" />
                   ) : (
@@ -487,19 +487,19 @@ export default function AdminNewsPage() {
                 <div className="flex shrink-0 gap-1.5">
                   <button
                     onClick={() => togglePublished(n)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]"
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#AAA] transition hover:bg-[rgba(255,255,255,0.06)]"
                   >
                     {n.published ? "Нуух" : "Нийтлэх"}
                   </button>
                   <button
                     onClick={() => loadContentForEdit(n.slug)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]"
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]"
                   >
                     Засах
                   </button>
                   <button
                     onClick={() => remove(n.slug)}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] text-[#555] transition hover:bg-[rgba(239,68,68,0.08)] hover:text-[#EF4444]"
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] text-[#555] transition hover:bg-[rgba(239,68,68,0.08)] hover:text-[#EF4444]"
                   >
                     Устгах
                   </button>

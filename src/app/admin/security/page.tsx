@@ -138,12 +138,12 @@ export default function SecurityDashboard() {
 
   const diskWarn = data.disk.usedPct > 75;
   const diskCrit = data.disk.usedPct > 90;
-  const diskColor = diskCrit ? "#EF4444" : diskWarn ? "#FFC107" : "#22C55E";
+  const diskColor = diskCrit ? "#EF4444" : diskWarn ? "#FFC107" : "#EF2C58";
 
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -153,14 +153,14 @@ export default function SecurityDashboard() {
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Security & Health</h1>
           <p className="mt-0.5 text-[12px] text-[#555]">Server resource monitor · abuse watchlist · one-click ban</p>
         </div>
-        <button onClick={load} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-2 text-[12px] font-bold text-[#AAA] hover:text-[#EF2C58]">
+        <button onClick={load} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-4 py-2 text-[12px] font-bold text-[#AAA] hover:text-[#EF2C58]">
           Шинэчлэх
         </button>
       </div>
 
       {/* Resource cards */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-        <div className="rounded-[8px] border bg-[#141414] p-5" style={{ borderColor: diskCrit ? `${diskColor}66` : "rgba(255,255,255,0.06)" }}>
+        <div className="rounded-[4px] border bg-[#141414] p-5" style={{ borderColor: diskCrit ? `${diskColor}66` : "rgba(255,255,255,0.06)" }}>
           <div className="flex items-center justify-between">
             <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: diskColor }}>Upload disk</div>
             <span className="text-[10px] font-bold" style={{ color: diskColor }}>
@@ -179,7 +179,7 @@ export default function SecurityDashboard() {
           </div>
         </div>
 
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Sharp concurrency</div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-[22px] font-black text-[#E8E8E8]">{data.sharp.active}</span>
@@ -191,7 +191,7 @@ export default function SecurityDashboard() {
           </div>
         </div>
 
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Users</div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-[22px] font-black text-[#E8E8E8]">{data.users.total.toLocaleString()}</span>
@@ -204,7 +204,7 @@ export default function SecurityDashboard() {
       </div>
 
       {/* Top uploaders */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Top uploaders (сарын)</span>
           <span className="text-[10px] text-[#555]">{data.topUploaders.length}</span>
@@ -219,14 +219,14 @@ export default function SecurityDashboard() {
               const cap = paid ? 500 * 1024 * 1024 : 50 * 1024 * 1024;
               const pct = Math.min(100, (bytes / cap) * 100);
               return (
-                <div key={u._id} className={`flex items-center gap-2.5 rounded-[6px] px-2 py-1.5 ${u.banned ? "bg-[rgba(239,68,68,0.08)]" : "hover:bg-[rgba(255,255,255,0.03)]"}`}>
+                <div key={u._id} className={`flex items-center gap-2.5 rounded-[4px] px-2 py-1.5 ${u.banned ? "bg-[rgba(239,68,68,0.08)]" : "hover:bg-[rgba(255,255,255,0.03)]"}`}>
                   <span className="w-5 text-center text-[10px] font-black text-[#EF2C58]">{i + 1}</span>
                   {u.avatar ? <img src={u.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : <div className="h-6 w-6 rounded-full bg-[rgba(239,44,88,0.1)]" />}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-[12px] font-bold text-[#CCC]">{u.name}</span>
                       {u.banned && <span className="rounded-full bg-[rgba(239,68,68,0.15)] px-1.5 py-0.5 text-[9px] font-black text-[#EF4444]">BANNED</span>}
-                      {paid && <span className="rounded-full bg-[rgba(34,197,94,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#22C55E]">PAID</span>}
+                      {paid && <span className="rounded-full bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">PAID</span>}
                     </div>
                     <div className="truncate text-[10px] text-[#555]">{u.email}</div>
                     <div className="mt-1 flex items-center gap-2">
@@ -239,10 +239,10 @@ export default function SecurityDashboard() {
                   <div className="flex shrink-0 gap-1">
                     {u.banned ? (
                       <button onClick={() => unban(u._id, u.name)} disabled={banningId === u._id}
-                        className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)] disabled:opacity-40">Unban</button>
+                        className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)] disabled:opacity-40">Unban</button>
                     ) : (
                       <button onClick={() => ban(u._id, u.name)} disabled={banningId === u._id}
-                        className="rounded-[6px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40">Ban</button>
+                        className="rounded-[4px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40">Ban</button>
                     )}
                   </div>
                 </div>
@@ -254,11 +254,11 @@ export default function SecurityDashboard() {
 
       {/* Recent bans */}
       {data.recentBans.length > 0 && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Recent bans</div>
           <div className="space-y-1.5">
             {data.recentBans.map((b) => (
-              <div key={b._id} className="flex items-center gap-2.5 rounded-[6px] bg-[rgba(239,68,68,0.04)] px-2 py-2">
+              <div key={b._id} className="flex items-center gap-2.5 rounded-[4px] bg-[rgba(239,68,68,0.04)] px-2 py-2">
                 {b.avatar ? <img src={b.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : <div className="h-6 w-6 rounded-full bg-[rgba(239,68,68,0.1)]" />}
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-[12px] font-bold text-[#CCC]">{b.name}</div>
@@ -266,7 +266,7 @@ export default function SecurityDashboard() {
                   {b.bannedReason && <div className="mt-0.5 truncate text-[10px] text-[#EF4444]">{b.bannedReason}</div>}
                 </div>
                 <button onClick={() => unban(b._id, b.name)} disabled={banningId === b._id}
-                  className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)] disabled:opacity-40">Unban</button>
+                  className="rounded-[4px] bg-[rgba(239,44,88,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.2)] disabled:opacity-40">Unban</button>
               </div>
             ))}
           </div>
@@ -274,13 +274,13 @@ export default function SecurityDashboard() {
       )}
 
       {/* Recent signups */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Recent signups (spot-check)</div>
         <div className="space-y-1">
           {data.recentSignups.slice(0, 15).map((u) => {
             const veryFresh = (Date.now() - new Date(u.createdAt).getTime()) < 60 * 60_000;
             return (
-              <div key={u._id} className="flex items-center gap-2.5 rounded-[6px] px-2 py-1.5 hover:bg-[rgba(255,255,255,0.03)]">
+              <div key={u._id} className="flex items-center gap-2.5 rounded-[4px] px-2 py-1.5 hover:bg-[rgba(255,255,255,0.03)]">
                 {u.avatar ? <img src={u.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : <div className="h-6 w-6 rounded-full bg-[rgba(239,44,88,0.1)]" />}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
@@ -290,7 +290,7 @@ export default function SecurityDashboard() {
                   <div className="truncate text-[10px] text-[#555]">{u.email} · {relativeDate(u.createdAt)} · L{u.level || 1}</div>
                 </div>
                 <button onClick={() => ban(u._id, u.name)} disabled={banningId === u._id}
-                  className="rounded-[6px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40">Ban</button>
+                  className="rounded-[4px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[10px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40">Ban</button>
               </div>
             );
           })}
@@ -298,7 +298,7 @@ export default function SecurityDashboard() {
       </div>
 
       {/* Defensive settings explainer */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[11px] leading-relaxed text-[#888]">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[11px] leading-relaxed text-[#888]">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Идэвхтэй хамгаалалтууд</div>
         <ul className="list-inside list-disc space-y-1">
           <li><span className="font-bold text-[#CCC]">Upload rate</span>: 3/min burst · 5/day free, 30/day paid, 500MB/30d paid, 50MB/30d free</li>

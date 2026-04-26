@@ -50,7 +50,7 @@ function SectionHeader({ accent, eyebrow, href, action = "Бүгдийг үзэ�
 function JumpChips() {
   const chips: { href: string; label: string; color: string }[] = [
     { href: "#blog", label: "Блог", color: "#EF2C58" },
-    { href: "#events", label: "Хуваарь", color: "#22C55E" },
+    { href: "#events", label: "Хуваарь", color: "#EF2C58" },
     { href: "#courses", label: "Хичээл", color: "#A855F7" },
     { href: "#tools", label: "Хэрэгсэл", color: "#06B6D4" },
   ];
@@ -76,10 +76,10 @@ function ToolTile({ href, accent, icon, eyebrow, title, subtitle }: TileProps) {
   return (
     <Link
       href={href}
-      className="group relative flex flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-5 transition hover:border-[rgba(239,44,88,0.25)]"
+      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] p-5 transition hover:border-[rgba(239,44,88,0.25)]"
     >
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-[8px]"
+        className="flex h-10 w-10 items-center justify-center rounded-[4px]"
         style={{ background: `${accent}1F` }}
       >
         <svg className="h-5 w-5" fill="none" stroke={accent} strokeWidth={1.5} viewBox="0 0 24 24">
@@ -142,7 +142,7 @@ export default async function ExplorePage() {
   const categoryColor: Record<string, string> = {
     AI: "#EF2C58",
     LLM: "#A855F7",
-    Agents: "#22C55E",
+    Agents: "#EF2C58",
     Research: "#3B82F6",
     "Бизнес": "#F59E0B",
     Tool: "#06B6D4",
@@ -172,7 +172,7 @@ export default async function ExplorePage() {
       <section id="blog" className="scroll-mt-20">
         <SectionHeader accent="#EF2C58" eyebrow="AI МЭДЭЭ · БЛОГ" href="/news" />
         {news.length === 0 ? (
-          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
             Мэдээ удахгүй
           </div>
         ) : (
@@ -183,7 +183,7 @@ export default async function ExplorePage() {
                 <Link
                   key={n._id}
                   href={`/news/${n.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
+                  className="group flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
                 >
                   <div className="relative aspect-[16/10] bg-[#1A1A1A]">
                     {n.coverImage ? (
@@ -212,9 +212,9 @@ export default async function ExplorePage() {
 
       {/* ─── EVENTS ─── */}
       <section id="events" className="scroll-mt-20">
-        <SectionHeader accent="#22C55E" eyebrow="ХУВААРЬ · ЭВЕНТ" href="/calendar" />
+        <SectionHeader accent="#EF2C58" eyebrow="ХУВААРЬ · ЭВЕНТ" href="/calendar" />
         {events.length === 0 ? (
-          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
             Ойрын эвент алга
           </div>
         ) : (
@@ -225,7 +225,7 @@ export default async function ExplorePage() {
                 <Link
                   key={e._id}
                   href="/calendar"
-                  className="group relative flex flex-col overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(34,197,94,0.25)]"
+                  className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(239,44,88,0.25)]"
                 >
                   <div className="relative aspect-[16/10] bg-[#1A1A1A]">
                     {e.image ? (
@@ -250,7 +250,7 @@ export default async function ExplorePage() {
                     </div>
                   </div>
                   <div className="p-3">
-                    <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-[#22C55E]">
+                    <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-[#EF2C58]">
                       {e.type}
                     </div>
                     <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-[#E8E8E8]">{e.title}</h3>
@@ -266,7 +266,7 @@ export default async function ExplorePage() {
       <section id="courses" className="scroll-mt-20">
         <SectionHeader accent="#A855F7" eyebrow="ХИЧЭЭЛ · СУРГАЛТ" href="/classroom" />
         {courses.length === 0 ? (
-          <div className="rounded-[8px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0D0D0D] py-10 text-center text-[12px] text-[#555]">
             Хичээл удахгүй нэмэгдэнэ
           </div>
         ) : (
@@ -275,7 +275,7 @@ export default async function ExplorePage() {
               <Link
                 key={c._id}
                 href={`/classroom/course/${c._id}`}
-                className="group overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(168,85,247,0.25)]"
+                className="group overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F0F] transition hover:border-[rgba(168,85,247,0.25)]"
               >
                 <div className="relative aspect-[16/10] bg-[#1A1A1A]">
                   {c.thumbnail ? (
@@ -339,7 +339,7 @@ export default async function ExplorePage() {
       </section>
 
       {/* ─── Final CTA for guests ─── */}
-      <section className="overflow-hidden rounded-[8px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
+      <section className="overflow-hidden rounded-[4px] border border-[rgba(239,44,88,0.18)] bg-gradient-to-br from-[rgba(239,44,88,0.08)] via-[#0D0D0D] to-[#0D0D0D] p-6 md:p-8">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#EF2C58]">ANTAQOR</div>
@@ -350,7 +350,7 @@ export default async function ExplorePage() {
               Промт, агент, бизнес — Cyber Empire-ийн дотоод контентод хандах эрх.
             </p>
           </div>
-          <Link href="/auth/signup" className="rounded-[8px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
+          <Link href="/auth/signup" className="rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(239,44,88,0.3)]">
             Нэгдэх →
           </Link>
         </div>

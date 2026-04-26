@@ -42,8 +42,8 @@ const CATEGORIES: {
     key: "бүтээл",
     label: "Бүтээл",
     blurb: "AI-ээр хийсэн бүтээл",
-    color: "#22C55E",
-    tint: "rgba(34,197,94,0.12)",
+    color: "#EF2C58",
+    tint: "rgba(239,44,88,0.12)",
     placeholder:
       "Юу бүтээсэн бэ? Аль AI ашигласан, ямар challenge тулгарч, хэрхэн шийдсэнээ бичнэ үү.",
     icon: (
@@ -279,7 +279,7 @@ function NewPostContent() {
                   key={cat.key}
                   type="button"
                   onClick={() => setCategory(cat.key)}
-                  className="flex flex-col items-center gap-1.5 rounded-[6px] border px-2 py-3 transition-all duration-200"
+                  className="flex flex-col items-center gap-1.5 rounded-[4px] border px-2 py-3 transition-all duration-200"
                   style={{
                     borderColor: isActive ? cat.color : "rgba(255,255,255,0.08)",
                     background: isActive ? cat.tint : "#141414",
@@ -305,7 +305,7 @@ function NewPostContent() {
         </div>
 
         {/* Content card */}
-        <div className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4 sm:p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4 sm:p-5">
           <div className="mb-2 flex items-center gap-2">
             <span
               className="inline-flex h-5 items-center gap-1 rounded-[4px] px-2 text-[10px] font-bold uppercase tracking-wide"
@@ -388,7 +388,7 @@ function NewPostContent() {
 
         {/* Quest — collapsed by default */}
         {tasks.length > 0 && (
-          <div className="rounded-[6px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414]">
             <button
               type="button"
               onClick={() => setQuestOpen((v) => !v)}

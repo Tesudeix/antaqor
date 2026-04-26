@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   if (!session || !isAdmin) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
-        <div className="w-full max-w-sm rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-8 text-center">
+        <div className="w-full max-w-sm rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-8 text-center">
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(239,44,88,0.1)]">
             <svg className="h-6 w-6 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
           <h2 className="text-[18px] font-bold text-[#E8E8E8]">Хандалт хориглогдсон</h2>
           <p className="mt-2 text-[13px] text-[#555555]">Зөвхөн админ эрхтэй хэрэглэгч</p>
-          <Link href="/" className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:bg-[#D4264E]">
+          <Link href="/" className="mt-6 inline-flex items-center gap-2 rounded-[4px] bg-[#EF2C58] px-6 py-3 text-[13px] font-bold text-white transition hover:bg-[#D4264E]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             Нүүр хуудас
           </Link>
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </div>
           )}
           <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[#555555] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#E8E8E8]">
+            className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[#555555] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#E8E8E8]">
             <svg className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
             </svg>
@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href}
-                className={`group relative mb-0.5 flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 ${
+                className={`group relative mb-0.5 flex items-center gap-3 rounded-[4px] px-3 py-2.5 transition-all duration-200 ${
                   active
                     ? "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]"
                     : "text-[#666666] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#CCCCCC]"
@@ -161,7 +161,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href}
-                className={`group relative mb-0.5 flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 ${
+                className={`group relative mb-0.5 flex items-center gap-3 rounded-[4px] px-3 py-2.5 transition-all duration-200 ${
                   active
                     ? "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]"
                     : "text-[#666666] hover:bg-[rgba(255,255,255,0.04)] hover:text-[#CCCCCC]"
@@ -183,7 +183,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         {/* Footer */}
         <div className="border-t border-[rgba(255,255,255,0.06)] p-3">
           <Link href="/"
-            className={`flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[#555555] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#E8E8E8] ${sidebarCollapsed ? "justify-center" : ""}`}
+            className={`flex items-center gap-2.5 rounded-[4px] px-3 py-2.5 text-[#555555] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#E8E8E8] ${sidebarCollapsed ? "justify-center" : ""}`}
             title={sidebarCollapsed ? "Сайт руу буцах" : undefined}
           >
             <svg className="h-[18px] w-[18px] shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </Link>
           {/* User */}
           {!sidebarCollapsed && session?.user && (
-            <div className="mt-2 flex items-center gap-2.5 rounded-[10px] bg-[rgba(255,255,255,0.03)] px-3 py-2.5">
+            <div className="mt-2 flex items-center gap-2.5 rounded-[4px] bg-[rgba(255,255,255,0.03)] px-3 py-2.5">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[rgba(239,44,88,0.15)] text-[10px] font-bold text-[#EF2C58]">
                 {session.user.name?.charAt(0) || "A"}
               </div>
@@ -223,14 +223,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         {moreOpen && (
           <>
             <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setMoreOpen(false)} />
-            <div className="relative z-50 mx-3 mb-2 rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[#111111] p-3 shadow-2xl backdrop-blur-xl">
+            <div className="relative z-50 mx-3 mb-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#111111] p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#444444]">Хэрэгслүүд</div>
               <div className="grid grid-cols-4 gap-1">
                 {allTools.map((item) => {
                   const active = isActive(item.href);
                   return (
                     <Link key={item.href} href={item.href}
-                      className={`flex flex-col items-center gap-1.5 rounded-[12px] px-2 py-3 transition ${active ? "bg-[rgba(239,44,88,0.12)]" : "hover:bg-[rgba(255,255,255,0.04)]"}`}>
+                      className={`flex flex-col items-center gap-1.5 rounded-[4px] px-2 py-3 transition ${active ? "bg-[rgba(239,44,88,0.12)]" : "hover:bg-[rgba(255,255,255,0.04)]"}`}>
                       <svg className={`h-5 w-5 ${active ? "text-[#EF2C58]" : "text-[#666666]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
@@ -240,7 +240,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 })}
               </div>
               <div className="mt-2 border-t border-[rgba(255,255,255,0.06)] pt-2">
-                <Link href="/" className="flex items-center gap-2 rounded-[10px] px-3 py-2.5 text-[#666666] transition hover:bg-[rgba(255,255,255,0.04)]">
+                <Link href="/" className="flex items-center gap-2 rounded-[4px] px-3 py-2.5 text-[#666666] transition hover:bg-[rgba(255,255,255,0.04)]">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                   </svg>
@@ -260,7 +260,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 return (
                   <button key="more" onClick={() => setMoreOpen(!moreOpen)}
                     className="flex flex-1 flex-col items-center gap-0.5 py-2.5 transition">
-                    <div className={`flex h-7 w-7 items-center justify-center rounded-[8px] transition ${anyToolActive || moreOpen ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
+                    <div className={`flex h-7 w-7 items-center justify-center rounded-[4px] transition ${anyToolActive || moreOpen ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
                       <svg className={`h-5 w-5 transition ${anyToolActive || moreOpen ? "text-[#EF2C58]" : "text-[#555555]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
@@ -274,7 +274,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               return (
                 <Link key={item.href} href={item.href}
                   className="flex flex-1 flex-col items-center gap-0.5 py-2.5 transition">
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-[8px] transition ${active ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
+                  <div className={`flex h-7 w-7 items-center justify-center rounded-[4px] transition ${active ? "bg-[rgba(239,44,88,0.15)]" : ""}`}>
                     <svg className={`h-5 w-5 transition ${active ? "text-[#EF2C58]" : "text-[#555555]"}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                     </svg>

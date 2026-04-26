@@ -99,7 +99,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             Эрхэм зорилго · Явц
           </div>
           <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#E8E8E8]">
-            <span className="text-[#EF2C58]">1,000</span> AI Байлдан дагуулагч бэлтгэх
+            <span className="text-[#EF2C58]">140</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
         <div className="text-right">

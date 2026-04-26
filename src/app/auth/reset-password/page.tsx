@@ -90,7 +90,7 @@ function ResetPasswordForm() {
 
       {success ? (
         <div>
-          <div className="mb-5 rounded-[4px] bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] px-4 py-3 text-[12px] text-green-400">
+          <div className="mb-5 rounded-[4px] bg-[rgba(239,44,88,0.08)] border border-[rgba(239,44,88,0.2)] px-4 py-3 text-[12px] text-green-400">
             <p className="font-medium">Нууц үг амжилттай солигдлоо</p>
             <p className="mt-1 text-[11px] text-green-400/60">
               Шинэ нууц үгээрээ нэвтэрнэ үү.

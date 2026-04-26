@@ -734,8 +734,8 @@ function TipContent({ number, title, body, tipDo, tipDont, compact }: {
       {/* Do / Don't */}
       <div style={{ marginTop: "auto" }}>
         <div style={{ display: "flex", gap: 8, marginBottom: 0 }}>
-          <div style={{ flex: 1, background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", padding: "10px 12px" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#22C55E", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>ZӨB</div>
+          <div style={{ flex: 1, background: "rgba(239,44,88,0.06)", border: "1px solid rgba(239,44,88,0.15)", padding: "10px 12px" }}>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#EF2C58", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>ZӨB</div>
             <div style={{ fontSize: compact ? 10 : 11, color: "#ddd", lineHeight: 1.4 }}>{tipDo}</div>
           </div>
           <div style={{ flex: 1, background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", padding: "10px 12px" }}>

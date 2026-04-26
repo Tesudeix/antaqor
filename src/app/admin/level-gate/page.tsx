@@ -92,7 +92,7 @@ export default function LevelGateAdminPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#1A1A1A] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -102,13 +102,13 @@ export default function LevelGateAdminPage() {
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Level Gating</h1>
           <p className="mt-0.5 text-[12px] text-[#555]">Feed visibility band + free cap + paid XP multiplier</p>
         </div>
-        <Link href="/" target="_blank" className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white">
+        <Link href="/" target="_blank" className="rounded-[4px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white">
           Feed харах
         </Link>
       </div>
 
       {/* Master toggle */}
-      <div className="flex items-center justify-between rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+      <div className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
         <div>
           <div className="text-[14px] font-bold text-[#E8E8E8]">Level gate ажиллаж байна</div>
           <div className="mt-0.5 text-[11px] text-[#666]">
@@ -117,7 +117,7 @@ export default function LevelGateAdminPage() {
         </div>
         <button
           onClick={() => setEnabled(!enabled)}
-          className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${enabled ? "bg-[#22C55E]" : "bg-[#333]"}`}
+          className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${enabled ? "bg-[#EF2C58]" : "bg-[#333]"}`}
         >
           <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
         </button>
@@ -126,7 +126,7 @@ export default function LevelGateAdminPage() {
       {/* Sliders */}
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Band */}
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Feed band</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">±{band}</span>
@@ -150,7 +150,7 @@ export default function LevelGateAdminPage() {
         </div>
 
         {/* Free cap */}
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Free cap</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">L{cap}</span>
@@ -174,7 +174,7 @@ export default function LevelGateAdminPage() {
         </div>
 
         {/* Multiplier */}
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Paid XP multiplier</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">{multiplier.toFixed(1)}×</span>
@@ -203,14 +203,14 @@ export default function LevelGateAdminPage() {
         <button
           onClick={save}
           disabled={saving}
-          className="rounded-[8px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+          className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40"
         >
           {saving ? "..." : "Хадгалах"}
         </button>
         <button
           onClick={backfill}
           disabled={backfilling}
-          className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-6 py-2.5 text-[13px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-40"
+          className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-6 py-2.5 text-[13px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58] disabled:opacity-40"
         >
           {backfilling ? "Backfill... (том бол удна)" : "Постууд backfill-ах"}
         </button>
@@ -220,7 +220,7 @@ export default function LevelGateAdminPage() {
       </div>
 
       {/* Explainer */}
-      <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[12px] leading-relaxed text-[#888]">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[12px] leading-relaxed text-[#888]">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#EF2C58]">Яаж ажилладаг вэ?</div>
         <ol className="list-inside list-decimal space-y-1.5">
           <li>User-ийн <span className="font-bold text-[#CCC]">effective level</span> = paid бол actual level, free бол min(actual, free cap)</li>
