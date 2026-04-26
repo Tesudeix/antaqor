@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 import { useMembership } from "@/lib/useMembership";
 import HeroSlider from "@/components/HeroSlider";
+import NextEventCountdown from "@/components/NextEventCountdown";
 import Testimonials from "@/components/Testimonials";
 
 interface Post {
@@ -775,6 +776,7 @@ function HeroLanding() {
 
   return (
     <div className="mx-auto max-w-lg space-y-5">
+      <NextEventCountdown />
       <HeroSlider />
       <SocialProof stats={stats} />
 
@@ -898,6 +900,9 @@ function FeedPaywall() {
       {/* What you unlock — uses the same admin-editable cards */}
       <ValueProps />
 
+      {/* Upcoming live/course — drives FOMO toward upgrade */}
+      <NextEventCountdown />
+
       {/* Free editorial — stays accessible so the page isn't a wall */}
       <LatestNews />
     </div>
@@ -986,7 +991,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <LatestNews />
+      <NextEventCountdown />
       <LatestNews />
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
