@@ -30,10 +30,9 @@ export async function GET(req: NextRequest) {
     const validCategories = ["мэдээлэл", "ялалт", "промт", "бүтээл", "танилцуулга"];
     if (category && validCategories.includes(category)) query.category = category;
 
-    // Non-authenticated users can only see free posts
-    if (!session?.user) {
-      query.visibility = "free";
-    } else if (visibility === "free") {
+    // Posts are publicly visible (free + members) to everyone, including guests.
+    // Visibility filter still honored when explicitly requested via ?visibility=.
+    if (visibility === "free") {
       query.visibility = "free";
     } else if (visibility === "members") {
       query.visibility = "members";
