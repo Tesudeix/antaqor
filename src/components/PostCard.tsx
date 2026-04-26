@@ -33,7 +33,7 @@ const REACTION_KEYS = ["heart", "fire", "rocket", "think"];
 const CATEGORY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   "мэдээлэл": { bg: "bg-[rgba(59,130,246,0.15)]", text: "text-[#3B82F6]", label: "МЭДЭЭЛЭЛ" },
   "ялалт": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#EF2C58]", label: "ЯЛАЛТ" },
-  "промт": { bg: "bg-[rgba(15,129,202,0.15)]", text: "text-[#0F81CA]", label: "ПРОМТ" },
+  "промт": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#EF2C58]", label: "ПРОМТ" },
   "бүтээл": { bg: "bg-[rgba(239,44,88,0.15)]", text: "text-[#EF2C58]", label: "БҮТЭЭЛ" },
   "танилцуулга": { bg: "bg-[rgba(168,85,247,0.15)]", text: "text-[#A855F7]", label: "ТАНИЛЦУУЛГА" },
 };
@@ -67,7 +67,7 @@ function levelColor(lvl: number): string {
   if (lvl >= 61) return "#A855F7"; // Entaqor
   if (lvl >= 41) return "#EF2C58"; // Conqueror
   if (lvl >= 26) return "#EF2C58"; // Entrepreneur
-  if (lvl >= 16) return "#0F81CA"; // Engineer
+  if (lvl >= 16) return "#EF2C58"; // Engineer
   if (lvl >= 6)  return "#3B82F6"; // Creator
   return "#999999";                 // Punk
 }
@@ -229,7 +229,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           {isLongPost && !expanded && (
             <button
               onClick={() => setExpanded(true)}
-              className="mt-1 text-[13px] font-medium text-[#0F81CA] transition-colors duration-200 hover:text-[#EF2C58]"
+              className="mt-1 text-[13px] font-medium text-[#EF2C58] transition-colors duration-200 hover:text-[#EF2C58]"
             >
               Цааш унших...
             </button>

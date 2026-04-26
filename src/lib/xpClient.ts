@@ -13,7 +13,7 @@ export const LEVEL_TITLES = [
 export const ROLE_LABELS: Record<string, { en: string; mn: string; color: string }> = {
   punk: { en: "Punk", mn: "Панк", color: "#999999" },
   creator: { en: "Creator", mn: "Бүтээгч", color: "#3B82F6" },
-  engineer: { en: "Engineer", mn: "Инженер", color: "#0F81CA" },
+  engineer: { en: "Engineer", mn: "Инженер", color: "#EF2C58" },
   entrepreneur: { en: "Entrepreneur", mn: "Антрепренёр", color: "#EF2C58" },
   conqueror: { en: "Conqueror", mn: "Байлдан дагуулагч", color: "#EF2C58" },
   entaqor: { en: "Entaqor", mn: "Энтакор", color: "#A855F7" },

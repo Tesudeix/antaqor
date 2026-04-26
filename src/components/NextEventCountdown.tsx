@@ -17,7 +17,7 @@ interface EventItem {
 
 const TYPE_CFG: Record<EventItem["type"], { label: string; color: string }> = {
   live:      { label: "LIVE",       color: "#EF2C58" },
-  class:     { label: "ХИЧЭЭЛ",     color: "#0F81CA" },
+  class:     { label: "ХИЧЭЭЛ",     color: "#EF2C58" },
   workshop:  { label: "ВОРКШОП",    color: "#A855F7" },
   challenge: { label: "CHALLENGE",  color: "#06B6D4" },
   mentor:    { label: "MENTOR",     color: "#14B8A6" },
@@ -122,25 +122,38 @@ export default function NextEventCountdown() {
   const cfg = TYPE_CFG[event.type] || TYPE_CFG.event;
   const date = new Date(event.date);
 
+  // Urgency tier — drives visual heat
+  const urgent = info.ticking || info.isLive; // <10min OR live → max heat
+  const warm = !urgent && isClose;            // <1hr → mild glow
+
   return (
     <Link
       href="/calendar"
       className={`group relative flex items-center gap-3 overflow-hidden rounded-[4px] border p-2 pr-3 transition ${
-        info.isLive
-          ? "border-[rgba(239,44,88,0.45)] bg-[rgba(239,44,88,0.06)] hover:border-[rgba(239,44,88,0.7)]"
-          : "border-[rgba(255,255,255,0.08)] bg-[#0F0F10] hover:border-[rgba(239,44,88,0.3)]"
+        urgent
+          ? "antaqor-urgency-pulse border-[#EF2C58] bg-[rgba(239,44,88,0.1)]"
+          : warm
+            ? "border-[rgba(239,44,88,0.45)] bg-[rgba(239,44,88,0.05)] hover:border-[rgba(239,44,88,0.7)]"
+            : "border-[rgba(255,255,255,0.08)] bg-[#0F0F10] hover:border-[rgba(239,44,88,0.3)]"
       }`}
     >
-      {/* Cover thumb (image OR seeded gradient with date stamp) */}
+      {/* Sweeping shimmer when urgent — subtle, pink */}
+      {urgent && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(239,44,88,0.12)] to-transparent antaqor-urgency-shimmer"
+        />
+      )}
+
+      {/* Cover thumb */}
       <div
-        className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] sm:h-14 sm:w-14"
+        className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] sm:h-14 sm:w-14 ${urgent ? "antaqor-stamp-pulse" : ""}`}
         style={!event.image ? { background: deterministicGradient(event._id, cfg.color) } : undefined}
       >
         {event.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={event.image} alt="" className="h-full w-full object-cover" />
         )}
-        {/* Date stamp overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
           <span className="text-[8px] font-bold uppercase leading-none text-white/80">{MN_DAYS[date.getDay()]}</span>
           <span className="text-[16px] font-black leading-none text-white sm:text-[18px]">{date.getDate()}</span>
@@ -150,7 +163,7 @@ export default function NextEventCountdown() {
       {/* Body */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          {info.isLive && (
+          {(info.isLive || urgent) && (
             <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
           )}
           <span
@@ -161,7 +174,11 @@ export default function NextEventCountdown() {
           </span>
           <span
             className={`truncate text-[10px] font-bold uppercase tracking-[0.06em] ${
-              info.isLive ? "text-[#EF2C58]" : "text-[#888]"
+              urgent
+                ? "antaqor-urgency-text text-[#EF2C58]"
+                : info.isLive || warm
+                  ? "text-[#EF2C58]"
+                  : "text-[#888]"
             }`}
           >
             {info.phrase}
@@ -172,7 +189,6 @@ export default function NextEventCountdown() {
         </div>
       </div>
 
-      {/* Arrow */}
       <svg
         className="h-4 w-4 shrink-0 text-[#666] transition group-hover:translate-x-0.5 group-hover:text-[#EF2C58]"
         fill="none"
@@ -182,6 +198,38 @@ export default function NextEventCountdown() {
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
       </svg>
+
+      {/* Scoped urgency keyframes — co-located so the component is self-contained */}
+      <style jsx>{`
+        @keyframes urgencyPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(239,44,88,0); }
+          50%      { box-shadow: 0 0 0 4px rgba(239,44,88,0.18), 0 0 24px rgba(239,44,88,0.25); }
+        }
+        :global(.antaqor-urgency-pulse) {
+          animation: urgencyPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes urgencyShimmer {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        :global(.antaqor-urgency-shimmer) {
+          animation: urgencyShimmer 2.4s linear infinite;
+        }
+        @keyframes urgencyText {
+          0%, 100% { text-shadow: 0 0 0 rgba(239,44,88,0); opacity: 0.85; }
+          50%      { text-shadow: 0 0 12px rgba(239,44,88,0.7); opacity: 1; }
+        }
+        :global(.antaqor-urgency-text) {
+          animation: urgencyText 1.2s ease-in-out infinite;
+        }
+        @keyframes stampPulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239,44,88,0); }
+          50%      { transform: scale(1.04); box-shadow: 0 0 0 3px rgba(239,44,88,0.35); }
+        }
+        :global(.antaqor-stamp-pulse) {
+          animation: stampPulse 1.6s ease-in-out infinite;
+        }
+      `}</style>
     </Link>
   );
 }

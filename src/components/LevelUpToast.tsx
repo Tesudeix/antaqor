@@ -18,7 +18,7 @@ function levelColor(lvl: number): string {
   if (lvl >= 61) return "#A855F7";
   if (lvl >= 41) return "#EF2C58";
   if (lvl >= 26) return "#EF2C58";
-  if (lvl >= 16) return "#0F81CA";
+  if (lvl >= 16) return "#EF2C58";
   if (lvl >= 6) return "#3B82F6";
   return "#999999";
 }

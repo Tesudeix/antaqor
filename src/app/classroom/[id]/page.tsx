@@ -321,7 +321,7 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
                 onClick={() => setShowTranscript(!showTranscript)}
                 className={`rounded-[4px] border px-4 py-2.5 text-[12px] font-medium transition-all duration-200 ${
                   showTranscript
-                    ? "border-[rgba(15,129,202,0.4)] bg-[rgba(15,129,202,0.1)] text-[#0F81CA]"
+                    ? "border-[rgba(239,44,88,0.4)] bg-[rgba(239,44,88,0.1)] text-[#EF2C58]"
                     : "border-[rgba(255,255,255,0.08)] text-[#999999] hover:text-[#E8E8E8]"
                 }`}
               >

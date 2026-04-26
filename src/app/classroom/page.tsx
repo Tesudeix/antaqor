@@ -51,7 +51,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
           <circle cx="140" cy="70" r="35" fill="none" stroke={`rgba(239,44,88,${goldOpacity + 0.05})`} strokeWidth="0.5" />
           <circle cx="140" cy="70" r="20" fill="none" stroke={`rgba(239,44,88,${goldOpacity + 0.1})`} strokeWidth="0.5" />
           <circle cx={140 + 50 * Math.cos(index * 0.8)} cy={70 + 50 * Math.sin(index * 0.8)} r="3" fill="#EF2C58" opacity="0.8" />
-          <circle cx={140 + 35 * Math.cos(index * 1.3 + 1)} cy={70 + 35 * Math.sin(index * 1.3 + 1)} r="2" fill="#0F81CA" opacity="0.7" />
+          <circle cx={140 + 35 * Math.cos(index * 1.3 + 1)} cy={70 + 35 * Math.sin(index * 1.3 + 1)} r="2" fill="#EF2C58" opacity="0.7" />
           <circle cx="140" cy="70" r="5" fill="#EF2C58" opacity="0.3" />
         </svg>
       );
@@ -77,7 +77,7 @@ function CourseCover({ style, index }: { style: CoverStyle; index: number }) {
               return `${x},${y}`;
             }).join(" ")}
             fill="none"
-            stroke="#0F81CA"
+            stroke="#EF2C58"
             strokeWidth="0.5"
             opacity="0.3"
           />
@@ -142,7 +142,7 @@ function ProgressRing({ percent, size = 44 }: { percent: number; size?: number }
 // ─── Status Badge ───
 function StatusBadge({ status }: { status: "new" | "active" | "done" }) {
   const config = {
-    new: { label: "ШИНЭ", bg: "rgba(15,129,202,0.2)", text: "#0F81CA" },
+    new: { label: "ШИНЭ", bg: "rgba(239,44,88,0.2)", text: "#EF2C58" },
     active: { label: "ҮРГЭЛЖИЛЖ БУЙ", bg: "rgba(239,44,88,0.15)", text: "#EF2C58" },
     done: { label: "ДУУССАН", bg: "rgba(239,44,88,0.15)", text: "#EF2C58" },
   };

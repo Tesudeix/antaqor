@@ -26,13 +26,13 @@ type ViewMode = "month" | "week" | "list";
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   event:    { label: "Эвент",       color: "#EF2C58", bg: "rgba(239,44,88,0.15)",   icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
   live:     { label: "LIVE хичээл", color: "#EF2C58", bg: "rgba(239,44,88,0.15)",    icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
-  class:    { label: "Хичээл",     color: "#0F81CA", bg: "rgba(15,129,202,0.15)",   icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
+  class:    { label: "Хичээл",     color: "#EF2C58", bg: "rgba(239,44,88,0.15)",   icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
   deadline: { label: "Дедлайн",    color: "#EF2C58", bg: "rgba(239,44,88,0.15)",    icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
   workshop: { label: "Воркшоп",    color: "#A855F7", bg: "rgba(168,85,247,0.15)",   icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  upcoming: { label: "Төлөвлөсөн", color: "#0F81CA" },
+  upcoming: { label: "Төлөвлөсөн", color: "#EF2C58" },
   live:     { label: "LIVE",       color: "#EF2C58" },
   ended:    { label: "Дууссан",    color: "#666666" },
 };
@@ -260,7 +260,7 @@ export default function AdminCalendarPage() {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Энэ сар", value: thisMonthCount, color: "text-[#E8E8E8]" },
-          { label: "Төлөвлөсөн", value: upcomingCount, color: "text-[#0F81CA]" },
+          { label: "Төлөвлөсөн", value: upcomingCount, color: "text-[#EF2C58]" },
           { label: "LIVE", value: liveCount, color: "text-[#EF2C58]" },
         ].map(s => (
           <div key={s.label} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-3">

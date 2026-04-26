@@ -28,8 +28,8 @@ const CATEGORIES: {
     key: "промт",
     label: "Промт",
     blurb: "Ажилласан промтоо хуваалц",
-    color: "#0F81CA",
-    tint: "rgba(15,129,202,0.12)",
+    color: "#EF2C58",
+    tint: "rgba(239,44,88,0.12)",
     placeholder:
       "Амжилттай ажилласан промтоо энд буулгаарай.\n\nЖишээ:\nAct as a senior UX designer. Given …",
     icon: (

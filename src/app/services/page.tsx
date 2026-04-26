@@ -49,7 +49,7 @@ const TOOLS: ServiceData[] = [
   },
 ];
 
-const ACCENT_PALETTE = ["#EF2C58", "#0F81CA", "#EF2C58", "#A855F7", "#FF4473", "#EC4899"];
+const ACCENT_PALETTE = ["#EF2C58", "#EF2C58", "#EF2C58", "#A855F7", "#FF4473", "#EC4899"];
 function getAccent(name: string): string {
   return ACCENT_PALETTE[name.charCodeAt(0) % ACCENT_PALETTE.length];
 }
