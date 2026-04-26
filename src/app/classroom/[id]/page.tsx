@@ -327,24 +327,11 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="mb-6 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]"
         >
-          {embedUrl ? (
-            <div className="relative aspect-video w-full">
-              <iframe
-                src={embedUrl}
-                className="absolute inset-0 h-full w-full"
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              />
-            </div>
-          ) : isUploadedVideo ? (
-            <video controls className="w-full" preload="metadata">
-              <source src={lesson.videoUrl} />
-            </video>
-          ) : (
-            <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="block p-8 text-center text-[14px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline">
-              Видео нээх →
-            </a>
-          )}
+          <LessonVideoPlayer
+            videoUrl={lesson.videoUrl}
+            embedUrl={embedUrl}
+            isUploaded={isUploadedVideo}
+          />
         </motion.div>
       )}
 
@@ -641,6 +628,117 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </motion.article>
       )}
+    </div>
+  );
+}
+
+// ─── Video player with skeleton + loading copy ───────────────────────────
+function LessonVideoPlayer({
+  videoUrl,
+  embedUrl,
+  isUploaded,
+}: {
+  videoUrl: string;
+  embedUrl: string | null;
+  isUploaded: boolean;
+}) {
+  const [ready, setReady] = useState(false);
+  const [buffering, setBuffering] = useState(false);
+  const [error, setError] = useState(false);
+
+  if (embedUrl) {
+    return (
+      <div className="relative aspect-video w-full bg-[#0A0A0A]">
+        {!ready && <VideoSkeleton text="Видео ачаалж байна. Түр хүлээгээрэй..." />}
+        <iframe
+          src={embedUrl}
+          className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${ready ? "opacity-100" : "opacity-0"}`}
+          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          onLoad={() => setReady(true)}
+        />
+      </div>
+    );
+  }
+
+  if (isUploaded) {
+    return (
+      <div className="relative aspect-video w-full bg-[#0A0A0A]">
+        {!ready && !error && <VideoSkeleton text="Видео ачаалж байна. Түр хүлээгээрэй..." />}
+        {ready && buffering && (
+          <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-[4px] bg-black/70 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm">
+            Буфер хийж байна...
+          </div>
+        )}
+        {error && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-[#0A0A0A] px-6 text-center">
+            <svg className="h-7 w-7 text-[#EF4444]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <p className="text-[12px] font-bold text-[#E8E8E8]">Видео ачаалж чадсангүй</p>
+            <button
+              onClick={() => { setError(false); setReady(false); }}
+              className="mt-1 text-[11px] font-bold text-[#EF2C58] hover:underline"
+            >
+              Дахин оролдох
+            </button>
+          </div>
+        )}
+        <video
+          key={videoUrl + (error ? ":retry" : "")}
+          controls
+          preload="metadata"
+          playsInline
+          className={`h-full w-full transition-opacity duration-200 ${ready ? "opacity-100" : "opacity-0"}`}
+          onLoadedMetadata={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+          onWaiting={() => setBuffering(true)}
+          onPlaying={() => setBuffering(false)}
+          onError={() => setError(true)}
+        >
+          <source src={videoUrl} />
+        </video>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={videoUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block p-8 text-center text-[14px] font-bold text-[#EF2C58] transition-colors duration-200 hover:underline"
+    >
+      Видео нээх →
+    </a>
+  );
+}
+
+function VideoSkeleton({ text }: { text: string }) {
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 overflow-hidden bg-[#0A0A0A]">
+      {/* shimmer band */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(239,44,88,0.06) 50%, transparent 100%)",
+          animation: "videoShimmer 1.6s ease-in-out infinite",
+        }}
+      />
+      <div className="relative z-10 flex flex-col items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)]">
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+        </span>
+        <p className="text-[12px] font-bold text-[#E8E8E8]">{text}</p>
+        <p className="text-[10px] text-[#666]">Хурд интернетээс хамаарна</p>
+      </div>
+      <style jsx>{`
+        @keyframes videoShimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }
