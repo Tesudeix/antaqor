@@ -354,7 +354,7 @@ function AddLessonInline({
       for (const file of files) {
         const fd = new FormData();
         fd.append("file", file);
-        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const res = await fetch("/api/classroom/upload-pdf", { method: "POST", body: fd });
         const data = await res.json();
         if (res.ok && data.url) {
           setPdfs((p) => [...p, { url: data.url, name: file.name, size: file.size }]);

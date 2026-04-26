@@ -70,14 +70,31 @@ function TaskPage({ params }: { params: Promise<{ id: string }> }) {
   const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+    setError("");
+    const nonPdf = files.find((f) => f.type !== "application/pdf" && !f.name.toLowerCase().endsWith(".pdf"));
+    if (nonPdf) {
+      setError("Зөвхөн PDF файл (.pdf) хүлээж авна");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+    const tooBig = files.find((f) => f.size > 25 * 1024 * 1024);
+    if (tooBig) {
+      setError("PDF 25MB-аас бага байх ёстой");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
     setUploading(true);
     try {
       for (const file of files) {
         const fd = new FormData();
         fd.append("file", file);
-        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const res = await fetch("/api/classroom/upload-pdf", { method: "POST", body: fd });
         const data = await res.json();
-        if (res.ok && data.url) {
+        if (!res.ok) {
+          setError(data.error || "PDF хадгалах алдаа");
+          continue;
+        }
+        if (data.url) {
           setAttachments((p) => [...p, { url: data.url, name: file.name }].slice(0, 5));
         }
       }
@@ -89,8 +106,8 @@ function TaskPage({ params }: { params: Promise<{ id: string }> }) {
 
   const submit = async () => {
     if (submitting) return;
-    if (!answer.trim() && attachments.length === 0) {
-      setError("Хариу эсвэл хавсралт оруулна уу");
+    if (attachments.length === 0) {
+      setError("PDF файл хавсаргана уу");
       return;
     }
     setSubmitting(true);
@@ -188,48 +205,60 @@ function TaskPage({ params }: { params: Promise<{ id: string }> }) {
             </div>
           )}
 
-          {/* Form */}
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Хариу бичих</div>
+          {/* PDF upload — primary submission */}
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">PDF хавсралт <span className="text-[#EF2C58]">*</span></span>
+            <span className="text-[9px] text-[#555]">{attachments.length}/5</span>
+          </div>
+          {attachments.length > 0 && (
+            <ul className="mb-2 space-y-1">
+              {attachments.map((a, i) => (
+                <li key={i} className="flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.05)] px-2.5 py-2">
+                  <span className="rounded-[3px] bg-[rgba(239,44,88,0.18)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">PDF</span>
+                  <span className="min-w-0 flex-1 truncate text-[12px] text-[#E8E8E8]">{a.name}</span>
+                  <button onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#666] hover:text-[#EF4444]" aria-label="Устгах">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {attachments.length < 5 && (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex w-full items-center gap-2.5 rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.35)] bg-[#0A0A0A] px-3 py-3 text-left transition hover:border-[rgba(239,44,88,0.55)] hover:bg-[rgba(239,44,88,0.04)] disabled:opacity-50"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] text-[#EF2C58]">
+                {uploading ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+                ) : (
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6M7 21h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+                  </svg>
+                )}
+              </span>
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block text-[12px] font-bold text-[#E8E8E8]">
+                  {uploading ? "Хадгалж байна..." : attachments.length === 0 ? "PDF сонгох" : "Дахин PDF нэмэх"}
+                </span>
+                <span className="block text-[10px] text-[#666]">.pdf · 25MB хүртэл · хамгийн их 5 файл</span>
+              </span>
+            </button>
+          )}
+          <input ref={fileRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePick} className="hidden" />
+
+          {/* Optional notes */}
+          <div className="mt-4 mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Тэмдэглэл <span className="text-[#555] normal-case font-normal tracking-normal">(заавал биш)</span></div>
           <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            placeholder={isGraded ? "Дахин илгээхэд үнэлгээ цэвэрлэгдэнэ" : "Хариу, тайлбар, шийдлээ бичнэ үү..."}
-            rows={6}
+            placeholder="Багшид нэмж хэлэх зүйл байвал бичнэ үү..."
+            rows={3}
             maxLength={10000}
-            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none focus:border-[rgba(239,44,88,0.4)]"
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none focus:border-[rgba(239,44,88,0.4)]"
           />
-
-          {/* Attachments */}
-          <div className="mt-3">
-            <div className="mb-1.5 flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Файл хавсаргах</span>
-              <span className="text-[9px] text-[#555]">{attachments.length}/5</span>
-            </div>
-            {attachments.length > 0 && (
-              <ul className="mb-2 space-y-1">
-                {attachments.map((a, i) => (
-                  <li key={i} className="flex items-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-2.5 py-1.5">
-                    <span className="rounded-[3px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">FILE</span>
-                    <span className="min-w-0 flex-1 truncate text-[11px] text-[#CCC]">{a.name}</span>
-                    <button onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#666] hover:text-[#EF4444]">
-                      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {attachments.length < 5 && (
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={uploading}
-                className="inline-flex items-center gap-1.5 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-3 py-1.5 text-[11px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50"
-              >
-                {uploading ? "Хадгалж байна..." : "+ Файл нэмэх"}
-              </button>
-            )}
-            <input ref={fileRef} type="file" multiple onChange={handlePick} className="hidden" />
-          </div>
 
           {error && (
             <div className="mt-3 rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] text-[#EF4444]">
@@ -248,10 +277,10 @@ function TaskPage({ params }: { params: Promise<{ id: string }> }) {
 
           <button
             onClick={submit}
-            disabled={submitting || uploading || (!answer.trim() && attachments.length === 0)}
+            disabled={submitting || uploading || attachments.length === 0}
             className="mt-4 w-full rounded-[4px] bg-[#EF2C58] py-3 text-[13px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
           >
-            {submitting ? "Илгээж байна..." : submission ? "Дахин илгээх" : "Илгээх"}
+            {submitting ? "Илгээж байна..." : submission ? "Дахин илгээх" : "PDF илгээх"}
           </button>
         </div>
       )}
