@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -47,19 +46,14 @@ function timeAgo(iso: string): string {
 
 export default function CommunityPage() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<Post | null>(null);
 
-  // Guests browse the gallery freely but tapping a tile pushes them to sign in
+  // Guests can browse and open posts; sign-in is only required for actions (like / comment)
   const handleOpen = (p: Post) => {
-    if (!session) {
-      router.push("/auth/signin?next=/community");
-      return;
-    }
     setOpen(p);
   };
 

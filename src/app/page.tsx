@@ -400,8 +400,8 @@ function ShowcaseGallery({ guest = false }: { guest?: boolean }) {
 
   if (posts.length === 0) return null;
 
-  const allHref = guest ? "/auth/signup" : "/";
-  const postHref = (id: string) => guest ? "/auth/signup" : `/posts/${id}`;
+  const allHref = "/community";
+  const postHref = (id: string) => `/posts/${id}`;
 
   return (
     <div>
@@ -461,10 +461,10 @@ function ShowcaseGallery({ guest = false }: { guest?: boolean }) {
       </div>
       {guest && (
         <Link
-          href="/auth/signup"
+          href="/community"
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] py-2.5 text-[12px] font-bold text-[#666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
         >
-          Бүтээлүүд үзэхийн тулд Cyber Empire нэгдэх
+          Бүх бүтээл үзэх
           <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
