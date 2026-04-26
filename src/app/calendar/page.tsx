@@ -23,14 +23,54 @@ interface CalEvent {
 
 type ViewMode = "month" | "list";
 
-// ─── Config ───
+// ─── Config — AI community event types ───
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  event:    { label: "Эвент",       color: "#EF2C58", bg: "rgba(239,44,88,0.12)", icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
-  live:     { label: "LIVE",        color: "#EF2C58", bg: "rgba(239,44,88,0.12)",  icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
-  class:    { label: "Хичээл",     color: "#0F81CA", bg: "rgba(15,129,202,0.12)", icon: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342" },
-  deadline: { label: "Дедлайн",    color: "#EF2C58", bg: "rgba(239,44,88,0.12)",  icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
-  workshop: { label: "Воркшоп",    color: "#A855F7", bg: "rgba(168,85,247,0.12)", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0012 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" },
+  live:      { label: "LIVE",       color: "#EF2C58", bg: "rgba(239,44,88,0.12)",  icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
+  class:     { label: "Хичээл",     color: "#0F81CA", bg: "rgba(15,129,202,0.12)", icon: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342" },
+  workshop:  { label: "Воркшоп",    color: "#A855F7", bg: "rgba(168,85,247,0.12)", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0012 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" },
+  challenge: { label: "Challenge",  color: "#06B6D4", bg: "rgba(6,182,212,0.12)",  icon: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" },
+  mentor:    { label: "1:1 Mentor", color: "#14B8A6", bg: "rgba(20,184,166,0.12)", icon: "M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" },
+  event:     { label: "Эвент",      color: "#EF2C58", bg: "rgba(239,44,88,0.12)", icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
+  deadline:  { label: "Дедлайн",    color: "#EF2C58", bg: "rgba(239,44,88,0.12)",  icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
 };
+
+// ─── Generate iCalendar (.ics) for "Add to calendar" ───
+function makeICS(ev: { title: string; description?: string; date: string; endDate?: string; location?: string; liveLink?: string }) {
+  const dt = (s: string) => new Date(s).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const start = dt(ev.date);
+  const end = ev.endDate ? dt(ev.endDate) : dt(new Date(+new Date(ev.date) + 60 * 60 * 1000).toISOString());
+  const desc = (ev.description || "").replace(/\n/g, "\\n");
+  const url = ev.liveLink || "";
+  const uid = `${start}-${Math.random().toString(36).slice(2, 9)}@antaqor.com`;
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Antaqor//Calendar//MN",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${dt(new Date().toISOString())}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${ev.title}`,
+    desc ? `DESCRIPTION:${desc}` : "",
+    ev.location ? `LOCATION:${ev.location}` : "",
+    url ? `URL:${url}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].filter(Boolean).join("\r\n");
+}
+
+function downloadIcs(ev: { title: string; description?: string; date: string; endDate?: string; location?: string; liveLink?: string }) {
+  const blob = new Blob([makeICS(ev)], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${ev.title.replace(/[^\wЀ-ӿ\s-]/g, "").trim() || "antaqor-event"}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 const MN_MONTHS = ["1 сар","2 сар","3 сар","4 сар","5 сар","6 сар","7 сар","8 сар","9 сар","10 сар","11 сар","12 сар"];
 const MN_DAYS = ["Ня","Да","Мя","Лх","Пү","Ба","Бя"];
@@ -58,6 +98,107 @@ function relativeDay(d: Date): string {
   if (diff === -1) return "Өчигдөр";
   if (diff > 1 && diff <= 7) return `${diff} хоногийн дараа`;
   return "";
+}
+
+// ─── This-week featured strip — horizontal scroll of next 7 days ───
+function ThisWeekStrip({ events, onSelect }: { events: CalEvent[]; onSelect: (e: CalEvent) => void }) {
+  const next7 = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter((e) => {
+        const d = new Date(e.date);
+        const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+        return diff >= -1 && diff <= 7;
+      })
+      .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+      .slice(0, 8);
+  }, [events]);
+
+  if (next7.length === 0) return null;
+
+  return (
+    <div className="mb-5">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]">ЭНЭ 7 ХОНОГ</span>
+          <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[10px] font-black text-[#EF2C58]">
+            {next7.length}
+          </span>
+        </div>
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        {next7.map((ev) => {
+          const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.event;
+          const rel = relativeDay(new Date(ev.date));
+          const isLive = ev.status === "live";
+          return (
+            <button
+              key={ev._id}
+              onClick={() => onSelect(ev)}
+              className="group flex w-[200px] shrink-0 flex-col gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-3 text-left transition hover:border-[rgba(239,44,88,0.3)]"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="rounded-full px-1.5 py-0.5 text-[9px] font-black tracking-wider" style={{ background: cfg.bg, color: cfg.color }}>
+                  {cfg.label}
+                </span>
+                {isLive && (
+                  <span className="flex items-center gap-1 text-[9px] font-black text-[#EF2C58]">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF2C58]" />
+                    LIVE
+                  </span>
+                )}
+              </div>
+              <div className="line-clamp-2 text-[12px] font-bold leading-tight text-[#E8E8E8]">
+                {ev.title}
+              </div>
+              <div className="mt-auto text-[10px] font-semibold text-[#666]">
+                {rel || dateStr(ev.date)} · {timeStr(ev.date)}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Monthly cadence stats — sets community pace expectation ───
+function MonthlyStats({ events }: { events: CalEvent[] }) {
+  const stats = useMemo(() => {
+    const m = new Map<string, number>();
+    events.forEach((e) => m.set(e.type, (m.get(e.type) || 0) + 1));
+    return [
+      { type: "class", n: m.get("class") || 0 },
+      { type: "live", n: m.get("live") || 0 },
+      { type: "workshop", n: m.get("workshop") || 0 },
+      { type: "challenge", n: m.get("challenge") || 0 },
+      { type: "mentor", n: m.get("mentor") || 0 },
+    ];
+  }, [events]);
+
+  const total = stats.reduce((s, x) => s + x.n, 0);
+  if (total === 0) return null;
+
+  return (
+    <div className="mb-5 flex flex-wrap items-center gap-2">
+      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Энэ сард</span>
+      {stats
+        .filter((s) => s.n > 0)
+        .map((s) => {
+          const cfg = TYPE_CONFIG[s.type];
+          return (
+            <span
+              key={s.type}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              style={{ background: cfg.bg, color: cfg.color }}
+            >
+              <span className="font-black">{s.n}</span>
+              {cfg.label}
+            </span>
+          );
+        })}
+    </div>
+  );
 }
 
 // ─── Event Card ───
@@ -194,11 +335,23 @@ export default function CalendarPage() {
   return (
     <div className="mx-auto max-w-[960px] pb-4">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">Schedule</span>
-        <h1 className="mt-1 text-[24px] font-bold text-[#E8E8E8] sm:text-[32px]">Хуваарь</h1>
-        <p className="mt-1 text-[13px] text-[#555555]">Хичээл, live, эвент, воркшоп — бүх хуваарь нэг дороос</p>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-5">
+        <div className="flex items-center gap-2">
+          <div className="h-[2px] w-4 bg-[#EF2C58]" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]">ANTAQOR · СУРГАЛТЫН РИТМ</span>
+        </div>
+        <h1 className="mt-2 text-[26px] font-black text-[#E8E8E8] sm:text-[34px]">Хуваарь</h1>
+        <p className="mt-1 text-[13px] text-[#888]">
+          AI хичээл · LIVE · challenge · 1:1 mentor — гишүүний 7 хоногийн ритм
+        </p>
       </motion.div>
+
+      {/* This-week featured strip — most actionable timeframe */}
+      <ThisWeekStrip events={upcomingEvents} onSelect={setSelectedEvent} />
+
+      {/* Monthly stats */}
+      <MonthlyStats events={events} />
+
 
       {/* Live now banner */}
       <AnimatePresence>
@@ -386,6 +539,15 @@ export default function CalendarPage() {
                       {selectedEvent.status === "live" ? "LIVE нэгдэх" : "Линк нээх"}
                     </a>
                   )}
+                  <button
+                    onClick={() => downloadIcs(selectedEvent)}
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] py-2.5 text-[12px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58]"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5M12 12v6m-3-3h6" />
+                    </svg>
+                    Календар руугаа нэмэх
+                  </button>
                 </motion.div>
               ) : selectedDate ? (
                 <motion.div key="daylist" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -460,11 +622,14 @@ export default function CalendarPage() {
       {!loading && view === "list" && (
         <div className="space-y-3">
           {events.length === 0 ? (
-            <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] py-16 text-center">
+            <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center">
               <svg className="mx-auto mb-3 h-10 w-10 text-[#333333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
               </svg>
-              <p className="text-[14px] text-[#555555]">Энэ сард хуваарь байхгүй</p>
+              <p className="text-[14px] font-bold text-[#E8E8E8]">Энэ сард хуваарь зарлагдаагүй</p>
+              <p className="mt-1.5 text-[11px] text-[#666]">
+                Гишүүний 7 хоногийн ритм бэлтгэгдэж байна — Лхагба LIVE · Бямба хичээл · Ням challenge
+              </p>
             </div>
           ) : (
             events.map(ev => <EventCard key={ev._id} event={ev} onSelect={setSelectedEvent} />)
@@ -521,6 +686,16 @@ export default function CalendarPage() {
                         {selectedEvent.status === "live" ? "LIVE нэгдэх" : "Линк нээх"}
                       </a>
                     )}
+                    <button
+                      onClick={() => downloadIcs(selectedEvent)}
+                      className="flex shrink-0 items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-3 text-[12px] font-bold text-[#AAA] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58]"
+                      title="Календар руугаа нэмэх"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75M12 12v6m-3-3h6" />
+                      </svg>
+                      .ics
+                    </button>
                     <button onClick={() => setSelectedEvent(null)}
                       className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-3 text-[13px] text-[#666666] transition hover:text-[#E8E8E8]">
                       Хаах

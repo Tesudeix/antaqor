@@ -5,7 +5,7 @@ export interface IEvent extends Document {
   title: string;
   description: string;
   image: string;
-  type: "event" | "live" | "class" | "deadline" | "workshop";
+  type: "event" | "live" | "class" | "deadline" | "workshop" | "challenge" | "mentor";
   date: Date;
   endDate: Date;
   liveLink: string;
@@ -51,7 +51,7 @@ const EventSchema = new Schema<IEvent>(
     },
     type: {
       type: String,
-      enum: ["event", "live", "class", "deadline", "workshop"],
+      enum: ["event", "live", "class", "deadline", "workshop", "challenge", "mentor"],
       default: "event",
     },
     location: {
