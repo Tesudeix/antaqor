@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
+// Next.js 16 default truncates request bodies above 10MB which broke lesson
+// video uploads (≤200MB). The runtime accepts middlewareClientMaxBodySize but
+// the type isn't published yet, so cast to bypass the missing-prop check.
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // Next.js 16 default truncates request bodies above 10MB which broke lesson
-  // video uploads (≤200MB). nginx is set to 250M; mirror that here.
-  middlewareClientMaxBodySize: "250mb",
+  ...({ middlewareClientMaxBodySize: "250mb" } as NextConfig),
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
