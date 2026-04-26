@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -13,6 +14,13 @@ interface Post {
   commentsCount: number;
   createdAt: string;
   author: { _id: string; name: string; avatar?: string } | null;
+}
+
+interface Member {
+  _id: string;
+  name: string;
+  avatar?: string;
+  aiLevel?: string;
 }
 
 type Filter = "all" | "бүтээл" | "промт" | "ялалт";
@@ -37,7 +45,9 @@ function timeAgo(iso: string): string {
 }
 
 export default function CommunityPage() {
+  const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<Post | null>(null);
@@ -52,13 +62,23 @@ export default function CommunityPage() {
       .then((d) => {
         if (cancel) return;
         const list = (d.posts || []) as Post[];
-        // Only posts with images — gallery is visual-first
         setPosts(list.filter((p) => p.image && p.image.trim().length > 0));
       })
       .catch(() => {})
       .finally(() => { if (!cancel) setLoading(false); });
     return () => { cancel = true; };
   }, [filter]);
+
+  // Fetch members (only when logged-in to avoid leaking member identity to bots)
+  useEffect(() => {
+    if (!session) return;
+    let cancel = false;
+    fetch("/api/members?limit=20")
+      .then((r) => r.json())
+      .then((d) => { if (!cancel && Array.isArray(d.members)) setMembers(d.members); })
+      .catch(() => {});
+    return () => { cancel = true; };
+  }, [session]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: posts.length };
@@ -81,6 +101,44 @@ export default function CommunityPage() {
           Гишүүдийн AI-аар үүсгэсэн зураг, промпт, бүтээлүүд — бодит ажил
         </p>
       </div>
+
+      {/* Members strip — logged-in only */}
+      {session && members.length > 0 && (
+        <div className="mb-5">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#EF2C58]">ИДЭВХТЭЙ ГИШҮҮД</span>
+              <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[10px] font-black text-[#EF2C58]">
+                {members.length}
+              </span>
+            </div>
+            <Link href="/members" className="text-[10px] font-bold text-[#666] transition hover:text-[#EF2C58]">
+              Бүгдийг үзэх →
+            </Link>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {members.map((m) => (
+              <Link
+                key={m._id}
+                href={`/profile/${m._id}`}
+                className="group flex w-[72px] shrink-0 flex-col items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-2 transition hover:border-[rgba(239,44,88,0.3)]"
+              >
+                {m.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={m.avatar} alt={m.name} className="h-10 w-10 rounded-full object-cover" />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(239,44,88,0.12)] text-[14px] font-black text-[#EF2C58]">
+                    {m.name.charAt(0)}
+                  </div>
+                )}
+                <span className="w-full truncate text-center text-[10px] font-bold text-[#E8E8E8] group-hover:text-[#EF2C58]">
+                  {m.name.split(" ")[0]}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Sticky filter pills */}
       <div className="sticky top-[60px] z-30 -mx-4 mb-5 border-y border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]/80 px-4 py-2 backdrop-blur-xl">

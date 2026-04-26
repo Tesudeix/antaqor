@@ -996,31 +996,27 @@ export default function Home() {
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 pb-1">
           {([
-            { key: "all" as CategoryFilter, label: "Бүгд", color: "#EF2C58" },
-            { key: "промт" as CategoryFilter, label: "Промт", color: "#EF2C58" },
-            { key: "бүтээл" as CategoryFilter, label: "Бүтээл", color: "#EF2C58" },
-            { key: "ялалт" as CategoryFilter, label: "Ялалт", color: "#EF2C58" },
-            { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл", color: "#3B82F6" },
-            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга", color: "#A855F7" },
+            { key: "all" as CategoryFilter, label: "Бүгд", color: "#EF2C58", icon: "M3.75 6h16.5M3.75 12h16.5m-16.5 6h16.5" },
+            { key: "промт" as CategoryFilter, label: "Промт", color: "#EF2C58", icon: "M8 9l-3 3 3 3m8-6l3 3-3 3M14 5l-4 14" },
+            { key: "бүтээл" as CategoryFilter, label: "Бүтээл", color: "#EF2C58", icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
+            { key: "ялалт" as CategoryFilter, label: "Ялалт", color: "#EF2C58", icon: "M12 15a4 4 0 004-4V4H8v7a4 4 0 004 4zm0 0v3m0 0H8m4 0h4M5 4h3m8 0h3m-3 3a3 3 0 003-3m-14 0a3 3 0 003 3" },
+            { key: "мэдээлэл" as CategoryFilter, label: "Мэдээлэл", color: "#3B82F6", icon: "M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2M7 8h6M7 12h6M7 16h4" },
+            { key: "танилцуулга" as CategoryFilter, label: "Танилцуулга", color: "#A855F7", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
           ]).map((tab) => {
             const active = category === tab.key;
             return (
               <button
                 key={tab.key}
                 onClick={() => switchCategory(tab.key)}
-                className="group shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
+                className="group shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all duration-200"
                 style={{
                   background: active ? tab.color : "rgba(255,255,255,0.04)",
                   color: active ? "#FFFFFF" : "#888888",
                 }}
               >
-                <span
-                  className="h-1.5 w-1.5 rounded-full transition-opacity"
-                  style={{
-                    background: active ? "rgba(255,255,255,0.9)" : tab.color,
-                    opacity: active ? 1 : 0.7,
-                  }}
-                />
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
+                </svg>
                 {tab.label}
               </button>
             );

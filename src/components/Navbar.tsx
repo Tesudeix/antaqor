@@ -85,6 +85,7 @@ export default function Navbar() {
         },
         { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
+        { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
         { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
           href: myId ? `/profile/${myId}` : "/credits",
