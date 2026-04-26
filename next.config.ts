@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Next.js 16 default truncates request bodies above 10MB which broke lesson
+  // video uploads (≤200MB). nginx is set to 250M; mirror that here.
+  middlewareClientMaxBodySize: "250mb",
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",

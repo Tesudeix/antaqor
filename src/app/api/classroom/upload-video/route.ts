@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
-import { writeFile, mkdir } from "fs/promises";
+import { mkdir, unlink } from "fs/promises";
+import { createWriteStream } from "fs";
+import { Readable } from "stream";
+import { pipeline } from "stream/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 
@@ -12,11 +15,22 @@ const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200 MB cap for course videos
 const ALLOWED_EXT = new Set(["mp4", "webm", "mov", "m4v", "ogg"]);
 
 // POST — admin only, video file → /uploads/lesson-<uuid>.<ext> → returns { url }
+// Streams the multipart file straight to disk to avoid buffering large videos
+// (≤200MB) in process memory.
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || !isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
+
+    // Cheap pre-check: reject obviously oversized requests before reading the body
+    const contentLength = parseInt(req.headers.get("content-length") || "0", 10);
+    if (contentLength && contentLength > MAX_VIDEO_SIZE + 4 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: `Видео хамгийн ихдээ ${Math.floor(MAX_VIDEO_SIZE / 1024 / 1024)}MB` },
+        { status: 413 }
+      );
     }
 
     const formData = await req.formData();
@@ -40,8 +54,17 @@ export async function POST(req: NextRequest) {
     await mkdir(UPLOAD_DIR, { recursive: true });
     const filename = `lesson-${randomUUID()}.${ext}`;
     const filepath = path.join(UPLOAD_DIR, filename);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filepath, buffer);
+
+    // Stream from the browser-side File (Web ReadableStream) → Node Readable → disk.
+    // No full-file buffer is held in memory.
+    try {
+      const nodeReadable = Readable.fromWeb(file.stream() as unknown as import("stream/web").ReadableStream);
+      await pipeline(nodeReadable, createWriteStream(filepath));
+    } catch (err) {
+      // Clean up partial file if streaming aborted
+      await unlink(filepath).catch(() => {});
+      throw err;
+    }
 
     return NextResponse.json({
       url: `/uploads/${filename}`,
