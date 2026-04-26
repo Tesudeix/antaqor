@@ -7,6 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import PaywallGate from "@/components/PaywallGate";
 
 // ─── Types matching /api/classroom/courses/[id]/tree response ───
+interface TaskSummary {
+  _id: string;
+  title: string;
+  maxScore: number;
+  deadline?: string;
+}
 interface LessonSummary {
   _id: string;
   title: string;
@@ -15,12 +21,7 @@ interface LessonSummary {
   thumbnail: string;
   attachments?: { url: string; name: string; size?: number }[];
   order: number;
-}
-interface TaskSummary {
-  _id: string;
-  title: string;
-  maxScore: number;
-  deadline?: string;
+  task: TaskSummary | null;
 }
 interface SectionNode {
   _id: string;
@@ -28,7 +29,7 @@ interface SectionNode {
   description: string;
   order: number;
   lessons: LessonSummary[];
-  task: TaskSummary | null;
+  legacyTask: TaskSummary | null;
 }
 interface CourseInfo {
   _id: string;
@@ -145,12 +146,12 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
                   {sec.description && <div className="mt-0.5 text-[11px] text-[#666]">{sec.description}</div>}
                 </div>
                 <span className="text-[10px] font-bold text-[#666]">
-                  {sec.lessons.length} хичээл{sec.task ? " · 📝" : ""}
+                  {sec.lessons.length} хичээл
                 </span>
                 {admin && <SectionAdminMenu sectionId={sec._id} title={sec.title} onChange={fetchTree} />}
               </button>
 
-              {/* Lessons + Task — visible after section expand */}
+              {/* Lessons (each with its own task) */}
               <AnimatePresence initial={false}>
                 {isOpen && (
                   <motion.div
@@ -160,9 +161,11 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]"
                   >
-                    <div className="space-y-1 p-3 pl-6">
-                      {sec.lessons.map((l) => <LessonRow key={l._id} lesson={l} />)}
-                      {sec.lessons.length === 0 && !admin && !sec.task && (
+                    <div className="space-y-2 p-3 pl-6">
+                      {sec.lessons.map((l) => (
+                        <LessonBlock key={l._id} lesson={l} admin={admin} onChange={fetchTree} />
+                      ))}
+                      {sec.lessons.length === 0 && !admin && !sec.legacyTask && (
                         <div className="px-2 py-3 text-center text-[11px] text-[#555]">Хичээл хараахан байхгүй</div>
                       )}
                       {admin && (
@@ -173,25 +176,20 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
                           onAdded={fetchTree}
                         />
                       )}
-                      {/* Task at the bottom */}
-                      {sec.task ? (
+                      {/* Legacy section-level task (read-only) */}
+                      {sec.legacyTask && (
                         <Link
-                          href={`/classroom/task/${sec.task._id}`}
-                          className="mt-2 flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2 text-left transition hover:bg-[rgba(239,44,88,0.1)]"
+                          href={`/classroom/task/${sec.legacyTask._id}`}
+                          className="mt-2 flex items-center gap-2 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.04)] px-3 py-2 text-left transition hover:bg-[rgba(239,44,88,0.08)]"
                         >
                           <span className="text-[14px]">📝</span>
                           <div className="min-w-0 flex-1">
-                            <div className="text-[11px] font-black text-[#EF2C58]">ДААЛГАВАР</div>
-                            <div className="text-[12px] font-bold text-[#E8E8E8]">{sec.task.title}</div>
+                            <div className="text-[10px] font-black text-[#EF2C58]">ХУУЧИН ДААЛГАВАР</div>
+                            <div className="text-[12px] font-bold text-[#E8E8E8]">{sec.legacyTask.title}</div>
                           </div>
-                          <span className="text-[10px] text-[#666]">{sec.task.maxScore} оноо</span>
+                          <span className="text-[10px] text-[#666]">{sec.legacyTask.maxScore} оноо</span>
                         </Link>
-                      ) : admin ? (
-                        <AddTaskInline
-                          sectionId={sec._id}
-                          onAdded={fetchTree}
-                        />
-                      ) : null}
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -204,9 +202,9 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
         {orphanLessons.length > 0 && (
           <div className="overflow-hidden rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-3">
             <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Бусад хичээл</div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {orphanLessons.map((l) => (
-                <LessonRow key={l._id} lesson={l} />
+                <LessonBlock key={l._id} lesson={l} admin={admin} onChange={fetchTree} />
               ))}
             </div>
           </div>
@@ -216,29 +214,51 @@ function CourseDetail({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
-// ─── Lesson row — click → /classroom/[id] (existing lesson view) ───
-function LessonRow({ lesson }: { lesson: LessonSummary }) {
+// ─── Lesson block: lesson row + its task (or admin add-task) underneath ───
+function LessonBlock({ lesson, admin, onChange }: { lesson: LessonSummary; admin: boolean; onChange: () => void }) {
   const pdfCount = lesson.attachments?.length || 0;
   return (
-    <Link
-      href={`/classroom/${lesson._id}`}
-      className="group flex items-center gap-2 rounded-[4px] px-2 py-1.5 transition hover:bg-[rgba(239,44,88,0.06)]"
-    >
-      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] text-[#EF2C58]">
-        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-      </span>
-      <span className="min-w-0 flex-1 truncate text-[12px] text-[#CCC] transition group-hover:text-[#EF2C58]">
-        {lesson.title}
-      </span>
-      {pdfCount > 0 && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[9px] font-bold text-[#888]">
-          <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-          {pdfCount}
+    <div className="rounded-[4px] border border-[rgba(255,255,255,0.05)] bg-[#0A0A0A] p-1.5">
+      {/* Lesson row → /classroom/[id] */}
+      <Link
+        href={`/classroom/${lesson._id}`}
+        className="group flex items-center gap-2 rounded-[4px] px-2 py-1.5 transition hover:bg-[rgba(239,44,88,0.06)]"
+      >
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.12)] text-[#EF2C58]">
+          <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
         </span>
-      )}
-    </Link>
+        <span className="min-w-0 flex-1 truncate text-[12px] text-[#CCC] transition group-hover:text-[#EF2C58]">
+          {lesson.title}
+        </span>
+        {pdfCount > 0 && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[9px] font-bold text-[#888]">
+            <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+            {pdfCount}
+          </span>
+        )}
+      </Link>
+
+      {/* Task — per-lesson */}
+      {lesson.task ? (
+        <Link
+          href={`/classroom/task/${lesson.task._id}`}
+          className="ml-7 mt-1 flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-2.5 py-1.5 transition hover:bg-[rgba(239,44,88,0.12)]"
+        >
+          <span className="text-[12px]">📝</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#EF2C58]">ДААЛГАВАР</div>
+            <div className="truncate text-[11px] font-bold text-[#E8E8E8]">{lesson.task.title}</div>
+          </div>
+          <span className="text-[9px] text-[#666]">{lesson.task.maxScore} оноо</span>
+        </Link>
+      ) : admin ? (
+        <div className="ml-7 mt-1">
+          <AddTaskInline lessonId={lesson._id} onAdded={onChange} />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -479,7 +499,7 @@ function AddLessonInline({
   );
 }
 
-function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () => void }) {
+function AddTaskInline({ lessonId, onAdded }: { lessonId: string; onAdded: () => void }) {
   const pdfRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -517,19 +537,19 @@ function AddTaskInline({ sectionId, onAdded }: { sectionId: string; onAdded: () 
       const res = await fetch("/api/classroom/lesson-tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ section: sectionId, title, description: desc, maxScore, deadline: deadline || undefined, attachments: pdfs }),
+        body: JSON.stringify({ lesson: lessonId, title, description: desc, maxScore, deadline: deadline || undefined, attachments: pdfs }),
       });
       if (res.ok) { setTitle(""); setDesc(""); setMaxScore(10); setDeadline(""); setPdfs([]); setOpen(false); onAdded(); }
     } finally { setBusy(false); }
   };
 
   if (!open) return (
-    <button onClick={() => setOpen(true)} className="mt-2 inline-flex items-center gap-1.5 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.4)] px-3 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
-      📝 Даалгавар нэмэх
+    <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.4)] px-2.5 py-1 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)]">
+      📝 + Даалгавар
     </button>
   );
   return (
-    <div className="mt-2 space-y-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2.5">
+    <div className="space-y-2 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.04)] p-2.5">
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Даалгаврын нэр" autoFocus
         className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(239,44,88,0.4)]" />
 

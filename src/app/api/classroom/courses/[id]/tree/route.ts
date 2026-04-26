@@ -6,10 +6,10 @@ import Subsection from "@/models/Subsection";
 import Lesson from "@/models/Lesson";
 import LessonTask from "@/models/LessonTask";
 
-// GET — flat 2-level tree:
-//   course → sections[] → { lessons[], task? }
-// Backwards-compat: lessons/tasks tied to a subsection are remapped
-// to that subsection's parent section so legacy data still renders.
+// GET — flat 2-level tree with per-lesson tasks:
+//   course → sections[] → lessons[] → { task? }
+// Legacy: section/subsection-tied tasks render at section level
+// (admin can no longer create them, but old data stays visible).
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await dbConnect();
@@ -29,44 +29,59 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const subToSection = new Map<string, string>();
   subsections.forEach((s) => subToSection.set(String(s._id), String(s.section)));
 
-  const resolveSectionId = (lesson: { section?: unknown; subsection?: unknown }): string | null => {
-    if (lesson.section) return String(lesson.section);
-    if (lesson.subsection) {
-      const parentSec = subToSection.get(String(lesson.subsection));
+  const resolveSectionId = (item: { section?: unknown; subsection?: unknown }): string | null => {
+    if (item.section) return String(item.section);
+    if (item.subsection) {
+      const parentSec = subToSection.get(String(item.subsection));
       if (parentSec) return parentSec;
     }
     return null;
   };
 
+  // Per-lesson tasks (active model)
+  const taskByLesson = new Map<string, (typeof tasks)[number]>();
+  // Per-section legacy tasks (no lesson ref)
+  const legacyTaskBySection = new Map<string, (typeof tasks)[number]>();
+  for (const t of tasks) {
+    if (t.lesson) {
+      const lid = String(t.lesson);
+      const existing = taskByLesson.get(lid);
+      if (!existing || +new Date(t.createdAt) > +new Date(existing.createdAt)) {
+        taskByLesson.set(lid, t);
+      }
+      continue;
+    }
+    const sid = resolveSectionId(t);
+    if (!sid) continue;
+    const existing = legacyTaskBySection.get(sid);
+    if (!existing || +new Date(t.createdAt) > +new Date(existing.createdAt)) {
+      legacyTaskBySection.set(sid, t);
+    }
+  }
+
+  // Attach task to each lesson
+  const lessonsWithTask = lessons.map((l) => ({
+    ...l,
+    task: taskByLesson.get(String(l._id)) || null,
+  }));
+
   // Group lessons by section
-  const lessonsBySection = new Map<string, typeof lessons>();
-  for (const l of lessons) {
+  const lessonsBySection = new Map<string, typeof lessonsWithTask>();
+  for (const l of lessonsWithTask) {
     const sid = resolveSectionId(l);
     if (!sid) continue;
     if (!lessonsBySection.has(sid)) lessonsBySection.set(sid, []);
     lessonsBySection.get(sid)!.push(l);
   }
 
-  // Pick task per section (one section → one task)
-  const taskBySection = new Map<string, (typeof tasks)[number]>();
-  for (const t of tasks) {
-    const sid = resolveSectionId(t);
-    if (!sid) continue;
-    // Prefer most-recent if multiple
-    const existing = taskBySection.get(sid);
-    if (!existing || +new Date(t.createdAt) > +new Date(existing.createdAt)) {
-      taskBySection.set(sid, t);
-    }
-  }
-
   const tree = sections.map((sec) => ({
     ...sec,
     lessons: lessonsBySection.get(String(sec._id)) || [],
-    task: taskBySection.get(String(sec._id)) || null,
+    legacyTask: legacyTaskBySection.get(String(sec._id)) || null,
   }));
 
   // Orphan lessons that aren't tied to any section (or section was deleted)
-  const orphanLessons = lessons.filter((l) => {
+  const orphanLessons = lessonsWithTask.filter((l) => {
     const sid = resolveSectionId(l);
     return !sid || !sections.find((s) => String(s._id) === sid);
   });

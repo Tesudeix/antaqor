@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Lesson from "@/models/Lesson";
 import Course from "@/models/Course";
+import LessonTask from "@/models/LessonTask";
 
 export async function GET(
   req: NextRequest,
@@ -92,6 +93,7 @@ export async function DELETE(
 
     const lesson = await Lesson.findByIdAndDelete(id);
     if (lesson) {
+      await LessonTask.deleteMany({ lesson: id });
       await Course.findByIdAndUpdate(lesson.course, { $inc: { lessonsCount: -1 } });
     }
 

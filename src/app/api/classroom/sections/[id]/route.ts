@@ -39,6 +39,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   // Lessons tied directly to the section (active 2-level)
   const directLessons = await Lesson.find({ section: id }).select("_id").lean();
+  const directLessonIds = directLessons.map((l) => l._id);
   let lessonsRemoved = directLessons.length;
 
   // Legacy: subsections under this section + their lessons/tasks
@@ -46,12 +47,19 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const subIds = subs.map((s) => s._id);
   if (subIds.length) {
     const legacyLessons = await Lesson.find({ subsection: { $in: subIds } }).select("_id").lean();
+    const legacyLessonIds = legacyLessons.map((l) => l._id);
     lessonsRemoved += legacyLessons.length;
+    if (legacyLessonIds.length) {
+      await LessonTask.deleteMany({ lesson: { $in: legacyLessonIds } });
+    }
     await Lesson.deleteMany({ subsection: { $in: subIds } });
     await LessonTask.deleteMany({ subsection: { $in: subIds } });
     await Subsection.deleteMany({ _id: { $in: subIds } });
   }
 
+  if (directLessonIds.length) {
+    await LessonTask.deleteMany({ lesson: { $in: directLessonIds } });
+  }
   await Lesson.deleteMany({ section: id });
   await LessonTask.deleteMany({ section: id });
   await Section.findByIdAndDelete(id);
