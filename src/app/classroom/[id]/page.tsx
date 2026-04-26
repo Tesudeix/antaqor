@@ -1,12 +1,14 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import Link from "next/link";
 import { isAdminEmail } from "@/lib/adminClient";
 import { formatDistanceToNow } from "@/lib/utils";
 import { motion } from "framer-motion";
 import PaywallGate from "@/components/PaywallGate";
+
+type Attachment = { url: string; name: string; size?: number };
 
 interface ReactionData {
   count: number;
@@ -77,13 +79,21 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ title: "", description: "", content: "", videoUrl: "" });
+  const [editAttachments, setEditAttachments] = useState<Attachment[]>([]);
+  const [editVideoName, setEditVideoName] = useState("");
+  const [editVideoSize, setEditVideoSize] = useState(0);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [editError, setEditError] = useState("");
   const [userLevel, setUserLevel] = useState(1);
   const [reactions, setReactions] = useState<Record<string, ReactionData>>({});
   const [reactingEmoji, setReactingEmoji] = useState<string | null>(null);
   const [showTranscript, setShowTranscript] = useState(false);
+
+  const videoFileRef = useRef<HTMLInputElement>(null);
+  const pdfFileRef = useRef<HTMLInputElement>(null);
 
   const admin = isAdminEmail(session?.user?.email);
   const userId = session ? (session.user as { id: string }).id : null;
@@ -111,6 +121,9 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
           content: data.lesson.content,
           videoUrl: data.lesson.videoUrl,
         });
+        setEditAttachments(Array.isArray(data.lesson.attachments) ? data.lesson.attachments : []);
+        setEditVideoName("");
+        setEditVideoSize(0);
       }
     } finally {
       setLoading(false);
@@ -136,52 +149,102 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
   const handleEditVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const isVideo = file.type.startsWith("video/");
-    if (!isVideo && !file.type.startsWith("image/")) return;
+    setEditError("");
+    if (!file.type.startsWith("video/")) {
+      setEditError("Зөвхөн видео файл (mp4, webm, mov)");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 200 * 1024 * 1024) {
+      setEditError("Видео 200MB-аас бага байх ёстой");
+      e.target.value = "";
+      return;
+    }
     setUploading(true);
     setUploadProgress(0);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const endpoint = isVideo ? "/api/upload/video" : "/api/upload";
       const xhr = new XMLHttpRequest();
-      const result = await new Promise<{ url: string }>((resolve, reject) => {
+      const result = await new Promise<{ url: string; size?: number; name?: string }>((resolve, reject) => {
         xhr.upload.addEventListener("progress", (ev) => {
           if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
         });
         xhr.addEventListener("load", () => {
           if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
-          else reject(new Error("Upload failed"));
+          else {
+            try { reject(new Error(JSON.parse(xhr.responseText).error || "Upload failed")); }
+            catch { reject(new Error("Upload failed")); }
+          }
         });
         xhr.addEventListener("error", () => reject(new Error("Upload failed")));
-        xhr.open("POST", endpoint);
+        xhr.open("POST", "/api/classroom/upload-video");
         xhr.send(formData);
       });
       setEditData((p) => ({ ...p, videoUrl: result.url }));
-    } catch {
-      alert("Файл оруулахад алдаа гарлаа");
+      setEditVideoName(file.name);
+      setEditVideoSize(file.size);
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Видео хадгалах алдаа");
     } finally {
       setUploading(false);
       setUploadProgress(0);
+      if (videoFileRef.current) videoFileRef.current.value = "";
+    }
+  };
+
+  const handleEditPdfPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setEditError("");
+    setPdfUploading(true);
+    try {
+      for (const file of files) {
+        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+          setEditError("Зөвхөн PDF файл (.pdf)");
+          continue;
+        }
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/classroom/upload-pdf", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) {
+          setEditError(data.error || "PDF хадгалах алдаа");
+          continue;
+        }
+        setEditAttachments((p) => [...p, { url: data.url, name: file.name, size: file.size }].slice(0, 10));
+      }
+    } finally {
+      setPdfUploading(false);
+      if (pdfFileRef.current) pdfFileRef.current.value = "";
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
+    setEditError("");
     try {
       const videoType = editData.videoUrl.startsWith("/uploads/") ? "upload" : "link";
       const res = await fetch(`/api/classroom/lessons/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...editData, videoType }),
+        body: JSON.stringify({ ...editData, videoType, attachments: editAttachments }),
       });
       if (res.ok) {
         fetchLesson();
         setEditing(false);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setEditError(data.error || "Хадгалах алдаа");
       }
     } finally {
       setSaving(false);
     }
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   };
 
   const handleDelete = async () => {
@@ -407,25 +470,154 @@ function LessonPage({ params }: { params: Promise<{ id: string }> }) {
 
       {/* ─── Edit form ─── */}
       {editing && (
-        <div className="mb-8 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6 space-y-4">
-          <input value={editData.title} onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" />
-          <textarea value={editData.description} onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))} rows={2} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Тайлбар" />
-          <textarea value={editData.content} onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))} rows={12} className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)] resize-none" placeholder="Хичээлийн агуулга (текст)" />
-          <div className="flex items-center gap-3">
-            <input value={editData.videoUrl} onChange={(e) => setEditData((p) => ({ ...p, videoUrl: e.target.value }))} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]" placeholder="Видео URL" />
-            <label className={`shrink-0 cursor-pointer rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8] ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-              {uploading ? `${uploadProgress}%` : "Файл"}
-              <input type="file" accept="video/mp4,video/webm,video/quicktime,image/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
-            </label>
+        <div className="mb-8 space-y-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-6">
+          <input
+            value={editData.title}
+            onChange={(e) => setEditData((p) => ({ ...p, title: e.target.value }))}
+            placeholder="Хичээлийн нэр"
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[18px] font-bold text-[#E8E8E8] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
+          />
+          <textarea
+            value={editData.description}
+            onChange={(e) => setEditData((p) => ({ ...p, description: e.target.value }))}
+            rows={2}
+            placeholder="Тайлбар"
+            className="w-full resize-none rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[15px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
+          />
+
+          {/* Video */}
+          <div>
+            <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">Видео</div>
+            {editData.videoUrl ? (
+              <div className="flex items-center gap-2.5 rounded-[4px] border border-[rgba(239,44,88,0.25)] bg-[rgba(239,44,88,0.04)] px-3 py-2.5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.15)] text-[#EF2C58]">
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                </span>
+                <div className="min-w-0 flex-1 leading-tight">
+                  <div className="truncate text-[12px] font-bold text-[#E8E8E8]">
+                    {editVideoName || (editData.videoUrl.startsWith("/uploads/") ? "lesson video" : editData.videoUrl)}
+                  </div>
+                  <div className="text-[10px] text-[#888]">
+                    {editVideoSize ? `${formatSize(editVideoSize)} · ` : ""}
+                    {editData.videoUrl.startsWith("/uploads/") ? "хадгалагдсан" : "external link"}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => videoFileRef.current?.click()}
+                  disabled={uploading}
+                  className="shrink-0 rounded-[4px] border border-[rgba(255,255,255,0.1)] px-2.5 py-1.5 text-[11px] font-bold text-[#999] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58] disabled:opacity-50"
+                >
+                  Солих
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setEditData((p) => ({ ...p, videoUrl: "" })); setEditVideoName(""); setEditVideoSize(0); }}
+                  className="shrink-0 text-[#666] hover:text-[#EF4444]"
+                  aria-label="Устгах"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => videoFileRef.current?.click()}
+                disabled={uploading}
+                className="flex w-full items-center gap-2.5 rounded-[4px] border-2 border-dashed border-[rgba(239,44,88,0.3)] bg-[#0A0A0A] px-3 py-3 text-left transition hover:border-[rgba(239,44,88,0.5)] disabled:opacity-50"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(239,44,88,0.1)] text-[#EF2C58]">
+                  {uploading ? (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
+                  ) : (
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  )}
+                </span>
+                <span className="min-w-0 flex-1 leading-tight">
+                  <span className="block text-[12px] font-bold text-[#E8E8E8]">
+                    {uploading ? `Хадгалж байна... ${uploadProgress}%` : "Видео сонгох"}
+                  </span>
+                  <span className="block text-[10px] text-[#666]">MP4 / WebM / MOV · 200MB хүртэл</span>
+                </span>
+              </button>
+            )}
+            <input ref={videoFileRef} type="file" accept="video/*" onChange={handleEditVideoUpload} className="hidden" disabled={uploading} />
+            {uploading && (
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
+                <div className="h-full rounded-full bg-[#EF2C58] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+              </div>
+            )}
+            <div className="mt-2 flex items-center gap-2 text-[10px] text-[#666]">
+              <span>эсвэл YouTube/Vimeo URL:</span>
+              <input
+                value={editData.videoUrl.startsWith("/uploads/") ? "" : editData.videoUrl}
+                onChange={(e) => { setEditData((p) => ({ ...p, videoUrl: e.target.value })); setEditVideoName(""); setEditVideoSize(0); }}
+                placeholder="https://youtube.com/..."
+                className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1 text-[11px] text-[#CCC] outline-none focus:border-[rgba(239,44,88,0.4)]"
+              />
+            </div>
           </div>
-          {uploading && (
-            <div className="h-1.5 overflow-hidden rounded-full bg-[rgba(0,0,0,0.08)]">
-              <div className="h-full rounded-full bg-[#EF2C58] transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+
+          {/* PDF / slide attachments */}
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#888]">PDF / Slide хавсралт</div>
+              <span className="text-[9px] text-[#555]">{editAttachments.length}/10</span>
+            </div>
+            {editAttachments.length > 0 && (
+              <ul className="mb-2 space-y-1">
+                {editAttachments.map((p, i) => (
+                  <li key={i} className="flex items-center gap-2 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.04)] px-2.5 py-1.5">
+                    <span className="rounded-[3px] bg-[rgba(239,44,88,0.18)] px-1.5 py-0.5 text-[9px] font-black text-[#EF2C58]">PDF</span>
+                    <span className="min-w-0 flex-1 truncate text-[12px] text-[#E8E8E8]">{p.name}</span>
+                    <button onClick={() => setEditAttachments((arr) => arr.filter((_, j) => j !== i))} className="text-[#666] hover:text-[#EF4444]" aria-label="Устгах">
+                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {editAttachments.length < 10 && (
+              <button
+                type="button"
+                onClick={() => pdfFileRef.current?.click()}
+                disabled={pdfUploading}
+                className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(239,44,88,0.3)] px-2.5 py-1.5 text-[10px] font-bold text-[#EF2C58] hover:bg-[rgba(239,44,88,0.05)] disabled:opacity-50"
+              >
+                {pdfUploading ? "Хадгалж байна..." : "+ PDF нэмэх"}
+              </button>
+            )}
+            <input ref={pdfFileRef} type="file" accept=".pdf,application/pdf" multiple onChange={handleEditPdfPick} className="hidden" />
+          </div>
+
+          <textarea
+            value={editData.content}
+            onChange={(e) => setEditData((p) => ({ ...p, content: e.target.value }))}
+            rows={8}
+            placeholder="Хичээлийн тэмдэглэл / агуулга"
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#E8E8E8] placeholder-[#555555] outline-none transition-colors duration-200 focus:border-[rgba(239,44,88,0.4)]"
+          />
+
+          {editError && (
+            <div className="rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[11px] text-[#EF4444]">
+              {editError}
             </div>
           )}
+
           <div className="flex gap-3">
-            <button onClick={handleSave} disabled={saving || uploading} className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 disabled:opacity-50">{saving ? "..." : "Хадгалах"}</button>
-            <button onClick={() => setEditing(false)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]">Цуцлах</button>
+            <button
+              onClick={handleSave}
+              disabled={saving || uploading || pdfUploading}
+              className="rounded-[4px] bg-[#EF2C58] px-6 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition-all duration-200 disabled:opacity-50"
+            >
+              {saving ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+            <button
+              onClick={() => { setEditing(false); setEditError(""); }}
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-5 py-2.5 text-[12px] font-medium text-[#999999] transition-colors duration-200 hover:text-[#E8E8E8]"
+            >
+              Цуцлах
+            </button>
           </div>
         </div>
       )}
