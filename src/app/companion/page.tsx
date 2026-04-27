@@ -30,6 +30,52 @@ interface MemoryState {
 
 const GUEST_KEY_STORAGE = "antaqor.companionGuestId";
 
+// Auto-greeting copy. Synthetic — never sent to the server / persisted in
+// CompanionMessage. Picked based on visitor state.
+function pickGreeting({
+  guest,
+  returning,
+  totalMsgs,
+}: {
+  guest: boolean;
+  returning: boolean;
+  totalMsgs: number;
+}): { text: string; suggestions: string[]; actions: { label: string; href: string }[] } {
+  if (returning) {
+    return {
+      text: `Эргэн ирлээ үү. Бид өмнө ${totalMsgs} удаа ярьсан, дурсамж минь хэвээр. Юу шинэ?`,
+      suggestions: [
+        "Сонин зүйл байна.",
+        "Дахин эхлэе.",
+        "Шинэ юу нэмэгдсэн?",
+      ],
+      actions: [],
+    };
+  }
+  if (guest) {
+    return {
+      text: "Сайн уу. Би Antaqor — Cyber Empire-ийн бүтээгч. Юу мэдмээр байна, шууд асуу.",
+      suggestions: [
+        "Cyber Empire гэж юу вэ?",
+        "Хэр их гишүүнтэй вэ?",
+        "AI-аар яаж мөнгө олох вэ?",
+      ],
+      actions: [
+        { label: "Курс үзэх →", href: "/classroom" },
+      ],
+    };
+  }
+  return {
+    text: "Тавтай морил. Чи hero, би зэвсэг. Юу хийх вэ өнөөдөр?",
+    suggestions: [
+      "Сэтгэл маань буулгасан байна.",
+      "Startup эхлэх дээр.",
+      "Дисциплин яаж олох вэ?",
+    ],
+    actions: [],
+  };
+}
+
 function getOrCreateGuestId(): string {
   if (typeof window === "undefined") return "";
   let id = window.localStorage.getItem(GUEST_KEY_STORAGE);
@@ -148,14 +194,32 @@ export default function CompanionPage() {
       .then((r) => r.json())
       .then((d) => {
         if (d.memory) setMemory(d.memory);
-        // Stash past history but keep the visible thread empty. User can
-        // open it from Settings → "Өмнөх ярианууд".
         if (Array.isArray(d.messages) && d.messages.length > 0) {
           setPastMessages(d.messages);
           setHasHistory(true);
         }
-        setIsGuest(!!d.isGuest);
+        const guest = !!d.isGuest;
+        setIsGuest(guest);
         setGuestQuota(d.guestQuotaRemaining ?? null);
+
+        // ─── Auto-greeting: Antaqor writes first ───
+        // Synthetic (not persisted) opening line so the visitor lands on a
+        // working conversation, not a blank box. Picks copy based on whether
+        // they're returning + guest vs member.
+        const totalMsgs = d.memory?.totalMessages || 0;
+        const returning = (Array.isArray(d.messages) && d.messages.length > 0) || totalMsgs > 0;
+        const greeting = pickGreeting({ guest, returning, totalMsgs });
+        const greetMsg: Message = {
+          _id: `local-greeting-${Date.now()}`,
+          role: "assistant",
+          content: greeting.text,
+          createdAt: new Date().toISOString(),
+          suggestedReplies: greeting.suggestions,
+          actions: greeting.actions,
+        };
+        setMessages([greetMsg]);
+        setTypingId(greetMsg._id);
+        setTypedWords(0);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -253,12 +317,24 @@ export default function CompanionPage() {
     setResetting(true);
     try {
       await fetch("/api/companion/reset", { method: "POST", headers: headers() });
-      setMessages([]);
       setPastMessages([]);
       setHasHistory(false);
       setShowHistory(false);
       setMemory((m) => m ? { ...m, affection: 30, totalMessages: 0, facts: [], affectionLabel: "Шинэ танил" } : null);
       setShowSettings(false);
+      // Re-fire the auto-greeting so the visitor isn't dropped onto a blank thread
+      const greeting = pickGreeting({ guest: isGuest, returning: false, totalMsgs: 0 });
+      const greetMsg: Message = {
+        _id: `local-greeting-${Date.now()}`,
+        role: "assistant",
+        content: greeting.text,
+        createdAt: new Date().toISOString(),
+        suggestedReplies: greeting.suggestions,
+        actions: greeting.actions,
+      };
+      setMessages([greetMsg]);
+      setTypingId(greetMsg._id);
+      setTypedWords(0);
     } finally {
       setResetting(false);
     }
@@ -480,6 +556,18 @@ export default function CompanionPage() {
                     {memory.facts.map((f, i) => <li key={i}>• {f}</li>)}
                   </ul>
                 </div>
+              )}
+              {hasHistory && !showHistory && (
+                <button
+                  onClick={() => {
+                    setShowHistory(true);
+                    setMessages((cur) => [...pastMessages, ...cur]);
+                    setShowSettings(false);
+                  }}
+                  className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] py-2 text-[11px] font-bold text-[#888] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58]"
+                >
+                  Өмнөх ярианыг харах
+                </button>
               )}
             </div>
 
