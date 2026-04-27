@@ -90,9 +90,13 @@ export default function CompanionPage() {
       }
       setMessages((m) => [...m, data.reply]);
       if (data.memory) {
-        setMemory((prev) => prev
-          ? { ...prev, affection: data.memory.affection, totalMessages: data.memory.totalMessages }
-          : { ...data.memory, affectionLabel: prev?.affectionLabel || "" } as MemoryState);
+        setMemory((prev): MemoryState => ({
+          affection: data.memory.affection,
+          affectionLabel: prev?.affectionLabel || "",
+          preferredName: data.memory.preferredName ?? prev?.preferredName ?? "",
+          totalMessages: data.memory.totalMessages ?? prev?.totalMessages ?? 0,
+          facts: prev?.facts || [],
+        }));
       }
     } catch {
       setError("Сүлжээний алдаа");
