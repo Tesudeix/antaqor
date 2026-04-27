@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import CompanionMemory from "@/models/CompanionMemory";
 import CompanionMessage from "@/models/CompanionMessage";
+import { resolveCompanionSubject, subjectFilter, subjectInsert } from "@/lib/companionSession";
 
-// POST — wipe the user's companion memory and chat history. Affection resets
-// to the default (30). The user keeps their account; only the relationship
-// with Antaqor is reset.
-export async function POST(_req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Нэвтрэх шаардлагатай" }, { status: 401 });
+export async function POST(req: NextRequest) {
+  const subject = await resolveCompanionSubject(req);
+  if (!subject) {
+    return NextResponse.json({ error: "Танигдсангүй" }, { status: 401 });
   }
-  const userId = (session.user as { id: string }).id;
   await dbConnect();
 
+  const filter = subjectFilter(subject);
   await Promise.all([
-    CompanionMessage.deleteMany({ user: userId }),
+    CompanionMessage.deleteMany(filter),
     CompanionMemory.findOneAndUpdate(
-      { user: userId },
+      filter,
       {
         $set: {
           affection: 30,
@@ -32,6 +28,7 @@ export async function POST(_req: NextRequest) {
           totalMessages: 0,
           lastInteractionAt: null,
         },
+        $setOnInsert: subjectInsert(subject),
       },
       { upsert: true }
     ),

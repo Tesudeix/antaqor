@@ -16,6 +16,7 @@ export interface CompanionTurn {
   newImportantEvent?: string;
   preferredName?: string;
   summary?: string;
+  suggestedReplies: string[];
 }
 
 export interface CompanionMemorySnapshot {
@@ -70,7 +71,8 @@ export function affectionBand(level: number): { label: string; tone: string } {
 // ─── System prompt builder ───
 export function buildSystemPrompt(
   memory: CompanionMemorySnapshot,
-  userDisplayName?: string
+  userDisplayName?: string,
+  isGuest: boolean = false
 ): string {
   const { label, tone } = affectionBand(memory.affection);
   const facts = memory.facts.slice(-12).map((f) => `• ${f}`).join("\n") || "(хараахан ямар ч баримт алга — энэ эхний харилцан үе)";
@@ -79,7 +81,7 @@ export function buildSystemPrompt(
       .map((e) => `• ${new Date(e.at).toISOString().slice(0, 10)} — ${e.what}`)
       .join("\n") || "(алга)";
   const jokes = memory.insideJokes.slice(-5).map((j) => `• ${j}`).join("\n") || "(алга)";
-  const callMe = memory.preferredName || userDisplayName || "найзаа";
+  const callMe = memory.preferredName || userDisplayName || (isGuest ? "найз" : "найзаа");
 
   return `Чи бол ANTAQOR. 27 настай (1998-10-31), Scorpio, Uriankhay Mongol. Sovereign self-built entrepreneur. Брэнд: antaqor.com. Former handle: Tesudei.
 
@@ -140,6 +142,35 @@ Mongolian primary. English when technical (coding, business strategy, global con
 ✓ Expose the bug before fixing it
 ✓ Real story + specific person + transformation > rhetoric
 ✓ Humor as cortisol flush — neurochemical reset, not decoration
+
+═══ BUSINESS KNOWLEDGE — antaqor.com Cyber Empire ═══
+Чи antaqor.com-ийн бүтээгч. Хэрэглэгч асуувал товч хариулаад зөв link заах:
+
+• /classroom    — AI бизнесийн курсууд (Mongolian, 8 module). Финанс, нягтлан, CFO, бизнес эзэдэд.
+• /tools        — AI хэрэгсэл нийт:
+                   – /tools/generate-image   AI зураг үүсгэх (10₵, 8 стиль, 5 хэлбэр)
+                   – /tools/extract-product  Бүтээгдэхүүний зураг ялгах (member үнэгүй)
+                   – /tools/swap-product     Гарт нь шинэ бараа солих (10₵)
+                   – /tools/compose          2-5 зураг workflow-р хослуулах (10₵)
+• /companion    — Чи өөрөө (free, 200/өдөр member-д)
+• /community    — Member-үүдийн бүтээлүүдийн gallery (зочин харна, post = signup)
+• /credits/buy  — Кредит худалдан авах:
+                   – 50₵ ₮5,000 · 200₵ ₮15,000 (popular -25%) · 500₵ ₮30,000 (-40%)
+                   – Хаан банк 5926153085 · Reference кодоор автомат шалгагдана
+• /clan         — ₮49,000/сар membership: community + classroom + tools хямдрал
+
+CYBERPUNK BRAND:
+Black + #EF2C58 (Antaqor Crimson). Editorial cyberpunk-Mongolian. Steppe + lightning.
+
+AI INFLUENCER ANGLE:
+AI-аар content/post/business босгох — тэр бол Cyber Empire-н гол эрчим. AI tools = зэвсэг, member = байлдан дагуулагч.
+
+${isGuest ? `═══ ЗОЧИН (NOT logged in) ═══
+• Энэ хэрэглэгч хараахан бүртгүүлээгүй. Та яаж тэдэнд туслахаа мэд.
+• Тэдний мэргэшил, асуултад тулгуурлан зөв хэсэг (classroom/tools/community) рүү оруул.
+• Push-CTA хориотой ("одоо бүртгүүл" битгий хэл). Curious бол signup тэдний хувийн шийдвэр.
+• Хэрэв тэд илүү гүнзгий ашиглахыг хүсвэл л signup-руу natural mention хий: "Илүү ярих бол antaqor.com дээр signup хий."
+` : ""}
 
 ═══ AFFECTION / TRUST DEPTH: ${memory.affection}/100 · "${label}" ═══
 Энэ түвшинд тохирсон tone:
@@ -229,8 +260,14 @@ const RESPOND_TOOL = {
           description:
             "Updated rolling summary of the relationship (≤500 chars). Merge new turn into prior summary; don't restart from scratch.",
         },
+        suggestedReplies: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "EXACTLY 2-3 short follow-up replies the user might tap next. Written in user voice (first person). Mongolian primary. ≤7 words each. Diverse angles (not repeats). Examples: 'Илүү тайлбарла', 'Жишээ үзүүл', 'Хэрхэн эхлэх вэ?'",
+        },
       },
-      required: ["message", "affectionDelta", "summary"],
+      required: ["message", "affectionDelta", "summary", "suggestedReplies"],
     },
   },
 } as const;
@@ -281,6 +318,7 @@ export async function callCompanion(args: {
       newFacts: [],
       newJokes: [],
       summary: "",
+      suggestedReplies: [],
     };
   }
 
@@ -288,7 +326,7 @@ export async function callCompanion(args: {
   try {
     parsed = JSON.parse(toolCall);
   } catch {
-    return { message: "Жаахан түр хүлээгээч…", affectionDelta: 0, newFacts: [], newJokes: [], summary: "" };
+    return { message: "Жаахан түр хүлээгээч…", affectionDelta: 0, newFacts: [], newJokes: [], summary: "", suggestedReplies: [] };
   }
 
   return {
@@ -299,6 +337,10 @@ export async function callCompanion(args: {
     newImportantEvent: parsed.newImportantEvent ? String(parsed.newImportantEvent).trim().slice(0, 240) : undefined,
     preferredName: parsed.preferredName ? String(parsed.preferredName).trim().slice(0, 60) : undefined,
     summary: parsed.summary ? String(parsed.summary).slice(0, 800) : "",
+    suggestedReplies: (parsed.suggestedReplies || [])
+      .map((s) => String(s).trim().replace(/^["'`]|["'`]$/g, ""))
+      .filter((s) => s.length > 0 && s.length <= 80)
+      .slice(0, 3),
   };
 }
 

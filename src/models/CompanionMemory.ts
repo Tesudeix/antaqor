@@ -1,31 +1,19 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// Long-term per-user memory for the Antaqor AI companion. One row per user.
+// Long-term memory for the Antaqor AI companion.
+// One row per VISITOR — either a logged-in user (`user`) OR an anonymous
+// browser session (`guestKey`). Exactly one of them is set.
 export interface ICompanionMemory extends Document {
   _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  user?: mongoose.Types.ObjectId;
+  guestKey?: string;
 
-  // Affection level 0–100. Persona warms up as this grows.
   affection: number;
-
-  // What the user has told the companion to call them. May differ from User.name.
   preferredName: string;
-
-  // Rolling free-text summary of the relationship and what's been discussed.
-  // Kept under ~600 chars to stay cheap to inject in every prompt.
   summary: string;
-
-  // Stable facts the user has shared ("Хан-Уул дүүрэгт амьдардаг", "AI startup
-  // эхлэхийг хүсэж байна", "хүүтэй"). Capped at 30; oldest get evicted.
   facts: string[];
-
-  // Light preference map (free-form key/value): favorite_color, mood, etc.
   preferences: Record<string, string>;
-
-  // Important moments worth remembering forever (birthday, big launch).
   importantEvents: { at: Date; what: string }[];
-
-  // In-jokes / shared references the companion can call back to.
   insideJokes: string[];
 
   totalMessages: number;
@@ -37,7 +25,8 @@ export interface ICompanionMemory extends Document {
 
 const CompanionMemorySchema = new Schema<ICompanionMemory>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true, index: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    guestKey: { type: String, index: true },
     affection: { type: Number, default: 30, min: 0, max: 100 },
     preferredName: { type: String, default: "", maxlength: 60 },
     summary: { type: String, default: "", maxlength: 1000 },
@@ -53,6 +42,10 @@ const CompanionMemorySchema = new Schema<ICompanionMemory>(
   },
   { timestamps: true }
 );
+
+// Each subject (user OR guest) is unique. Sparse so the row can have only one.
+CompanionMemorySchema.index({ user: 1 }, { unique: true, sparse: true });
+CompanionMemorySchema.index({ guestKey: 1 }, { unique: true, sparse: true });
 
 const CompanionMemory: Model<ICompanionMemory> =
   mongoose.models.CompanionMemory ||

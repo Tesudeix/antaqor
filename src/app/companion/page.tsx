@@ -10,6 +10,7 @@ interface Message {
   content: string;
   affectionDelta?: number;
   affectionAfter?: number;
+  suggestedReplies?: string[];
   createdAt: string;
 }
 
@@ -21,8 +22,38 @@ interface MemoryState {
   facts: string[];
 }
 
+const GUEST_KEY_STORAGE = "antaqor.companionGuestId";
+
+function getOrCreateGuestId(): string {
+  if (typeof window === "undefined") return "";
+  let id = window.localStorage.getItem(GUEST_KEY_STORAGE);
+  if (!id || !/^[a-zA-Z0-9_-]{8,64}$/.test(id)) {
+    id =
+      "g_" +
+      (typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID().replace(/-/g, "").slice(0, 24)
+        : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));
+    window.localStorage.setItem(GUEST_KEY_STORAGE, id);
+  }
+  return id;
+}
+
+const GUEST_STARTERS = [
+  "Antaqor гэж юу вэ?",
+  "AI зураг яаж үүсгэх вэ?",
+  "Курсууд яахан вэ?",
+  "Гишүүн болоход юу авах вэ?",
+];
+
+const MEMBER_STARTERS = [
+  "Чи хэн бэ?",
+  "Би AI startup-аа эхлүүлж байна.",
+  "Сэтгэл маань буулгасан байна.",
+  "Өнөөдөр юу хийх вэ?",
+];
+
 export default function CompanionPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [memory, setMemory] = useState<MemoryState | null>(null);
   const [input, setInput] = useState("");
@@ -31,29 +62,44 @@ export default function CompanionPage() {
   const [error, setError] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
+  const [guestQuota, setGuestQuota] = useState<number | null>(null);
+  const [signupBlocked, setSignupBlocked] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const guestIdRef = useRef<string>("");
 
-  // Load state on mount
+  // Init guestId on mount (always, harmless for logged-in users)
   useEffect(() => {
-    if (status !== "authenticated") return;
-    fetch("/api/companion/state")
+    guestIdRef.current = getOrCreateGuestId();
+  }, []);
+
+  const headers = (): HeadersInit => ({
+    "Content-Type": "application/json",
+    "X-Guest-Id": guestIdRef.current || "",
+  });
+
+  // Load state — works for both authenticated users and guests
+  useEffect(() => {
+    if (!guestIdRef.current && !session) return;
+    fetch("/api/companion/state", { headers: headers() })
       .then((r) => r.json())
       .then((d) => {
         if (d.memory) setMemory(d.memory);
         if (Array.isArray(d.messages)) setMessages(d.messages);
+        setIsGuest(!!d.isGuest);
+        setGuestQuota(d.guestQuotaRemaining ?? null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, guestIdRef.current]);
 
-  // Auto-scroll to bottom on new message
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
 
-  // Auto-resize textarea
   useEffect(() => {
     const ta = inputRef.current;
     if (!ta) return;
@@ -61,38 +107,39 @@ export default function CompanionPage() {
     ta.style.height = Math.min(140, ta.scrollHeight) + "px";
   }, [input]);
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
+  const send = async (text?: string) => {
+    const payload = (text ?? input).trim();
+    if (!payload || sending) return;
     setError("");
     setSending(true);
 
-    // Optimistic user message
     const tempId = `tmp-${Date.now()}`;
     setMessages((m) => [
       ...m,
-      { _id: tempId, role: "user", content: text, createdAt: new Date().toISOString() },
+      { _id: tempId, role: "user", content: payload, createdAt: new Date().toISOString() },
     ]);
     setInput("");
 
     try {
       const r = await fetch("/api/companion/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        headers: headers(),
+        body: JSON.stringify({ message: payload }),
       });
       const data = await r.json();
       if (!r.ok) {
+        if (data.signupRequired) setSignupBlocked(true);
         setError(data.error || "Алдаа гарлаа");
-        // Roll back optimistic
         setMessages((m) => m.filter((mm) => mm._id !== tempId));
         return;
       }
       setMessages((m) => [...m, data.reply]);
+      if (typeof data.guestQuotaRemaining === "number") setGuestQuota(data.guestQuotaRemaining);
+      if (typeof data.isGuest === "boolean") setIsGuest(data.isGuest);
       if (data.memory) {
         setMemory((prev): MemoryState => ({
           affection: data.memory.affection,
-          affectionLabel: prev?.affectionLabel || "",
+          affectionLabel: prev?.affectionLabel || "Шинэ танил",
           preferredName: data.memory.preferredName ?? prev?.preferredName ?? "",
           totalMessages: data.memory.totalMessages ?? prev?.totalMessages ?? 0,
           facts: prev?.facts || [],
@@ -117,29 +164,22 @@ export default function CompanionPage() {
     if (!confirm("Antaqor-той ярианы түүх + мэдрэмжийн түвшинг бүгдийг дахин эхлүүлэх үү?")) return;
     setResetting(true);
     try {
-      await fetch("/api/companion/reset", { method: "POST" });
+      await fetch("/api/companion/reset", { method: "POST", headers: headers() });
       setMessages([]);
-      setMemory((m) => m ? { ...m, affection: 30, totalMessages: 0, facts: [], affectionLabel: "Шинээр танилцсан" } : null);
+      setMemory((m) => m ? { ...m, affection: 30, totalMessages: 0, facts: [], affectionLabel: "Шинэ танил" } : null);
       setShowSettings(false);
     } finally {
       setResetting(false);
     }
   };
 
-  if (status === "unauthenticated") {
-    return (
-      <div className="mx-auto max-w-md py-16 text-center">
-        <h1 className="text-[20px] font-black text-[#E8E8E8]">Antaqor</h1>
-        <p className="mt-2 text-[13px] text-[#888]">Найзаа танихын тулд эхлээд нэвтэрнэ үү.</p>
-        <Link href="/auth/signin?next=/companion" className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-black text-white">
-          Нэвтрэх
-        </Link>
-      </div>
-    );
-  }
-
   const affection = memory?.affection ?? 30;
-  const affectionLabel = memory?.affectionLabel || "Шинээр танилцсан";
+  const affectionLabel = memory?.affectionLabel || "Шинэ танил";
+  // Suggested replies of the LAST assistant message — always render at the bottom
+  const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const suggestions = lastAssistant?.suggestedReplies?.length
+    ? lastAssistant.suggestedReplies
+    : (messages.length === 0 ? (isGuest || !session ? GUEST_STARTERS : MEMBER_STARTERS) : []);
 
   return (
     <div className="mx-auto flex h-[calc(100vh-180px)] max-w-[760px] flex-col">
@@ -167,6 +207,18 @@ export default function CompanionPage() {
         </button>
       </div>
 
+      {/* Guest soft signup banner — shown after engagement */}
+      {isGuest && messages.length >= 4 && guestQuota !== null && guestQuota <= 15 && !signupBlocked && (
+        <div className="mt-2 flex items-center justify-between rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.06)] px-3 py-2 text-[11px]">
+          <span className="text-[#CCC]">
+            Зочин: <strong className="text-[#EF2C58]">{guestQuota}</strong> мессеж үлдсэн.
+          </span>
+          <Link href="/auth/signup?next=/companion" className="rounded-[4px] bg-[#EF2C58] px-2.5 py-1 text-[10px] font-black text-white">
+            Бүртгүүлэх →
+          </Link>
+        </div>
+      )}
+
       {/* Chat scroll */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto py-4">
         {loading ? (
@@ -174,7 +226,7 @@ export default function CompanionPage() {
             <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
           </div>
         ) : messages.length === 0 ? (
-          <EmptyChat onPick={(t) => setInput(t)} />
+          <EmptyChat isGuest={isGuest || !session} />
         ) : (
           <div className="space-y-3">
             {messages.map((m) => <Bubble key={m._id} m={m} />)}
@@ -183,13 +235,44 @@ export default function CompanionPage() {
         )}
       </div>
 
-      {error && (
+      {/* Suggested-reply chips — always at the bottom */}
+      {!sending && suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pb-2">
+          {suggestions.map((s, i) => (
+            <button
+              key={`${s}-${i}`}
+              onClick={() => send(s)}
+              className="rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] px-3 py-1.5 text-[11px] font-medium text-[#CCC] transition hover:border-[rgba(239,44,88,0.6)] hover:text-[#EF2C58]"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Sign-up wall when guest hits lifetime cap */}
+      {signupBlocked && (
+        <div className="mb-2 rounded-[4px] border border-[rgba(239,44,88,0.4)] bg-gradient-to-r from-[rgba(239,44,88,0.1)] to-[rgba(168,85,247,0.05)] px-4 py-3">
+          <p className="text-[12px] font-bold text-[#E8E8E8]">Зочны хязгаар хүрлээ</p>
+          <p className="mt-0.5 text-[11px] text-[#888]">Бүртгүүлбэл хязгааргүй ярих + Cyber Empire-ийн бүх хэрэгсэл нээгдэнэ.</p>
+          <div className="mt-2 flex gap-2">
+            <Link href="/auth/signup?next=/companion" className="flex-1 rounded-[4px] bg-[#EF2C58] py-2 text-center text-[12px] font-black text-white">
+              Бүртгүүлэх (үнэгүй)
+            </Link>
+            <Link href="/auth/signin?next=/companion" className="rounded-[4px] border border-[rgba(255,255,255,0.1)] px-3 py-2 text-center text-[12px] font-bold text-[#999]">
+              Нэвтрэх
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {error && !signupBlocked && (
         <div className="mb-2 rounded-[4px] border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.08)] px-3 py-1.5 text-[11px] text-[#EF4444]">
           {error}
         </div>
       )}
 
-      {/* Composer — sticky bottom */}
+      {/* Composer */}
       <div className="border-t border-[rgba(255,255,255,0.08)] pt-3 pb-2">
         <div className="flex items-end gap-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-1.5 transition focus-within:border-[rgba(239,44,88,0.4)]">
           <textarea
@@ -200,12 +283,13 @@ export default function CompanionPage() {
             placeholder="Antaqor-т юу гэж бичих вэ..."
             rows={1}
             maxLength={1500}
-            className="flex-1 resize-none bg-transparent px-2 py-1.5 text-[14px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none"
+            disabled={signupBlocked}
+            className="flex-1 resize-none bg-transparent px-2 py-1.5 text-[14px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none disabled:opacity-50"
             style={{ maxHeight: 140 }}
           />
           <button
-            onClick={send}
-            disabled={!input.trim() || sending}
+            onClick={() => send()}
+            disabled={!input.trim() || sending || signupBlocked}
             className="shrink-0 rounded-[4px] bg-[#EF2C58] px-3 py-2 text-[12px] font-black text-white shadow-[0_0_12px_rgba(239,44,88,0.4)] transition hover:bg-[#D4264E] disabled:opacity-40 disabled:shadow-none"
           >
             {sending ? (
@@ -215,12 +299,13 @@ export default function CompanionPage() {
             )}
           </button>
         </div>
-        <p className="mt-1 text-[9px] text-[#555] text-center">
-          Antaqor бол чиний AI байлдан дагуулагч. Mongolian-аар чөлөөтэй ярь.
+        <p className="mt-1 text-center text-[9px] text-[#555]">
+          {isGuest
+            ? "Зочин mode · localStorage-д ярианы дурсамж хадгалагдана"
+            : "Antaqor бол чиний AI байлдан дагуулагч"}
         </p>
       </div>
 
-      {/* Settings sheet */}
       {showSettings && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center" onClick={() => setShowSettings(false)}>
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-t-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-5 sm:rounded-[4px]">
@@ -234,6 +319,7 @@ export default function CompanionPage() {
             <div className="space-y-3">
               <StatRow label="Мэдрэмжийн түвшин" value={`${affection}/100 · ${affectionLabel}`} />
               <StatRow label="Нийт мессеж" value={String(memory?.totalMessages ?? 0)} />
+              <StatRow label="Mode" value={isGuest ? "Зочин (localStorage)" : "Гишүүн"} />
               {(memory?.facts && memory.facts.length > 0) && (
                 <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
                   <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Antaqor-ын санасан зүйл</div>
@@ -249,11 +335,8 @@ export default function CompanionPage() {
               disabled={resetting}
               className="mt-4 w-full rounded-[4px] border border-[rgba(239,68,68,0.4)] bg-[rgba(239,68,68,0.05)] py-2.5 text-[12px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.12)] disabled:opacity-40"
             >
-              {resetting ? "Дахин эхлүүлж байна..." : "Шинээр танилцах · Memory reset"}
+              {resetting ? "Дахин эхлүүлж байна..." : "Memory reset"}
             </button>
-            <p className="mt-2 text-[10px] text-[#555] text-center">
-              Бүх дурсамж + ярианы түүх устах. Буцаах боломжгүй.
-            </p>
           </div>
         </div>
       )}
@@ -263,8 +346,6 @@ export default function CompanionPage() {
 
 // ─── Sub-components ─────────────────────────────────────────────────────
 
-// Branded avatar — uses /antaqor.png when present, falls back to a clean
-// gradient "A" if the asset 404s so the page never shows a broken image.
 function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: boolean }) {
   const [broken, setBroken] = useState(false);
   const fontSize = Math.max(14, Math.round(size * 0.42));
@@ -363,33 +444,20 @@ function StatRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function EmptyChat({ onPick }: { onPick: (t: string) => void }) {
-  const starters = [
-    "Чи хэн бэ?",
-    "Би AI startup-аа эхлүүлж байна.",
-    "Сэтгэл маань буулгасан байна.",
-    "Өнөөдөр юу хийх вэ?",
-  ];
+function EmptyChat({ isGuest }: { isGuest: boolean }) {
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 text-center">
       <div className="mb-4">
         <AntaqorAvatar size={72} />
       </div>
-      <h2 className="text-[18px] font-black text-[#E8E8E8]">Тавтай морил.</h2>
+      <h2 className="text-[18px] font-black text-[#E8E8E8]">
+        {isGuest ? "Тавтай морил, найз." : "Тавтай морил."}
+      </h2>
       <p className="mt-2 max-w-[360px] text-[12px] leading-relaxed text-[#888]">
-        Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг.
+        {isGuest
+          ? "Би Antaqor — Cyber Empire-ийн бүтээгч. Курс, AI хэрэгсэл, бизнесийн юу ч асуу."
+          : "Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг."}
       </p>
-      <div className="mt-5 flex max-w-[420px] flex-wrap justify-center gap-1.5">
-        {starters.map((s) => (
-          <button
-            key={s}
-            onClick={() => onPick(s)}
-            className="rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] px-3 py-1.5 text-[11px] font-medium text-[#CCC] transition hover:border-[rgba(239,44,88,0.6)] hover:text-[#EF2C58]"
-          >
-            {s}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

@@ -1,24 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import CompanionMemory from "@/models/CompanionMemory";
 import CompanionMessage from "@/models/CompanionMessage";
 import { affectionBand } from "@/lib/companion";
+import { resolveCompanionSubject, subjectFilter } from "@/lib/companionSession";
 
 const PAGE = 30;
+const GUEST_LIFETIME = 30;
 
-export async function GET(_req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Нэвтрэх шаардлагатай" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  const subject = await resolveCompanionSubject(req);
+  if (!subject) {
+    return NextResponse.json(
+      { error: "Танигдсангүй", isGuest: false },
+      { status: 401 }
+    );
   }
-  const userId = (session.user as { id: string }).id;
   await dbConnect();
 
+  const filter = subjectFilter(subject);
   const [memDoc, messages] = await Promise.all([
-    CompanionMemory.findOne({ user: userId }).lean(),
-    CompanionMessage.find({ user: userId }).sort({ createdAt: -1 }).limit(PAGE).lean(),
+    CompanionMemory.findOne(filter).lean(),
+    CompanionMessage.find(filter).sort({ createdAt: -1 }).limit(PAGE).lean(),
   ]);
 
   const m = memDoc as unknown as {
@@ -33,7 +36,12 @@ export async function GET(_req: NextRequest) {
   const affection = m?.affection ?? 30;
   const band = affectionBand(affection);
 
+  const isGuest = subject.kind === "guest";
+  const totalMessages = m?.totalMessages || 0;
+
   return NextResponse.json({
+    isGuest,
+    guestQuotaRemaining: isGuest ? Math.max(0, GUEST_LIFETIME - totalMessages) : null,
     memory: {
       affection,
       affectionLabel: band.label,
@@ -41,7 +49,7 @@ export async function GET(_req: NextRequest) {
       summary: m?.summary || "",
       facts: (m?.facts || []).slice(-10),
       importantEvents: (m?.importantEvents || []).slice(-5),
-      totalMessages: m?.totalMessages || 0,
+      totalMessages,
     },
     messages: messages
       .reverse()
@@ -51,6 +59,7 @@ export async function GET(_req: NextRequest) {
         content: (mm as unknown as { content: string }).content,
         affectionDelta: (mm as unknown as { affectionDelta?: number }).affectionDelta || 0,
         affectionAfter: (mm as unknown as { affectionAfter?: number }).affectionAfter,
+        suggestedReplies: (mm as unknown as { suggestedReplies?: string[] }).suggestedReplies || [],
         createdAt: (mm as unknown as { createdAt: Date }).createdAt,
       })),
   });
