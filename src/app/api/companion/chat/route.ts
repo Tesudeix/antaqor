@@ -102,11 +102,24 @@ export async function POST(req: NextRequest) {
   try {
     turn = await callCompanion({ apiKey, systemPrompt, recent, userInput });
   } catch (err) {
-    console.error("Companion Grok call failed:", err);
-    return NextResponse.json(
-      { error: "Антаквор түр амарч байна. Дахин оролдоно уу." },
-      { status: 502 }
-    );
+    const raw = err instanceof Error ? err.message : String(err);
+    console.error("Companion Grok call failed:", raw);
+
+    // Surface a more useful Mongolian message based on the upstream error.
+    let friendly = "Antaqor түр амарч байна. Дахин оролдоно уу.";
+    let status = 502;
+    if (/Grok 401|invalid.?api.?key|Unauthorized/i.test(raw)) {
+      friendly = "Antaqor-ын API түлхүүр буруу тохируулагдсан байна. Админд хандана уу.";
+      status = 503;
+    } else if (/Grok 429|exhausted|spending limit|all available credits|quota/i.test(raw)) {
+      friendly = "Antaqor-ын сарын кредит дууссан байна. Удахгүй сэргэнэ. Админд мэдэгдсэн.";
+      status = 503;
+    } else if (/Grok 5\d\d/i.test(raw)) {
+      friendly = "Antaqor дотоод алдаатай байна. Хэдхэн минутын дараа дахин оролдоно уу.";
+      status = 502;
+    }
+
+    return NextResponse.json({ error: friendly, code: "GROK_UPSTREAM" }, { status });
   }
 
   // ─── Apply updates ───

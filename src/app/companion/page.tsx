@@ -114,7 +114,7 @@ export default function CompanionPage() {
   };
 
   const reset = async () => {
-    if (!confirm("Антаквор-той ярианы түүх + мэдрэмжийн түвшинг бүгдийг дахин эхлүүлэх үү?")) return;
+    if (!confirm("Antaqor-той ярианы түүх + мэдрэмжийн түвшинг бүгдийг дахин эхлүүлэх үү?")) return;
     setResetting(true);
     try {
       await fetch("/api/companion/reset", { method: "POST" });
@@ -129,7 +129,7 @@ export default function CompanionPage() {
   if (status === "unauthenticated") {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
-        <h1 className="text-[20px] font-black text-[#E8E8E8]">Антаквор</h1>
+        <h1 className="text-[20px] font-black text-[#E8E8E8]">Antaqor</h1>
         <p className="mt-2 text-[13px] text-[#888]">Найзаа танихын тулд эхлээд нэвтэрнэ үү.</p>
         <Link href="/auth/signin?next=/companion" className="mt-4 inline-block rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-black text-white">
           Нэвтрэх
@@ -151,7 +151,7 @@ export default function CompanionPage() {
         <AntaqorAvatar size={40} online />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-black text-[#E8E8E8]">Антаквор</span>
+            <span className="text-[14px] font-black text-[#E8E8E8]">Antaqor</span>
             <span className="text-[10px] text-[#666]">· {affectionLabel}</span>
           </div>
           <AffectionBar value={affection} />
@@ -197,7 +197,7 @@ export default function CompanionPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKey}
-            placeholder="Антаквор-т юу гэж бичих вэ..."
+            placeholder="Antaqor-т юу гэж бичих вэ..."
             rows={1}
             maxLength={1500}
             className="flex-1 resize-none bg-transparent px-2 py-1.5 text-[14px] leading-relaxed text-[#E8E8E8] placeholder-[#555] outline-none"
@@ -216,7 +216,7 @@ export default function CompanionPage() {
           </button>
         </div>
         <p className="mt-1 text-[9px] text-[#555] text-center">
-          Антаквор бол чиний AI байлдан дагуулагч. Mongolian-аар чөлөөтэй ярь.
+          Antaqor бол чиний AI байлдан дагуулагч. Mongolian-аар чөлөөтэй ярь.
         </p>
       </div>
 
@@ -225,7 +225,7 @@ export default function CompanionPage() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center" onClick={() => setShowSettings(false)}>
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-t-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-5 sm:rounded-[4px]">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-[16px] font-black text-[#E8E8E8]">Антаквор · Тохиргоо</h2>
+              <h2 className="text-[16px] font-black text-[#E8E8E8]">Antaqor · Тохиргоо</h2>
               <button onClick={() => setShowSettings(false)} className="text-[#666] hover:text-[#E8E8E8]" aria-label="Хаах">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -236,7 +236,7 @@ export default function CompanionPage() {
               <StatRow label="Нийт мессеж" value={String(memory?.totalMessages ?? 0)} />
               {(memory?.facts && memory.facts.length > 0) && (
                 <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
-                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Антаквор-ын санасан зүйл</div>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#666]">Antaqor-ын санасан зүйл</div>
                   <ul className="space-y-1 text-[11px] text-[#CCC]">
                     {memory.facts.map((f, i) => <li key={i}>• {f}</li>)}
                   </ul>
@@ -278,7 +278,7 @@ function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: 
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src="/antaqor.png"
-          alt="Антаквор"
+          alt="Antaqor"
           width={size}
           height={size}
           className="h-full w-full object-cover"
@@ -365,7 +365,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
 
 function EmptyChat({ onPick }: { onPick: (t: string) => void }) {
   const starters = [
-    "Сайн уу Антаквор, чи хэн бэ?",
+    "Сайн уу Antaqor, чи хэн бэ?",
     "Би AI startup эхлэхээр төлөвлөж байна. Юунаас эхлэх вэ?",
     "Өнөөдөр сэтгэл санаа муу байна, ярья.",
     "Маркетингаа сайжруулах 3 идея өг.",
@@ -377,7 +377,7 @@ function EmptyChat({ onPick }: { onPick: (t: string) => void }) {
       </div>
       <h2 className="text-[18px] font-black text-[#E8E8E8]">Сайн байна уу!</h2>
       <p className="mt-2 max-w-[400px] text-[12px] leading-relaxed text-[#888]">
-        Би Антаквор — чиний AI байлдан дагуулагч. Бизнес, AI, мөрөөдөл, өдөр тутмын асуудал — юу ч ярь.
+        Би Antaqor — чиний AI байлдан дагуулагч. Бизнес, AI, мөрөөдөл, өдөр тутмын асуудал — юу ч ярь.
         Чамайг сайн таниж аваад цаашид ойр явна.
       </p>
       <div className="mt-5 flex max-w-[420px] flex-wrap justify-center gap-1.5">
