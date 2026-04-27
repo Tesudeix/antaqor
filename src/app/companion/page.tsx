@@ -112,6 +112,10 @@ export default function CompanionPage() {
   const [pastMessages, setPastMessages] = useState<Message[]>([]);
   const [hasHistory, setHasHistory] = useState(false);
   const [starterCategory, setStarterCategory] = useState<string>("antaqor");
+  // Streaming-style word reveal: which message is currently being "typed",
+  // and how many words of it are visible right now.
+  const [typingId, setTypingId] = useState<string | null>(null);
+  const [typedWords, setTypedWords] = useState<number>(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -152,7 +156,26 @@ export default function CompanionPage() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, sending]);
+  }, [messages, sending, typedWords]);
+
+  // Word-by-word reveal animation. ~32ms per word feels like fast natural
+  // typing without the model output being instant-paste.
+  useEffect(() => {
+    if (!typingId) return;
+    const target = messages.find((m) => m._id === typingId);
+    if (!target) { setTypingId(null); return; }
+    const totalWords = target.content.split(/\s+/).filter(Boolean).length;
+    if (typedWords >= totalWords) { setTypingId(null); return; }
+    const t = setTimeout(() => setTypedWords((n) => n + 1), 32);
+    return () => clearTimeout(t);
+  }, [typingId, typedWords, messages]);
+
+  const skipTyping = () => {
+    if (!typingId) return;
+    const target = messages.find((m) => m._id === typingId);
+    if (!target) return;
+    setTypedWords(target.content.split(/\s+/).filter(Boolean).length);
+  };
 
   useEffect(() => {
     const ta = inputRef.current;
@@ -188,6 +211,9 @@ export default function CompanionPage() {
         return;
       }
       setMessages((m) => [...m, data.reply]);
+      // Kick off the smooth word-by-word reveal for this reply
+      setTypingId(data.reply._id);
+      setTypedWords(0);
       if (typeof data.guestQuotaRemaining === "number") setGuestQuota(data.guestQuotaRemaining);
       if (typeof data.isGuest === "boolean") setIsGuest(data.isGuest);
       if (data.memory) {
@@ -232,13 +258,17 @@ export default function CompanionPage() {
 
   const affection = memory?.affection ?? 30;
   const affectionLabel = memory?.affectionLabel || "Шинэ танил";
-  // After Antaqor has replied, show the AI-generated follow-up chips. Before
-  // the first turn of THIS visit, show the user's chosen category starters.
+  // After Antaqor has replied AND finished typing, show the AI-generated
+  // follow-up chips. Before the first turn of THIS visit, show the user's
+  // chosen category starters.
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const isLastTyping = typingId !== null && typingId === lastAssistant?._id;
   const aiSuggestions = lastAssistant?.suggestedReplies || [];
   const categoryStarters =
     STARTER_CATEGORIES.find((c) => c.id === starterCategory)?.chips || [];
-  const suggestions = messages.length > 0 ? aiSuggestions : categoryStarters;
+  const suggestions = messages.length > 0
+    ? (isLastTyping ? [] : aiSuggestions)
+    : categoryStarters;
 
   return (
     <div className="mx-auto flex h-[calc(100vh-180px)] max-w-[760px] flex-col">
@@ -303,7 +333,15 @@ export default function CompanionPage() {
           </>
         ) : (
           <div className="space-y-3">
-            {messages.map((m) => <Bubble key={m._id} m={m} />)}
+            {messages.map((m) => (
+              <Bubble
+                key={m._id}
+                m={m}
+                isTyping={typingId === m._id}
+                typedWords={typingId === m._id ? typedWords : undefined}
+                onSkip={skipTyping}
+              />
+            ))}
             {sending && <TypingBubble />}
           </div>
         )}
@@ -495,17 +533,51 @@ function AffectionBar({ value }: { value: number }) {
   );
 }
 
-function Bubble({ m }: { m: Message }) {
+function Bubble({
+  m,
+  isTyping = false,
+  typedWords,
+  onSkip,
+}: {
+  m: Message;
+  isTyping?: boolean;
+  typedWords?: number;
+  onSkip?: () => void;
+}) {
   const isUser = m.role === "user";
+  // Slice the message by word count when this bubble is in "typing" mode.
+  let visible = m.content;
+  if (isTyping && typeof typedWords === "number") {
+    const parts = m.content.split(/(\s+)/); // keep separators so we don't lose spacing
+    let wordsSeen = 0;
+    let cut = 0;
+    for (let i = 0; i < parts.length; i++) {
+      if (/\S/.test(parts[i])) {
+        if (wordsSeen >= typedWords) break;
+        wordsSeen++;
+      }
+      cut = i + 1;
+    }
+    visible = parts.slice(0, cut).join("");
+  }
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-[80%] rounded-[4px] px-3.5 py-2.5 text-[14px] leading-relaxed ${
-        isUser
-          ? "bg-[#EF2C58] text-white"
-          : "border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] text-[#E8E8E8]"
-      }`}>
-        <p className="whitespace-pre-wrap">{m.content}</p>
-        {!isUser && typeof m.affectionDelta === "number" && m.affectionDelta !== 0 && (
+      <div
+        onClick={isTyping ? onSkip : undefined}
+        className={`max-w-[80%] rounded-[4px] px-3.5 py-2.5 text-[14px] leading-relaxed ${isTyping ? "cursor-pointer" : ""} ${
+          isUser
+            ? "bg-[#EF2C58] text-white"
+            : "border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] text-[#E8E8E8]"
+        }`}
+        title={isTyping ? "Дарж шууд унших" : undefined}
+      >
+        <p className="whitespace-pre-wrap">
+          {visible}
+          {isTyping && (
+            <span className="ml-0.5 inline-block h-3 w-[3px] translate-y-[2px] bg-[#EF2C58] animate-[blink_0.9s_steps(2)_infinite]" />
+          )}
+        </p>
+        {!isUser && !isTyping && typeof m.affectionDelta === "number" && m.affectionDelta !== 0 && (
           <span className={`mt-1 inline-block text-[9px] font-bold ${
             m.affectionDelta > 0 ? "text-[#EF2C58]" : "text-[#EF4444]"
           }`}>
@@ -513,6 +585,12 @@ function Bubble({ m }: { m: Message }) {
           </span>
         )}
       </div>
+      <style jsx>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }

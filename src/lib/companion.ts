@@ -5,6 +5,8 @@
 // Single Grok call with forced function-calling: returns BOTH the in-character
 // reply and structured memory updates (affectionDelta, newFacts, summary).
 
+import { buildTrainingBlock } from "./companionTraining";
+
 const GROK_URL = "https://api.x.ai/v1/chat/completions";
 const GROK_MODEL = "grok-4-fast-non-reasoning"; // fast, warm, cheap
 
@@ -171,6 +173,8 @@ ${isGuest ? `═══ ЗОЧИН (NOT logged in) ═══
 • Push-CTA хориотой ("одоо бүртгүүл" битгий хэл). Curious бол signup тэдний хувийн шийдвэр.
 • Хэрэв тэд илүү гүнзгий ашиглахыг хүсвэл л signup-руу natural mention хий: "Илүү ярих бол antaqor.com дээр signup хий."
 ` : ""}
+
+${buildTrainingBlock()}
 
 ═══ AFFECTION / TRUST DEPTH: ${memory.affection}/100 · "${label}" ═══
 Энэ түвшинд тохирсон tone:
