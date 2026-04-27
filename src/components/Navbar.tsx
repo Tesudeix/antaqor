@@ -75,6 +75,10 @@ export default function Navbar() {
 
   const myId = (session?.user as { id?: string })?.id || "";
 
+  // Desktop nav mirrors mobile BottomBar 1:1.
+  // Order: Нүүр · Хичээл · [+ AI] · Community · Profile  (logged-in)
+  //        Нүүр · Хичээл · [+ AI] · Community · Бүртгэл (guest)
+  const profileHref = myId ? `/profile/${myId}` : "/credits";
   const tabs = session
     ? [
         {
@@ -83,17 +87,16 @@ export default function Navbar() {
           check: (p: string) =>
             p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
-        { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
         { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
-        { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
-          href: myId ? `/profile/${myId}` : "/credits",
-          label: "Би",
+          href: profileHref,
+          label: "Profile",
           check: (p: string) =>
             p.startsWith("/profile") ||
             p.startsWith("/credits") ||
             p.startsWith("/calendar") ||
+            p.startsWith("/chat") ||
             p.startsWith("/services") ||
             p.startsWith("/tools"),
         },
@@ -104,8 +107,7 @@ export default function Navbar() {
           label: "Нүүр",
           check: (p: string) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
         },
-        { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
-        { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
+        { href: "/classroom", label: "Classroom", check: (p: string) => p.startsWith("/classroom") },
         { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
       ];
 
@@ -120,36 +122,59 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Center pill tabs - desktop */}
-        <div className="hidden items-center gap-2 md:flex">
-          <div className="flex items-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-1">
-            {tabs.map((tab) => {
-              const active = tab.check(pathname);
-              return (
+        {/* Center pill — mirrors the mobile BottomBar (Нүүр · Хичээл · [+ AI] · Community · Profile) */}
+        <div className="hidden items-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-1 md:flex">
+          {(() => {
+            const aiActive = pathname.startsWith("/companion") || pathname.startsWith("/tools");
+            // Splice the "+" AI button into the middle of the pill
+            const half = Math.ceil(tabs.length / 2);
+            const left = tabs.slice(0, half);
+            const right = tabs.slice(half);
+            return (
+              <>
+                {left.map((tab) => {
+                  const active = tab.check(pathname);
+                  return (
+                    <Link
+                      key={tab.href}
+                      href={tab.href}
+                      className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                        active ? "bg-[#EF2C58] text-white" : "text-[#AAAAAA] hover:text-[#E8E8E8]"
+                      }`}
+                    >
+                      {tab.label}
+                    </Link>
+                  );
+                })}
+                {/* Brand-pink "+" AI center — same square as the mobile bar */}
                 <Link
-                  key={tab.href}
-                  href={tab.href}
-                  className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
-                    active
-                      ? "bg-[#EF2C58] text-white"
-                      : "text-[#AAAAAA] hover:text-[#E8E8E8]"
+                  href="/companion"
+                  title="AI · Antaqor"
+                  className={`mx-1 inline-flex h-[30px] w-[30px] items-center justify-center rounded-[4px] bg-[#EF2C58] text-white transition hover:bg-[#D4264E] ${
+                    aiActive ? "ring-2 ring-[#EF2C58] ring-offset-2 ring-offset-[#141414]" : ""
                   }`}
                 >
-                  {tab.label}
+                  <svg className="h-[14px] w-[14px]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
                 </Link>
-              );
-            })}
-          </div>
-          {/* Neon AI Generate — distinct, glowing CTA on desktop */}
-          <Link
-            href="/tools/generate-image"
-            className="group inline-flex items-center gap-1.5 rounded-[4px] bg-gradient-to-r from-[#EF2C58] to-[#A855F7] px-3 py-1.5 text-[12px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.45)] transition hover:shadow-[0_0_28px_rgba(239,44,88,0.7)]"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
-            AI
-          </Link>
+                {right.map((tab) => {
+                  const active = tab.check(pathname);
+                  return (
+                    <Link
+                      key={tab.href}
+                      href={tab.href}
+                      className={`rounded-[4px] px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
+                        active ? "bg-[#EF2C58] text-white" : "text-[#AAAAAA] hover:text-[#E8E8E8]"
+                      }`}
+                    >
+                      {tab.label}
+                    </Link>
+                  );
+                })}
+              </>
+            );
+          })()}
         </div>
 
         {/* Right side */}
