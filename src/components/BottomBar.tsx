@@ -74,12 +74,14 @@ export default function BottomBar() {
       </span>
     );
 
-    // AI center tab — plain brand-pink "+" square (rounded-[4px])
+    // AI center tab — plain brand-pink "+" square. Routes straight into the
+    // Antaqor companion (the brand's hero AI surface). Other tools are a tap
+    // away inside the companion's recommendations.
     const neonAi: Tab = {
-      href: "/tools",
+      href: "/companion",
       label: "AI",
       neon: true,
-      match: (p) => p.startsWith("/tools"),
+      match: (p) => p.startsWith("/companion") || p.startsWith("/tools"),
       icon: (
         <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

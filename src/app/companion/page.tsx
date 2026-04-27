@@ -38,18 +38,59 @@ function getOrCreateGuestId(): string {
   return id;
 }
 
-const GUEST_STARTERS = [
-  "Antaqor гэж юу вэ?",
-  "AI зураг яаж үүсгэх вэ?",
-  "Курсууд яахан вэ?",
-  "Гишүүн болоход юу авах вэ?",
-];
-
-const MEMBER_STARTERS = [
-  "Чи хэн бэ?",
-  "Би AI startup-аа эхлүүлж байна.",
-  "Сэтгэл маань буулгасан байна.",
-  "Өнөөдөр юу хийх вэ?",
+// Categorised starter chips. Picked per category by user; first chip per
+// row used for "default" first-load state.
+const STARTER_CATEGORIES: { id: string; label: string; chips: string[] }[] = [
+  {
+    id: "antaqor",
+    label: "Antaqor",
+    chips: [
+      "Antaqor гэж хэн бэ?",
+      "Cyber Empire зорилго юу вэ?",
+      "Чи яагаад entrepreneur гэдэг вэ?",
+      "Tesudei яагаад Antaqor болсон вэ?",
+    ],
+  },
+  {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    chips: [
+      "Cyberpunk brand гэж юу вэ?",
+      "Яагаад #EF2C58 өнгө вэ?",
+      "Mongol + cyberpunk хослол?",
+      "Steppe meets neon — тайлбарла",
+    ],
+  },
+  {
+    id: "tools",
+    label: "Хэрэгсэл",
+    chips: [
+      "AI зураг яаж үүсгэх вэ?",
+      "Бүтээгдэхүүний зураг гаргах уу?",
+      "Кредит яаж авах вэ?",
+      "Workflow гэж юу вэ?",
+    ],
+  },
+  {
+    id: "courses",
+    label: "Курс",
+    chips: [
+      "Classroom-д юу үздэг вэ?",
+      "AI санхүү сурах уу?",
+      "Курс хэн авбал тохирох вэ?",
+      "Гишүүн болоход юу авах вэ?",
+    ],
+  },
+  {
+    id: "personal",
+    label: "Хувийн",
+    chips: [
+      "Сэтгэл маань буулгасан байна.",
+      "Би startup эхлүүлэх дээр.",
+      "Өнөөдөр юу хийх вэ?",
+      "Бизнесээ яаж эхлэх вэ?",
+    ],
+  },
 ];
 
 export default function CompanionPage() {
@@ -65,6 +106,12 @@ export default function CompanionPage() {
   const [isGuest, setIsGuest] = useState(false);
   const [guestQuota, setGuestQuota] = useState<number | null>(null);
   const [signupBlocked, setSignupBlocked] = useState(false);
+  // Past chat is kept on the server (memory + history) but the UI starts
+  // FRESH on every visit. User can opt into seeing the history from settings.
+  const [showHistory, setShowHistory] = useState(false);
+  const [pastMessages, setPastMessages] = useState<Message[]>([]);
+  const [hasHistory, setHasHistory] = useState(false);
+  const [starterCategory, setStarterCategory] = useState<string>("antaqor");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -80,14 +127,21 @@ export default function CompanionPage() {
     "X-Guest-Id": guestIdRef.current || "",
   });
 
-  // Load state — works for both authenticated users and guests
+  // Load STATE on mount — pull memory + flag whether past history exists,
+  // but DON'T render old messages. Each visit starts as a fresh conversation
+  // (memory still informs Antaqor's reply via the server prompt).
   useEffect(() => {
     if (!guestIdRef.current && !session) return;
     fetch("/api/companion/state", { headers: headers() })
       .then((r) => r.json())
       .then((d) => {
         if (d.memory) setMemory(d.memory);
-        if (Array.isArray(d.messages)) setMessages(d.messages);
+        // Stash past history but keep the visible thread empty. User can
+        // open it from Settings → "Өмнөх ярианууд".
+        if (Array.isArray(d.messages) && d.messages.length > 0) {
+          setPastMessages(d.messages);
+          setHasHistory(true);
+        }
         setIsGuest(!!d.isGuest);
         setGuestQuota(d.guestQuotaRemaining ?? null);
       })
@@ -166,6 +220,9 @@ export default function CompanionPage() {
     try {
       await fetch("/api/companion/reset", { method: "POST", headers: headers() });
       setMessages([]);
+      setPastMessages([]);
+      setHasHistory(false);
+      setShowHistory(false);
       setMemory((m) => m ? { ...m, affection: 30, totalMessages: 0, facts: [], affectionLabel: "Шинэ танил" } : null);
       setShowSettings(false);
     } finally {
@@ -175,11 +232,13 @@ export default function CompanionPage() {
 
   const affection = memory?.affection ?? 30;
   const affectionLabel = memory?.affectionLabel || "Шинэ танил";
-  // Suggested replies of the LAST assistant message — always render at the bottom
+  // After Antaqor has replied, show the AI-generated follow-up chips. Before
+  // the first turn of THIS visit, show the user's chosen category starters.
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-  const suggestions = lastAssistant?.suggestedReplies?.length
-    ? lastAssistant.suggestedReplies
-    : (messages.length === 0 ? (isGuest || !session ? GUEST_STARTERS : MEMBER_STARTERS) : []);
+  const aiSuggestions = lastAssistant?.suggestedReplies || [];
+  const categoryStarters =
+    STARTER_CATEGORIES.find((c) => c.id === starterCategory)?.chips || [];
+  const suggestions = messages.length > 0 ? aiSuggestions : categoryStarters;
 
   return (
     <div className="mx-auto flex h-[calc(100vh-180px)] max-w-[760px] flex-col">
@@ -226,7 +285,22 @@ export default function CompanionPage() {
             <div className="h-2 w-2 animate-pulse rounded-full bg-[#EF2C58]" />
           </div>
         ) : messages.length === 0 ? (
-          <EmptyChat isGuest={isGuest || !session} />
+          <>
+            <EmptyChat isGuest={isGuest || !session} hasHistory={hasHistory} memTotal={memory?.totalMessages || 0} />
+            {hasHistory && !showHistory && (
+              <div className="mx-auto mt-4 flex max-w-sm justify-center">
+                <button
+                  onClick={() => { setShowHistory(true); setMessages(pastMessages); }}
+                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] px-3 py-1.5 text-[10px] font-bold text-[#888] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58]"
+                >
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Өмнөх ярианыг харах
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="space-y-3">
             {messages.map((m) => <Bubble key={m._id} m={m} />)}
@@ -235,7 +309,29 @@ export default function CompanionPage() {
         )}
       </div>
 
-      {/* Suggested-reply chips — always at the bottom */}
+      {/* Starter category tabs — only when chat is empty (pre-first-turn) */}
+      {!sending && messages.length === 0 && (
+        <div className="mb-1.5 -mx-1 flex gap-1 overflow-x-auto px-1 pb-1 scrollbar-hide">
+          {STARTER_CATEGORIES.map((c) => {
+            const active = c.id === starterCategory;
+            return (
+              <button
+                key={c.id}
+                onClick={() => setStarterCategory(c.id)}
+                className={`shrink-0 rounded-[4px] px-2.5 py-1 text-[10px] font-black tracking-wide transition ${
+                  active
+                    ? "bg-[#EF2C58] text-white"
+                    : "border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] text-[#888] hover:border-[rgba(239,44,88,0.4)] hover:text-[#E8E8E8]"
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Suggested-reply chips — AI-generated post-reply, or category starters pre-first-turn */}
       {!sending && suggestions.length > 0 && (
         <div className="flex flex-wrap gap-1.5 pb-2">
           {suggestions.map((s, i) => (
@@ -444,19 +540,30 @@ function StatRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function EmptyChat({ isGuest }: { isGuest: boolean }) {
+function EmptyChat({
+  isGuest,
+  hasHistory,
+  memTotal,
+}: {
+  isGuest: boolean;
+  hasHistory: boolean;
+  memTotal: number;
+}) {
+  const returning = hasHistory || memTotal > 0;
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 text-center">
       <div className="mb-4">
         <AntaqorAvatar size={72} />
       </div>
       <h2 className="text-[18px] font-black text-[#E8E8E8]">
-        {isGuest ? "Тавтай морил, найз." : "Тавтай морил."}
+        {returning ? "Эргэн ирлээ үү?" : isGuest ? "Тавтай морил, найз." : "Тавтай морил."}
       </h2>
       <p className="mt-2 max-w-[360px] text-[12px] leading-relaxed text-[#888]">
-        {isGuest
-          ? "Би Antaqor — Cyber Empire-ийн бүтээгч. Курс, AI хэрэгсэл, бизнесийн юу ч асуу."
-          : "Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг."}
+        {returning
+          ? `Бид өмнө ${memTotal} удаа уулзсан. Дурсамж минь хэвээр. Шинэ яриа эхлэе.`
+          : isGuest
+            ? "Би Antaqor — Cyber Empire-ийн бүтээгч. Курс, AI хэрэгсэл, бизнесийн юу ч асуу."
+            : "Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг."}
       </p>
     </div>
   );
