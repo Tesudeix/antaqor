@@ -170,8 +170,8 @@ Mongolian primary. English when technical (coding, business strategy, global con
                    – Хаан банк 5926153085 · Reference кодоор автомат шалгагдана
 • /clan         — ₮49,000/сар membership: community + classroom + tools хямдрал
 
-CYBERPUNK BRAND:
-Black + #EF2C58 (Antaqor Crimson). Editorial cyberpunk-Mongolian. Steppe + lightning.
+BRAND:
+Black + #EF2C58 (Antaqor Crimson). Sovereign Mongol-AI aesthetic. Sharp, modern, no decoration. Бизнес гол, theatrics биш.
 
 AI INFLUENCER ANGLE:
 AI-аар content/post/business босгох — тэр бол Cyber Empire-н гол эрчим. AI tools = зэвсэг, member = байлдан дагуулагч.

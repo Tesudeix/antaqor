@@ -44,36 +44,38 @@ function getOrCreateGuestId(): string {
   return id;
 }
 
-// Categorised starter chips. Picked per category by user; first chip per
-// row used for "default" first-load state.
+// Categorised starter chips. 5 categories aligned with current business —
+// trillionaire-entrepreneur lens: every chip should drive a real conversation
+// with money/skill/identity payoff. Cyberpunk frame removed (was aspirational
+// aesthetic, not what visitors actually want to learn).
 const STARTER_CATEGORIES: { id: string; label: string; chips: string[] }[] = [
   {
     id: "antaqor",
     label: "Antaqor",
     chips: [
-      "Antaqor гэж хэн бэ?",
+      "Antaqor нь хэн бэ?",
       "Cyber Empire зорилго юу вэ?",
-      "Чи яагаад entrepreneur гэдэг вэ?",
       "Tesudei яагаад Antaqor болсон вэ?",
+      "Чи 1 жилд юу босгосон вэ?",
     ],
   },
   {
-    id: "cyberpunk",
-    label: "Cyberpunk",
+    id: "ai-business",
+    label: "AI Бизнес",
     chips: [
-      "Cyberpunk brand гэж юу вэ?",
-      "Яагаад #EF2C58 өнгө вэ?",
-      "Mongol + cyberpunk хослол?",
-      "Steppe meets neon — тайлбарла",
+      "AI-аар яаж мөнгө олох вэ?",
+      "Эхний $1,000-аа AI-аар яаж олсон бэ?",
+      "AI freelancing хаанаас эхлэх вэ?",
+      "Mongol-д AI-аар бизнес босгож болох уу?",
     ],
   },
   {
     id: "tools",
     label: "Хэрэгсэл",
     chips: [
-      "AI зураг яаж үүсгэх вэ?",
-      "Бүтээгдэхүүний зураг гаргах уу?",
-      "Кредит яаж авах вэ?",
+      "Аль AI tool хамгийн их хэрэгтэй вэ?",
+      "Зураг үүсгэхэд хэдэн кредит вэ?",
+      "Бүтээгдэхүүний зураг яаж гаргах вэ?",
       "Workflow гэж юу вэ?",
     ],
   },
@@ -82,8 +84,8 @@ const STARTER_CATEGORIES: { id: string; label: string; chips: string[] }[] = [
     label: "Курс",
     chips: [
       "Classroom-д юу үздэг вэ?",
-      "AI санхүү сурах уу?",
-      "Курс хэн авбал тохирох вэ?",
+      "AI Engineer яаж болох вэ?",
+      "Курс хэнд тохирох вэ?",
       "Гишүүн болоход юу авах вэ?",
     ],
   },
@@ -93,8 +95,8 @@ const STARTER_CATEGORIES: { id: string; label: string; chips: string[] }[] = [
     chips: [
       "Сэтгэл маань буулгасан байна.",
       "Би startup эхлүүлэх дээр.",
-      "Өнөөдөр юу хийх вэ?",
-      "Бизнесээ яаж эхлэх вэ?",
+      "Generalist vs Specialist — аль нь?",
+      "Дисциплин яаж олох вэ?",
     ],
   },
 ];
@@ -488,8 +490,13 @@ export default function CompanionPage() {
 
 // ─── Sub-components ─────────────────────────────────────────────────────
 
+// Chained image fallback so whichever filename is present on the host works:
+//   /antaqorr.png → /antaqor.png → gradient "A"
+const AVATAR_SOURCES = ["/antaqorr.png", "/antaqor.png"];
+
 function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: boolean }) {
-  const [broken, setBroken] = useState(false);
+  const [srcIndex, setSrcIndex] = useState(0);
+  const [allFailed, setAllFailed] = useState(false);
   const fontSize = Math.max(14, Math.round(size * 0.42));
   const dotSize = Math.max(8, Math.round(size * 0.22));
   return (
@@ -497,15 +504,18 @@ function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: 
       className="relative shrink-0 overflow-hidden rounded-[4px] bg-gradient-to-br from-[#EF2C58] to-[#A855F7] shadow-[0_0_18px_rgba(239,44,88,0.35)]"
       style={{ width: size, height: size }}
     >
-      {!broken ? (
+      {!allFailed ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src="/antaqor.png"
+          src={AVATAR_SOURCES[srcIndex]}
           alt="Antaqor"
           width={size}
           height={size}
           className="h-full w-full object-cover"
-          onError={() => setBroken(true)}
+          onError={() => {
+            if (srcIndex < AVATAR_SOURCES.length - 1) setSrcIndex((i) => i + 1);
+            else setAllFailed(true);
+          }}
         />
       ) : (
         <span
