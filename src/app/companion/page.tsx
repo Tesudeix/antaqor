@@ -295,6 +295,15 @@ export default function CompanionPage() {
           </div>
           <AffectionBar value={affection} />
         </div>
+        {/* Guests get a persistent (subtle) signup pill — never blocks, always present */}
+        {(isGuest || !session) && !signupBlocked && (
+          <Link
+            href="/auth/signup?next=/companion"
+            className="hidden sm:inline-flex items-center gap-1 rounded-[4px] border border-[rgba(239,44,88,0.4)] bg-[rgba(239,44,88,0.06)] px-2.5 py-1 text-[10px] font-black text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+          >
+            Бүртгүүлэх
+          </Link>
+        )}
         <button
           onClick={() => setShowSettings(true)}
           aria-label="Тохиргоо"
@@ -663,20 +672,57 @@ function EmptyChat({
 }) {
   const returning = hasHistory || memTotal > 0;
   return (
-    <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-      <div className="mb-4">
-        <AntaqorAvatar size={72} />
+    <div className="flex h-full flex-col items-center justify-center px-4 pb-2 text-center">
+      <div className="mb-5">
+        <AntaqorAvatar size={88} online />
       </div>
-      <h2 className="text-[18px] font-black text-[#E8E8E8]">
-        {returning ? "Эргэн ирлээ үү?" : isGuest ? "Тавтай морил, найз." : "Тавтай морил."}
+      <h2 className="text-[20px] font-black text-[#E8E8E8]">
+        {returning ? "Эргэн ирлээ үү?" : "Тавтай морил."}
       </h2>
       <p className="mt-2 max-w-[360px] text-[12px] leading-relaxed text-[#888]">
         {returning
-          ? `Бид өмнө ${memTotal} удаа уулзсан. Дурсамж минь хэвээр. Шинэ яриа эхлэе.`
+          ? `Бид өмнө ${memTotal} удаа уулзсан. Дурсамж минь хэвээр.`
           : isGuest
-            ? "Би Antaqor — Cyber Empire-ийн бүтээгч. Курс, AI хэрэгсэл, бизнесийн юу ч асуу."
+            ? "Би Antaqor. Cyber Empire-ийн бүтээгч. Доороос асуулт сонго эсвэл өөрөө бич."
             : "Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг."}
       </p>
+
+      {/* Quick-action big buttons — split for guest vs member */}
+      {!returning && (
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          {isGuest ? (
+            <>
+              <Link
+                href="/classroom"
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] px-3 py-2 text-[11px] font-black text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+              >
+                Курс үзэх →
+              </Link>
+              <Link
+                href="/auth/signup?next=/companion"
+                className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3 py-2 text-[11px] font-black text-white shadow-[0_0_12px_rgba(239,44,88,0.35)] transition hover:bg-[#D4264E]"
+              >
+                Үнэгүй бүртгүүлэх →
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/tools/generate-image"
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] px-3 py-2 text-[11px] font-black text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+              >
+                AI зураг үүсгэх →
+              </Link>
+              <Link
+                href="/classroom"
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] px-3 py-2 text-[11px] font-black text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.12)]"
+              >
+                Курс →
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
