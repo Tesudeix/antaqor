@@ -131,25 +131,27 @@ export default function ToolsIndexPage() {
         )}
       </div>
 
-      {/* Tools grid — 1 col mobile, 2 col tablet, 3 col desktop */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Tools grid — 2 col on every breakpoint, 3 col desktop+ */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {TOOLS.map((t) => (
           <ToolCard key={t.href} tool={t} />
         ))}
 
-        {/* Coming soon placeholder — keeps grid balanced and signals roadmap */}
-        <div className="flex flex-col items-start gap-3 rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]/50 p-5 text-left opacity-60">
-          <span className="flex h-12 w-12 items-center justify-center rounded-[4px] bg-[#141414] text-[#444]">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.4} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </span>
-          <span className="rounded-full bg-[#141414] px-2 py-0.5 text-[9px] font-black tracking-wider text-[#666]">
-            УДАХГҮЙ
-          </span>
-          <h3 className="text-[14px] font-bold text-[#888]">Шинэ хэрэгсэл</h3>
-          <p className="text-[11px] text-[#555]">
-            Mongolian voice → text · Background swap · Mockup generator. Идея байвал санал болгоорой.
+        {/* Coming soon placeholder */}
+        <div className="flex flex-col gap-2 rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]/50 p-3 sm:p-4 opacity-60">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#141414] text-[#444]">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.4} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <span className="rounded-[4px] bg-[#141414] px-2 py-0.5 text-[8px] font-black tracking-wider text-[#666]">
+              УДАХГҮЙ
+            </span>
+          </div>
+          <h3 className="text-[13px] font-bold text-[#888]">Шинэ хэрэгсэл</h3>
+          <p className="text-[10px] leading-snug text-[#555]">
+            Voice → text · Background swap · Mockup generator
           </p>
         </div>
       </div>
@@ -163,7 +165,7 @@ export default function ToolsIndexPage() {
 
 function ToolCard({ tool }: { tool: ToolDef }) {
   const costClass = tool.costTone === "neon"
-    ? "bg-gradient-to-r from-[#EF2C58] to-[#A855F7] text-white shadow-[0_0_12px_rgba(239,44,88,0.4)]"
+    ? "bg-[#EF2C58] text-white"
     : tool.costTone === "free"
       ? "border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] text-[#999]"
       : "border border-[rgba(239,44,88,0.3)] bg-[rgba(239,44,88,0.05)] text-[#EF2C58]";
@@ -171,10 +173,10 @@ function ToolCard({ tool }: { tool: ToolDef }) {
   return (
     <Link
       href={tool.href}
-      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] transition hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_24px_rgba(239,44,88,0.18)]"
+      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] transition hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_18px_rgba(239,44,88,0.15)]"
     >
-      {/* Gradient cover band */}
-      <div className={`relative h-[110px] bg-gradient-to-br ${tool.accent} overflow-hidden`}>
+      {/* Gradient cover — compact 4:3 aspect, scales naturally on every screen */}
+      <div className={`relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br ${tool.accent}`}>
         <div
           className="absolute inset-0 opacity-[0.12]"
           style={{
@@ -184,26 +186,26 @@ function ToolCard({ tool }: { tool: ToolDef }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F10] via-transparent to-transparent" />
         {tool.tag && (
-          <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-black tracking-wider text-white backdrop-blur-md">
+          <span className="absolute left-2 top-2 rounded-[4px] bg-black/70 px-1.5 py-0.5 text-[8px] font-black tracking-wider text-white backdrop-blur-md">
             {tool.tag}
           </span>
         )}
-        <span className="absolute bottom-3 left-3 flex h-12 w-12 items-center justify-center rounded-[4px] bg-black/70 text-white backdrop-blur-md transition group-hover:scale-105">
-          {tool.icon}
+        <span className="absolute bottom-2 left-2 flex h-9 w-9 items-center justify-center rounded-[4px] bg-black/70 text-white backdrop-blur-md transition group-hover:scale-105">
+          <span className="[&>svg]:h-5 [&>svg]:w-5">{tool.icon}</span>
         </span>
       </div>
 
-      {/* Body */}
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="text-[15px] font-black text-[#E8E8E8] transition group-hover:text-[#EF2C58]">
+      {/* Body — compact for 2-col mobile fit */}
+      <div className="flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 sm:p-3.5">
+        <h3 className="text-[13px] font-black leading-snug text-[#E8E8E8] transition group-hover:text-[#EF2C58] sm:text-[14px]">
           {tool.title}
         </h3>
-        <p className="line-clamp-3 text-[11px] leading-relaxed text-[#888]">{tool.blurb}</p>
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-black ${costClass}`}>
+        <p className="line-clamp-2 text-[10px] leading-snug text-[#888] sm:line-clamp-3 sm:text-[11px] sm:leading-relaxed">{tool.blurb}</p>
+        <div className="mt-auto flex items-center justify-between pt-2">
+          <span className={`inline-flex items-center rounded-[4px] px-2 py-0.5 text-[9px] font-black sm:text-[10px] ${costClass}`}>
             {tool.cost}
           </span>
-          <span className="text-[11px] font-bold text-[#666] transition group-hover:text-[#EF2C58]">
+          <span className="text-[10px] font-bold text-[#666] transition group-hover:text-[#EF2C58] sm:text-[11px]">
             Нээх →
           </span>
         </div>

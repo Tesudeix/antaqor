@@ -144,7 +144,7 @@ function ExtractProductPage() {
               <img src={previewUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
               <button
                 onClick={reset}
-                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-md transition hover:bg-[#EF4444]"
+                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/70 text-white backdrop-blur-md transition hover:bg-[#EF4444]"
                 aria-label="Цэвэрлэх"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>

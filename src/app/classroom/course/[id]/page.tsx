@@ -683,7 +683,7 @@ function CourseCoverEditButton({ courseId, onUpdate }: { courseId: string; onUpd
         onClick={() => fileRef.current?.click()}
         disabled={busy}
         title="Cover солих"
-        className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md transition hover:bg-[#EF2C58] disabled:opacity-50"
+        className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-[4px] bg-black/70 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md transition hover:bg-[#EF2C58] disabled:opacity-50"
       >
         {busy ? (
           <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
