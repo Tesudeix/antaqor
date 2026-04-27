@@ -88,7 +88,7 @@ export default function Navbar() {
             p === "/" || p.startsWith("/posts") || p.startsWith("/news") || p.startsWith("/explore"),
         },
         { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
-        { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
+        { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
         {
           href: profileHref,
           label: "Profile",
@@ -96,9 +96,7 @@ export default function Navbar() {
             p.startsWith("/profile") ||
             p.startsWith("/credits") ||
             p.startsWith("/calendar") ||
-            p.startsWith("/chat") ||
-            p.startsWith("/services") ||
-            p.startsWith("/tools"),
+            p.startsWith("/services"),
         },
       ]
     : [
@@ -108,7 +106,7 @@ export default function Navbar() {
           check: (p: string) => p === "/" || p.startsWith("/posts") || p.startsWith("/explore"),
         },
         { href: "/classroom", label: "Classroom", check: (p: string) => p.startsWith("/classroom") },
-        { href: "/community", label: "Community", check: (p: string) => p.startsWith("/community") },
+        { href: "/chat", label: "Чат", check: (p: string) => p.startsWith("/chat") },
       ];
 
   return (

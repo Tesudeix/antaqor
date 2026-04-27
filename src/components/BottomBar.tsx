@@ -27,10 +27,9 @@ export default function BottomBar() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.122 0L21.75 12M4.5 9.75v9.75A2.25 2.25 0 006.75 21.75H18a2.25 2.25 0 002.25-2.25V9.75M9 21.75V15a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0115 15v6.75" />
       </svg>
     );
-    const iconServices = (
-      // Heroicon: squares-2x2 — represents a grid of services/apps
+    const iconChat = (
       <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a8 8 0 01-12.3 6.7L3 20l1.3-5.4A8 8 0 1121 12z" />
       </svg>
     );
     const iconClassroom = (
@@ -89,10 +88,10 @@ export default function BottomBar() {
         },
         neonAi,
         {
-          href: "/community",
-          label: "Community",
-          icon: iconServices,
-          match: (p) => p.startsWith("/community"),
+          href: "/chat",
+          label: "Чат",
+          icon: iconChat,
+          match: (p) => p.startsWith("/chat"),
         },
         {
           href: myId ? `/profile/${myId}` : "/credits",
@@ -101,10 +100,8 @@ export default function BottomBar() {
           match: (p) =>
             p.startsWith("/profile") ||
             p.startsWith("/credits") ||
-            p.startsWith("/chat") ||
             p.startsWith("/calendar") ||
-            p.startsWith("/services") ||
-            p.startsWith("/tools"),
+            p.startsWith("/services"),
         },
       ];
     }
