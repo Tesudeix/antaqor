@@ -121,10 +121,10 @@ export default function BottomBar() {
       },
       neonAi,
       {
-        href: "/community",
-        label: "Community",
-        icon: iconServices,
-        match: (p) => p.startsWith("/community"),
+        href: "/chat",
+        label: "Чат",
+        icon: iconChat,
+        match: (p) => p.startsWith("/chat"),
       },
       {
         href: "/auth/signup",
