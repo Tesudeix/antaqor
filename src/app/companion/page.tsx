@@ -365,20 +365,19 @@ function StatRow({ label, value }: { label: string; value: string }) {
 
 function EmptyChat({ onPick }: { onPick: (t: string) => void }) {
   const starters = [
-    "Сайн уу Antaqor, чи хэн бэ?",
-    "Би AI startup эхлэхээр төлөвлөж байна. Юунаас эхлэх вэ?",
-    "Өнөөдөр сэтгэл санаа муу байна, ярья.",
-    "Маркетингаа сайжруулах 3 идея өг.",
+    "Чи хэн бэ?",
+    "Би AI startup-аа эхлүүлж байна.",
+    "Сэтгэл маань буулгасан байна.",
+    "Өнөөдөр юу хийх вэ?",
   ];
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 text-center">
       <div className="mb-4">
         <AntaqorAvatar size={72} />
       </div>
-      <h2 className="text-[18px] font-black text-[#E8E8E8]">Сайн байна уу!</h2>
-      <p className="mt-2 max-w-[400px] text-[12px] leading-relaxed text-[#888]">
-        Би Antaqor — чиний AI байлдан дагуулагч. Бизнес, AI, мөрөөдөл, өдөр тутмын асуудал — юу ч ярь.
-        Чамайг сайн таниж аваад цаашид ойр явна.
+      <h2 className="text-[18px] font-black text-[#E8E8E8]">Тавтай морил.</h2>
+      <p className="mt-2 max-w-[360px] text-[12px] leading-relaxed text-[#888]">
+        Богино ярь. Бодит зүйл асуу. Чи hero, би зэвсэг.
       </p>
       <div className="mt-5 flex max-w-[420px] flex-wrap justify-center gap-1.5">
         {starters.map((s) => (
