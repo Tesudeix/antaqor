@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Fact {
   _id: string;
@@ -90,6 +90,9 @@ export default function AdminAntaqorMindPage() {
           өөрчлөлт.
         </p>
       </div>
+
+      <AvatarUploader />
+
 
       {/* Add new fact */}
       <div className="mb-6 rounded-[4px] border border-[rgba(239,44,88,0.2)] bg-gradient-to-br from-[rgba(239,44,88,0.04)] to-[#0F0F10] p-4">
@@ -219,6 +222,85 @@ export default function AdminAntaqorMindPage() {
       <p className="mt-6 text-center text-[10px] text-[#444]">
         Live news + classroom courses Antaqor автомат уншина. Энд зөвхөн админы оруулсан тусгай мэдээ.
       </p>
+    </div>
+  );
+}
+
+function AvatarUploader() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [version, setVersion] = useState<number>(() => Date.now());
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError("");
+    setSuccess(false);
+    if (!file.type.startsWith("image/")) {
+      setError("Зөвхөн зургийн файл");
+      return;
+    }
+    if (file.size > 6 * 1024 * 1024) {
+      setError("Зураг 6MB-аас бага байх ёстой");
+      return;
+    }
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch("/api/admin/companion-avatar", { method: "POST", body: fd });
+      const d = await r.json();
+      if (!r.ok) {
+        setError(d.error || "Хадгалах алдаа");
+        return;
+      }
+      setVersion(Date.now());
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2400);
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="mb-6 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0F0F10] p-4">
+      <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#888]">
+        Antaqor Profile Image
+      </div>
+      <div className="flex items-center gap-4">
+        {/* Live preview — cache-busted */}
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[4px] bg-gradient-to-br from-[#EF2C58] to-[#A855F7]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/antaqorr.png?v=${version}`}
+            alt="Antaqor"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex-1">
+          <p className="text-[12px] text-[#CCC]">
+            Шинэ зураг сонгоход <code className="rounded-[3px] bg-[rgba(239,44,88,0.1)] px-1 text-[#EF2C58]">/antaqorr.png</code> +{" "}
+            <code className="rounded-[3px] bg-[rgba(239,44,88,0.1)] px-1 text-[#EF2C58]">/antaqor.png</code> хоёрууланг шинэчилнэ.
+            512×512 square PNG болж хадгалагдана.
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={busy}
+              className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3 py-1.5 text-[11px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-40"
+            >
+              {busy ? "Хадгалж байна..." : "Зураг оруулах"}
+            </button>
+            {success && <span className="text-[11px] font-bold text-[#EF2C58]">✓ Шинэчлэгдлээ</span>}
+            {error && <span className="text-[11px] text-[#EF4444]">{error}</span>}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" onChange={onPick} className="hidden" />
+        </div>
+      </div>
     </div>
   );
 }

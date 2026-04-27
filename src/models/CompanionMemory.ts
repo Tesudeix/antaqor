@@ -25,8 +25,10 @@ export interface ICompanionMemory extends Document {
 
 const CompanionMemorySchema = new Schema<ICompanionMemory>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", index: true },
-    guestKey: { type: String, index: true },
+    // No field-level index: true — the compound sparse-unique indexes
+    // below are the source of truth.
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    guestKey: { type: String },
     affection: { type: Number, default: 30, min: 0, max: 100 },
     preferredName: { type: String, default: "", maxlength: 60 },
     summary: { type: String, default: "", maxlength: 1000 },

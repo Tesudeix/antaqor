@@ -44,59 +44,59 @@ function getOrCreateGuestId(): string {
   return id;
 }
 
-// Categorised starter chips. 5 categories aligned with current business —
-// trillionaire-entrepreneur lens: every chip should drive a real conversation
-// with money/skill/identity payoff. Cyberpunk frame removed (was aspirational
-// aesthetic, not what visitors actually want to learn).
+// Categorised starter chips — focus is Cyber Empire (vision/membership),
+// AI Community (the live network/courses/tools), a few about Antaqor himself,
+// and a Social tab to push the visitor onto the founder's accounts. Sharp,
+// direct, no fluff.
 const STARTER_CATEGORIES: { id: string; label: string; chips: string[] }[] = [
   {
-    id: "antaqor",
-    label: "Antaqor",
+    id: "empire",
+    label: "Cyber Empire",
     chips: [
-      "Antaqor нь хэн бэ?",
-      "Cyber Empire зорилго юу вэ?",
-      "Tesudei яагаад Antaqor болсон вэ?",
-      "Чи 1 жилд юу босгосон вэ?",
+      "Cyber Empire гэж юу вэ?",
+      "Гишүүн болсноор юу нээгдэх вэ?",
+      "Мэдээ бус ямар үнэ цэнэтэй вэ?",
+      "Яагаад одоо нэгдэх ёстой вэ?",
     ],
   },
   {
-    id: "ai-business",
-    label: "AI Бизнес",
+    id: "community",
+    label: "AI Community",
     chips: [
-      "AI-аар яаж мөнгө олох вэ?",
-      "Эхний $1,000-аа AI-аар яаж олсон бэ?",
-      "AI freelancing хаанаас эхлэх вэ?",
-      "Mongol-д AI-аар бизнес босгож болох уу?",
+      "Community одоо хэр их гишүүнтэй вэ?",
+      "Хэдэн хичээл, хэдэн курс байна?",
+      "Гишүүд яг юу хийдэг вэ?",
+      "Community-д орвол хэн нартай танилцах вэ?",
     ],
   },
   {
     id: "tools",
     label: "Хэрэгсэл",
     chips: [
-      "Аль AI tool хамгийн их хэрэгтэй вэ?",
-      "Зураг үүсгэхэд хэдэн кредит вэ?",
-      "Бүтээгдэхүүний зураг яаж гаргах вэ?",
-      "Workflow гэж юу вэ?",
+      "Аль AI tool хамгийн чухал вэ?",
+      "AI зураг яаж үүсгэх вэ?",
+      "Бүтээгдэхүүний зураг гаргах уу?",
+      "Кредит хэдэн төгрөг вэ?",
     ],
   },
   {
-    id: "courses",
-    label: "Курс",
+    id: "antaqor",
+    label: "Antaqor",
     chips: [
-      "Classroom-д юу үздэг вэ?",
-      "AI Engineer яаж болох вэ?",
-      "Курс хэнд тохирох вэ?",
-      "Гишүүн болоход юу авах вэ?",
+      "Antaqor нь хэн бэ?",
+      "Чи 1 жилд юу босгосон вэ?",
+      "Tesudei → Antaqor — яагаад?",
+      "Чиний хамгийн ширүүн зарчим?",
     ],
   },
   {
-    id: "personal",
-    label: "Хувийн",
+    id: "social",
+    label: "Social",
     chips: [
-      "Сэтгэл маань буулгасан байна.",
-      "Би startup эхлүүлэх дээр.",
-      "Generalist vs Specialist — аль нь?",
-      "Дисциплин яаж олох вэ?",
+      "Threads дээр чи юу постлодог вэ?",
+      "Antaqor-ыг хаанаас дагах вэ?",
+      "Сүүлд чиний зарласан их зүйл?",
+      "Хамгийн их like авсан пост?",
     ],
   },
 ];
@@ -501,7 +501,13 @@ export default function CompanionPage() {
 
 // Chained image fallback so whichever filename is present on the host works:
 //   /antaqorr.png → /antaqor.png → gradient "A"
-const AVATAR_SOURCES = ["/antaqorr.png", "/antaqor.png"];
+// Hourly cache-bust so admins see avatar swaps within ~1h without a full
+// service-worker purge.
+const AVATAR_VERSION = Math.floor(Date.now() / (60 * 60 * 1000));
+const AVATAR_SOURCES = [
+  `/antaqorr.png?v=${AVATAR_VERSION}`,
+  `/antaqor.png?v=${AVATAR_VERSION}`,
+];
 
 function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: boolean }) {
   const [srcIndex, setSrcIndex] = useState(0);

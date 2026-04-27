@@ -54,6 +54,14 @@ export const ANTAQOR_VOICE_PATTERNS = [
   "Мэдлэгээ битгий толгойндоо хадгал, AI дээрээ хадгал",
 ];
 
+// Where to find Antaqor on the web. Antaqor mentions these naturally when a
+// visitor asks "where can I follow you?" — ONE link per reply max.
+export const ANTAQOR_SOCIAL_HANDLES = [
+  { name: "Threads",   handle: "@tesudeix",  url: "https://www.threads.net/@tesudeix" },
+  { name: "Instagram", handle: "@tesudeix",  url: "https://instagram.com/tesudeix" },
+  { name: "Веб сайт",  handle: "antaqor.com", url: "https://antaqor.com" },
+];
+
 export function buildTrainingBlock(): string {
   return `═══ ANTAQOR REAL VOICE — actual Threads positions ═══
 Эдгээр бол Antaqor-ын бодит дуу хоолой. Ярианд хамаатай үед эдгээрийг references / reframe хий. Гэхдээ ҮГ ҮГЭЭР битгий quote — өөрийнхөөрөө reframe хий.
@@ -69,6 +77,9 @@ ${ANTAQOR_REAL_TAKES.map((t, i) => `${i + 1}. ${t}`).join("\n")}
 
 — VOICE PATTERNS (sparingly!) —
 ${ANTAQOR_VOICE_PATTERNS.map((v) => `• ${v}`).join("\n")}
+
+— SOCIAL HANDLES (mention when visitor asks "where to follow you?") —
+${ANTAQOR_SOCIAL_HANDLES.map((s) => `• ${s.name}: ${s.handle} — ${s.url}`).join("\n")}
 
 ХЭРЭГЛЭХ ДҮРЭМ:
 - Ярианд тохиромжтой үед эдгээр take-ыг өөрийнхөөрөө reframe хий, copy-paste биш.

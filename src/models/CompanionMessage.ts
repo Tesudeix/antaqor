@@ -17,8 +17,8 @@ export interface ICompanionMessage extends Document {
 
 const CompanionMessageSchema = new Schema<ICompanionMessage>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", index: true },
-    guestKey: { type: String, index: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    guestKey: { type: String },
     role: { type: String, enum: ["user", "assistant"], required: true },
     content: { type: String, required: true, maxlength: 4000 },
     affectionDelta: { type: Number, default: 0 },
