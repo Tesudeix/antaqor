@@ -60,6 +60,37 @@ function ClassroomPage() {
     fetchCourses();
   };
 
+  // ─── Reorder mode (admin only) ───
+  const [reorderMode, setReorderMode] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  const moveCourse = async (id: string, dir: -1 | 1) => {
+    setCourses((cur) => {
+      const idx = cur.findIndex((c) => c._id === id);
+      if (idx === -1) return cur;
+      const target = idx + dir;
+      if (target < 0 || target >= cur.length) return cur;
+      const next = [...cur];
+      [next[idx], next[target]] = [next[target], next[idx]];
+      // Persist new order — fire-and-forget; UI is already optimistic
+      persistOrder(next.map((c) => c._id));
+      return next;
+    });
+  };
+
+  const persistOrder = async (ids: string[]) => {
+    setSavingOrder(true);
+    try {
+      await fetch("/api/classroom/courses/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
   const filtered = useMemo(() => {
     if (!search) return courses;
     const q = search.toLowerCase();
@@ -75,18 +106,45 @@ function ClassroomPage() {
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-[26px] font-black leading-tight text-[#E8E8E8] sm:text-[32px]">Хичээл</h1>
-          <p className="mt-1 text-[12px] text-[#666]">{courses.length} курс</p>
+          <p className="mt-1 text-[12px] text-[#666]">
+            {courses.length} курс
+            {reorderMode && (
+              <>
+                <span className="text-[#333]"> · </span>
+                <span className="font-bold text-[#EF2C58]">Дараалал засаж байна</span>
+                {savingOrder && <span className="ml-1 text-[10px] text-[#666]">хадгалж байна…</span>}
+              </>
+            )}
+          </p>
         </div>
         {admin && (
-          <button
-            onClick={() => setShowCreate(true)}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3.5 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E]"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Курс нэмэх
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              onClick={() => setReorderMode((v) => !v)}
+              disabled={courses.length < 2}
+              title="Курсуудын дарааллыг солих"
+              className={`inline-flex items-center gap-1.5 rounded-[4px] border px-3 py-2 text-[11px] font-black transition disabled:opacity-30 ${
+                reorderMode
+                  ? "border-[#EF2C58] bg-[rgba(239,44,88,0.1)] text-[#EF2C58]"
+                  : "border-[rgba(255,255,255,0.08)] bg-[#0F0F10] text-[#888] hover:border-[rgba(239,44,88,0.4)] hover:text-[#E8E8E8]"
+              }`}
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+              </svg>
+              {reorderMode ? "Дууссан" : "Дараалал"}
+            </button>
+            <button
+              onClick={() => setShowCreate(true)}
+              disabled={reorderMode}
+              className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#EF2C58] px-3.5 py-2 text-[12px] font-black text-white transition hover:bg-[#D4264E] disabled:opacity-30"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Курс нэмэх
+            </button>
+          </div>
         )}
       </div>
 
@@ -121,7 +179,7 @@ function ClassroomPage() {
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((c, i) => (
+          {(reorderMode ? courses : filtered).map((c, i, arr) => (
             <CourseCard
               key={c._id}
               course={c}
@@ -129,6 +187,11 @@ function ClassroomPage() {
               admin={admin}
               onUpdate={fetchCourses}
               onDelete={handleDelete}
+              reorderMode={reorderMode}
+              canMoveUp={reorderMode && i > 0}
+              canMoveDown={reorderMode && i < arr.length - 1}
+              onMoveUp={() => moveCourse(c._id, -1)}
+              onMoveDown={() => moveCourse(c._id, 1)}
             />
           ))}
         </div>
@@ -151,28 +214,38 @@ function CourseCard({
   admin,
   onUpdate,
   onDelete,
+  reorderMode = false,
+  canMoveUp = false,
+  canMoveDown = false,
+  onMoveUp,
+  onMoveDown,
 }: {
   course: Course;
   index: number;
   admin: boolean;
   onUpdate: () => void;
   onDelete: (id: string) => void;
+  reorderMode?: boolean;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }) {
   const total = course.lessonsCount || 0;
   const done = course.completedLessons || 0;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const isDone = pct === 100;
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.04, 0.4) }}
-    >
-      <Link
-        href={`/classroom/course/${course._id}`}
-        className="group block overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] transition hover:border-[rgba(239,44,88,0.3)]"
-      >
+  // In reorder mode the card is no longer navigable — every tap belongs to
+  // the up/down move buttons.
+  const wrapperClass = `group block overflow-hidden rounded-[4px] border bg-[#0F0F10] transition ${
+    reorderMode
+      ? "border-[#EF2C58]/40 cursor-default"
+      : "border-[rgba(255,255,255,0.06)] hover:border-[rgba(239,44,88,0.3)]"
+  }`;
+
+  const inner = (
+    <>
         {/* Cover — fixed 3:2 aspect, image absolutely fills it */}
         <div
           className="relative aspect-[3/2] w-full overflow-hidden bg-[#0A0A0A]"
@@ -226,7 +299,55 @@ function CourseCard({
             {total} хичээл{pct > 0 && !isDone ? ` · ${pct}%` : ""}
           </p>
         </div>
-      </Link>
+
+        {/* Reorder controls — visible only in reorder mode */}
+        {reorderMode && (
+          <div className="flex items-center justify-between gap-2 border-t border-[rgba(239,44,88,0.2)] bg-[rgba(239,44,88,0.04)] px-3 py-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#EF2C58]">
+              #{index + 1}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onMoveUp?.(); }}
+                disabled={!canMoveUp}
+                aria-label="Дээш"
+                className="flex h-7 w-7 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#CCC] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58] disabled:opacity-30"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onMoveDown?.(); }}
+                disabled={!canMoveDown}
+                aria-label="Доош"
+                className="flex h-7 w-7 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#CCC] transition hover:border-[rgba(239,44,88,0.4)] hover:text-[#EF2C58] disabled:opacity-30"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+    </>
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(index * 0.04, 0.4) }}
+    >
+      {reorderMode ? (
+        <div className={wrapperClass}>{inner}</div>
+      ) : (
+        <Link href={`/classroom/course/${course._id}`} className={wrapperClass}>
+          {inner}
+        </Link>
+      )}
     </motion.div>
   );
 }
