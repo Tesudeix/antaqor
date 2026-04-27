@@ -78,11 +78,6 @@ export default function GenerateImagePage() {
 
   return (
     <div className="relative mx-auto max-w-[720px] px-1 pb-16 sm:px-0">
-      {/* Subtle ambient glow */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 left-1/2 h-[380px] w-[380px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(239,44,88,0.16)_0%,transparent_70%)] blur-3xl" />
-      </div>
-
       {/* Top bar */}
       <div className="mb-3 flex items-center justify-between">
         <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]">

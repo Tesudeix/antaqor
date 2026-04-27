@@ -106,10 +106,6 @@ export default function SwapProductPage() {
 
   return (
     <div className="relative mx-auto max-w-[1100px] pb-16">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(239,44,88,0.14)_0%,transparent_70%)] blur-3xl" />
-      </div>
-
       <div className="mb-3 flex items-center justify-between">
         <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#666] transition hover:text-[#EF2C58]">
           ← Бүх хэрэгсэл

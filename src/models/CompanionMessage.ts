@@ -10,6 +10,8 @@ export interface ICompanionMessage extends Document {
   affectionAfter?: number;
   // Suggestions Antaqor offered after THIS message (if role="assistant").
   suggestedReplies?: string[];
+  // Page-push action chips (label + internal href).
+  actions?: { label: string; href: string }[];
   createdAt: Date;
 }
 
@@ -22,6 +24,10 @@ const CompanionMessageSchema = new Schema<ICompanionMessage>(
     affectionDelta: { type: Number, default: 0 },
     affectionAfter: { type: Number },
     suggestedReplies: { type: [String], default: [] },
+    actions: {
+      type: [{ label: String, href: String, _id: false }],
+      default: [],
+    },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

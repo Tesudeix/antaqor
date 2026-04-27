@@ -60,6 +60,7 @@ export async function GET(req: NextRequest) {
         affectionDelta: (mm as unknown as { affectionDelta?: number }).affectionDelta || 0,
         affectionAfter: (mm as unknown as { affectionAfter?: number }).affectionAfter,
         suggestedReplies: (mm as unknown as { suggestedReplies?: string[] }).suggestedReplies || [],
+        actions: (mm as unknown as { actions?: { label: string; href: string }[] }).actions || [],
         createdAt: (mm as unknown as { createdAt: Date }).createdAt,
       })),
   });

@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
+interface Action {
+  label: string;
+  href: string;
+}
+
 interface Message {
   _id: string;
   role: "user" | "assistant";
@@ -11,6 +16,7 @@ interface Message {
   affectionDelta?: number;
   affectionAfter?: number;
   suggestedReplies?: string[];
+  actions?: Action[];
   createdAt: string;
 }
 
@@ -272,6 +278,8 @@ export default function CompanionPage() {
 
   return (
     <div className="mx-auto flex h-[calc(100vh-180px)] max-w-[760px] flex-col">
+      {/* No ambient gradient blurs — kept the surface clean per request */}
+
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-[rgba(255,255,255,0.08)] pb-3">
         <Link href="/tools" className="text-[#666] transition hover:text-[#EF2C58]" aria-label="Буцах">
@@ -583,6 +591,22 @@ function Bubble({
           }`}>
             {m.affectionDelta > 0 ? "+" : ""}{m.affectionDelta} мэдрэмж
           </span>
+        )}
+        {!isUser && !isTyping && Array.isArray(m.actions) && m.actions.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {m.actions.map((a, i) => (
+              <Link
+                key={`${a.href}-${i}`}
+                href={a.href}
+                className="inline-flex items-center gap-1 rounded-[4px] bg-[#EF2C58] px-2.5 py-1 text-[10px] font-black text-white shadow-[0_0_10px_rgba(239,44,88,0.35)] transition hover:bg-[#D4264E]"
+              >
+                {a.label}
+                <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
       <style jsx>{`

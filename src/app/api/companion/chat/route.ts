@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
   };
 
   const userDisplayName = (userDoc as unknown as { name?: string } | null)?.name || "";
-  const systemPrompt = buildSystemPrompt(memorySnapshot, userDisplayName, subject.kind === "guest");
+  const systemPrompt = await buildSystemPrompt(memorySnapshot, userDisplayName, subject.kind === "guest");
 
   const recent: CompanionContextMessage[] = recentDocs
     .reverse()
@@ -174,6 +174,7 @@ export async function POST(req: NextRequest) {
     affectionDelta: turn.affectionDelta,
     affectionAfter: newAffection,
     suggestedReplies: turn.suggestedReplies,
+    actions: turn.actions,
   });
 
   return NextResponse.json({
@@ -184,6 +185,7 @@ export async function POST(req: NextRequest) {
       affectionDelta: turn.affectionDelta,
       affectionAfter: newAffection,
       suggestedReplies: turn.suggestedReplies,
+      actions: turn.actions,
       createdAt: assistantMsg.createdAt,
     },
     memory: {

@@ -114,11 +114,6 @@ export default function ToolsIndexPage() {
 
   return (
     <div className="relative mx-auto max-w-[1100px] pb-12">
-      {/* Subtle ambient glow */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(239,44,88,0.14)_0%,transparent_70%)] blur-3xl" />
-      </div>
-
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>

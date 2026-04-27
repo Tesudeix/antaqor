@@ -6,9 +6,15 @@
 // reply and structured memory updates (affectionDelta, newFacts, summary).
 
 import { buildTrainingBlock } from "./companionTraining";
+import { getPlatformContext, buildPlatformContextBlock } from "./companionContext";
 
 const GROK_URL = "https://api.x.ai/v1/chat/completions";
 const GROK_MODEL = "grok-4-fast-non-reasoning"; // fast, warm, cheap
+
+export interface CompanionAction {
+  label: string;
+  href: string;
+}
 
 export interface CompanionTurn {
   message: string;
@@ -19,6 +25,7 @@ export interface CompanionTurn {
   preferredName?: string;
   summary?: string;
   suggestedReplies: string[];
+  actions: CompanionAction[];
 }
 
 export interface CompanionMemorySnapshot {
@@ -71,11 +78,13 @@ export function affectionBand(level: number): { label: string; tone: string } {
 }
 
 // ─── System prompt builder ───
-export function buildSystemPrompt(
+export async function buildSystemPrompt(
   memory: CompanionMemorySnapshot,
   userDisplayName?: string,
   isGuest: boolean = false
-): string {
+): Promise<string> {
+  const ctx = await getPlatformContext();
+  const platformBlock = buildPlatformContextBlock(ctx);
   const { label, tone } = affectionBand(memory.affection);
   const facts = memory.facts.slice(-12).map((f) => `• ${f}`).join("\n") || "(хараахан ямар ч баримт алга — энэ эхний харилцан үе)";
   const events =
@@ -176,6 +185,8 @@ ${isGuest ? `═══ ЗОЧИН (NOT logged in) ═══
 
 ${buildTrainingBlock()}
 
+${platformBlock}
+
 ═══ AFFECTION / TRUST DEPTH: ${memory.affection}/100 · "${label}" ═══
 Энэ түвшинд тохирсон tone:
 ${tone}
@@ -270,6 +281,19 @@ const RESPOND_TOOL = {
           description:
             "EXACTLY 2-3 short follow-up replies the user might tap next. Written in user voice (first person). Mongolian primary. ≤7 words each. Diverse angles (not repeats). Examples: 'Илүү тайлбарла', 'Жишээ үзүүл', 'Хэрхэн эхлэх вэ?'",
         },
+        actions: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string", description: "Mongolian button label, ≤22 chars (e.g. 'Курс үзэх', 'Зураг үүсгэх', 'Гишүүн болох')" },
+              href: { type: "string", description: "Internal link path. Allowed prefixes: /classroom, /tools, /community, /credits, /clan, /companion, /news. Use the EXACT links from LIVE PLATFORM CONTEXT when relevant. Skip if not applicable." },
+            },
+            required: ["label", "href"],
+          },
+          description:
+            "0-2 page-push buttons that navigate the user to a specific antaqor.com surface. ONLY include when truly relevant to the reply (don't push the same link every turn). Empty array if none.",
+        },
       },
       required: ["message", "affectionDelta", "summary", "suggestedReplies"],
     },
@@ -323,6 +347,7 @@ export async function callCompanion(args: {
       newJokes: [],
       summary: "",
       suggestedReplies: [],
+      actions: [],
     };
   }
 
@@ -330,7 +355,7 @@ export async function callCompanion(args: {
   try {
     parsed = JSON.parse(toolCall);
   } catch {
-    return { message: "Жаахан түр хүлээгээч…", affectionDelta: 0, newFacts: [], newJokes: [], summary: "", suggestedReplies: [] };
+    return { message: "Жаахан түр хүлээгээч…", affectionDelta: 0, newFacts: [], newJokes: [], summary: "", suggestedReplies: [], actions: [] };
   }
 
   return {
@@ -345,7 +370,22 @@ export async function callCompanion(args: {
       .map((s) => String(s).trim().replace(/^["'`]|["'`]$/g, ""))
       .filter((s) => s.length > 0 && s.length <= 80)
       .slice(0, 3),
+    actions: sanitizeActions(parsed.actions),
   };
+}
+
+// Whitelist allowed link prefixes so the model can't push arbitrary URLs.
+const ALLOWED_HREF = /^\/(classroom|tools|community|credits|clan|companion|news|posts|profile)(\/.*)?$/;
+function sanitizeActions(raw: unknown): { label: string; href: string }[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((a) => a as { label?: unknown; href?: unknown })
+    .map((a) => ({
+      label: String(a.label || "").trim().slice(0, 28),
+      href: String(a.href || "").trim(),
+    }))
+    .filter((a) => a.label.length > 0 && ALLOWED_HREF.test(a.href))
+    .slice(0, 2);
 }
 
 function clamp(n: number, min: number, max: number): number {
