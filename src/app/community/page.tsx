@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -16,14 +15,15 @@ interface Post {
   author: { _id: string; name: string; avatar?: string } | null;
 }
 
-interface Member {
-  _id: string;
-  name: string;
-  avatar?: string;
-  aiLevel?: string;
-}
-
 type Filter = "all" | "бүтээл" | "промт" | "ялалт";
+
+// Video filenames sneak into the image field on legacy posts. Treat anything
+// with a video extension as a video and exclude it from this gallery.
+const VIDEO_EXT = /\.(mp4|mov|webm|m4v|avi|mkv|ogv|3gp|m3u8)(\?|$)/i;
+function isPhoto(url?: string): boolean {
+  if (!url) return false;
+  return !VIDEO_EXT.test(url.toLowerCase());
+}
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "Бүгд" },
@@ -45,9 +45,7 @@ function timeAgo(iso: string): string {
 }
 
 export default function CommunityPage() {
-  const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<Post | null>(null);
@@ -67,23 +65,13 @@ export default function CommunityPage() {
       .then((d) => {
         if (cancel) return;
         const list = (d.posts || []) as Post[];
-        setPosts(list.filter((p) => p.image && p.image.trim().length > 0));
+        // Photos only — no videos in the gallery
+        setPosts(list.filter((p) => p.image && p.image.trim().length > 0 && isPhoto(p.image)));
       })
       .catch(() => {})
       .finally(() => { if (!cancel) setLoading(false); });
     return () => { cancel = true; };
   }, [filter]);
-
-  // Fetch members (only when logged-in to avoid leaking member identity to bots)
-  useEffect(() => {
-    if (!session) return;
-    let cancel = false;
-    fetch("/api/members?limit=20")
-      .then((r) => r.json())
-      .then((d) => { if (!cancel && Array.isArray(d.members)) setMembers(d.members); })
-      .catch(() => {});
-    return () => { cancel = true; };
-  }, [session]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: posts.length };
@@ -103,33 +91,6 @@ export default function CommunityPage() {
           Бүтээлүүд
         </h1>
       </div>
-
-      {/* Members strip — logged-in only, headerless avatar carousel */}
-      {session && members.length > 0 && (
-        <div className="mb-5">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {members.map((m) => (
-              <Link
-                key={m._id}
-                href={`/profile/${m._id}`}
-                className="group flex w-[72px] shrink-0 flex-col items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0F0F10] p-2 transition hover:border-[rgba(239,44,88,0.3)]"
-              >
-                {m.avatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={m.avatar} alt={m.name} className="h-10 w-10 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(239,44,88,0.12)] text-[14px] font-black text-[#EF2C58]">
-                    {m.name.charAt(0)}
-                  </div>
-                )}
-                <span className="w-full truncate text-center text-[10px] font-bold text-[#E8E8E8] group-hover:text-[#EF2C58]">
-                  {m.name.split(" ")[0]}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Sticky filter pills */}
       <div className="sticky top-[60px] z-30 -mx-4 mb-5 border-y border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]/80 px-4 py-2 backdrop-blur-xl">
