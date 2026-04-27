@@ -18,8 +18,8 @@ interface ToolDef {
 const TOOLS: ToolDef[] = [
   {
     href: "/companion",
-    title: "Антаквор · Чиний AI найз",
-    blurb: "Mongolian-аар ярьдаг хувийн entrepreneur найз. Чамайг тогтмол санаж, дотно болж явна.",
+    title: "Антаквор · Чиний AI байлдан дагуулагч",
+    blurb: "Mongolian-аар ярьдаг хувийн entrepreneur companion. Чамайг тогтмол санаж, бизнес, мөрөөдлийг тань дэмжинэ.",
     cost: "Үнэгүй · 200/өдөр",
     costTone: "neon",
     tag: "ШИНЭ ✦",

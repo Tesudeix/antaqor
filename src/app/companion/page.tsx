@@ -148,10 +148,7 @@ export default function CompanionPage() {
         <Link href="/tools" className="text-[#666] transition hover:text-[#EF2C58]" aria-label="Буцах">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
         </Link>
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-gradient-to-br from-[#EF2C58] to-[#A855F7] text-[15px] font-black text-white shadow-[0_0_18px_rgba(239,44,88,0.35)]">
-          A
-          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#22C55E] ring-2 ring-[#0A0A0A]" title="online" />
-        </div>
+        <AntaqorAvatar size={40} online />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-[14px] font-black text-[#E8E8E8]">Антаквор</span>
@@ -219,7 +216,7 @@ export default function CompanionPage() {
           </button>
         </div>
         <p className="mt-1 text-[9px] text-[#555] text-center">
-          Антаквор бол таны хувийн AI найз. Mongolian-аар чөлөөтэй ярь.
+          Антаквор бол чиний AI байлдан дагуулагч. Mongolian-аар чөлөөтэй ярь.
         </p>
       </div>
 
@@ -265,6 +262,46 @@ export default function CompanionPage() {
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────
+
+// Branded avatar — uses /antaqor.png when present, falls back to a clean
+// gradient "A" if the asset 404s so the page never shows a broken image.
+function AntaqorAvatar({ size = 40, online = false }: { size?: number; online?: boolean }) {
+  const [broken, setBroken] = useState(false);
+  const fontSize = Math.max(14, Math.round(size * 0.42));
+  const dotSize = Math.max(8, Math.round(size * 0.22));
+  return (
+    <div
+      className="relative shrink-0 overflow-hidden rounded-[4px] bg-gradient-to-br from-[#EF2C58] to-[#A855F7] shadow-[0_0_18px_rgba(239,44,88,0.35)]"
+      style={{ width: size, height: size }}
+    >
+      {!broken ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/antaqor.png"
+          alt="Антаквор"
+          width={size}
+          height={size}
+          className="h-full w-full object-cover"
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <span
+          className="flex h-full w-full items-center justify-center font-black text-white"
+          style={{ fontSize }}
+        >
+          A
+        </span>
+      )}
+      {online && (
+        <span
+          className="absolute -bottom-0.5 -right-0.5 rounded-full bg-[#22C55E] ring-2 ring-[#0A0A0A]"
+          style={{ width: dotSize, height: dotSize }}
+          title="online"
+        />
+      )}
+    </div>
+  );
+}
 
 function AffectionBar({ value }: { value: number }) {
   const pct = Math.max(0, Math.min(100, value));
@@ -335,13 +372,13 @@ function EmptyChat({ onPick }: { onPick: (t: string) => void }) {
   ];
   return (
     <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[4px] bg-gradient-to-br from-[#EF2C58] to-[#A855F7] text-[24px] font-black text-white shadow-[0_0_28px_rgba(239,44,88,0.4)]">
-        A
+      <div className="mb-4">
+        <AntaqorAvatar size={72} />
       </div>
       <h2 className="text-[18px] font-black text-[#E8E8E8]">Сайн байна уу!</h2>
       <p className="mt-2 max-w-[400px] text-[12px] leading-relaxed text-[#888]">
-        Би Антаквор — таны хувийн entrepreneur найз. Бизнес, AI, мөрөөдөл, өдөр тутмын асуудал — юу ч ярь.
-        Чамайг сайн таниж аваад, цаашид ойр найз болж явна.
+        Би Антаквор — чиний AI байлдан дагуулагч. Бизнес, AI, мөрөөдөл, өдөр тутмын асуудал — юу ч ярь.
+        Чамайг сайн таниж аваад цаашид ойр явна.
       </p>
       <div className="mt-5 flex max-w-[420px] flex-wrap justify-center gap-1.5">
         {starters.map((s) => (
