@@ -31,6 +31,20 @@ const TOOLS: ToolDef[] = [
     ),
   },
   {
+    href: "/budjargal",
+    title: "Буджаргал · Гүйлтийн бясалгагч",
+    blurb: "Бямбаагийн Буджаргал — 23 удаагийн дэлхийн ультра аварга. Бясалгал, дисциплин, дотоод аян замын багш.",
+    cost: "Үнэгүй · 200/өдөр",
+    costTone: "neon",
+    tag: "ШИНЭ ✦",
+    accent: "from-[#6366F1] via-[#A855F7] to-[#0A0A0A]",
+    icon: (
+      <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5l1.5 1.5m-7.5 7.5l-3 3m13.5-13.5l-9 9m9-9l-9 9m4.5-13.5L19.5 12l-7.5 7.5m0-15L4.5 12l7.5 7.5" />
+      </svg>
+    ),
+  },
+  {
     href: "/tools/generate-image",
     title: "AI зураг үүсгэх",
     blurb: "Промпт + стиль + хэлбэр сонгож AI-аар бэлэн зураг авна. 8 стиль, 5 хэлбэр.",
