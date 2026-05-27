@@ -89,7 +89,7 @@ Generate a secure secret and create the `.env.local` file:
 cd /var/www/antaqor
 
 cat > .env.local << 'EOF'
-MONGODB_URI=mongodb://127.0.0.1:27017/antaqor
+MONGODB_URI=mongodb://admin:5ff0dd1723e840e7b965833b87@178.128.104.98:27017/antaqor?authSource=admin
 NEXTAUTH_SECRET=REPLACE_THIS
 NEXTAUTH_URL=http://68.183.184.111
 EOF
@@ -111,7 +111,7 @@ cat .env.local
 You should see:
 
 ```
-MONGODB_URI=mongodb://127.0.0.1:27017/antaqor
+MONGODB_URI=mongodb://admin:5ff0dd1723e840e7b965833b87@178.128.104.98:27017/antaqor?authSource=admin
 NEXTAUTH_SECRET=aB3kLm9x...  (long random string)
 NEXTAUTH_URL=http://68.183.184.111
 ```
