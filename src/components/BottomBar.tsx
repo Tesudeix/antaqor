@@ -21,6 +21,12 @@ export default function BottomBar() {
 
   const myId = (session?.user as { id?: string })?.id || "";
 
+  // The /admin section renders its own mobile bottom tab bar (with the full
+  // automation tool set behind "Бусад"). Both bars are fixed bottom-0 z-50, so
+  // showing the site bar here would paint over the admin one. Yield the bottom
+  // to admin on mobile.
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
   const tabs: Tab[] = useMemo(() => {
     const iconHome = (
       <svg className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
@@ -134,6 +140,8 @@ export default function BottomBar() {
       },
     ];
   }, [session, myId]);
+
+  if (isAdminRoute) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
