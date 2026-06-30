@@ -125,9 +125,42 @@ function GroupCard({ g }: { g: Group }) {
 
 export default function ErchisPage() {
   return (
-    <div className="-mx-4 -mt-6 -mb-28 bg-[#0a0a0c] text-[#E8E8E8] sm:-mx-6 md:-mx-8 md:-mb-12 lg:-mx-12">
-      {/* HERO */}
-      <header className="relative overflow-hidden px-5 pt-16 pb-14 text-center sm:pt-24 sm:pb-20">
+    <div
+      id="top"
+      className="-mx-4 -mt-6 -mb-28 min-h-screen bg-[#0a0a0c] text-[#E8E8E8] sm:-mx-6 md:-mx-8 md:-mb-12 lg:-mx-12"
+    >
+      {/* ─── Erchis header (own, replaces Antaqor navbar) ─── */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0c]/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-5 py-3">
+          <a href="#top" className="flex items-center gap-2.5">
+            <span className="text-[22px] leading-none">🏐</span>
+            <span className="flex flex-col leading-none">
+              <span className="text-[15px] font-extrabold tracking-[0.18em] text-white">ЭРЧИС</span>
+              <span className="mt-1 text-[8px] font-bold tracking-[0.3em] text-[#FF6B1A]">ВОЛЕЙБОЛ КЛУБ</span>
+            </span>
+          </a>
+          <nav className="hidden items-center gap-7 sm:flex">
+            {[
+              { href: "#advantages", label: "Давуу тал" },
+              { href: "#discounts", label: "Хөнгөлөлт" },
+              { href: "#salbaruud", label: "Хуваарь" },
+            ].map((l) => (
+              <a key={l.href} href={l.href} className="text-[13px] font-semibold text-[#AAAAAA] transition hover:text-white">
+                {l.label}
+              </a>
+            ))}
+          </nav>
+          <a
+            href={`tel:${PHONE_TEL}`}
+            className="rounded-[4px] bg-[#FF6B1A] px-4 py-2 text-[13px] font-bold text-black transition hover:bg-[#ff7d33]"
+          >
+            📞 Залгах
+          </a>
+        </div>
+      </header>
+
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden px-5 pt-12 pb-14 text-center sm:pt-16 sm:pb-20">
         <div
           className="pointer-events-none absolute inset-0 opacity-70"
           style={{
@@ -165,11 +198,11 @@ export default function ErchisPage() {
             </a>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="mx-auto max-w-3xl px-5 pb-20">
+      <main className="mx-auto max-w-3xl px-5 pb-28 md:pb-16">
         {/* ADVANTAGES */}
-        <section className="mt-4">
+        <section id="advantages" className="mt-4 scroll-mt-24">
           <h2 className="flex items-center gap-2 text-[20px] font-extrabold text-white">
             🌟 Бидний давуу тал
           </h2>
@@ -189,7 +222,7 @@ export default function ErchisPage() {
         </section>
 
         {/* DISCOUNTS */}
-        <section className="mt-12">
+        <section id="discounts" className="mt-12 scroll-mt-24">
           <h2 className="flex items-center gap-2 text-[20px] font-extrabold text-white">
             🎯 Хөнгөлөлтүүд
           </h2>
@@ -207,7 +240,7 @@ export default function ErchisPage() {
         </section>
 
         {/* BRANCHES & SCHEDULE */}
-        <section id="salbaruud" className="mt-12 scroll-mt-20">
+        <section id="salbaruud" className="mt-12 scroll-mt-24">
           <h2 className="flex items-center gap-2 text-[20px] font-extrabold text-white">
             📍 Салбарууд ба цагийн хуваарь
           </h2>
@@ -255,6 +288,24 @@ export default function ErchisPage() {
           © {new Date().getFullYear()} Эрчис Волейбол Клуб
         </p>
       </main>
+
+      {/* ─── Erchis bottom bar (own, mobile — replaces Antaqor BottomBar) ─── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#0a0a0c]/95 backdrop-blur-xl md:hidden">
+        <div className="mx-auto grid max-w-md grid-cols-3 items-stretch px-2 pb-[env(safe-area-inset-bottom)] pt-1.5">
+          <a href="#salbaruud" className="flex flex-col items-center gap-0.5 py-1.5 text-[#AAAAAA] transition active:text-white">
+            <span className="text-[18px] leading-none">🗓️</span>
+            <span className="text-[10px] font-semibold">Хуваарь</span>
+          </a>
+          <a href="#discounts" className="flex flex-col items-center gap-0.5 py-1.5 text-[#AAAAAA] transition active:text-white">
+            <span className="text-[18px] leading-none">🎯</span>
+            <span className="text-[10px] font-semibold">Хөнгөлөлт</span>
+          </a>
+          <a href={`tel:${PHONE_TEL}`} className="flex flex-col items-center gap-0.5 py-1.5 text-[#FF6B1A] transition active:text-[#ff7d33]">
+            <span className="text-[18px] leading-none">📞</span>
+            <span className="text-[10px] font-extrabold">Залгах</span>
+          </a>
+        </div>
+      </nav>
     </div>
   );
 }

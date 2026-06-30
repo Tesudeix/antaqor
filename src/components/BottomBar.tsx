@@ -135,6 +135,9 @@ export default function BottomBar() {
     ];
   }, [session, myId]);
 
+  // The /erchis microsite renders its own bottom bar — hide the Antaqor one there.
+  if (pathname.startsWith("/erchis")) return null;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl md:hidden">
       <div className="mx-auto flex max-w-md items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)] pt-1.5">

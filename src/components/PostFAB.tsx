@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import NewPostModal from "./NewPostModal";
 
-const HIDDEN_PREFIXES = ["/posts/new", "/auth", "/admin", "/chat"];
+const HIDDEN_PREFIXES = ["/posts/new", "/auth", "/admin", "/chat", "/erchis"];
 
 export default function PostFAB() {
   const { data: session, status } = useSession();

@@ -73,6 +73,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
+  // The /erchis microsite renders its own header — hide the Antaqor navbar there.
+  if (pathname.startsWith("/erchis")) return null;
+
   const myId = (session?.user as { id?: string })?.id || "";
 
   // Desktop nav mirrors mobile BottomBar 1:1.
