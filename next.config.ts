@@ -1,11 +1,16 @@
 import type { NextConfig } from "next";
 
+// Next.js 16 truncates request bodies past 10MB by default. Lesson video
+// uploads run up to 200MB; nginx is set to 250M. The right knob in 16.1
+// lives under experimental.proxyClientMaxBodySize. Cast around the missing
+// type until @types/next ships it.
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
     },
+    ...({ proxyClientMaxBodySize: "250mb" } as Record<string, unknown>),
   },
   images: {
     remotePatterns: [
