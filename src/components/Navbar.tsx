@@ -9,6 +9,38 @@ import NotificationBell from "./NotificationBell";
 // ─── Edgerunner header — sticky 56px, hairline border, slash-mark logo. ───
 // Desktop tabs mirror the mobile BottomBar funnels. Active = brand-accent underline.
 
+// Live credit balance — polls /api/credits so a purchase/spend reflects
+// without a full page reload.
+function CreditChip() {
+  const { data: session } = useSession();
+  const [balance, setBalance] = useState<number | null>(null);
+  useEffect(() => {
+    if (!session?.user) return;
+    let cancelled = false;
+    const load = () => {
+      fetch("/api/credits")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (!cancelled && typeof d?.balance === "number") setBalance(d.balance); })
+        .catch(() => {});
+    };
+    load();
+    const t = setInterval(load, 60000);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [session]);
+
+  if (!session?.user || balance === null) return null;
+  return (
+    <Link
+      href="/credits"
+      title="Миний кредит"
+      className="group hidden items-center gap-1.5 rounded-[4px] border border-[#2E2E33] bg-[#1E1E21] px-2.5 py-1 text-[12px] font-bold text-[#1080CA] transition hover:border-[#1080CA] sm:flex"
+    >
+      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span className="tabular-nums">{balance.toLocaleString()}</span>
+    </Link>
+  );
+}
+
 // Plan CTA shown only to logged-in non-members. Command-button style (dark,
 // brand-accent border) so it reads as the one attention item without glow noise.
 function PlanChip() {
@@ -190,6 +222,7 @@ export default function Navbar() {
                 </svg>
                 Пост
               </Link>
+              <CreditChip />
               <PlanChip />
               <NotificationBell />
               <Link

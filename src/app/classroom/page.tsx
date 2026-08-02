@@ -8,6 +8,7 @@ import UpgradeModal from "@/components/UpgradeModal";
 import CourseLanding from "@/components/CourseLanding";
 import { PLANS, TRACKS, hasPlanAccess, type PlanId } from "@/lib/plans";
 import { track as trackEvent } from "@/lib/analytics";
+import { Reveal, RevealGroup, RevealItem } from "@/components/landing/kit";
 
 // ─── /classroom — the same funnel switch as "/" ───
 // Guest → CourseLanding (7-day course sales page). Logged-in → the roadmap
@@ -103,7 +104,7 @@ function ClassroomRoadmap() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+      <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="chrome mb-2 flex items-center gap-2 text-[9px] font-bold">
             <span className="text-[#1080CA]">[КУРС]</span>
@@ -121,7 +122,7 @@ function ClassroomRoadmap() {
             УДИРДАХ →
           </Link>
         )}
-      </div>
+      </Reveal>
 
       <div className="space-y-10">
         {TRACKS.map((t) => {
@@ -130,7 +131,7 @@ function ClassroomRoadmap() {
           const trackColor = t.id === "foundation" ? "#3B82F6" : t.id === "builder" ? "#1080CA" : "#F59E0B";
           return (
             <section key={t.id}>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-[#2E2E33] pb-3">
+              <Reveal className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-[#2E2E33] pb-3">
                 <div className="flex items-center gap-3">
                   <span className="tag">{t.name}</span>
                   <span className="text-[13px] text-[#B4B4BA]">{t.desc}</span>
@@ -138,8 +139,8 @@ function ClassroomRoadmap() {
                 <span className="chrome text-[9px] font-bold" style={{ color: trackColor }}>
                   {`${PLANS[t.requiredPlan === "free" ? "starter" : t.requiredPlan].name.toUpperCase()} PLAN-ААС`}
                 </span>
-              </div>
-              <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 xl:grid-cols-4">
+              </Reveal>
+              <RevealGroup className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 xl:grid-cols-4">
                 {list.map((c) => {
                   // Business rule: no free courses — everything needs at least Runner.
                   const rawPlan = (c.requiredPlan || "free") as PlanId;
@@ -195,28 +196,29 @@ function ClassroomRoadmap() {
                       </div>
                     </div>
                   );
-                  if (soon) return <div key={c._id}>{inner}</div>;
+                  if (soon) return <RevealItem key={c._id}>{inner}</RevealItem>;
                   if (unlocked) {
                     return (
-                      <Link key={c._id} href={`/classroom/course/${c._id}`}>
-                        {inner}
-                      </Link>
+                      <RevealItem key={c._id}>
+                        <Link href={`/classroom/course/${c._id}`}>{inner}</Link>
+                      </RevealItem>
                     );
                   }
                   return (
-                    <button
-                      key={c._id}
-                      className="text-left"
-                      onClick={() => {
-                        trackEvent("premium_course_locked_viewed", { course: c.title });
-                        setUpgrade({ plan: reqPlan, context: c.title });
-                      }}
-                    >
-                      {inner}
-                    </button>
+                    <RevealItem key={c._id}>
+                      <button
+                        className="text-left"
+                        onClick={() => {
+                          trackEvent("premium_course_locked_viewed", { course: c.title });
+                          setUpgrade({ plan: reqPlan, context: c.title });
+                        }}
+                      >
+                        {inner}
+                      </button>
+                    </RevealItem>
                   );
                 })}
-              </div>
+              </RevealGroup>
             </section>
           );
         })}
