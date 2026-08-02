@@ -21,6 +21,7 @@ export async function GET() {
       return NextResponse.json({
         isMember: true,
         isAdmin: true,
+        plan: "operator",
         clan: "antaqor",
         joinedAt: null,
         expiresAt: null,
@@ -34,7 +35,7 @@ export async function GET() {
     await dbConnect();
 
     const user = await User.findById(userId).select(
-      "clan clanJoinedAt subscriptionExpiresAt role"
+      "clan clanJoinedAt subscriptionExpiresAt role plan"
     );
 
     const now = new Date();
@@ -45,9 +46,14 @@ export async function GET() {
       new Date(user.subscriptionExpiresAt) < now;
     const isAdmin = user?.role === "admin";
 
+    // Effective plan: paid tier only while the subscription is active.
+    const subActive = !!(user?.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now);
+    const plan = isAdmin ? "operator" : subActive ? user?.plan || "starter" : "free";
+
     return NextResponse.json({
       isMember: hasClan && !isExpired,
       isAdmin,
+      plan,
       clan: user?.clan || null,
       joinedAt: user?.clanJoinedAt || null,
       expiresAt: user?.subscriptionExpiresAt || null,

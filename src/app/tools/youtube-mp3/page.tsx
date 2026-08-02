@@ -87,7 +87,7 @@ export default function YouTubeMp3Page() {
   return (
     <div className="mx-auto max-w-lg px-4 py-8">
         {/* Back */}
-        <Link href="/services" className="mb-6 inline-flex items-center gap-1.5 text-[12px] text-[#888] transition hover:text-[#EF2C58]">
+        <Link href="/services" className="mb-6 inline-flex items-center gap-1.5 text-[12px] text-[#6b7280] transition hover:text-[#1080CA]">
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
@@ -96,17 +96,17 @@ export default function YouTubeMp3Page() {
 
         {/* Header */}
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-[#EF2C58]">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-none bg-[#1080CA]">
             <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
             </svg>
           </div>
-          <h1 className="text-[22px] font-bold text-[#E8E8E8]">YouTube → MP3</h1>
-          <p className="mt-1 text-[13px] text-[#888]">YouTube видеог MP3 аудио болгож татах</p>
+          <h1 className="text-[22px] font-bold text-[#0e1726]">YouTube → MP3</h1>
+          <p className="mt-1 text-[13px] text-[#6b7280]">YouTube видеог MP3 аудио болгож татах</p>
         </div>
 
         {/* Input */}
-        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5">
+        <div className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] p-5">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <input
@@ -115,12 +115,12 @@ export default function YouTubeMp3Page() {
                 onChange={(e) => { setUrl(e.target.value); setError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && handleDownload()}
                 placeholder="https://youtube.com/watch?v=..."
-                className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-4 py-3 pr-16 text-[14px] text-[#E8E8E8] outline-none transition placeholder:text-[#AAA] focus:border-[#EF2C58]"
+                className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-4 py-3 pr-16 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#475569] focus:border-[#1080CA]"
                 disabled={status === "loading"}
               />
               <button
                 onClick={handlePaste}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-[rgba(0,0,0,0.04)] px-2.5 py-1 text-[10px] font-bold text-[#888] transition hover:bg-[rgba(0,0,0,0.08)] hover:text-[#E8E8E8]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-none bg-[rgba(0,0,0,0.04)] px-2.5 py-1 text-[10px] font-bold text-[#6b7280] transition hover:bg-[rgba(0,0,0,0.08)] hover:text-[#0e1726]"
               >
                 PASTE
               </button>
@@ -128,7 +128,7 @@ export default function YouTubeMp3Page() {
           </div>
 
           {error && (
-            <p className="mt-3 text-[12px] text-[#EF2C58]">{error}</p>
+            <p className="mt-3 text-[12px] text-[#1080CA]">{error}</p>
           )}
 
           {/* Progress */}
@@ -136,26 +136,26 @@ export default function YouTubeMp3Page() {
             <div className="mt-4">
               <div className="h-1 overflow-hidden rounded-full bg-[rgba(0,0,0,0.06)]">
                 <div
-                  className="h-full rounded-full bg-[#EF2C58] transition-all duration-500"
+                  className="h-full rounded-full bg-[#1080CA] transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-2 text-center text-[11px] text-[#888]">Хөрвүүлж байна... {Math.round(progress)}%</p>
+              <p className="mt-2 text-center text-[11px] text-[#6b7280]">Хөрвүүлж байна... {Math.round(progress)}%</p>
             </div>
           )}
 
           {/* Result */}
           {status === "done" && info && (
-            <div className="mt-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4">
+            <div className="mt-4 rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] p-4">
               <div className="flex items-center gap-3">
                 {info.thumbnail && (
-                  <img src={info.thumbnail} alt="" className="h-12 w-16 rounded-md object-cover" />
+                  <img src={info.thumbnail} alt="" className="h-12 w-16 rounded-none object-cover" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-semibold text-[#E8E8E8]">{info.title}</p>
-                  <p className="text-[11px] text-[#888]">{info.duration}</p>
+                  <p className="truncate text-[13px] font-semibold text-[#0e1726]">{info.title}</p>
+                  <p className="text-[11px] text-[#6b7280]">{info.duration}</p>
                 </div>
-                <svg className="h-5 w-5 shrink-0 text-[#22C55E]" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 shrink-0 text-[#1080CA]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
               </div>
@@ -166,7 +166,7 @@ export default function YouTubeMp3Page() {
           <button
             onClick={status === "done" ? reset : handleDownload}
             disabled={status === "loading"}
-            className="mt-4 w-full rounded-[4px] bg-[#EF2C58] py-3 text-[14px] font-bold text-white transition hover:brightness-110 disabled:opacity-50"
+            className="mt-4 w-full rounded-none bg-[#1080CA] py-3 text-[14px] font-bold text-[#0E0E10] transition hover:brightness-110 disabled:opacity-50"
           >
             {status === "loading" ? "Хөрвүүлж байна..." : status === "done" ? "Шинэ татах" : "MP3 татах"}
           </button>
@@ -179,16 +179,16 @@ export default function YouTubeMp3Page() {
             { icon: "M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3", label: "320kbps" },
             { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", label: "Аюулгүй" },
           ].map((f) => (
-            <div key={f.label} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-3 text-center">
-              <svg className="mx-auto mb-1.5 h-5 w-5 text-[#EF2C58]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div key={f.label} className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] p-3 text-center">
+              <svg className="mx-auto mb-1.5 h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={f.icon} />
               </svg>
-              <span className="text-[11px] font-semibold text-[#888]">{f.label}</span>
+              <span className="text-[11px] font-semibold text-[#6b7280]">{f.label}</span>
             </div>
           ))}
         </div>
 
-        <p className="mt-4 text-center text-[10px] text-[#AAA]">
+        <p className="mt-4 text-center text-[10px] text-[#475569]">
           Зөвхөн хувийн хэрэглээнд зориулагдсан. Зохиогчийн эрхийг хүндэтгэнэ үү.
         </p>
       <a ref={linkRef} className="hidden" />

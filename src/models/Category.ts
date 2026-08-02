@@ -5,6 +5,7 @@ export interface ICategory extends Document {
   name: string;
   slug: string;
   color: string;
+  iconPath: string;
   order: number;
   createdAt: Date;
 }
@@ -27,7 +28,12 @@ const CategorySchema = new Schema<ICategory>(
     },
     color: {
       type: String,
-      default: "#EF2C58",
+      default: "#1080CA",
+      trim: true,
+    },
+    iconPath: {
+      type: String,
+      default: "",
       trim: true,
     },
     order: {

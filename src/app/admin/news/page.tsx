@@ -1,0 +1,514 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+
+type Category = "AI" | "LLM" | "Agents" | "Research" | "Бизнес" | "Tool" | "Монгол";
+
+interface NewsItem {
+  _id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content?: string;
+  coverImage: string;
+  category: Category;
+  tags: string[];
+  source: string;
+  sourceUrl: string;
+  authorName: string;
+  authorAvatar: string;
+  featured: boolean;
+  published: boolean;
+  views: number;
+  readingMinutes: number;
+  publishedAt: string;
+}
+
+const CATEGORIES: Category[] = ["AI", "LLM", "Agents", "Research", "Бизнес", "Tool", "Монгол"];
+const CATEGORY_COLORS: Record<Category, string> = {
+  AI: "#1080CA",
+  LLM: "#1080CA",
+  Agents: "#1080CA",
+  Research: "#1080CA",
+  "Бизнес": "#F59E0B",
+  Tool: "#06B6D4",
+  "Монгол": "#EC4899",
+};
+
+const EMPTY = {
+  title: "",
+  excerpt: "",
+  content: "",
+  coverImage: "",
+  category: "AI" as Category,
+  tagsRaw: "",
+  source: "",
+  sourceUrl: "",
+  authorName: "Antaqor Editorial",
+  authorAvatar: "",
+  featured: false,
+};
+
+async function uploadImage(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Upload failed");
+  return data.url as string;
+}
+
+export default function AdminNewsPage() {
+  const [items, setItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(EMPTY);
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [flash, setFlash] = useState("");
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [inlineUploading, setInlineUploading] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const inlineInputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  const showFlash = (msg: string) => {
+    setFlash(msg);
+    setTimeout(() => setFlash(""), 2500);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverUploading(true);
+    try {
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, coverImage: url }));
+      showFlash("Cover зураг оруулагдлаа");
+    } catch (err) {
+      showFlash("Алдаа: " + (err instanceof Error ? err.message : "upload"));
+    } finally {
+      setCoverUploading(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
+
+  const handleInlineUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setInlineUploading(true);
+    try {
+      const url = await uploadImage(file);
+      const ta = contentRef.current;
+      const snippet = `\n\n![${file.name.replace(/\.[^.]+$/, "")}](${url})\n\n`;
+      if (ta) {
+        const start = ta.selectionStart ?? form.content.length;
+        const end = ta.selectionEnd ?? form.content.length;
+        const next = form.content.slice(0, start) + snippet + form.content.slice(end);
+        setForm((f) => ({ ...f, content: next }));
+        // restore focus and caret after state applies
+        setTimeout(() => {
+          ta.focus();
+          const pos = start + snippet.length;
+          ta.setSelectionRange(pos, pos);
+        }, 0);
+      } else {
+        setForm((f) => ({ ...f, content: f.content + snippet }));
+      }
+      showFlash("Зураг контент дотор оруулагдлаа");
+    } catch (err) {
+      showFlash("Алдаа: " + (err instanceof Error ? err.message : "upload"));
+    } finally {
+      setInlineUploading(false);
+      if (inlineInputRef.current) inlineInputRef.current.value = "";
+    }
+  };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/news?limit=50");
+      const data = await res.json();
+      setItems(data.items || []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const resetForm = () => {
+    setForm(EMPTY);
+    setEditingSlug(null);
+  };
+
+  const save = async () => {
+    if (!form.title.trim() || saving) return;
+    setSaving(true);
+    try {
+      const payload = {
+        title: form.title.trim(),
+        excerpt: form.excerpt.trim(),
+        content: form.content.trim(),
+        coverImage: form.coverImage.trim(),
+        category: form.category,
+        tags: form.tagsRaw
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        source: form.source.trim(),
+        sourceUrl: form.sourceUrl.trim(),
+        authorName: form.authorName.trim(),
+        authorAvatar: form.authorAvatar.trim(),
+        featured: form.featured,
+      };
+
+      const url = editingSlug ? `/api/news/${editingSlug}` : "/api/news";
+      const method = editingSlug ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "save failed");
+
+      resetForm();
+      await load();
+      showFlash(editingSlug ? "Шинэчлэгдлээ" : "Нийтлэгдлээ");
+    } catch (err) {
+      showFlash("Алдаа: " + (err instanceof Error ? err.message : "unknown"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const edit = (n: NewsItem) => {
+    setEditingSlug(n.slug);
+    setForm({
+      title: n.title,
+      excerpt: n.excerpt,
+      content: n.content || "",
+      coverImage: n.coverImage,
+      category: n.category,
+      tagsRaw: (n.tags || []).join(", "),
+      source: n.source,
+      sourceUrl: n.sourceUrl,
+      authorName: n.authorName,
+      authorAvatar: n.authorAvatar,
+      featured: n.featured,
+    });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const loadContentForEdit = async (slug: string) => {
+    try {
+      const res = await fetch(`/api/news/${slug}`);
+      const data = await res.json();
+      if (data.news) {
+        edit(data.news);
+      }
+    } catch {
+      showFlash("Уншиж чадсангүй");
+    }
+  };
+
+  const remove = async (slug: string) => {
+    if (!confirm("Энэ мэдээг устгах уу?")) return;
+    const res = await fetch(`/api/news/${slug}`, { method: "DELETE" });
+    if (res.ok) {
+      setItems((prev) => prev.filter((i) => i.slug !== slug));
+      showFlash("Устгагдлаа");
+      if (editingSlug === slug) resetForm();
+    }
+  };
+
+  const togglePublished = async (n: NewsItem) => {
+    const res = await fetch(`/api/news/${n.slug}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ published: !n.published }),
+    });
+    if (res.ok) {
+      await load();
+      showFlash(n.published ? "Нуусан" : "Нийтэлсэн");
+    }
+  };
+
+  return (
+    <div className="space-y-5 pb-6">
+      {flash && (
+        <div className="fixed top-4 right-4 z-50 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+          {flash}
+        </div>
+      )}
+
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#E8E8E8]">AI Мэдээ</h1>
+          <p className="mt-0.5 text-[12px] text-[#56565E]">Public блог/мэдээний удирдлага — нэвтрээгүй хэрэглэгчдэд ил</p>
+        </div>
+        <Link href="/news" target="_blank" className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]">
+          Блог харах
+        </Link>
+      </div>
+
+      {/* Editor */}
+      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">
+            {editingSlug ? "Засварлаж байна" : "Шинэ мэдээ"}
+          </span>
+          {editingSlug && (
+            <button onClick={resetForm} className="text-[11px] text-[#8A8A92] hover:text-[#E8E8E8]">
+              Цуцлах
+            </button>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <input
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+            placeholder="Гарчиг"
+            maxLength={220}
+            className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+          />
+          <textarea
+            value={form.excerpt}
+            onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
+            placeholder="Excerpt (богино тайлбар)"
+            maxLength={400}
+            rows={2}
+            className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+          />
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-2 text-[10px] text-[#56565E]">
+              <span className="font-bold uppercase tracking-[0.12em]">Контент</span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline">
+                  # H2 · ## H3 · &gt; quote · **bold** · [link](url) · ![alt](url)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => inlineInputRef.current?.click()}
+                  disabled={inlineUploading}
+                  className="flex items-center gap-1 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA] disabled:opacity-50"
+                >
+                  {inlineUploading ? (
+                    <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+                  ) : (
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  )}
+                  Зураг оруулах
+                </button>
+                <input
+                  ref={inlineInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleInlineUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            <textarea
+              ref={contentRef}
+              value={form.content}
+              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+              placeholder={"Үндсэн контент...\n\nДавхар мөр = шинэ параграф.\n\n# H2 гарчиг\n## H3 гарчиг\n> иш татсан үг\n**bold** эсвэл `code`\n\nЗураг оруулах: дээрх товчийг дар, автоматаар ![alt](url) тэмдэглэгээ орно"}
+              rows={14}
+              className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+          </div>
+
+          {/* Cover image */}
+          <div className="rounded-none border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#56565E]">Cover зураг</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  disabled={coverUploading}
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-2.5 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA] disabled:opacity-50"
+                >
+                  {coverUploading ? "Байршуулж байна..." : form.coverImage ? "Солих" : "Сонгох"}
+                </button>
+                {form.coverImage && (
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, coverImage: "" }))}
+                    className="text-[10px] text-[#56565E] hover:text-[#1080CA]"
+                  >
+                    Устгах
+                  </button>
+                )}
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            {form.coverImage ? (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-none bg-[#141419]">
+                <img src={form.coverImage} alt="cover preview" className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-6 text-[11px] text-[#56565E]">
+                <svg className="h-6 w-6 text-[#d5dce3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                JPG / PNG / WebP / GIF · max 10MB · автоматаар WebP-д хөрвүүлнэ
+              </div>
+            )}
+            <input
+              value={form.coverImage}
+              onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))}
+              placeholder="эсвэл URL оруул"
+              className="mt-2 w-full rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] px-2.5 py-1.5 text-[11px] text-[#8A8A92] placeholder-[#d5dce3] outline-none transition focus:border-[rgba(16,128,202,0.3)]"
+            />
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <select
+              value={form.category}
+              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as Category }))}
+              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none focus:border-[#1080CA]"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+            <input
+              value={form.tagsRaw}
+              onChange={(e) => setForm((f) => ({ ...f, tagsRaw: e.target.value }))}
+              placeholder="Tags (таслалаар салга: claude, opus, 4.7)"
+              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+            <input
+              value={form.source}
+              onChange={(e) => setForm((f) => ({ ...f, source: e.target.value }))}
+              placeholder="Эх сурвалжийн нэр (жишээ: Anthropic)"
+              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+            <input
+              value={form.sourceUrl}
+              onChange={(e) => setForm((f) => ({ ...f, sourceUrl: e.target.value }))}
+              placeholder="Эх сурвалжийн URL"
+              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+            <input
+              value={form.authorName}
+              onChange={(e) => setForm((f) => ({ ...f, authorName: e.target.value }))}
+              placeholder="Зохиогчийн нэр"
+              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <label className="flex cursor-pointer items-center gap-2 text-[12px] text-[#8A8A92]">
+              <input
+                type="checkbox"
+                checked={form.featured}
+                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                className="accent-[#1080CA]"
+              />
+              Featured дээр гаргах
+            </label>
+            <button
+              onClick={save}
+              disabled={!form.title.trim() || saving}
+              className="rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40"
+            >
+              {saving ? "..." : editingSlug ? "Шинэчлэх" : "Нийтлэх"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Бүх мэдээ ({items.length})</span>
+          <button
+            onClick={load}
+            className="text-[11px] text-[#8A8A92] hover:text-[#1080CA]"
+          >
+            Шинэчлэх
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="py-10 text-center text-[12px] text-[#56565E]">Ачааллаж байна...</div>
+        ) : items.length === 0 ? (
+          <div className="py-10 text-center text-[12px] text-[#56565E]">Мэдээ байхгүй — эхнийхийг нэм</div>
+        ) : (
+          <div className="space-y-2">
+            {items.map((n) => (
+              <div
+                key={n._id}
+                className="flex items-center gap-3 rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]"
+              >
+                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-none bg-[#F2F2F4]">
+                  {n.coverImage ? (
+                    <img src={n.coverImage} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[9px] text-[#d5dce3]">no img</div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                      style={{ background: `${CATEGORY_COLORS[n.category]}1F`, color: CATEGORY_COLORS[n.category] }}
+                    >
+                      {n.category}
+                    </span>
+                    {n.featured && (
+                      <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">
+                        FEATURED
+                      </span>
+                    )}
+                    {!n.published && (
+                      <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">
+                        DRAFT
+                      </span>
+                    )}
+                    <span className="text-[10px] text-[#56565E]">{n.views.toLocaleString()} views</span>
+                  </div>
+                  <div className="mt-0.5 truncate text-[13px] font-bold text-[#E8E8E8]">{n.title}</div>
+                  <div className="truncate text-[11px] text-[#56565E]">/{n.slug}</div>
+                </div>
+                <div className="flex shrink-0 gap-1.5">
+                  <button
+                    onClick={() => togglePublished(n)}
+                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#8A8A92] transition hover:bg-[rgba(255,255,255,0.06)]"
+                  >
+                    {n.published ? "Нуух" : "Нийтлэх"}
+                  </button>
+                  <button
+                    onClick={() => loadContentForEdit(n.slug)}
+                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.08)]"
+                  >
+                    Засах
+                  </button>
+                  <button
+                    onClick={() => remove(n.slug)}
+                    className="rounded-none px-2.5 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.08)] hover:text-[#1080CA]"
+                  >
+                    Устгах
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

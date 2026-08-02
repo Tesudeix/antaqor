@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/mongodb";
 import Notification from "@/models/Notification";
 import User from "@/models/User";
+import { sendPushBroadcast } from "@/lib/push-server";
 
 export async function broadcastNotification({
   type,
@@ -36,4 +37,12 @@ export async function broadcastNotification({
   }));
 
   await Notification.insertMany(notifications);
+
+  // Fire-and-forget push. Each subscribed device gets a system notification
+  // matching the in-app DB record. Don't await — DB is source of truth and
+  // shouldn't block on push transport.
+  sendPushBroadcast(
+    { title, body: message, url: link, tag: type },
+    excludeUserId
+  ).catch((e) => console.error("[notifications] push broadcast failed:", e));
 }

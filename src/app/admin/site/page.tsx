@@ -1,0 +1,941 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
+
+interface DashboardStats {
+  totalUsers: number;
+  totalMembers: number;
+  totalPosts: number;
+  recentSignups: number;
+  aiLevelCounts: { _id: string; count: number }[];
+  interestCounts: { _id: string; count: number }[];
+  levelDistribution: { _id: number; count: number }[];
+  topXPUsers: { _id: string; name: string; avatar?: string; xp: number; level: number }[];
+}
+
+interface DayBucket { day: string; count: number; }
+interface AdminAnalytics {
+  kpis: { totalUsers: number; members: number; totalPosts: number; totalReactions: number; revenueAll: number; revenue30: number };
+  signupsByDay: DayBucket[];
+  postsByDay: DayBucket[];
+}
+
+// ─── Tesla-style numeric formatters ───
+function fmtCount(n: number | null | undefined): string {
+  if (n == null) return "—";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 10_000) return `${(n / 1_000).toFixed(1)}K`;
+  if (n >= 1_000) return n.toLocaleString();
+  return String(n);
+}
+function fmtMNT(n: number | null | undefined): string {
+  if (n == null) return "—";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
+  return String(n);
+}
+function fillRange30(buckets: DayBucket[]): DayBucket[] {
+  const map = new Map(buckets.map((b) => [b.day, b.count]));
+  const out: DayBucket[] = [];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 86_400_000);
+    const key = d.toISOString().slice(0, 10);
+    out.push({ day: key, count: map.get(key) || 0 });
+  }
+  return out;
+}
+
+const AI_LEVEL_LABELS: Record<string, string> = {
+  beginner: "Эхлэгч",
+  intermediate: "Дунд",
+  advanced: "Ахисан",
+  expert: "Мэргэжилтэн",
+};
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"hero" | "cards" | "tasks" | "announcements">("hero");
+
+  const [announcements, setAnnouncements] = useState<{_id:string;title:string;content:string;image?:string;tag:string;pinned:boolean;published:boolean;createdAt:string}[]>([]);
+  const [annForm, setAnnForm] = useState({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
+  const [annEditing, setAnnEditing] = useState<string|null>(null);
+  const [annSaving, setAnnSaving] = useState(false);
+
+  const [tasks, setTasks] = useState<{_id:string;title:string;description:string;xpReward:number;status:string;assignedTo?:{_id:string;name:string}|null;createdAt:string}[]>([]);
+  const [taskForm, setTaskForm] = useState({title:"",description:"",xpReward:"500"});
+  const [taskSaving, setTaskSaving] = useState(false);
+
+  const [heroSlides, setHeroSlides] = useState<{url:string;type:string}[]>([]);
+  const [heroUploading, setHeroUploading] = useState(false);
+  const [heroVideoUrl, setHeroVideoUrl] = useState("");
+
+  const [heroMusicUrl, setHeroMusicUrl] = useState("/fire-again.mp3");
+  const [heroMusicEnabled, setHeroMusicEnabled] = useState(true);
+  const [musicUploading, setMusicUploading] = useState(false);
+
+  const [joinCardImg, setJoinCardImg] = useState<string | null>(null);
+  const [joinUploading, setJoinUploading] = useState(false);
+
+  const [cards, setCards] = useState<{_id:string;title:string;description:string;icon:string;order:number;enabled:boolean;ctaLabel?:string;ctaHref?:string}[]>([]);
+  const [cardForm, setCardForm] = useState({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""});
+  const [cardEditing, setCardEditing] = useState<string|null>(null);
+  const [cardSaving, setCardSaving] = useState(false);
+
+  const CARD_ICON_OPTIONS = [
+    { value: "ai", label: "🧠 AI / Brain" },
+    { value: "money", label: "💰 Money" },
+    { value: "community", label: "👥 Community" },
+    { value: "lightning", label: "⚡ Lightning" },
+    { value: "target", label: "🎯 Target" },
+    { value: "growth", label: "📈 Growth" },
+    { value: "rocket", label: "🚀 Rocket" },
+    { value: "tool", label: "🛠️ Tool" },
+    { value: "shield", label: "🛡️ Shield" },
+    { value: "spark", label: "✨ Spark" },
+  ];
+
+  const flash = (msg: string) => {
+    setSaveStatus(msg);
+    setTimeout(() => setSaveStatus(null), 3000);
+  };
+
+  const loadData = useCallback(async () => {
+    try {
+      const [statsRes, annRes, taskRes, heroRes, musicRes, cardsRes, joinRes, anaRes] = await Promise.all([
+        fetch("/api/admin/stats"),
+        fetch("/api/announcements?limit=50"),
+        fetch("/api/tasks"),
+        fetch("/api/hero/slides"),
+        fetch("/api/hero/music"),
+        fetch("/api/landing-cards"),
+        fetch("/api/join-card"),
+        fetch("/api/admin/analytics"),
+      ]);
+      if (statsRes.ok) setStats(await statsRes.json());
+      if (anaRes.ok) { try { setAnalytics(await anaRes.json()); } catch { /* analytics is non-fatal */ } }
+      if (annRes.ok) { const d = await annRes.json(); setAnnouncements(d.announcements || []); }
+      if (taskRes.ok) { const d = await taskRes.json(); setTasks(d.tasks || []); }
+      if (heroRes.ok) { const d = await heroRes.json(); setHeroSlides(d.slides || []); }
+      if (musicRes.ok) { const d = await musicRes.json(); setHeroMusicUrl(d.url || "/fire-again.mp3"); setHeroMusicEnabled(d.enabled !== false); }
+      if (cardsRes.ok) { const d = await cardsRes.json(); setCards(d.cards || []); }
+      if (joinRes.ok) { const d = await joinRes.json(); setJoinCardImg(d.url || null); }
+    } catch {} finally { setLoading(false); }
+  }, []);
+
+  const handleCardSave = async () => {
+    if (!cardForm.title.trim() || !cardForm.description.trim() || cardSaving) return;
+    setCardSaving(true);
+    try {
+      const isEdit = !!cardEditing;
+      const res = await fetch(isEdit ? `/api/landing-cards/${cardEditing}` : "/api/landing-cards", {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cardForm),
+      });
+      if (res.ok) {
+        flash(isEdit ? "Шинэчиллээ" : "Карт нэмлээ");
+        setCardForm({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""});
+        setCardEditing(null);
+        loadData();
+      }
+    } finally { setCardSaving(false); }
+  };
+
+  const handleCardDelete = async (id: string) => {
+    if (!confirm("Картыг устгах уу?")) return;
+    const res = await fetch(`/api/landing-cards/${id}`, { method: "DELETE" });
+    if (res.ok) { flash("Устгалаа"); loadData(); }
+  };
+
+  const handleCardToggle = async (id: string, enabled: boolean) => {
+    const res = await fetch(`/api/landing-cards/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled: !enabled }),
+    });
+    if (res.ok) loadData();
+  };
+
+  const handleCardReorder = async (id: string, direction: "up" | "down") => {
+    const idx = cards.findIndex((c) => c._id === id);
+    if (idx < 0) return;
+    const swap = direction === "up" ? idx - 1 : idx + 1;
+    if (swap < 0 || swap >= cards.length) return;
+    const a = cards[idx], b = cards[swap];
+    await Promise.all([
+      fetch(`/api/landing-cards/${a._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: b.order }) }),
+      fetch(`/api/landing-cards/${b._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: a.order }) }),
+    ]);
+    loadData();
+  };
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const handleAnnSave = async () => {
+    if (!annForm.title.trim() || !annForm.content.trim() || annSaving) return;
+    setAnnSaving(true);
+    try {
+      const isEdit = !!annEditing;
+      const res = await fetch(isEdit ? `/api/announcements/${annEditing}` : "/api/announcements", {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(annForm),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (isEdit) setAnnouncements(prev => prev.map(a => a._id === annEditing ? data.announcement : a));
+      else setAnnouncements(prev => [data.announcement, ...prev]);
+      setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
+      setAnnEditing(null);
+      flash(isEdit ? "Мэдэгдэл шинэчлэгдлээ" : "Мэдэгдэл нэмэгдлээ");
+    } catch { flash("Алдаа гарлаа"); }
+    finally { setAnnSaving(false); }
+  };
+  const handleAnnDelete = async (id: string) => {
+    await fetch(`/api/announcements/${id}`, { method: "DELETE" });
+    setAnnouncements(prev => prev.filter(a => a._id !== id));
+    flash("Устгагдлаа");
+  };
+
+  const handleTaskCreate = async () => {
+    if (!taskForm.title.trim() || taskSaving) return;
+    setTaskSaving(true);
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: taskForm.title.trim(), description: taskForm.description.trim(), xpReward: parseInt(taskForm.xpReward) || 500 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setTasks(prev => [data.task, ...prev]);
+      setTaskForm({title:"",description:"",xpReward:"500"});
+      flash("Даалгавар нэмэгдлээ");
+    } catch { flash("Алдаа гарлаа"); }
+    finally { setTaskSaving(false); }
+  };
+  const handleTaskAction = async (id: string, action: string) => {
+    const res = await fetch(`/api/tasks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
+    const data = await res.json();
+    if (res.ok) { setTasks(prev => prev.map(t => t._id === id ? data.task : t)); flash(action === "accept" ? "Баталсан" : "Татгалзсан"); }
+  };
+  const handleTaskDelete = async (id: string) => {
+    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+    setTasks(prev => prev.filter(t => t._id !== id));
+    flash("Устгагдлаа");
+  };
+
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setHeroUploading(true);
+    try {
+      const fd = new FormData(); fd.append("file", file);
+      const res = await fetch("/api/hero/slides", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) { setHeroSlides(data.slides); flash("Слайд нэмэгдлээ"); }
+      else flash("Алдаа: " + (data.error || "Upload failed"));
+    } catch { flash("Network алдаа"); }
+    finally { setHeroUploading(false); e.target.value = ""; }
+  };
+
+  const handleHeroVideoAdd = async () => {
+    const url = heroVideoUrl.trim();
+    if (!url) return;
+    setHeroUploading(true);
+    try {
+      const res = await fetch("/api/hero/slides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl: url }),
+      });
+      const data = await res.json();
+      if (res.ok) { setHeroSlides(data.slides); setHeroVideoUrl(""); flash("Видео нэмэгдлээ"); }
+      else flash("Алдаа: " + (data.error || "Failed"));
+    } catch { flash("Network алдаа"); }
+    finally { setHeroUploading(false); }
+  };
+
+  const MAX_VIDEO_SECONDS = 20;
+  const probeVideoDuration = (file: File): Promise<number> =>
+    new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.muted = true;
+      const cleanup = () => URL.revokeObjectURL(video.src);
+      video.onloadedmetadata = () => {
+        const d = video.duration;
+        cleanup();
+        if (Number.isFinite(d)) resolve(d);
+        else reject(new Error("Видеоны уртыг тогтоож чадсангүй"));
+      };
+      video.onerror = () => { cleanup(); reject(new Error("Видео файл уншигдсангүй")); };
+      video.src = URL.createObjectURL(file);
+    });
+
+  const handleHeroVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      flash("Зөвхөн видео файл сонгоно уу");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      flash("Видео 50MB-аас бага байх ёстой");
+      e.target.value = "";
+      return;
+    }
+    setHeroUploading(true);
+    try {
+      const duration = await probeVideoDuration(file);
+      if (duration > MAX_VIDEO_SECONDS + 0.5) {
+        flash(`Видео хэт урт байна (${duration.toFixed(1)}с) — хамгийн ихдээ ${MAX_VIDEO_SECONDS} секунд`);
+        return;
+      }
+      const fd = new FormData(); fd.append("file", file);
+      const res = await fetch("/api/hero/slides", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) { setHeroSlides(data.slides); flash(`Видео нэмэгдлээ (${duration.toFixed(1)}с)`); }
+      else flash("Алдаа: " + (data.error || "Upload failed"));
+    } catch (err) {
+      flash(err instanceof Error ? err.message : "Алдаа");
+    } finally {
+      setHeroUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleHeroSlideDelete = async (index: number) => {
+    const res = await fetch("/api/hero/slides", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ index }) });
+    const data = await res.json();
+    if (res.ok) { setHeroSlides(data.slides); flash("Слайд устгагдлаа"); }
+  };
+
+  const handleJoinCardUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setJoinUploading(true);
+    try {
+      const fd = new FormData(); fd.append("file", file);
+      const res = await fetch("/api/join-card", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) { setJoinCardImg(data.url); flash("Картны зураг шинэчлэгдлээ"); }
+      else flash("Алдаа: " + (data.error || "Upload failed"));
+    } catch { flash("Network алдаа"); }
+    finally { setJoinUploading(false); e.target.value = ""; }
+  };
+
+  const handleJoinCardDelete = async () => {
+    if (!confirm("Картны зургийг устгах уу? (Fallback дизайн ашиглагдана)")) return;
+    setJoinUploading(true);
+    try {
+      const res = await fetch("/api/join-card", { method: "DELETE" });
+      if (res.ok) { setJoinCardImg(null); flash("Зураг устгагдлаа"); }
+    } catch { flash("Алдаа"); }
+    finally { setJoinUploading(false); }
+  };
+
+  const handleMusicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMusicUploading(true);
+    try {
+      const fd = new FormData(); fd.append("file", file);
+      const res = await fetch("/api/hero/music", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) { setHeroMusicUrl(data.url); flash("Хөгжим солигдлоо"); }
+    } catch { flash("Алдаа"); }
+    finally { setMusicUploading(false); e.target.value = ""; }
+  };
+
+  const handleMusicToggle = async () => {
+    const newVal = !heroMusicEnabled;
+    setHeroMusicEnabled(newVal);
+    try {
+      await fetch("/api/hero/music", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: newVal }),
+      });
+      flash(newVal ? "Хөгжим асаагдлаа" : "Хөгжим унтраагдлаа");
+    } catch { flash("Алдаа"); }
+  };
+
+  const handleMusicReset = async () => {
+    setMusicUploading(true);
+    try {
+      const res = await fetch("/api/hero/music", { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok) { setHeroMusicUrl(data.url); flash("Анхны хөгжим сэргээгдлээ"); }
+    } catch {} finally { setMusicUploading(false); }
+  };
+
+  if (loading) return (
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+    </div>
+  );
+
+  const tabs = [
+    { key: "hero" as const, label: "Hero & Хөгжим", count: heroSlides.length },
+    { key: "cards" as const, label: "Hero картууд", count: cards.length },
+    { key: "tasks" as const, label: "Даалгавар", count: tasks.length },
+    { key: "announcements" as const, label: "Мэдэгдэл", count: announcements.length },
+  ];
+
+  const statusColors: Record<string, string> = {
+    open: "bg-[rgba(16,128,202,0.15)] text-[#1080CA]",
+    submitted: "bg-[rgba(16,128,202,0.08)] text-[rgba(16,128,202,0.75)]",
+    accepted: "bg-[rgba(16,128,202,0.12)] text-[#1080CA]",
+    rejected: "bg-[rgba(16,128,202,0.15)] text-[#1080CA]",
+  };
+  const statusLabels: Record<string, string> = { open: "Нээлттэй", submitted: "Хүлээж буй", accepted: "Баталсан", rejected: "Татгалзсан" };
+
+  return (
+    <div className="space-y-5 pb-6">
+      {/* Save toast */}
+      {saveStatus && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-none bg-[#F2F2F4] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
+          <svg className="h-4 w-4 text-[#1080CA] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          <span className="text-[13px] text-[#E8E8E8]">{saveStatus}</span>
+        </div>
+      )}
+
+      {/* ─── TESLA-STYLE COMMAND CENTER ─── */}
+      {/* HUD status strip */}
+      <div className="flex items-center justify-between rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A92]">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-green-400" />ONLINE</span>
+          <span className="hidden sm:inline text-[#8A8A92]">EDGERUNNERS · ANTAQOR</span>
+        </div>
+        <div className="flex items-center gap-2 text-[#56565E]">
+          <span className="hidden sm:inline">OPS NOMINAL</span>
+          <span className="hidden sm:inline">·</span>
+          <span>BUILD v17</span>
+        </div>
+      </div>
+
+      {/* Header */}
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-[26px] font-black tracking-tight text-[#E8E8E8]">Сайтын контент</h1>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8A8A92]">Антакор удирдлагын самбар · {new Date().toLocaleDateString("mn-MN", { dateStyle: "long" })}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => { setLoading(true); loadData(); }} className="rounded-none border border-[rgba(255,255,255,0.10)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-[#8A8A92] transition hover:border-[#1080CA] hover:text-[#1080CA]">↻ Refresh</button>
+          <Link href="/admin/analytics" className="hidden sm:inline-flex rounded-none border border-[rgba(16,128,202,0.4)] bg-[rgba(16,128,202,0.06)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.12)]">Analytics →</Link>
+          <Link href="/" target="_blank" className="rounded-none bg-[#1080CA] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider font-bold text-[#0E0E10] transition hover:brightness-110">View Site ↗</Link>
+        </div>
+      </div>
+
+      {/* KPI GRID — 6 numerical tiles */}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
+        {[
+          { label: "USERS",     value: stats?.totalUsers,                                  unit: "n", hint: "нийт хэрэглэгч",   href: "/admin/people",   accent: false },
+          { label: "MEMBERS",   value: stats?.totalMembers,                                unit: "n", hint: "төлбөртэй гишүүн", href: "/admin/members",  accent: true  },
+          { label: "POSTS",     value: stats?.totalPosts,                                  unit: "n", hint: "нийт контент",     href: "/admin/threads",  accent: false },
+          { label: "NEW · 7D",  value: stats?.recentSignups,                               unit: "n", hint: "сүүлийн долоо",    href: "/admin/people",   accent: true  },
+          { label: "REV · 30D", value: analytics?.kpis?.revenue30,                         unit: "₮", hint: "сар.орлого",       href: "/admin/payments", accent: false },
+          { label: "REV · ALL", value: analytics?.kpis?.revenueAll,                        unit: "₮", hint: "нийт орлого",      href: "/admin/payments", accent: false },
+        ].map((k) => (
+          <Link key={k.label} href={k.href} className="group block rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3 transition hover:border-[#1080CA] hover:bg-[rgba(16,128,202,0.03)]">
+            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#8A8A92] group-hover:text-[#1080CA]">{k.label}</div>
+            <div className={`mt-1 font-mono text-[22px] font-black leading-none tabular-nums ${k.accent ? "text-[#1080CA]" : "text-[#E8E8E8]"}`}>
+              {k.unit === "₮" ? fmtMNT(k.value) : fmtCount(k.value)}
+              {k.unit === "₮" && k.value != null && <span className="ml-0.5 text-[14px] text-[#8A8A92]">₮</span>}
+            </div>
+            <div className="mt-1 font-mono text-[9px] uppercase tracking-wider text-[#56565E]">{k.hint}</div>
+          </Link>
+        ))}
+      </div>
+
+      {/* SPARKLINE — 30-day signups */}
+      {analytics?.signupsByDay && (
+        <div className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+          <div className="mb-2 flex items-baseline justify-between">
+            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A92]">SIGNUPS · LAST 30 DAYS</div>
+            <div className="font-mono text-[10px] tabular-nums text-[#8A8A92]">{fillRange30(analytics.signupsByDay).reduce((a, b) => a + b.count, 0)} нийт</div>
+          </div>
+          <div className="flex h-[40px] items-end gap-[2px]">
+            {fillRange30(analytics.signupsByDay).map((d, i, arr) => {
+              const max = Math.max(1, ...arr.map((x) => x.count));
+              const h = Math.max(2, (d.count / max) * 38);
+              return <div key={i} className="flex-1 rounded-none bg-[#1080CA]/30 transition hover:bg-[#1080CA]" style={{ height: `${h}px` }} title={`${d.day}: ${d.count}`} />;
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* AI LEVEL + TOP XP — compact, mono, 4px radii */}
+      {stats && (
+        <div className="grid gap-2 lg:grid-cols-2">
+          <div className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A92]">AI ТҮВШИН ХУВААРИ</span>
+              <Link href="/admin/members" className="font-mono text-[10px] text-[#56565E] hover:text-[#1080CA]">DETAIL →</Link>
+            </div>
+            <div className="space-y-1.5">
+              {(["beginner","intermediate","advanced","expert"] as const).map(level => {
+                const count = stats.aiLevelCounts.find(a => a._id === level)?.count || 0;
+                const pct = stats.totalUsers > 0 ? (count / stats.totalUsers) * 100 : 0;
+                return (
+                  <div key={level} className="flex items-center gap-2">
+                    <span className="w-20 font-mono text-[10px] uppercase tracking-wider text-[#8A8A92]">{AI_LEVEL_LABELS[level]}</span>
+                    <div className="h-1 flex-1 overflow-hidden rounded-none bg-[rgba(255,255,255,0.06)]">
+                      <div className="h-full bg-[#1080CA] transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="w-10 text-right font-mono text-[10px] tabular-nums text-[#E8E8E8]">{count}</span>
+                    <span className="w-10 text-right font-mono text-[9px] text-[#56565E]">{pct.toFixed(0)}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A92]">TOP XP · LEADERBOARD</span>
+              <Link href="/admin/people" className="font-mono text-[10px] text-[#56565E] hover:text-[#1080CA]">ALL →</Link>
+            </div>
+            <div className="space-y-0.5">
+              {(stats.topXPUsers || []).slice(0, 5).map((u, i) => (
+                <Link key={u._id} href={`/profile/${u._id}`} className="group flex items-center gap-2 rounded-none py-1 px-2 transition hover:bg-[rgba(16,128,202,0.05)]">
+                  <span className={`w-5 text-center font-mono text-[10px] font-bold tabular-nums ${i < 3 ? "text-[#1080CA]" : "text-[#56565E]"}`}>{String(i + 1).padStart(2, "0")}</span>
+                  {u.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={u.avatar} alt="" className="h-5 w-5 rounded-none object-cover" />
+                  ) : (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-none bg-[#F2F2F4] text-[9px] font-bold text-[#8A8A92]">{u.name?.charAt(0).toUpperCase()}</div>
+                  )}
+                  <span className="flex-1 truncate text-[12px] text-[#E8E8E8] group-hover:text-[#E8E8E8]">{u.name}</span>
+                  <span className="font-mono text-[10px] tabular-nums text-[#1080CA]">{(u.xp || 0).toLocaleString()}<span className="ml-1 text-[#56565E]">XP</span></span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK NAV MATRIX — Tesla-style block grid */}
+      <div>
+        <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A8A92]">QUICK NAV · АДМИН ХЭСГҮҮД</div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { href: "/admin/people",          label: "ХҮМҮҮС",     emoji: "▦" },
+            { href: "/admin/members",         label: "ГИШҮҮД",     emoji: "★" },
+            { href: "/admin/classroom",       label: "ХИЧЭЭЛ",     emoji: "▢" },
+            { href: "/admin/homepage-cards",  label: "НҮҮР КАРТ",  emoji: "▤" },
+            { href: "/admin/analytics",       label: "АНАЛИТИК",   emoji: "▲" },
+            { href: "/admin/payments",        label: "ТӨЛБӨР",     emoji: "₮" },
+          ].map((n) => (
+            <Link key={n.href} href={n.href} className="group flex items-center gap-2 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-2.5 transition hover:border-[#1080CA] hover:bg-[rgba(16,128,202,0.03)]">
+              <span className="font-mono text-[14px] text-[#1080CA]">{n.emoji}</span>
+              <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.15em] text-[#E8E8E8] group-hover:text-[#E8E8E8]">{n.label}</span>
+              <span className="font-mono text-[#56565E] group-hover:text-[#1080CA]">→</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="my-2 h-px bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.10)] to-transparent" />
+
+      {/* Tab Navigation */}
+      <div className="flex items-center gap-1 rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-1">
+        {tabs.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-none px-4 py-2.5 text-[13px] font-semibold transition ${
+              activeTab === tab.key ? "bg-[#1080CA] text-[#0E0E10]" : "text-[#8A8A92] hover:text-[#5b6573] hover:bg-[rgba(255,255,255,0.04)]"
+            }`}
+          >
+            {tab.label}
+            <span className={`ml-1.5 text-[10px] ${activeTab === tab.key ? "text-white/70" : "text-[#56565E]"}`}>({tab.count})</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Hero & Music Tab */}
+      {activeTab === "hero" && (
+        <div className="space-y-4">
+          <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+            <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#56565E]">Hero Slider</div>
+
+            {heroSlides.length > 0 ? (
+              <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+                {heroSlides.map((slide, i) => (
+                  <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
+                    {slide.type === "video" ? (
+                      <video src={slide.url} muted loop playsInline className="h-full w-full object-cover" />
+                    ) : (
+                      <img src={slide.url} alt={`Slide ${i+1}`} className="h-full w-full object-cover" />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/40">
+                      <button onClick={() => handleHeroSlideDelete(i)} className="rounded-full bg-[#1080CA] p-2 text-[#0E0E10] opacity-0 transition group-hover:opacity-100 hover:bg-[#135084]">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
+                    <span className="absolute bottom-1 left-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">{slide.type}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mb-4 rounded-none border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center text-[12px] text-[#56565E]">Слайд байхгүй — fallback зураг ашиглагдана</div>
+            )}
+
+            <div className="flex flex-wrap items-end gap-4">
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-[#56565E]">Зураг нэмэх</label>
+                <input type="file" accept="image/*" onChange={handleHeroImageUpload} disabled={heroUploading}
+                  className="text-[12px] text-[#5b6573] file:mr-2 file:rounded-none file:border-0 file:bg-[#1080CA] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#4FA8E8]" />
+              </div>
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-[#56565E]">
+                  Видео файл нэмэх <span className="text-[#1080CA]">· макс 20 секунд</span>
+                </label>
+                <input type="file" accept="video/*" onChange={handleHeroVideoUpload} disabled={heroUploading}
+                  className="text-[12px] text-[#5b6573] file:mr-2 file:rounded-none file:border-0 file:bg-[#1080CA] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#4FA8E8]" />
+              </div>
+              <div className="flex items-end gap-2">
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[#56565E]">Видео URL (заавал биш)</label>
+                  <input
+                    type="text"
+                    value={heroVideoUrl}
+                    onChange={e => setHeroVideoUrl(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") handleHeroVideoAdd(); }}
+                    placeholder="https://example.com/video.mp4"
+                    className="w-[240px] rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+                  />
+                </div>
+                <button onClick={handleHeroVideoAdd} disabled={!heroVideoUrl.trim() || heroUploading}
+                  className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40">
+                  Нэмэх
+                </button>
+              </div>
+            </div>
+            <p className="mt-2 text-[11px] text-[#56565E]">
+              Зураг 15MB, видео 50MB / 20с хүртэл. Видео уртыг browser-ээс шалгаад илгээдэг — урт бол шууд татгалзана.
+            </p>
+            {heroUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#56565E]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" /> Байршуулж байна...</div>}
+          </div>
+
+          {/* Join card image */}
+          <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#56565E]">«Нэгдэх» картны зураг</div>
+            <div className="mb-4 text-[11px] text-[#56565E]">
+              Нүүр хуудасны «Нэгдэх» картны баннер зураг. Зураг байхгүй бол улаан fallback дизайн харагдана. 16:9 зураг тохиромжтой · макс 15MB.
+            </div>
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="relative aspect-[16/9] w-[220px] overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
+                {joinCardImg ? (
+                  <img src={joinCardImg} alt="Join card" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1080CA] via-[#4FA8E8] to-[#4FA8E8] text-[10px] font-bold uppercase tracking-wider text-white/80">
+                    Fallback
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[#56565E]">{joinCardImg ? "Зураг солих" : "Зураг нэмэх"}</label>
+                  <input type="file" accept="image/*" onChange={handleJoinCardUpload} disabled={joinUploading}
+                    className="text-[12px] text-[#5b6573] file:mr-2 file:rounded-none file:border-0 file:bg-[#1080CA] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#4FA8E8]" />
+                </div>
+                {joinCardImg && (
+                  <button onClick={handleJoinCardDelete} disabled={joinUploading}
+                    className="self-start rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA]">
+                    Зураг устгах
+                  </button>
+                )}
+              </div>
+            </div>
+            {joinUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#56565E]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" /> Байршуулж байна...</div>}
+          </div>
+
+          {/* Music */}
+          <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#56565E]">Арын хөгжим</span>
+              <button
+                onClick={handleMusicToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${heroMusicEnabled ? "bg-[#1080CA]" : "bg-[#d5dce3]"}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-[#0A0A0A] transition-transform ${heroMusicEnabled ? "translate-x-6" : "translate-x-1"}`} />
+              </button>
+            </div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-2 rounded-none bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] px-3 py-2">
+                <svg className="h-4 w-4 text-[#1080CA]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                <span className="text-[12px] text-[#5b6573] max-w-[200px] truncate">{heroMusicUrl === "/fire-again.mp3" ? "fire-again.mp3 (default)" : heroMusicUrl.split("/").pop()}</span>
+              </div>
+              <audio src={heroMusicUrl} controls className="h-8" style={{maxWidth: 200}} />
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-[#56565E]">Хөгжим солих</label>
+                <input type="file" accept="audio/*" onChange={handleMusicUpload} disabled={musicUploading}
+                  className="text-[12px] text-[#5b6573] file:mr-2 file:rounded-none file:border-0 file:bg-[#1080CA] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer" />
+              </div>
+              {heroMusicUrl !== "/fire-again.mp3" && (
+                <button onClick={handleMusicReset} disabled={musicUploading}
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA]">
+                  Default сэргээх
+                </button>
+              )}
+            </div>
+            {musicUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#56565E]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" /> Байршуулж байна...</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Hero Cards Tab */}
+      {activeTab === "cards" && (
+        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+          <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Нүүр хуудасны картууд</div>
+          <div className="mb-4 text-[11px] text-[#56565E]">«ЯАГААД ANTAQOR» хэсэгт харагддаг үнэ цэнийн картууд. Дараалал чухал — захиалагч нь дээрээс нь уншдаг.</div>
+
+          {/* Form */}
+          <div className="mb-5 space-y-3 rounded-none bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+            <input
+              value={cardForm.title}
+              onChange={(e) => setCardForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="Гарчиг (ж: AI Сургалт)"
+              maxLength={80}
+              className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+            />
+            <textarea
+              value={cardForm.description}
+              onChange={(e) => setCardForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Тайлбар (1-2 өгүүлбэр, үнэ цэнийг тодорхой бич)"
+              maxLength={240}
+              className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA] min-h-[60px] resize-y"
+            />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#56565E]">Айкон</label>
+                <select
+                  value={cardForm.icon}
+                  onChange={(e) => setCardForm((f) => ({ ...f, icon: e.target.value }))}
+                  className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none"
+                >
+                  {CARD_ICON_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#56565E]">CTA текст (заавал биш)</label>
+                <input
+                  value={cardForm.ctaLabel}
+                  onChange={(e) => setCardForm((f) => ({ ...f, ctaLabel: e.target.value }))}
+                  placeholder="Хичээл үзэх"
+                  maxLength={60}
+                  className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-[#56565E]">CTA холбоос</label>
+                <input
+                  value={cardForm.ctaHref}
+                  onChange={(e) => setCardForm((f) => ({ ...f, ctaHref: e.target.value }))}
+                  placeholder="/classroom"
+                  maxLength={240}
+                  className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCardSave}
+                disabled={!cardForm.title.trim() || !cardForm.description.trim() || cardSaving}
+                className="rounded-none bg-[#1080CA] px-5 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40"
+              >
+                {cardSaving ? "..." : cardEditing ? "Шинэчлэх" : "+ Карт нэмэх"}
+              </button>
+              {cardEditing && (
+                <button
+                  onClick={() => { setCardEditing(null); setCardForm({title:"",description:"",icon:"ai",ctaLabel:"",ctaHref:""}); }}
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#8A8A92] transition hover:text-[#5b6573]"
+                >
+                  Болих
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="space-y-2">
+            {cards.length === 0 && (
+              <div className="py-8 text-center text-[12px] text-[#56565E]">Карт байхгүй — анхны 3 карт автоматаар үүснэ</div>
+            )}
+            {cards.map((c, i) => (
+              <div
+                key={c._id}
+                className={`flex items-start gap-3 rounded-none border p-3 transition ${
+                  c.enabled ? "border-[rgba(255,255,255,0.06)]" : "border-[rgba(255,255,255,0.04)] opacity-50"
+                }`}
+              >
+                <div className="flex shrink-0 flex-col items-center gap-1">
+                  <button
+                    onClick={() => handleCardReorder(c._id, "up")}
+                    disabled={i === 0}
+                    className="rounded p-0.5 text-[#56565E] transition hover:text-[#1080CA] disabled:opacity-20"
+                    aria-label="Дээш"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                  </button>
+                  <span className="text-[10px] font-bold text-[#8A8A92]">#{i+1}</span>
+                  <button
+                    onClick={() => handleCardReorder(c._id, "down")}
+                    disabled={i === cards.length - 1}
+                    className="rounded p-0.5 text-[#56565E] transition hover:text-[#1080CA] disabled:opacity-20"
+                    aria-label="Доош"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA] uppercase">{c.icon}</span>
+                    <span className="text-[13px] font-bold text-[#E8E8E8] truncate">{c.title}</span>
+                    {!c.enabled && <span className="rounded-full bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[9px] font-bold text-[#56565E]">DISABLED</span>}
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-[#8A8A92] line-clamp-2">{c.description}</div>
+                  {c.ctaLabel && c.ctaHref && (
+                    <div className="mt-1 text-[10px] text-[#56565E]">→ {c.ctaLabel} ({c.ctaHref})</div>
+                  )}
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    onClick={() => handleCardToggle(c._id, c.enabled)}
+                    className="rounded-none border border-[rgba(255,255,255,0.08)] px-2 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:text-[#E8E8E8]"
+                  >
+                    {c.enabled ? "Нуух" : "Идэвхжүүлэх"}
+                  </button>
+                  <button
+                    onClick={() => { setCardEditing(c._id); setCardForm({title:c.title,description:c.description,icon:c.icon,ctaLabel:c.ctaLabel||"",ctaHref:c.ctaHref||""}); setActiveTab("cards"); }}
+                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.08)]"
+                  >
+                    Засах
+                  </button>
+                  <button
+                    onClick={() => handleCardDelete(c._id)}
+                    className="rounded-none px-2 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.1)] hover:text-[#1080CA]"
+                  >
+                    Устгах
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tasks Tab */}
+      {activeTab === "tasks" && (
+        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+          <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Даалгавар удирдлага</div>
+          <div className="mb-5 space-y-3 rounded-none bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input value={taskForm.title} onChange={e => setTaskForm(f => ({...f, title: e.target.value}))} placeholder="Даалгаврын нэр"
+                className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]" maxLength={200} />
+              <input value={taskForm.xpReward} onChange={e => setTaskForm(f => ({...f, xpReward: e.target.value}))} placeholder="XP (200-5000)"
+                className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]" type="number" min={200} max={5000} />
+            </div>
+            <input value={taskForm.description} onChange={e => setTaskForm(f => ({...f, description: e.target.value}))} placeholder="Тайлбар (заавал биш)"
+              className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]" maxLength={2000} />
+            <button onClick={handleTaskCreate} disabled={!taskForm.title.trim() || taskSaving}
+              className="rounded-none bg-[#1080CA] px-5 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40">
+              {taskSaving ? "Нэмж байна..." : "+ Даалгавар нэмэх"}
+            </button>
+          </div>
+          <div className="space-y-2">
+            {tasks.map((t, i) => (
+              <div key={t._id} className="flex items-center justify-between gap-3 rounded-none border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[12px] font-bold text-[#1080CA]">#{i+1}</span>
+                    <span className="text-[13px] font-bold text-[#E8E8E8] truncate">{t.title}</span>
+                    <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-2 py-0.5 text-[10px] font-bold text-[#1080CA]">+{t.xpReward} XP</span>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusColors[t.status] || "bg-[rgba(255,255,255,0.06)] text-[#56565E]"}`}>{statusLabels[t.status] || t.status}</span>
+                  </div>
+                  {t.description && <div className="mt-0.5 text-[11px] text-[#56565E] line-clamp-1">{t.description}</div>}
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  {t.status === "submitted" && (
+                    <>
+                      <button onClick={() => handleTaskAction(t._id, "accept")} className="rounded-none bg-[rgba(16,128,202,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.2)]">Батлах</button>
+                      <button onClick={() => handleTaskAction(t._id, "reject")} className="rounded-none bg-[rgba(16,128,202,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.2)]">Татгалзах</button>
+                    </>
+                  )}
+                  <button onClick={() => handleTaskDelete(t._id)} className="rounded-none px-2 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.1)] hover:text-[#1080CA]">Устгах</button>
+                </div>
+              </div>
+            ))}
+            {tasks.length === 0 && <div className="py-8 text-center text-[12px] text-[#56565E]">Даалгавар байхгүй</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Announcements Tab */}
+      {activeTab === "announcements" && (
+        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+          <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Мэдэгдэл удирдлага</div>
+          <div className="mb-5 space-y-3 rounded-none bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
+            <input value={annForm.title} onChange={e => setAnnForm(f => ({...f, title: e.target.value}))} placeholder="Гарчиг"
+              className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA]" maxLength={200} />
+            <textarea value={annForm.content} onChange={e => setAnnForm(f => ({...f, content: e.target.value}))} placeholder="Агуулга..."
+              className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none transition focus:border-[#1080CA] min-h-[80px] resize-y" maxLength={5000} />
+            <div className="flex flex-wrap items-center gap-3">
+              <select value={annForm.tag} onChange={e => setAnnForm(f => ({...f, tag: e.target.value}))}
+                className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none">
+                {["мэдэгдэл","шинэчлэл","AI","эвент","бусад"].map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+              </select>
+              <label className="flex items-center gap-1.5 text-[12px] text-[#5b6573] cursor-pointer">
+                <input type="checkbox" checked={annForm.pinned} onChange={e => setAnnForm(f => ({...f, pinned: e.target.checked}))} className="accent-[#1080CA]" />
+                Pinned
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={handleAnnSave} disabled={!annForm.title.trim() || !annForm.content.trim() || annSaving}
+                className="rounded-none bg-[#1080CA] px-5 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40">
+                {annSaving ? "..." : annEditing ? "Шинэчлэх" : "Нэмэх"}
+              </button>
+              {annEditing && (
+                <button onClick={() => { setAnnEditing(null); setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false}); }}
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#8A8A92] transition hover:text-[#5b6573]">Болих</button>
+              )}
+            </div>
+          </div>
+          <div className="space-y-2">
+            {announcements.map(a => (
+              <div key={a._id} className="flex items-start justify-between gap-3 rounded-none border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    {a.pinned && <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">PIN</span>}
+                    <span className="rounded-full bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[9px] font-bold text-[#8A8A92] uppercase">{a.tag}</span>
+                  </div>
+                  <div className="text-[13px] font-bold text-[#E8E8E8] truncate">{a.title}</div>
+                  <div className="text-[11px] text-[#56565E] line-clamp-1">{a.content}</div>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <button onClick={() => { setAnnEditing(a._id); setAnnForm({title:a.title,content:a.content,image:a.image||"",tag:a.tag,pinned:a.pinned}); setActiveTab("announcements"); }}
+                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.08)]">Засах</button>
+                  <button onClick={() => handleAnnDelete(a._id)}
+                    className="rounded-none px-2 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.1)] hover:text-[#1080CA]">Устгах</button>
+                </div>
+              </div>
+            ))}
+            {announcements.length === 0 && <div className="py-8 text-center text-[12px] text-[#56565E]">Мэдэгдэл байхгүй</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

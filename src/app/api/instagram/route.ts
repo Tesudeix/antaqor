@@ -8,15 +8,27 @@ const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 async function getIgToken(): Promise<string | null> {
   const setting = await SiteSettings.findOne({ key: "instagram_token" });
-  return setting?.value || null;
+  return setting?.value || process.env.IG_ACCESS_TOKEN || null;
+}
+
+interface RawIgMedia {
+  id: string;
+  media_type: string;
+  media_url?: string;
+  thumbnail_url?: string;
+  permalink: string;
+  caption?: string;
+  timestamp: string;
+  like_count?: number;
+  comments_count?: number;
 }
 
 async function fetchAndCacheFromIG() {
   const token = await getIgToken();
   if (!token) return null;
 
-  // Fetch recent media from Instagram Graph API
-  const url = `${IG_GRAPH_URL}/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp&limit=20&access_token=${token}`;
+  // Fetch recent media from Instagram Graph API (engagement counts included)
+  const url = `${IG_GRAPH_URL}/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp,like_count,comments_count&limit=20&access_token=${token}`;
 
   const res = await fetch(url, { next: { revalidate: 0 } });
   if (!res.ok) {
@@ -26,7 +38,7 @@ async function fetchAndCacheFromIG() {
   }
 
   const data = await res.json();
-  const posts = data.data || [];
+  const posts: RawIgMedia[] = data.data || [];
 
   // Upsert into MongoDB
   for (const post of posts) {
@@ -41,10 +53,35 @@ async function fetchAndCacheFromIG() {
         caption: post.caption || "",
         timestamp: new Date(post.timestamp),
         fetchedAt: new Date(),
+        likes: post.like_count || 0,
+        comments: post.comments_count || 0,
       },
       { upsert: true, new: true }
     );
   }
+
+  // Views live on the insights edge, one call per video — best effort, parallel
+  const videos = posts.filter(
+    (p) => p.media_type === "VIDEO" || p.media_type === "REELS"
+  );
+  await Promise.all(
+    videos.map(async (p) => {
+      try {
+        const r = await fetch(
+          `${IG_GRAPH_URL}/${p.id}/insights?metric=views&access_token=${token}`,
+          { next: { revalidate: 0 } }
+        );
+        if (!r.ok) return;
+        const d = await r.json();
+        const v = d.data?.[0]?.values?.[0]?.value;
+        if (typeof v === "number") {
+          await InstagramPost.updateOne({ igId: p.id }, { views: v });
+        }
+      } catch {
+        // insights are decorative — never fail the refresh over them
+      }
+    })
+  );
 
   return posts.length;
 }

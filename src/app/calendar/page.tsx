@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ─── Types ───
 interface CalEvent {
   _id: string;
   title: string;
@@ -16,532 +15,611 @@ interface CalEvent {
   liveLink: string;
   location: string;
   status: "upcoming" | "live" | "ended";
-  color: string;
-  attendeeCount: number;
   image: string;
+  attendeeCount: number;
 }
 
-type ViewMode = "month" | "list";
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  order: number;
+  requiredLevel: number;
+}
 
-// ─── Config ───
-const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  event:    { label: "Эвент",       color: "#EF2C58", bg: "rgba(239,44,88,0.12)", icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
-  live:     { label: "LIVE",        color: "#22C55E", bg: "rgba(34,197,94,0.12)",  icon: "M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" },
-  class:    { label: "Хичээл",     color: "#0F81CA", bg: "rgba(15,129,202,0.12)", icon: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342" },
-  deadline: { label: "Дедлайн",    color: "#EAB308", bg: "rgba(234,179,8,0.12)",  icon: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" },
-  workshop: { label: "Воркшоп",    color: "#A855F7", bg: "rgba(168,85,247,0.12)", icon: "M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0012 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" },
+const NEON = "#1080CA";
+const NEON_GLOW = "0 0 24px rgba(16,128,202,0.5)";
+const NEON_GLOW_SOFT = "0 0 12px rgba(16,128,202,0.35)";
+
+const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
+  live:      { label: "LIVE",       color: "#1080CA" },
+  class:     { label: "Хичээл",     color: "#1080CA" },
+  workshop:  { label: "Воркшоп",    color: "#1080CA" },
+  challenge: { label: "Challenge",  color: "#06B6D4" },
+  mentor:    { label: "1:1 Mentor", color: "#14B8A6" },
+  event:     { label: "Эвент",      color: "#1080CA" },
+  deadline:  { label: "Дедлайн",    color: "#1080CA" },
 };
 
-const MN_MONTHS = ["1 сар","2 сар","3 сар","4 сар","5 сар","6 сар","7 сар","8 сар","9 сар","10 сар","11 сар","12 сар"];
-const MN_DAYS = ["Ня","Да","Мя","Лх","Пү","Ба","Бя"];
+const MN_MONTHS_SHORT = ["1-р", "2-р", "3-р", "4-р", "5-р", "6-р", "7-р", "8-р", "9-р", "10-р", "11-р", "12-р"];
+const MN_DAYS_SHORT = ["Ня", "Да", "Мя", "Лх", "Пү", "Ба", "Бя"];
 
-function isSameDay(a: Date, b: Date) {
+function formatDate(d: Date) {
+  return `${MN_MONTHS_SHORT[d.getMonth()]} сар ${d.getDate()} · ${MN_DAYS_SHORT[d.getDay()]}`;
+}
+
+function formatTime(s: string) {
+  return new Date(s).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" });
+}
+
+function sameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-function timeStr(d: string) {
-  return new Date(d).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" });
+function useTick(ms: number) {
+  const [n, setN] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setN(Date.now()), ms);
+    return () => clearInterval(t);
+  }, [ms]);
+  return n;
 }
 
-function dateStr(d: string) {
-  return new Date(d).toLocaleDateString("mn-MN", { month: "short", day: "numeric", weekday: "short" });
+// ─── iCal export ───
+function makeICS(ev: CalEvent) {
+  const dt = (s: string) => new Date(s).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const start = dt(ev.date);
+  const end = ev.endDate ? dt(ev.endDate) : dt(new Date(+new Date(ev.date) + 60 * 60 * 1000).toISOString());
+  return [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Antaqor//Calendar//MN",
+    "BEGIN:VEVENT",
+    `UID:${start}-${ev._id}@antaqor.com`,
+    `DTSTAMP:${dt(new Date().toISOString())}`,
+    `DTSTART:${start}`, `DTEND:${end}`,
+    `SUMMARY:${ev.title}`,
+    ev.description ? `DESCRIPTION:${ev.description.replace(/\n/g, "\\n")}` : "",
+    ev.location ? `LOCATION:${ev.location}` : "",
+    ev.liveLink ? `URL:${ev.liveLink}` : "",
+    "END:VEVENT", "END:VCALENDAR",
+  ].filter(Boolean).join("\r\n");
 }
 
-function relativeDay(d: Date): string {
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const target = new Date(d);
-  target.setHours(0,0,0,0);
-  const diff = Math.round((target.getTime() - now.getTime()) / (1000*60*60*24));
-  if (diff === 0) return "Өнөөдөр";
-  if (diff === 1) return "Маргааш";
-  if (diff === -1) return "Өчигдөр";
-  if (diff > 1 && diff <= 7) return `${diff} хоногийн дараа`;
-  return "";
+function downloadIcs(ev: CalEvent) {
+  const blob = new Blob([makeICS(ev)], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${ev.title.replace(/[^\wЀ-ӿ\s-]/g, "").trim() || "antaqor-event"}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// ─── Event Card ───
-function EventCard({ event, onSelect }: { event: CalEvent; onSelect: (e: CalEvent) => void }) {
-  const cfg = TYPE_CONFIG[event.type] || TYPE_CONFIG.event;
-  const rel = relativeDay(new Date(event.date));
-  const isLive = event.status === "live";
+// ─── Live countdown ───
+function Countdown({ to, big }: { to: Date; big?: boolean }) {
+  const now = useTick(1000);
+  const diff = Math.max(0, to.getTime() - now);
+  const d = Math.floor(diff / 86_400_000);
+  const h = Math.floor((diff / 3_600_000) % 24);
+  const m = Math.floor((diff / 60_000) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+
+  if (d > 0) {
+    return (
+      <div
+        className={`font-black tabular-nums ${big ? "text-[40px] sm:text-[52px]" : "text-[20px]"}`}
+        style={{ color: NEON, textShadow: big ? NEON_GLOW : NEON_GLOW_SOFT, lineHeight: 1 }}
+      >
+        {d}<span className="text-[0.45em] text-[#6b7280] font-bold ml-1.5">хоног</span>
+        <span className="ml-3">{String(h).padStart(2, "0")}<span className="opacity-30">ц</span></span>
+      </div>
+    );
+  }
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      onClick={() => onSelect(event)}
-      className="w-full text-left rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-4 transition hover:border-[rgba(255,255,255,0.12)] hover:bg-[#141414] active:scale-[0.99]"
+    <div
+      className={`font-black tabular-nums ${big ? "text-[44px] sm:text-[64px]" : "text-[20px]"}`}
+      style={{ color: NEON, textShadow: big ? NEON_GLOW : NEON_GLOW_SOFT, lineHeight: 1, letterSpacing: "-0.02em" }}
     >
-      <div className="flex items-start gap-3">
-        {/* Type icon */}
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]" style={{ background: cfg.bg }}>
-          <svg className="h-5 w-5" style={{ color: cfg.color }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d={cfg.icon} />
-          </svg>
-        </div>
-
-        <div className="min-w-0 flex-1">
-          {/* Tags */}
-          <div className="flex items-center gap-2 mb-1">
-            <span className="rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-            {isLive && (
-              <span className="flex items-center gap-1 rounded-full bg-[rgba(34,197,94,0.15)] px-2 py-0.5 text-[9px] font-bold text-[#22C55E]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
-                LIVE
-              </span>
-            )}
-            {rel && <span className="text-[10px] font-semibold text-[#555555]">{rel}</span>}
-          </div>
-
-          {/* Title */}
-          <h3 className="text-[14px] font-bold text-[#E8E8E8] leading-tight">{event.title}</h3>
-          {event.description && (
-            <p className="mt-1 text-[12px] text-[#666666] line-clamp-2">{event.description}</p>
-          )}
-
-          {/* Meta */}
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-[#555555]">
-            <span className="flex items-center gap-1">
-              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              {dateStr(event.date)} · {timeStr(event.date)}
-            </span>
-            {event.location && (
-              <span className="flex items-center gap-1">
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-                {event.location}
-              </span>
-            )}
-            {event.attendeeCount > 0 && (
-              <span className="flex items-center gap-1">
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
-                {event.attendeeCount}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.button>
+      {String(h).padStart(2, "0")}
+      <span className="opacity-30">:</span>
+      {String(m).padStart(2, "0")}
+      <span className="opacity-30">:</span>
+      {String(s).padStart(2, "0")}
+    </div>
   );
 }
 
-// ─── Main Page ───
-export default function CalendarPage() {
-  const { data: session } = useSession();
-  const [events, setEvents] = useState<CalEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<ViewMode>("month");
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
-  const [typeFilter, setTypeFilter] = useState("all");
-
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  const monthKey = `${year}-${String(month + 1).padStart(2, "0")}`;
-
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({ month: monthKey });
-      if (typeFilter !== "all") params.set("type", typeFilter);
-      const res = await fetch(`/api/events?${params}`);
-      const data = await res.json();
-      if (res.ok) setEvents(data.events || []);
-    } finally { setLoading(false); }
-  }, [monthKey, typeFilter]);
-
-  useEffect(() => { fetchEvents(); }, [fetchEvents]);
-
+// ─── Today hero — countdown to next event OR live indicator ───
+function TodayHero({ next, todayCount }: { next: CalEvent | null; todayCount: number }) {
+  const now = useTick(1000);
   const today = new Date();
-  today.setHours(0,0,0,0);
 
-  // Calendar grid
-  const calendarDays = useMemo(() => {
-    const first = new Date(year, month, 1);
-    const last = new Date(year, month + 1, 0);
-    const pad = first.getDay();
-    const days: { date: Date; inMonth: boolean }[] = [];
-    for (let i = pad - 1; i >= 0; i--) days.push({ date: new Date(year, month, -i), inMonth: false });
-    for (let d = 1; d <= last.getDate(); d++) days.push({ date: new Date(year, month, d), inMonth: true });
-    const rem = 42 - days.length;
-    for (let i = 1; i <= rem; i++) days.push({ date: new Date(year, month + 1, i), inMonth: false });
-    return days;
-  }, [year, month]);
+  if (!next) {
+    return (
+      <div className="relative overflow-hidden rounded-none border border-[#0e1726] bg-white p-7 text-center">
+        <div className="text-[10px] font-black uppercase tracking-[0.25em] text-[#A1A1A6]">ӨНӨӨДӨР</div>
+        <div className="mt-3 text-[16px] font-bold text-[#6B6B72]">{formatDate(today)}</div>
+        <div className="mt-1 text-[12px] text-[#9A9A9F]">Эвент байхгүй · хичээлээ үргэлжлүүл</div>
+      </div>
+    );
+  }
 
-  const eventsForDate = (date: Date) => events.filter(ev => isSameDay(new Date(ev.date), date));
+  const isLive = next.status === "live";
+  const date = new Date(next.date);
+  const isToday = sameDay(date, new Date(now));
 
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    return events
-      .filter(e => new Date(e.date) >= now || e.status === "live")
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [events]);
-
-  const selectedDayEvents = selectedDate ? eventsForDate(selectedDate) : [];
-
-  const navigate = (dir: number) => {
-    const d = new Date(currentDate);
-    d.setMonth(d.getMonth() + dir);
-    setCurrentDate(d);
-    setSelectedDate(null);
-    setSelectedEvent(null);
-  };
-
-  // Live count
-  const liveNow = events.filter(e => e.status === "live");
+  if (isLive) {
+    return (
+      <div
+        className="relative overflow-hidden rounded-none border p-6 sm:p-7"
+        style={{ borderColor: "rgba(16,128,202,0.4)", background: "linear-gradient(135deg, rgba(16,128,202,0.10) 0%, #F2F2F4 60%)" }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className="h-2 w-2 animate-pulse rounded-full"
+            style={{ background: NEON, boxShadow: "0 0 14px #1080CA, 0 0 28px rgba(16,128,202,0.5)" }}
+          />
+          <span className="text-[10px] font-black tracking-[0.3em]" style={{ color: NEON }}>ОДОО · LIVE</span>
+        </div>
+        <h2 className="mt-3 text-[22px] font-black leading-tight text-white sm:text-[26px]">{next.title}</h2>
+        <div className="mt-1.5 text-[12px] text-[#6B6B72]">
+          {formatTime(next.date)}{next.endDate && <> – {formatTime(next.endDate)}</>}
+          {next.location && <> · {next.location}</>}
+        </div>
+        {next.liveLink && (
+          <a
+            href={next.liveLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-2 rounded-none px-5 py-2.5 text-[12px] font-black text-white transition hover:opacity-90"
+            style={{ background: NEON, boxShadow: NEON_GLOW }}
+          >
+            ОДОО НЭГДЭХ
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-[960px] pb-4">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#EF2C58]">Schedule</span>
-        <h1 className="mt-1 text-[24px] font-bold text-[#E8E8E8] sm:text-[32px]">Хуваарь</h1>
-        <p className="mt-1 text-[13px] text-[#555555]">Хичээл, live, эвент, воркшоп — бүх хуваарь нэг дороос</p>
-      </motion.div>
+    <div className="relative overflow-hidden rounded-none border border-[#E6E6E6] bg-white p-6 sm:p-7">
+      <div className="absolute inset-x-0 top-0 h-[1px]" style={{ background: `linear-gradient(90deg, transparent, ${NEON}, transparent)`, opacity: 0.5 }} />
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="text-[10px] font-black uppercase tracking-[0.3em]" style={{ color: NEON }}>
+          {isToday ? "ӨНӨӨДӨР" : "ДАРААГИЙН"}
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9A9A9F]">{formatDate(today)}</div>
+      </div>
 
-      {/* Live now banner */}
-      <AnimatePresence>
-        {liveNow.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-5 overflow-hidden"
+      <div className="mt-4">
+        <Countdown to={date} big />
+      </div>
+
+      <h2 className="mt-4 line-clamp-2 text-[18px] font-black leading-tight text-white sm:text-[20px]">{next.title}</h2>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#6B6B72]">
+        <span className="font-bold tabular-nums" style={{ color: NEON }}>{formatTime(next.date)}</span>
+        {!isToday && <span>{formatDate(date)}</span>}
+        {next.location && <span>· {next.location}</span>}
+      </div>
+
+      {todayCount > 1 && (
+        <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[rgba(16,128,202,0.1)] px-2.5 py-1 text-[10px] font-bold" style={{ color: NEON }}>
+          ӨНӨӨДӨР {todayCount} ЭВЕНТ
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Compact event row ───
+function EventRow({ event, onOpen, showDate }: { event: CalEvent; onOpen: (e: CalEvent) => void; showDate?: boolean }) {
+  const cfg = TYPE_CONFIG[event.type] || TYPE_CONFIG.event;
+  const date = new Date(event.date);
+  const isLive = event.status === "live";
+  return (
+    <button
+      onClick={() => onOpen(event)}
+      className="flex w-full items-center gap-3 px-3 py-3 text-left transition hover:bg-[#F4F4F2]"
+    >
+      <div className="flex w-[58px] shrink-0 flex-col items-center">
+        <span className="text-[13px] font-black tabular-nums" style={{ color: NEON, textShadow: NEON_GLOW_SOFT }}>{formatTime(event.date)}</span>
+        {showDate && <span className="text-[9px] font-bold uppercase text-[#9A9A9F] mt-0.5">{MN_DAYS_SHORT[date.getDay()]} {date.getDate()}</span>}
+      </div>
+      <span className="rounded-full px-2 py-0.5 text-[8px] font-black tracking-wider text-white" style={{ background: cfg.color }}>
+        {cfg.label}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[13px] font-bold text-[#171717]">{event.title}</div>
+        {event.location && <div className="truncate text-[10px] text-[#6b7280]">{event.location}</div>}
+      </div>
+      {isLive && (
+        <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-black text-white" style={{ background: NEON, boxShadow: NEON_GLOW_SOFT }}>
+          <span className="h-1 w-1 animate-pulse rounded-full bg-white" />
+          LIVE
+        </span>
+      )}
+      <svg className="h-3 w-3 shrink-0 text-[#A1A1A6]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  );
+}
+
+// ─── Today view ───
+function TodayView({ events, next, onOpen }: { events: CalEvent[]; next: CalEvent | null; onOpen: (e: CalEvent) => void }) {
+  return (
+    <div>
+      <TodayHero next={next} todayCount={events.length} />
+      {events.length > 0 && (
+        <div className="mt-5">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-[1px] w-3" style={{ background: NEON }} />
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#6b7280]">Бүгд ({events.length})</span>
+          </div>
+          <div className="overflow-hidden rounded-none border border-[#0e1726] bg-white divide-y divide-[#EFEFEF]">
+            {events.map((ev) => (
+              <EventRow key={ev._id} event={ev} onOpen={onOpen} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Upcoming view — grouped by day ───
+function UpcomingView({ events, onOpen }: { events: CalEvent[]; onOpen: (e: CalEvent) => void }) {
+  const groups = useMemo(() => {
+    const byDay = new Map<string, CalEvent[]>();
+    for (const ev of events) {
+      const d = new Date(ev.date);
+      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      if (!byDay.has(key)) byDay.set(key, []);
+      byDay.get(key)!.push(ev);
+    }
+    return Array.from(byDay.entries());
+  }, [events]);
+
+  if (events.length === 0) {
+    return <EmptyState text="Удахгүй болох эвент байхгүй" />;
+  }
+
+  return (
+    <div className="space-y-5">
+      {groups.map(([key, evs]) => {
+        const d = new Date(evs[0].date);
+        const isToday = sameDay(d, new Date());
+        return (
+          <div key={key}>
+            <div className="mb-2 flex items-end gap-3">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[20px] font-black tabular-nums text-white" style={isToday ? { color: NEON, textShadow: NEON_GLOW_SOFT } : undefined}>{d.getDate()}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#9A9A9F]">{MN_MONTHS_SHORT[d.getMonth()]} · {MN_DAYS_SHORT[d.getDay()]}</span>
+              </div>
+              {isToday && (
+                <span className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white" style={{ background: NEON, boxShadow: NEON_GLOW_SOFT }}>Өнөөдөр</span>
+              )}
+            </div>
+            <div className="overflow-hidden rounded-none border border-[#0e1726] bg-white divide-y divide-[#EFEFEF]">
+              {evs.map((ev) => (
+                <EventRow key={ev._id} event={ev} onOpen={onOpen} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Courses view ───
+function CoursesView({ courses, loading }: { courses: Course[]; loading: boolean }) {
+  if (loading) {
+    return (
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="aspect-[16/12] animate-pulse rounded-none bg-[#F0F0EE]" />
+        ))}
+      </div>
+    );
+  }
+  if (courses.length === 0) return <EmptyState text="Хичээл удахгүй нэмэгдэнэ" />;
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {courses.map((c) => (
+        <Link
+          key={c._id}
+          href={`/classroom/course/${c._id}`}
+          className="group flex flex-col overflow-hidden rounded-none border border-[#0e1726] bg-white transition hover:-translate-y-[1px]"
+          style={{ transitionProperty: "border-color, transform" }}
+        >
+          <div
+            className="relative aspect-[16/9] overflow-hidden"
+            style={{ background: `linear-gradient(135deg, rgba(16,128,202,0.12) 0%, #e2e8ef 70%)` }}
           >
-            {liveNow.map(ev => (
-              <button key={ev._id} onClick={() => setSelectedEvent(ev)}
-                className="w-full flex items-center gap-3 rounded-[12px] border border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.06)] p-4 transition hover:bg-[rgba(34,197,94,0.1)]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(34,197,94,0.15)]">
-                  <span className="h-3 w-3 rounded-full bg-[#22C55E] animate-pulse" />
+            {c.thumbnail ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={c.thumbnail} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+            ) : (
+              <svg className="absolute inset-0 m-auto h-12 w-12 opacity-25" fill="none" stroke={NEON} strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5l9-5 9 5-9 5-9-5z" />
+              </svg>
+            )}
+            {c.requiredLevel > 0 && (
+              <span className="absolute right-2 top-2 rounded-none border border-[#E6E6E6] bg-white/90 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#1080CA] backdrop-blur-md">L{c.requiredLevel}+</span>
+            )}
+          </div>
+          <div className="flex flex-1 flex-col gap-1 p-3">
+            <h3 className="line-clamp-2 text-[13px] font-black leading-tight text-[#171717] transition-colors group-hover:text-white">{c.title}</h3>
+            {c.description && <p className="line-clamp-2 text-[11px] leading-relaxed text-[#6b7280]">{c.description}</p>}
+            <div className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold transition" style={{ color: NEON }}>
+              Эхлэх
+              <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+// ─── Empty state ───
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div className="rounded-none border-2 border-dashed border-[#0e1726] p-8 text-center">
+      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "rgba(16,128,202,0.1)", boxShadow: NEON_GLOW_SOFT }}>
+        <svg className="h-4 w-4" fill="none" stroke={NEON} strokeWidth={1.8} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25" />
+        </svg>
+      </div>
+      <p className="text-[12px] font-bold text-[#6B6B72]">{text}</p>
+    </div>
+  );
+}
+
+// ─── Detail drawer ───
+function EventDrawer({ event, onClose }: { event: CalEvent | null; onClose: () => void }) {
+  if (!event) return null;
+  const cfg = TYPE_CONFIG[event.type] || TYPE_CONFIG.event;
+  const date = new Date(event.date);
+  return (
+    <AnimatePresence>
+      {event && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
+        >
+          <motion.div
+            initial={{ y: 32 }} animate={{ y: 0 }} exit={{ y: 32 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md max-h-[88vh] overflow-y-auto rounded-t-[4px] border-t border-[#E6E6E6] bg-white sm:max-h-[85vh] sm:rounded-none sm:border"
+          >
+            <div className="border-b border-[#0e1726] p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-1.5">
+                  {event.status === "live" && (
+                    <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black text-white" style={{ background: NEON, boxShadow: NEON_GLOW_SOFT }}>
+                      <span className="h-1 w-1 animate-pulse rounded-full bg-white" />
+                      LIVE
+                    </span>
+                  )}
+                  <span className="rounded-full px-2 py-0.5 text-[9px] font-black tracking-wider text-white" style={{ background: cfg.color }}>{cfg.label}</span>
                 </div>
-                <div className="min-w-0 flex-1 text-left">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#22C55E]">ОДОО LIVE</div>
-                  <div className="text-[14px] font-bold text-[#E8E8E8] truncate">{ev.title}</div>
+                <button onClick={onClose} aria-label="Хаах" className="flex h-8 w-8 items-center justify-center rounded-full text-[#6B6B72] transition hover:bg-[#EFEFED] hover:text-white">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <h2 className="mt-3 text-[19px] font-black leading-tight text-[#171717] sm:text-[22px]">{event.title}</h2>
+              {event.status === "upcoming" && (
+                <div className="mt-3">
+                  <Countdown to={date} />
                 </div>
-                {ev.liveLink && (
-                  <a href={ev.liveLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                    className="shrink-0 rounded-[8px] bg-[#22C55E] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#16A34A]">
-                    Нэгдэх
+              )}
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-[#6B6B72]">
+                <span>{formatDate(date)}</span>
+                <span className="font-bold tabular-nums" style={{ color: NEON }}>
+                  {formatTime(event.date)}{event.endDate && <> – {formatTime(event.endDate)}</>}
+                </span>
+                {event.location && <span>· {event.location}</span>}
+              </div>
+            </div>
+
+            <div className="p-5">
+              {event.description && (
+                <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#52525B]">{event.description}</p>
+              )}
+
+              <div className="mt-5 flex gap-2">
+                {event.liveLink && (
+                  <a
+                    href={event.liveLink}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-none py-3 text-[13px] font-black text-white transition hover:opacity-90"
+                    style={{ background: NEON, boxShadow: NEON_GLOW }}
+                  >
+                    {event.status === "live" ? "LIVE нэгдэх" : "Линк нээх"}
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                   </a>
                 )}
-              </button>
-            ))}
+                <button
+                  onClick={() => downloadIcs(event)}
+                  className="flex shrink-0 items-center justify-center gap-1.5 rounded-none border border-[#E6E6E6] px-4 py-3 text-[12px] font-bold text-[#52525B] transition hover:border-[rgba(16,128,202,0.4)] hover:text-[#1080CA]"
+                  title="Календар руугаа нэмэх"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25M12 12v6m-3-3h6" />
+                  </svg>
+                  .ics
+                </button>
+              </div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
-      {/* Controls */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* View toggle */}
-        <div className="flex items-center gap-1 rounded-[10px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-1">
-          {(["month", "list"] as ViewMode[]).map(v => (
-            <button key={v} onClick={() => { setView(v); setSelectedEvent(null); }}
-              className={`rounded-[8px] px-4 py-2 text-[12px] font-semibold transition ${view === v ? "bg-[#EF2C58] text-white" : "text-[#666666] hover:text-[#999999]"}`}>
-              {v === "month" ? "Календар" : "Жагсаалт"}
-            </button>
-          ))}
-        </div>
+// ─── Main page ───
+type Tab = "today" | "upcoming" | "courses";
 
-        {/* Month nav */}
+const TABS: { key: Tab; label: string }[] = [
+  { key: "today", label: "Өнөөдөр" },
+  { key: "upcoming", label: "Удахгүй" },
+  { key: "courses", label: "Хичээл" },
+];
+
+export default function CalendarPage() {
+  const { data: session } = useSession();
+  const [tab, setTab] = useState<Tab>("today");
+  const [events, setEvents] = useState<CalEvent[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
+  const [selected, setSelected] = useState<CalEvent | null>(null);
+
+  useEffect(() => {
+    let cancel = false;
+    fetch("/api/events")
+      .then((r) => r.json())
+      .then((d) => { if (!cancel && Array.isArray(d.events)) setEvents(d.events); })
+      .catch(() => {})
+      .finally(() => { if (!cancel) setLoadingEvents(false); });
+    return () => { cancel = true; };
+  }, []);
+
+  useEffect(() => {
+    if (tab !== "courses" || coursesLoaded) return;
+    let cancel = false;
+    setLoadingCourses(true);
+    fetch("/api/classroom/courses")
+      .then((r) => r.json())
+      .then((d) => { if (!cancel && Array.isArray(d.courses)) setCourses(d.courses); })
+      .catch(() => {})
+      .finally(() => { if (!cancel) { setLoadingCourses(false); setCoursesLoaded(true); } });
+    return () => { cancel = true; };
+  }, [tab, coursesLoaded]);
+
+  const todayEvents = useMemo(() => {
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const end = new Date(); end.setHours(23, 59, 59, 999);
+    return events
+      .filter((e) => {
+        const d = new Date(e.date);
+        return (d >= start && d <= end && e.status !== "ended") || e.status === "live";
+      })
+      .sort((a, b) => +new Date(a.date) - +new Date(b.date));
+  }, [events]);
+
+  const next = useMemo(() => {
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    return events
+      .filter((e) => e.status !== "ended" && +new Date(e.date) >= cutoff)
+      .sort((a, b) => +new Date(a.date) - +new Date(b.date))[0] || null;
+  }, [events]);
+
+  const upcomingEvents = useMemo(() => {
+    const now = Date.now();
+    return events
+      .filter((e) => e.status !== "ended" && +new Date(e.date) >= now)
+      .sort((a, b) => +new Date(a.date) - +new Date(b.date));
+  }, [events]);
+
+  const counts = {
+    today: todayEvents.length,
+    upcoming: upcomingEvents.length,
+    courses: courses.length,
+  };
+
+  return (
+    <div className="mx-auto max-w-[900px] pb-10">
+      {/* Header */}
+      <div className="mb-5">
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] p-2 text-[#666666] transition hover:text-[#E8E8E8]">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-          </button>
-          <button onClick={() => { setCurrentDate(new Date()); setSelectedDate(null); }}
-            className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[11px] font-bold text-[#666666] transition hover:text-[#EF2C58] hover:border-[rgba(239,44,88,0.3)]">
-            Өнөөдөр
-          </button>
-          <span className="min-w-[130px] text-center text-[15px] font-bold text-[#E8E8E8]">
-            {year} {MN_MONTHS[month]}
-          </span>
-          <button onClick={() => navigate(1)} className="rounded-[8px] border border-[rgba(255,255,255,0.08)] p-2 text-[#666666] transition hover:text-[#E8E8E8]">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-          </button>
+          <div className="h-[6px] w-[6px] animate-pulse rounded-full" style={{ background: NEON, boxShadow: "0 0 10px #1080CA" }} />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em]" style={{ color: NEON }}>ANTAQOR · ХУВААРЬ</span>
         </div>
+        <h1 className="mt-2 text-[26px] font-black leading-tight text-[#171717] sm:text-[30px]">Цаг чухал.</h1>
+        <p className="mt-1 text-[12px] text-[#6B6B72]">Live, хичээл, challenge — алдалгүй нэгд</p>
+      </div>
 
-        {/* Type chips */}
-        <div className="flex items-center gap-1 flex-wrap">
-          <button onClick={() => setTypeFilter("all")}
-            className={`rounded-full px-3 py-1.5 text-[10px] font-bold transition ${typeFilter === "all" ? "bg-[rgba(255,255,255,0.1)] text-[#E8E8E8]" : "text-[#555555] hover:text-[#888888]"}`}>
-            Бүгд
-          </button>
-          {Object.entries(TYPE_CONFIG).map(([k, c]) => (
-            <button key={k} onClick={() => setTypeFilter(k)}
-              className={`rounded-full px-3 py-1.5 text-[10px] font-bold transition ${typeFilter === k ? "text-white" : "text-[#555555] hover:text-[#888888]"}`}
-              style={typeFilter === k ? { background: c.bg, color: c.color } : {}}>
-              {c.label}
-            </button>
-          ))}
+      {/* Tabs */}
+      <div className="sticky top-[60px] z-30 -mx-4 mb-5 px-4 py-2 backdrop-blur-xl" style={{ background: "rgba(15,23,38,0.85)" }}>
+        <div className="flex gap-1 rounded-none border border-[#E6E6E6] bg-white p-1">
+          {TABS.map((t) => {
+            const active = tab === t.key;
+            const c = counts[t.key];
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-none px-3 py-2 text-[11px] font-black uppercase tracking-wider transition ${
+                  active ? "text-white" : "text-[#6B6B72] hover:text-[#171717]"
+                }`}
+                style={active ? { background: NEON, boxShadow: NEON_GLOW_SOFT } : undefined}
+              >
+                {t.label}
+                {c > 0 && (
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[9px] font-black tabular-nums"
+                    style={active
+                      ? { background: "rgba(0,0,0,0.25)", color: "#fff" }
+                      : { background: "rgba(16,128,202,0.15)", color: NEON }}
+                  >
+                    {c}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {loading && (
-        <div className="flex justify-center py-12">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
-        </div>
-      )}
-
-      {!loading && view === "month" && (
-        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-          {/* Calendar grid */}
-          <div className="rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] overflow-hidden">
-            {/* Day headers */}
-            <div className="grid grid-cols-7 border-b border-[rgba(255,255,255,0.06)]">
-              {MN_DAYS.map(d => (
-                <div key={d} className="py-2.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#444444]">{d}</div>
-              ))}
-            </div>
-            {/* Grid */}
-            <div className="grid grid-cols-7">
-              {calendarDays.map((day, i) => {
-                const dayEvts = eventsForDate(day.date);
-                const isToday = isSameDay(day.date, today);
-                const isSel = selectedDate && isSameDay(day.date, selectedDate);
-                const hasLive = dayEvts.some(e => e.status === "live");
-
-                return (
-                  <button key={i} onClick={() => { setSelectedDate(day.date); setSelectedEvent(null); }}
-                    className={`relative min-h-[72px] sm:min-h-[85px] border-b border-r border-[rgba(255,255,255,0.04)] p-1.5 text-left transition hover:bg-[rgba(255,255,255,0.03)] ${!day.inMonth ? "opacity-25" : ""} ${isSel ? "bg-[rgba(239,44,88,0.06)] ring-1 ring-inset ring-[rgba(239,44,88,0.2)]" : ""}`}>
-                    {/* Date number */}
-                    <div className="flex items-center gap-1">
-                      <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${isToday ? "bg-[#EF2C58] text-white" : "text-[#888888]"}`}>
-                        {day.date.getDate()}
-                      </span>
-                      {hasLive && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />}
-                    </div>
-
-                    {/* Event dots */}
-                    <div className="mt-1 space-y-0.5">
-                      {dayEvts.slice(0, 2).map(ev => {
-                        const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.event;
-                        return (
-                          <div key={ev._id}
-                            className="rounded-[3px] px-1 py-0.5 text-[8px] font-bold leading-tight truncate sm:text-[9px]"
-                            style={{ background: cfg.bg, color: cfg.color }}>
-                            {ev.title}
-                          </div>
-                        );
-                      })}
-                      {dayEvts.length > 2 && (
-                        <div className="px-1 text-[8px] font-bold text-[#555555]">+{dayEvts.length - 2}</div>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Selected day detail */}
-            <AnimatePresence mode="wait">
-              {selectedEvent ? (
-                <motion.div key="detail" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-5">
-                  <button onClick={() => setSelectedEvent(null)} className="mb-3 flex items-center gap-1 text-[11px] text-[#555555] transition hover:text-[#EF2C58]">
-                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                    Буцах
-                  </button>
-
-                  {selectedEvent.image && (
-                    <img src={selectedEvent.image} alt={selectedEvent.title} className="mb-3 w-full rounded-[8px] object-cover max-h-[160px]" />
-                  )}
-
-                  <div className="flex items-center gap-2 mb-2">
-                    {(() => { const c = TYPE_CONFIG[selectedEvent.type] || TYPE_CONFIG.event; return (
-                      <span className="rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ background: c.bg, color: c.color }}>{c.label}</span>
-                    ); })()}
-                    {selectedEvent.status === "live" && (
-                      <span className="flex items-center gap-1 rounded-full bg-[rgba(34,197,94,0.15)] px-2 py-0.5 text-[9px] font-bold text-[#22C55E]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" /> LIVE
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-[16px] font-bold text-[#E8E8E8] leading-tight">{selectedEvent.title}</h3>
-                  {selectedEvent.description && (
-                    <p className="mt-2 text-[12px] leading-relaxed text-[#888888]">{selectedEvent.description}</p>
-                  )}
-
-                  <div className="mt-3 space-y-2 text-[11px]">
-                    <div className="flex items-center gap-2 text-[#888888]">
-                      <svg className="h-3.5 w-3.5 text-[#555555]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {dateStr(selectedEvent.date)} · {timeStr(selectedEvent.date)}
-                      {selectedEvent.endDate && <span className="text-[#555555]">— {timeStr(selectedEvent.endDate)}</span>}
-                    </div>
-                    {selectedEvent.location && (
-                      <div className="flex items-center gap-2 text-[#888888]">
-                        <svg className="h-3.5 w-3.5 text-[#555555]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-                        {selectedEvent.location}
-                      </div>
-                    )}
-                  </div>
-
-                  {selectedEvent.liveLink && (
-                    <a href={selectedEvent.liveLink} target="_blank" rel="noopener noreferrer"
-                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#EF2C58] py-3 text-[13px] font-bold text-white transition hover:bg-[#D4264E]">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" /></svg>
-                      {selectedEvent.status === "live" ? "LIVE нэгдэх" : "Линк нээх"}
-                    </a>
-                  )}
-                </motion.div>
-              ) : selectedDate ? (
-                <motion.div key="daylist" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-4">
-                  <h3 className="mb-3 text-[13px] font-bold text-[#E8E8E8]">
-                    {selectedDate.toLocaleDateString("mn-MN", { month: "long", day: "numeric", weekday: "long" })}
-                  </h3>
-                  {selectedDayEvents.length === 0 ? (
-                    <p className="py-6 text-center text-[12px] text-[#555555]">Энэ өдөр хуваарь байхгүй</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {selectedDayEvents.map(ev => {
-                        const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.event;
-                        return (
-                          <button key={ev._id} onClick={() => setSelectedEvent(ev)}
-                            className="w-full rounded-[8px] p-3 text-left transition hover:brightness-110"
-                            style={{ background: cfg.bg }}>
-                            <div className="flex items-center gap-2">
-                              {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />}
-                              <span className="text-[10px] font-bold" style={{ color: cfg.color }}>{timeStr(ev.date)} · {cfg.label}</span>
-                            </div>
-                            <div className="text-[13px] font-bold text-[#E8E8E8] mt-1">{ev.title}</div>
-                            {ev.location && <div className="text-[10px] text-[#666666] mt-0.5">{ev.location}</div>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div key="upcoming" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  className="rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#111111] p-4">
-                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Удахгүй болох</h3>
-                  {upcomingEvents.length === 0 ? (
-                    <p className="py-4 text-center text-[12px] text-[#555555]">Энэ сард хуваарь байхгүй</p>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {upcomingEvents.slice(0, 8).map(ev => {
-                        const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.event;
-                        const d = new Date(ev.date);
-                        const rel = relativeDay(d);
-                        return (
-                          <button key={ev._id} onClick={() => setSelectedEvent(ev)}
-                            className="w-full flex items-center gap-3 rounded-[8px] p-2.5 transition hover:bg-[rgba(255,255,255,0.04)] text-left">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px]" style={{ background: cfg.bg }}>
-                              <svg className="h-4 w-4" style={{ color: cfg.color }} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d={cfg.icon} />
-                              </svg>
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[12px] font-semibold text-[#E8E8E8] truncate">{ev.title}</div>
-                              <div className="flex items-center gap-1.5 text-[10px] text-[#555555]">
-                                {ev.status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />}
-                                <span>{rel || dateStr(ev.date)}</span>
-                                <span>·</span>
-                                <span>{timeStr(ev.date)}</span>
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      )}
-
-      {/* List view */}
-      {!loading && view === "list" && (
-        <div className="space-y-3">
-          {events.length === 0 ? (
-            <div className="rounded-[12px] border-2 border-dashed border-[rgba(255,255,255,0.08)] py-16 text-center">
-              <svg className="mx-auto mb-3 h-10 w-10 text-[#333333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-              </svg>
-              <p className="text-[14px] text-[#555555]">Энэ сард хуваарь байхгүй</p>
-            </div>
-          ) : (
-            events.map(ev => <EventCard key={ev._id} event={ev} onSelect={setSelectedEvent} />)
+      {/* Body */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.18 }}
+        >
+          {tab === "today" && (
+            loadingEvents ? <div className="h-48 animate-pulse rounded-none bg-[#F0F0EE]" /> : <TodayView events={todayEvents} next={next} onOpen={setSelected} />
           )}
+          {tab === "upcoming" && (
+            loadingEvents ? <div className="space-y-3"><div className="h-24 animate-pulse rounded-none bg-[#F0F0EE]" /><div className="h-24 animate-pulse rounded-none bg-[#F0F0EE]" /></div> : <UpcomingView events={upcomingEvents} onOpen={setSelected} />
+          )}
+          {tab === "courses" && <CoursesView courses={courses} loading={loadingCourses} />}
+        </motion.div>
+      </AnimatePresence>
 
-          {/* Event detail modal for list view */}
-          <AnimatePresence>
-            {selectedEvent && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-4"
-                onClick={() => setSelectedEvent(null)}>
-                <motion.div initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }}
-                  onClick={e => e.stopPropagation()}
-                  className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[#111111] p-6">
-
-                  {selectedEvent.image && (
-                    <img src={selectedEvent.image} alt={selectedEvent.title} className="mb-4 w-full rounded-[10px] object-cover max-h-[200px]" />
-                  )}
-
-                  <div className="flex items-center gap-2 mb-2">
-                    {(() => { const c = TYPE_CONFIG[selectedEvent.type] || TYPE_CONFIG.event; return (
-                      <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold" style={{ background: c.bg, color: c.color }}>{c.label}</span>
-                    ); })()}
-                    {selectedEvent.status === "live" && (
-                      <span className="flex items-center gap-1 rounded-full bg-[rgba(34,197,94,0.15)] px-2 py-0.5 text-[10px] font-bold text-[#22C55E]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" /> LIVE
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="text-[18px] font-bold text-[#E8E8E8]">{selectedEvent.title}</h2>
-                  {selectedEvent.description && (
-                    <p className="mt-2 text-[13px] leading-relaxed text-[#888888]">{selectedEvent.description}</p>
-                  )}
-
-                  <div className="mt-4 space-y-2 text-[12px] text-[#888888]">
-                    <div className="flex items-center gap-2">
-                      <svg className="h-4 w-4 text-[#555555]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {dateStr(selectedEvent.date)} · {timeStr(selectedEvent.date)}
-                      {selectedEvent.endDate && <span>— {timeStr(selectedEvent.endDate)}</span>}
-                    </div>
-                    {selectedEvent.location && (
-                      <div className="flex items-center gap-2">
-                        <svg className="h-4 w-4 text-[#555555]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-                        {selectedEvent.location}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-5 flex gap-2">
-                    {selectedEvent.liveLink && (
-                      <a href={selectedEvent.liveLink} target="_blank" rel="noopener noreferrer"
-                        className="flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#EF2C58] py-3 text-[13px] font-bold text-white transition hover:bg-[#D4264E]">
-                        {selectedEvent.status === "live" ? "LIVE нэгдэх" : "Линк нээх"}
-                      </a>
-                    )}
-                    <button onClick={() => setSelectedEvent(null)}
-                      className="rounded-[10px] border border-[rgba(255,255,255,0.08)] px-5 py-3 text-[13px] text-[#666666] transition hover:text-[#E8E8E8]">
-                      Хаах
-                    </button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {/* Not signed in prompt */}
+      {/* Sign-in nudge */}
       {!session && (
-        <div className="mt-6 rounded-[12px] border border-[rgba(239,44,88,0.15)] bg-[rgba(239,44,88,0.04)] p-5 text-center">
-          <p className="text-[13px] text-[#888888]">
-            Хуваарьт бүртгүүлэх, live-д нэгдэхийн тулд{" "}
-            <Link href="/auth/signin" className="font-bold text-[#EF2C58]">нэвтрэх</Link>
+        <div className="mt-8 rounded-none border p-5 text-center" style={{ borderColor: "rgba(16,128,202,0.18)", background: "rgba(16,128,202,0.04)" }}>
+          <p className="text-[13px] text-[#6B6B72]">
+            Эвентэд нэгдэх + сануулга авахын тулд{" "}
+            <Link href="/auth/signin" className="font-black" style={{ color: NEON }}>нэвтрэх</Link>
           </p>
         </div>
       )}
+
+      <EventDrawer event={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

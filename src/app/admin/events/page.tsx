@@ -25,7 +25,7 @@ interface EventData {
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   upcoming: { label: "Төлөвлөсөн", color: "text-blue-400 bg-blue-400/10" },
   live: { label: "LIVE", color: "text-green-400 bg-green-400/10" },
-  ended: { label: "Дууссан", color: "text-[#999999] bg-[#999999]/10" },
+  ended: { label: "Дууссан", color: "text-[#5b6573] bg-[#5b6573]/10" },
 };
 
 function formatDate(d: string) {
@@ -153,7 +153,7 @@ export default function AdminEventsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-6 w-6 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
+        <div className="h-6 w-6 animate-spin border-2 border-[#1080CA] border-t-transparent" />
       </div>
     );
   }
@@ -164,18 +164,18 @@ export default function AdminEventsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-[2px] text-[#E8E8E8]">Эвентүүд</h1>
-          <p className="mt-1 text-[11px] text-[#999999]">{events.length} эвент</p>
+          <p className="mt-1 text-[11px] text-[#5b6573]">{events.length} эвент</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
-          className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#D4264E]"
+          className="rounded-none bg-[#1080CA] px-5 py-2 text-[12px] font-semibold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
         >
           {showForm ? "Цуцлах" : "+ Шинэ эвент"}
         </button>
       </div>
 
       {flash && (
-        <div className="mb-4 border-l-2 border-[#EF2C58] bg-[rgba(239,44,88,0.05)] px-4 py-3 text-[12px] text-[#EF2C58]">
+        <div className="mb-4 border-l-2 border-[#1080CA] bg-[rgba(16,128,202,0.05)] px-4 py-3 text-[12px] text-[#1080CA]">
           {flash}
         </div>
       )}
@@ -188,7 +188,7 @@ export default function AdminEventsPage() {
           </h2>
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Гарчиг *</label>
+              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Гарчиг *</label>
               <input
                 value={form.title}
                 onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
@@ -197,7 +197,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Тайлбар</label>
+              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Тайлбар</label>
               <textarea
                 value={form.description}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
@@ -208,7 +208,7 @@ export default function AdminEventsPage() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Эхлэх огноо *</label>
+                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Эхлэх огноо *</label>
                 <input
                   type="datetime-local"
                   value={form.date}
@@ -217,7 +217,7 @@ export default function AdminEventsPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Дуусах огноо</label>
+                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Дуусах огноо</label>
                 <input
                   type="datetime-local"
                   value={form.endDate}
@@ -227,7 +227,7 @@ export default function AdminEventsPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Live линк (Zoom, YouTube, гэх мэт)</label>
+              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Live линк (Zoom, YouTube, гэх мэт)</label>
               <input
                 value={form.liveLink}
                 onChange={(e) => setForm((p) => ({ ...p, liveLink: e.target.value }))}
@@ -236,7 +236,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Байршил</label>
+              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Байршил</label>
               <input
                 value={form.location}
                 onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
@@ -245,7 +245,7 @@ export default function AdminEventsPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Зураг URL</label>
+              <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Зураг URL</label>
               <input
                 value={form.image}
                 onChange={(e) => setForm((p) => ({ ...p, image: e.target.value }))}
@@ -255,17 +255,17 @@ export default function AdminEventsPage() {
             </div>
             {editingId && (
               <div>
-                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#999999]">Статус</label>
+                <label className="mb-1 block text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Статус</label>
                 <div className="flex gap-2">
                   {(["upcoming", "live", "ended"] as const).map((s) => (
                     <button
                       key={s}
                       type="button"
                       onClick={() => setForm((p) => ({ ...p, status: s }))}
-                      className={`rounded-[4px] px-3 py-1.5 text-[11px] font-semibold transition ${
+                      className={`rounded-none px-3 py-1.5 text-[11px] font-semibold transition ${
                         form.status === s
                           ? STATUS_MAP[s].color + " border border-current"
-                          : "text-[#999999] border border-[rgba(255,255,255,0.08)] hover:text-[#CCCCCC]"
+                          : "text-[#5b6573] border border-[rgba(255,255,255,0.08)] hover:text-[#8A8A92]"
                       }`}
                     >
                       {STATUS_MAP[s].label}
@@ -278,13 +278,13 @@ export default function AdminEventsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#D4264E] disabled:opacity-50"
+                className="rounded-none bg-[#1080CA] px-5 py-2 text-[12px] font-semibold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-50"
               >
                 {saving ? "..." : editingId ? "Хадгалах" : "Үүсгэх"}
               </button>
               <button
                 onClick={resetForm}
-                className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#888888] transition hover:text-[#F8F8F6]"
+                className="rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] font-medium text-[#8A8A92] transition hover:text-[#F8F8F6]"
               >
                 Цуцлах
               </button>
@@ -296,7 +296,7 @@ export default function AdminEventsPage() {
       {/* Events List */}
       {events.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-[14px] text-[#999999]">Эвент байхгүй</p>
+          <p className="text-[14px] text-[#5b6573]">Эвент байхгүй</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -308,17 +308,17 @@ export default function AdminEventsPage() {
                 <div className="flex items-center justify-between p-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className={`rounded-[4px] px-2 py-0.5 text-[10px] font-bold ${st.color}`}>
+                      <span className={`rounded-none px-2 py-0.5 text-[10px] font-bold ${st.color}`}>
                         {st.label}
                       </span>
                       <h3 className="truncate text-[14px] font-semibold text-[#E8E8E8]">{ev.title}</h3>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-[#999999]">
+                    <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-[#5b6573]">
                       <span>{formatDate(ev.date)}</span>
                       {ev.location && <span>· {ev.location}</span>}
                       <span>· {ev.attendees.length} оролцогч</span>
                       {ev.liveLink && (
-                        <a href={ev.liveLink} target="_blank" rel="noopener noreferrer" className="text-[#EF2C58] hover:text-[#D4264E]">
+                        <a href={ev.liveLink} target="_blank" rel="noopener noreferrer" className="text-[#1080CA] hover:text-[#4FA8E8]">
                           Live линк →
                         </a>
                       )}
@@ -328,7 +328,7 @@ export default function AdminEventsPage() {
                     {ev.status !== "live" && (
                       <button
                         onClick={() => handleStatusChange(ev._id, "live")}
-                        className="rounded-[4px] bg-green-500/10 px-3 py-1.5 text-[10px] font-bold text-green-400 transition hover:bg-green-500/20"
+                        className="rounded-none bg-green-500/10 px-3 py-1.5 text-[10px] font-bold text-green-400 transition hover:bg-green-500/20"
                       >
                         LIVE
                       </button>
@@ -336,14 +336,14 @@ export default function AdminEventsPage() {
                     {ev.status === "live" && (
                       <button
                         onClick={() => handleStatusChange(ev._id, "ended")}
-                        className="rounded-[4px] bg-[#999999]/10 px-3 py-1.5 text-[10px] font-bold text-[#999999] transition hover:bg-[#999999]/20"
+                        className="rounded-none bg-[#5b6573]/10 px-3 py-1.5 text-[10px] font-bold text-[#5b6573] transition hover:bg-[#5b6573]/20"
                       >
                         Дуусгах
                       </button>
                     )}
                     <button
                       onClick={() => startEdit(ev)}
-                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#E8E8E8]"
+                      className="rounded-none p-2 text-[#5b6573] transition hover:text-[#E8E8E8]"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -351,7 +351,7 @@ export default function AdminEventsPage() {
                     </button>
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : ev._id)}
-                      className="rounded-[4px] p-2 text-[#999999] transition hover:text-[#E8E8E8]"
+                      className="rounded-none p-2 text-[#5b6573] transition hover:text-[#E8E8E8]"
                     >
                       <svg className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
@@ -359,7 +359,7 @@ export default function AdminEventsPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(ev._id)}
-                      className="rounded-[4px] p-2 text-red-400/60 transition hover:text-red-400"
+                      className="rounded-none p-2 text-[#4E94D0]/60 transition hover:text-[#4E94D0]"
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -372,20 +372,20 @@ export default function AdminEventsPage() {
                 {isExpanded && (
                   <div className="border-t border-[rgba(255,255,255,0.08)] px-4 py-3">
                     {ev.description && (
-                      <p className="mb-3 text-[13px] leading-relaxed text-[#888888]">{ev.description}</p>
+                      <p className="mb-3 text-[13px] leading-relaxed text-[#8A8A92]">{ev.description}</p>
                     )}
                     {ev.image && (
-                      <img src={ev.image} alt={ev.title} className="mb-3 max-h-40 rounded-[4px] object-cover" />
+                      <img src={ev.image} alt={ev.title} className="mb-3 max-h-40 rounded-none object-cover" />
                     )}
                     {ev.endDate && (
-                      <p className="mb-2 text-[11px] text-[#999999]">Дуусах: {formatDate(ev.endDate)}</p>
+                      <p className="mb-2 text-[11px] text-[#5b6573]">Дуусах: {formatDate(ev.endDate)}</p>
                     )}
                     {ev.attendees.length > 0 && (
                       <div>
-                        <p className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#999999]">Оролцогчид ({ev.attendees.length})</p>
+                        <p className="mb-1 text-[10px] uppercase tracking-[0.5px] text-[#5b6573]">Оролцогчид ({ev.attendees.length})</p>
                         <div className="flex flex-wrap gap-1">
                           {ev.attendees.map((a) => (
-                            <span key={a._id} className="rounded-[4px] bg-[rgba(0,0,0,0.08)] px-2 py-1 text-[11px] text-[#888888]">
+                            <span key={a._id} className="rounded-none bg-[rgba(0,0,0,0.08)] px-2 py-1 text-[11px] text-[#8A8A92]">
                               {a.name}
                             </span>
                           ))}

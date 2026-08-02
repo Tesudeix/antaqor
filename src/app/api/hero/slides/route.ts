@@ -53,22 +53,41 @@ export async function POST(req: NextRequest) {
     if (videoUrl) {
       slides.push({ url: videoUrl, type: "video" });
     } else if (file) {
-      if (file.size > 15 * 1024 * 1024) {
-        return NextResponse.json({ error: "Max 15MB" }, { status: 413 });
+      const isVideo = file.type.startsWith("video/");
+      const isImage = file.type.startsWith("image/");
+
+      if (!isVideo && !isImage) {
+        return NextResponse.json({ error: "Image or video file required" }, { status: 400 });
+      }
+
+      // Image cap 15MB, video cap 50MB (~20s @ decent bitrate)
+      const maxSize = isVideo ? 50 * 1024 * 1024 : 15 * 1024 * 1024;
+      if (file.size > maxSize) {
+        return NextResponse.json(
+          { error: isVideo ? "Видео хамгийн ихдээ 50MB" : "Зураг хамгийн ихдээ 15MB" },
+          { status: 413 }
+        );
       }
 
       await mkdir(UPLOAD_DIR, { recursive: true });
-
       const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `hero-${randomUUID()}.webp`;
-      const filepath = path.join(UPLOAD_DIR, filename);
 
-      await sharp(buffer)
-        .resize(1200, 1600, { fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 88 })
-        .toFile(filepath);
-
-      slides.push({ url: `/uploads/${filename}`, type: "image" });
+      if (isVideo) {
+        // Preserve container — most browsers handle mp4/webm/mov natively.
+        const ext = (file.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "mp4";
+        const filename = `hero-${randomUUID()}.${ext}`;
+        const filepath = path.join(UPLOAD_DIR, filename);
+        await writeFile(filepath, buffer);
+        slides.push({ url: `/uploads/${filename}`, type: "video" });
+      } else {
+        const filename = `hero-${randomUUID()}.webp`;
+        const filepath = path.join(UPLOAD_DIR, filename);
+        await sharp(buffer)
+          .resize(1200, 1600, { fit: "inside", withoutEnlargement: true })
+          .webp({ quality: 88 })
+          .toFile(filepath);
+        slides.push({ url: `/uploads/${filename}`, type: "image" });
+      }
     } else {
       return NextResponse.json({ error: "No file or videoUrl" }, { status: 400 });
     }

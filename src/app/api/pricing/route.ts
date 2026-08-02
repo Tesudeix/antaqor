@@ -4,7 +4,7 @@ import User from "@/models/User";
 
 export const dynamic = "force-dynamic";
 
-const FIXED_PRICE = 29000;
+const FIXED_PRICE = 9000;
 
 export async function GET() {
   try {

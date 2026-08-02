@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
-const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com", "cyberempire4444@gmail.com"];
 
 interface MembershipState {
   loading: boolean;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface IGPost {
   _id: string;
@@ -11,6 +11,15 @@ interface IGPost {
   permalink: string;
   caption?: string;
   timestamp: string;
+  views?: number;
+  likes?: number;
+}
+
+function fmtCount(n?: number) {
+  if (!n) return null;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return String(n);
 }
 
 function timeAgo(dateStr: string) {
@@ -25,13 +34,22 @@ function timeAgo(dateStr: string) {
   return `${weeks}д`;
 }
 
+const IG_GLYPH = (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+  </svg>
+);
+
 export default function InstagramReels() {
   const [posts, setPosts] = useState<IGPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/instagram?limit=12")
+    fetch("/api/instagram?limit=16")
       .then((r) => r.json())
       .then((d) => {
         if (d.posts) setPosts(d.posts);
@@ -40,18 +58,24 @@ export default function InstagramReels() {
       .finally(() => setLoading(false));
   }, []);
 
+  const scrollRail = (dir: 1 | -1) => {
+    const el = railRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+
   if (loading) {
     return (
-      <div className="px-4 py-4">
+      <div className="py-4">
         <div className="mb-3 flex items-center gap-2">
-          <div className="h-4 w-4 animate-pulse rounded-full bg-[rgba(0,0,0,0.08)]" />
-          <div className="h-3 w-16 animate-pulse rounded bg-[rgba(0,0,0,0.06)]" />
+          <div className="h-4 w-4 animate-pulse rounded-full bg-[rgba(255,255,255,0.08)]" />
+          <div className="h-3 w-16 animate-pulse rounded bg-[rgba(255,255,255,0.06)]" />
         </div>
-        <div className="flex gap-2 overflow-hidden">
+        <div className="flex gap-2.5 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="aspect-[9/16] w-[120px] shrink-0 animate-pulse rounded-[4px] bg-[rgba(0,0,0,0.06)]"
+              className="aspect-[9/16] w-[150px] shrink-0 animate-pulse rounded-none bg-[rgba(255,255,255,0.05)]"
             />
           ))}
         </div>
@@ -69,133 +93,159 @@ export default function InstagramReels() {
   );
 
   return (
-    <div className="py-4">
-      {/* Reels row */}
-      {reels.length > 0 && (
-        <div className="mb-4">
-          <div className="mb-3 flex items-center justify-between px-4">
-            <div className="flex items-center gap-2">
-              <svg
-                className="h-4 w-4 text-[#F8F8F6]"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-              </svg>
-              <span className="text-[12px] font-black tracking-wide text-[#F8F8F6]">
-                Instagram Reels
-              </span>
+    <section className="py-4">
+      {/* Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-[rgba(16,128,202,0.14)] text-[#4E94D0]">
+            {IG_GLYPH}
+          </span>
+          <div>
+            <div className="text-[13px] font-black tracking-wide text-[#F2F2F4]">Сошиал</div>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#84848C]">
+              Edgerunners амьдралаас
             </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Desktop rail arrows */}
+          {reels.length > 3 && (
+            <div className="hidden gap-1.5 md:flex">
+              <button
+                type="button"
+                aria-label="Өмнөх"
+                onClick={() => scrollRail(-1)}
+                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Дараах"
+                onClick={() => scrollRail(1)}
+                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          )}
+          <a
+            href="https://www.instagram.com/tesudei"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-none border border-[rgba(16,128,202,0.35)] bg-[rgba(16,128,202,0.10)] px-3 py-1.5 text-[11px] font-bold text-[#4E94D0] transition hover:bg-[rgba(16,128,202,0.2)] hover:text-[#F2F2F4]"
+          >
+            @tesudei
+          </a>
+        </div>
+      </div>
+
+      {/* Reels rail — snap carousel, hover/tap to preview */}
+      {reels.length > 0 && (
+        <div
+          ref={railRef}
+          className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-2"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {reels.map((reel) => (
             <a
-              href="https://www.instagram.com/antaqor"
+              key={reel._id}
+              href={reel.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] font-bold text-[rgba(0,0,0,0.3)] transition hover:text-[#F8F8F6]"
+              className="group relative aspect-[9/16] w-[150px] shrink-0 snap-start overflow-hidden rounded-none border border-[rgba(255,255,255,0.08)] bg-[#1E1E21] transition hover:-translate-y-0.5 hover:border-[rgba(16,128,202,0.45)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.45)] active:scale-[0.97] sm:w-[170px]"
+              onMouseEnter={() => setActiveVideo(reel._id)}
+              onMouseLeave={() => setActiveVideo(null)}
             >
-              @antaqor
-            </a>
-          </div>
-          <div className="flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-            {reels.map((reel) => (
-              <a
-                key={reel._id}
-                href={reel.permalink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative aspect-[9/16] w-[120px] shrink-0 overflow-hidden rounded-[4px] bg-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] active:scale-[0.97]"
-                onMouseEnter={() => setActiveVideo(reel._id)}
-                onMouseLeave={() => setActiveVideo(null)}
-              >
-                {activeVideo === reel._id && reel.mediaUrl ? (
-                  <video
-                    src={reel.mediaUrl}
-                    className="h-full w-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={reel.thumbnailUrl || reel.mediaUrl}
-                    alt={reel.caption?.slice(0, 50) || "Reel"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                {/* Play icon */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition group-hover:opacity-100">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(239,44,88,0.9)]">
-                    <svg className="ml-0.5 h-3.5 w-3.5 text-[#F8F8F6]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-                {/* Reel badge */}
-                <div className="absolute right-1.5 top-1.5">
-                  <svg className="h-3.5 w-3.5 text-white drop-shadow" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 3H3a2 2 0 00-2 2v14a2 2 0 002 2h18a2 2 0 002-2V5a2 2 0 00-2-2zm-9 13l-5-3 5-3v6z" />
+              {activeVideo === reel._id && reel.mediaUrl ? (
+                <video
+                  src={reel.mediaUrl}
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={reel.thumbnailUrl || reel.mediaUrl}
+                  alt={reel.caption?.slice(0, 50) || "Reel"}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              {/* Play affordance */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition group-hover:opacity-100">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(16,128,202,0.92)] shadow-[0_0_18px_rgba(16,128,202,0.5)]">
+                  <svg className="ml-0.5 h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
-                {/* Caption + time */}
-                <div className="absolute bottom-0 left-0 right-0 p-2">
-                  {reel.caption && (
-                    <p className="mb-1 line-clamp-2 text-[9px] leading-tight text-[rgba(255,255,255,0.8)]">
-                      {reel.caption.slice(0, 60)}
-                    </p>
+              </div>
+              {/* Reel badge */}
+              <div className="absolute right-2 top-2 rounded-none bg-black/45 p-1 backdrop-blur-sm">
+                <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="2" y="4" width="20" height="16" rx="3" />
+                  <path d="M2 9h20M9.5 4l3 5M15.5 4l3 5M10.5 13.5l4 2.5-4 2.5v-5z" />
+                </svg>
+              </div>
+              {/* Caption + views + time */}
+              <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                {reel.caption && (
+                  <p className="mb-1 line-clamp-2 text-[10px] font-medium leading-tight text-[#F2F2F4]">
+                    {reel.caption.slice(0, 70)}
+                  </p>
+                )}
+                <div className="flex items-center gap-2">
+                  {fmtCount(reel.views) && (
+                    <span className="flex items-center gap-1 text-[9px] font-black text-[#F2F2F4]">
+                      <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      {fmtCount(reel.views)}
+                    </span>
                   )}
-                  <span className="text-[8px] font-bold text-[rgba(255,255,255,0.4)]">
+                  {fmtCount(reel.likes) && (
+                    <span className="flex items-center gap-1 text-[9px] font-bold text-[#B4B4BA]">
+                      <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                      {fmtCount(reel.likes)}
+                    </span>
+                  )}
+                  <span className="ml-auto text-[9px] font-bold text-[#B4B4BA]">
                     {timeAgo(reel.timestamp)}
                   </span>
                 </div>
-              </a>
-            ))}
-          </div>
+              </div>
+            </a>
+          ))}
         </div>
       )}
 
       {/* Image posts grid */}
       {images.length > 0 && (
-        <div>
-          <div className="mb-3 flex items-center gap-2 px-4">
-            <svg
-              className="h-4 w-4 text-[#F8F8F6]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div className="mt-3 grid grid-cols-3 gap-1.5">
+          {images.slice(0, 6).map((post) => (
+            <a
+              key={post._id}
+              href={post.permalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative aspect-square overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#1E1E21] transition hover:border-[rgba(16,128,202,0.4)] active:scale-[0.97]"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              <img
+                src={post.mediaUrl}
+                alt={post.caption?.slice(0, 50) || "Post"}
+                loading="lazy"
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
               />
-            </svg>
-            <span className="text-[12px] font-black tracking-wide text-[#F8F8F6]">
-              Постууд
-            </span>
-          </div>
-          <div className="grid grid-cols-3 gap-1 px-4">
-            {images.slice(0, 9).map((post) => (
-              <a
-                key={post._id}
-                href={post.permalink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative aspect-square overflow-hidden rounded-[4px] bg-[#0A0A0A] shadow-[0_1px_4px_rgba(0,0,0,0.08)] transition hover:scale-[1.02] active:scale-[0.97]"
-              >
-                <img
-                  src={post.mediaUrl}
-                  alt={post.caption?.slice(0, 50) || "Post"}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/20" />
-              </a>
-            ))}
-          </div>
+              <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/25" />
+            </a>
+          ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

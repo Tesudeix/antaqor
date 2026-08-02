@@ -1,510 +1,218 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { fmtMNTCompact } from "@/lib/money";
+import { T, MONO, Ico, Card, Metric, Btn, SectionHeader, Empty, Skeleton } from "@/components/admin/kit";
 
-interface DashboardStats {
-  totalUsers: number;
-  totalMembers: number;
-  totalPosts: number;
-  recentSignups: number;
-  aiLevelCounts: { _id: string; count: number }[];
-  interestCounts: { _id: string; count: number }[];
-  levelDistribution: { _id: number; count: number }[];
-  topXPUsers: { _id: string; name: string; avatar?: string; xp: number; level: number }[];
+// ─── Command Center — Edgerunner. Гол урсгал: шинэ бүртгэл → email → орлого. ───
+
+interface Stats { totalUsers: number; totalMembers: number; totalPosts: number; recentSignups: number }
+interface DayBucket { day: string; count: number }
+interface Analytics { kpis: { members: number; totalUsers: number; totalPosts: number; revenueAll: number; revenue30: number }; signupsByDay: DayBucket[] }
+interface NewMember { id: string; name: string; email: string; phone: string; plan: string; paid: boolean; createdAt: string }
+
+function fill30(b: DayBucket[] = []): DayBucket[] {
+  const m = new Map(b.map((x) => [x.day, x.count]));
+  const out: DayBucket[] = []; const t = new Date(); t.setHours(0, 0, 0, 0);
+  for (let i = 29; i >= 0; i--) { const d = new Date(t.getTime() - i * 864e5).toISOString().slice(0, 10); out.push({ day: d, count: m.get(d) || 0 }); }
+  return out;
+}
+function ago(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime(); const min = Math.floor(ms / 6e4);
+  if (min < 1) return "саяхан"; if (min < 60) return `${min} мин`;
+  const h = Math.floor(min / 60); if (h < 24) return `${h} цаг`;
+  return `${Math.floor(h / 24)} хоног`;
 }
 
-const AI_LEVEL_LABELS: Record<string, string> = {
-  beginner: "Эхлэгч",
-  intermediate: "Дунд",
-  advanced: "Ахисан",
-  expert: "Мэргэжилтэн",
-};
+function Sparkline({ data }: { data: DayBucket[] }) {
+  const max = Math.max(...data.map((d) => d.count), 1); const n = data.length;
+  const pts = data.map((d, i) => `${(i / (n - 1)) * 300},${36 - (d.count / max) * 32}`).join(" ");
+  return (
+    <svg viewBox="0 0 300 40" preserveAspectRatio="none" className="h-10 w-full">
+      <polyline points={pts} fill="none" stroke={T.secondary} strokeWidth={1.5} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
-export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+// Хамгийн их хэрэглэдэг модулиуд л үлдээв — бусад нь ⌘K болон sidebar-т бий.
+const MODULES = [
+  { href: "/admin/members", label: "Гишүүд", desc: "Бүртгэл · CRM", icon: "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" },
+  { href: "/admin/email", label: "Email илгээх", desc: "Бүртгүүлсэн рүү", icon: "M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" },
+  { href: "/admin/hero", label: "Нүүр слайдер", desc: "Зураг · текст", icon: "M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" },
+  { href: "/admin/payments", label: "Төлбөр", desc: "Орлого · гүйлгээ ₮", icon: "M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" },
+  { href: "/admin/classroom", label: "Хичээл", desc: "Курс · бүртгэл", icon: "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342" },
+  { href: "/admin/automation", label: "Автоматжуулалт", desc: "Comment → DM → захиалга", icon: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" },
+  { href: "/admin/analytics", label: "Аналитик", desc: "Тоо · хандалт", icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" },
+  { href: "/admin/site", label: "Контент", desc: "Сайтын текст", icon: "M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" },
+];
+
+export default function CommandCenter() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [ana, setAna] = useState<Analytics | null>(null);
+  const [newMembers, setNewMembers] = useState<NewMember[]>([]);
+  const [newCount, setNewCount] = useState(0);
+  const [autoEnabled, setAutoEnabled] = useState<boolean | null>(null);
+  const [autoBusy, setAutoBusy] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"hero" | "tasks" | "announcements">("hero");
 
-  const [announcements, setAnnouncements] = useState<{_id:string;title:string;content:string;image?:string;tag:string;pinned:boolean;published:boolean;createdAt:string}[]>([]);
-  const [annForm, setAnnForm] = useState({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
-  const [annEditing, setAnnEditing] = useState<string|null>(null);
-  const [annSaving, setAnnSaving] = useState(false);
-
-  const [tasks, setTasks] = useState<{_id:string;title:string;description:string;xpReward:number;status:string;assignedTo?:{_id:string;name:string}|null;createdAt:string}[]>([]);
-  const [taskForm, setTaskForm] = useState({title:"",description:"",xpReward:"500"});
-  const [taskSaving, setTaskSaving] = useState(false);
-
-  const [heroSlides, setHeroSlides] = useState<{url:string;type:string}[]>([]);
-  const [heroUploading, setHeroUploading] = useState(false);
-  const [heroVideoUrl, setHeroVideoUrl] = useState("");
-
-  const [heroMusicUrl, setHeroMusicUrl] = useState("/fire-again.mp3");
-  const [heroMusicEnabled, setHeroMusicEnabled] = useState(true);
-  const [musicUploading, setMusicUploading] = useState(false);
-
-  const flash = (msg: string) => {
-    setSaveStatus(msg);
-    setTimeout(() => setSaveStatus(null), 3000);
-  };
-
-  const loadData = useCallback(async () => {
-    try {
-      const [statsRes, annRes, taskRes, heroRes, musicRes] = await Promise.all([
-        fetch("/api/admin/stats"),
-        fetch("/api/announcements?limit=50"),
-        fetch("/api/tasks"),
-        fetch("/api/hero/slides"),
-        fetch("/api/hero/music"),
+  useEffect(() => {
+    (async () => {
+      const [s, a, nm, ms] = await Promise.all([
+        fetch("/api/admin/stats").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+        fetch("/api/admin/analytics").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+        fetch("/api/admin/new-members?days=7").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+        fetch("/api/admin/meta/settings").then((r) => (r.ok ? r.json() : null)).catch(() => null),
       ]);
-      if (statsRes.ok) setStats(await statsRes.json());
-      if (annRes.ok) { const d = await annRes.json(); setAnnouncements(d.announcements || []); }
-      if (taskRes.ok) { const d = await taskRes.json(); setTasks(d.tasks || []); }
-      if (heroRes.ok) { const d = await heroRes.json(); setHeroSlides(d.slides || []); }
-      if (musicRes.ok) { const d = await musicRes.json(); setHeroMusicUrl(d.url || "/fire-again.mp3"); setHeroMusicEnabled(d.enabled !== false); }
-    } catch {} finally { setLoading(false); }
+      setStats(s); setAna(a);
+      setNewMembers((nm?.members || []).slice(0, 8));
+      setNewCount(nm?.count || 0);
+      setAutoEnabled(ms?.settings?.automationEnabled !== false);
+      setLoading(false);
+    })();
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
-
-  const handleAnnSave = async () => {
-    if (!annForm.title.trim() || !annForm.content.trim() || annSaving) return;
-    setAnnSaving(true);
+  // DM автоматжуулалтын master унтраалга — унтраавал бүх чат хүн рүү очно.
+  const toggleAutomation = async () => {
+    if (autoEnabled === null || autoBusy) return;
+    const next = !autoEnabled;
+    setAutoBusy(true);
     try {
-      const isEdit = !!annEditing;
-      const res = await fetch(isEdit ? `/api/announcements/${annEditing}` : "/api/announcements", {
-        method: isEdit ? "PUT" : "POST",
+      const r = await fetch("/api/admin/meta/settings", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(annForm),
+        body: JSON.stringify({ automationEnabled: next }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      if (isEdit) setAnnouncements(prev => prev.map(a => a._id === annEditing ? data.announcement : a));
-      else setAnnouncements(prev => [data.announcement, ...prev]);
-      setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false});
-      setAnnEditing(null);
-      flash(isEdit ? "Мэдэгдэл шинэчлэгдлээ" : "Мэдэгдэл нэмэгдлээ");
-    } catch { flash("Алдаа гарлаа"); }
-    finally { setAnnSaving(false); }
-  };
-  const handleAnnDelete = async (id: string) => {
-    await fetch(`/api/announcements/${id}`, { method: "DELETE" });
-    setAnnouncements(prev => prev.filter(a => a._id !== id));
-    flash("Устгагдлаа");
+      if (r.ok) setAutoEnabled(next);
+    } finally {
+      setAutoBusy(false);
+    }
   };
 
-  const handleTaskCreate = async () => {
-    if (!taskForm.title.trim() || taskSaving) return;
-    setTaskSaving(true);
-    try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: taskForm.title.trim(), description: taskForm.description.trim(), xpReward: parseInt(taskForm.xpReward) || 500 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setTasks(prev => [data.task, ...prev]);
-      setTaskForm({title:"",description:"",xpReward:"500"});
-      flash("Даалгавар нэмэгдлээ");
-    } catch { flash("Алдаа гарлаа"); }
-    finally { setTaskSaving(false); }
-  };
-  const handleTaskAction = async (id: string, action: string) => {
-    const res = await fetch(`/api/tasks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
-    const data = await res.json();
-    if (res.ok) { setTasks(prev => prev.map(t => t._id === id ? data.task : t)); flash(action === "accept" ? "Баталсан" : "Татгалзсан"); }
-  };
-  const handleTaskDelete = async (id: string) => {
-    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-    setTasks(prev => prev.filter(t => t._id !== id));
-    flash("Устгагдлаа");
-  };
-
-  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setHeroUploading(true);
-    try {
-      const fd = new FormData(); fd.append("file", file);
-      const res = await fetch("/api/hero/slides", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok) { setHeroSlides(data.slides); flash("Слайд нэмэгдлээ"); }
-      else flash("Алдаа: " + (data.error || "Upload failed"));
-    } catch { flash("Network алдаа"); }
-    finally { setHeroUploading(false); e.target.value = ""; }
-  };
-
-  const handleHeroVideoAdd = async () => {
-    const url = heroVideoUrl.trim();
-    if (!url) return;
-    setHeroUploading(true);
-    try {
-      const res = await fetch("/api/hero/slides", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrl: url }),
-      });
-      const data = await res.json();
-      if (res.ok) { setHeroSlides(data.slides); setHeroVideoUrl(""); flash("Видео нэмэгдлээ"); }
-      else flash("Алдаа: " + (data.error || "Failed"));
-    } catch { flash("Network алдаа"); }
-    finally { setHeroUploading(false); }
-  };
-
-  const handleHeroSlideDelete = async (index: number) => {
-    const res = await fetch("/api/hero/slides", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ index }) });
-    const data = await res.json();
-    if (res.ok) { setHeroSlides(data.slides); flash("Слайд устгагдлаа"); }
-  };
-
-  const handleMusicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setMusicUploading(true);
-    try {
-      const fd = new FormData(); fd.append("file", file);
-      const res = await fetch("/api/hero/music", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok) { setHeroMusicUrl(data.url); flash("Хөгжим солигдлоо"); }
-    } catch { flash("Алдаа"); }
-    finally { setMusicUploading(false); e.target.value = ""; }
-  };
-
-  const handleMusicToggle = async () => {
-    const newVal = !heroMusicEnabled;
-    setHeroMusicEnabled(newVal);
-    try {
-      await fetch("/api/hero/music", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: newVal }),
-      });
-      flash(newVal ? "Хөгжим асаагдлаа" : "Хөгжим унтраагдлаа");
-    } catch { flash("Алдаа"); }
-  };
-
-  const handleMusicReset = async () => {
-    setMusicUploading(true);
-    try {
-      const res = await fetch("/api/hero/music", { method: "DELETE" });
-      const data = await res.json();
-      if (res.ok) { setHeroMusicUrl(data.url); flash("Анхны хөгжим сэргээгдлээ"); }
-    } catch {} finally { setMusicUploading(false); }
-  };
-
-  if (loading) return (
-    <div className="flex min-h-[40vh] items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" />
-    </div>
-  );
-
-  const tabs = [
-    { key: "hero" as const, label: "Hero & Хөгжим", count: heroSlides.length },
-    { key: "tasks" as const, label: "Даалгавар", count: tasks.length },
-    { key: "announcements" as const, label: "Мэдэгдэл", count: announcements.length },
-  ];
-
-  const statusColors: Record<string, string> = {
-    open: "bg-[rgba(34,197,94,0.15)] text-[#22C55E]",
-    submitted: "bg-[rgba(234,179,8,0.15)] text-[#EAB308]",
-    accepted: "bg-[rgba(239,44,88,0.12)] text-[#EF2C58]",
-    rejected: "bg-[rgba(239,68,68,0.15)] text-[#EF4444]",
-  };
-  const statusLabels: Record<string, string> = { open: "Нээлттэй", submitted: "Хүлээж буй", accepted: "Баталсан", rejected: "Татгалзсан" };
+  const k = ana?.kpis;
+  const members = k?.members ?? stats?.totalMembers ?? null;
+  const revenue30 = k?.revenue30 ?? null;
+  const trend = useMemo(() => fill30(ana?.signupsByDay), [ana]);
+  const today = new Date().toLocaleDateString("mn-MN", { month: "long", day: "numeric", weekday: "long" });
 
   return (
-    <div className="space-y-5 pb-6">
-      {/* Save toast */}
-      {saveStatus && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-[8px] bg-[#1A1A1A] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 shadow-xl">
-          <svg className="h-4 w-4 text-[#22C55E] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-          <span className="text-[13px] text-[#E8E8E8]">{saveStatus}</span>
-        </div>
-      )}
-
+    <div className="mx-auto max-w-6xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#E8E8E8]">Dashboard</h1>
-          <p className="mt-0.5 text-[12px] text-[#555555]">Нийгэмлэгийн удирдлагын самбар</p>
+          <div className="chrome flex items-center gap-2 text-[9px] font-bold">
+            <span className="text-[#1080CA]">[ADMIN]</span>
+            <span className="text-[#1080CA]">/////</span>
+            <span style={{ color: T.faint }}>COMMAND CENTER</span>
+          </div>
+          <h1 className="mt-1 text-[26px] font-bold tracking-tight" style={{ color: "#1080CA", fontFamily: "var(--font-display)" }}>
+            Сайн байна уу
+          </h1>
+          <p className="mt-0.5 text-[12px] capitalize" style={{ color: T.faint }}>{today}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => { setLoading(true); loadData(); }}
-            className="flex items-center gap-1.5 rounded-[8px] border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            Шинэчлэх
-          </button>
-          <Link href="/" target="_blank" className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E]">
-            Сайт харах
-          </Link>
-        </div>
+        <button
+          onClick={toggleAutomation}
+          disabled={autoEnabled === null || autoBusy}
+          title={autoEnabled ? "DM автоматжуулалтыг унтраах" : "DM автоматжуулалтыг асаах"}
+          className="inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            borderColor: autoEnabled ? "rgba(74,222,128,0.4)" : "rgba(79,168,232,0.5)",
+            color: autoEnabled ? T.ok : T.bad,
+            background: autoEnabled ? "rgba(74,222,128,0.08)" : "rgba(79,168,232,0.08)",
+          }}
+        >
+          {autoBusy ? (
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          ) : (
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: autoEnabled ? T.ok : T.bad }} />
+          )}
+          Автомат · {autoEnabled === null ? "…" : autoEnabled ? "ON" : "OFF"}
+        </button>
       </div>
 
-      {/* Stats Cards */}
-      {stats && (
+      {/* Metrics */}
+      {loading ? (
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[104px]" />)}</div>
+      ) : (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {[
-            { label: "Хэрэглэгч", value: stats.totalUsers, color: "text-[#E8E8E8]" },
-            { label: "Клан гишүүд", value: stats.totalMembers, color: "text-[#EF2C58]" },
-            { label: "Нийтлэл", value: stats.totalPosts, color: "text-[#E8E8E8]" },
-            { label: "Шинэ (7 хоног)", value: stats.recentSignups, color: "text-[#22C55E]" },
-          ].map(s => (
-            <div key={s.label} className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
-              <div className="text-[10px] font-medium uppercase tracking-wider text-[#555555]">{s.label}</div>
-              <div className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value.toLocaleString()}</div>
-            </div>
-          ))}
+          <Metric label="Шинэ бүртгэл · 7 хоног" value={newCount.toLocaleString()} accent="secondary" sub="Доор жагсаалт бий" />
+          <Metric label="Идэвхтэй гишүүн" value={(members ?? 0).toLocaleString()} accent="primary" sub="Төлбөртэй" />
+          <Metric label="Орлого · 30 хоног" value={fmtMNTCompact(revenue30)} accent="ok" sub="Сүүлийн сар" />
+          <Metric label="Нийт бүртгэл" value={(stats?.totalUsers ?? 0).toLocaleString()} sub="Бүх хэрэглэгч" />
         </div>
       )}
 
-      {/* AI Level + Top XP */}
-      {stats && (
-        <div className="grid gap-3 lg:grid-cols-2">
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">AI Түвшин</span>
-              <Link href="/admin/members" className="text-[10px] text-[#555555] hover:text-[#EF2C58]">Бүгд →</Link>
-            </div>
-            <div className="space-y-2">
-              {(["beginner","intermediate","advanced","expert"] as const).map(level => {
-                const count = stats.aiLevelCounts.find(a => a._id === level)?.count || 0;
-                const pct = stats.totalUsers > 0 ? (count / stats.totalUsers) * 100 : 0;
-                return (
-                  <div key={level} className="flex items-center gap-2">
-                    <span className="w-20 text-[11px] text-[#666666]">{AI_LEVEL_LABELS[level]}</span>
-                    <div className="h-1.5 flex-1 rounded-full bg-[rgba(255,255,255,0.06)]"><div className="h-full rounded-full bg-[#EF2C58] transition-all" style={{ width: `${pct}%` }} /></div>
-                    <span className="w-8 text-right text-[11px] text-[#555555]">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-4">
-            <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Шилдэг XP</div>
-            <div className="space-y-1">
-              {(stats.topXPUsers || []).slice(0, 5).map((u, i) => (
-                <Link key={u._id} href={`/profile/${u._id}`} className="flex items-center gap-2 rounded-[8px] py-1.5 px-2 transition hover:bg-[rgba(255,255,255,0.04)]">
-                  <span className={`w-5 text-center text-[11px] font-bold ${i < 3 ? "text-[#EF2C58]" : "text-[#555555]"}`}>{i+1}</span>
-                  {u.avatar ? <img src={u.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1A1A1A] text-[9px] font-bold text-[#666666]">{u.name?.charAt(0)}</div>}
-                  <span className="flex-1 text-[12px] text-[#CCCCCC] truncate">{u.name}</span>
-                  <span className="text-[11px] font-bold text-[#EF2C58]">{(u.xp||0).toLocaleString()} XP</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+      {/* Trend */}
+      <Card hud className="mt-3 p-5">
+        <div className="flex items-center justify-between">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: T.faint }}>Бүртгэл · 30 хоног</div>
+          <div className="text-[12px]" style={{ fontFamily: MONO, color: T.muted }}>{trend.reduce((a, b) => a + b.count, 0)}</div>
         </div>
-      )}
+        <div className="mt-3">{loading ? <Skeleton className="h-10" /> : <Sparkline data={trend} />}</div>
+      </Card>
 
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-1 rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-1">
-        {tabs.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-[6px] px-4 py-2.5 text-[13px] font-semibold transition ${
-              activeTab === tab.key ? "bg-[#EF2C58] text-white" : "text-[#666666] hover:text-[#999999] hover:bg-[rgba(255,255,255,0.04)]"
-            }`}
-          >
-            {tab.label}
-            <span className={`ml-1.5 text-[10px] ${activeTab === tab.key ? "text-white/70" : "text-[#555555]"}`}>({tab.count})</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Hero & Music Tab */}
-      {activeTab === "hero" && (
-        <div className="space-y-4">
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#555555]">Hero Slider</div>
-
-            {heroSlides.length > 0 ? (
-              <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-                {heroSlides.map((slide, i) => (
-                  <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
-                    {slide.type === "video" ? (
-                      <video src={slide.url} muted loop playsInline className="h-full w-full object-cover" />
-                    ) : (
-                      <img src={slide.url} alt={`Slide ${i+1}`} className="h-full w-full object-cover" />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/40">
-                      <button onClick={() => handleHeroSlideDelete(i)} className="rounded-full bg-red-500 p-2 text-white opacity-0 transition group-hover:opacity-100 hover:bg-red-600">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      </button>
+      {/* Шинэ бүртгэл + модулиуд */}
+      <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_380px]">
+        <div>
+          <SectionHeader
+            title="Шинэ бүртгэл · 7 хоног"
+            hint="хамгийн сүүлийнх дээрээ"
+            action={<Btn href="/admin/email" size="sm">Email илгээх →</Btn>}
+          />
+          {loading ? (
+            <Card><div className="space-y-3 p-4">{[0, 1, 2].map((i) => <Skeleton key={i} />)}</div></Card>
+          ) : newMembers.length === 0 ? (
+            <Empty title="Шинэ бүртгэл алга" hint="Сүүлийн 7 хоногт бүртгүүлсэн хүн энд гарна." />
+          ) : (
+            <Card>
+              <div className="divide-y" style={{ borderColor: T.border }}>
+                {newMembers.map((m) => (
+                  <Link key={m.id} href={`/profile/${m.id}`} className="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-[rgba(255,255,255,0.02)]">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-[13px] font-semibold" style={{ color: T.text }}>{m.name}</span>
+                        {m.paid ? (
+                          <span className="chrome rounded-[4px] bg-[#1080CA] px-1.5 py-0.5 text-[7px] font-bold text-[#161618]">ТӨЛСӨН</span>
+                        ) : (
+                          <span className="chrome rounded-[4px] border border-[rgba(255,255,255,0.14)] px-1.5 py-0.5 text-[7px] font-bold" style={{ color: T.faint }}>FREE</span>
+                        )}
+                      </div>
+                      <div className="truncate text-[11px]" style={{ fontFamily: MONO, color: T.muted }}>
+                        {m.email}{m.phone ? ` · ${m.phone}` : ""}
+                      </div>
                     </div>
-                    <span className="absolute bottom-1 left-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">{slide.type}</span>
-                  </div>
+                    <span className="shrink-0 text-[11px]" style={{ fontFamily: MONO, color: T.faint }}>{ago(m.createdAt)}</span>
+                  </Link>
                 ))}
               </div>
-            ) : (
-              <div className="mb-4 rounded-[8px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-8 text-center text-[12px] text-[#555555]">Слайд байхгүй — fallback зураг ашиглагдана</div>
-            )}
-
-            <div className="flex flex-wrap items-end gap-4">
-              <div>
-                <label className="mb-1 block text-[11px] font-medium text-[#555555]">Зураг нэмэх</label>
-                <input type="file" accept="image/*" onChange={handleHeroImageUpload} disabled={heroUploading}
-                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer hover:file:bg-[#D4264E]" />
+              <div className="border-t px-4 py-2.5" style={{ borderColor: T.border }}>
+                <Link href="/admin/members" className="chrome text-[9px] font-bold text-[#1080CA] hover:brightness-110">
+                  БҮХ ГИШҮҮД →
+                </Link>
               </div>
-              <div className="flex items-end gap-2">
-                <div>
-                  <label className="mb-1 block text-[11px] font-medium text-[#555555]">Видео URL</label>
-                  <input
-                    type="text"
-                    value={heroVideoUrl}
-                    onChange={e => setHeroVideoUrl(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") handleHeroVideoAdd(); }}
-                    placeholder="https://example.com/video.mp4"
-                    className="w-[260px] rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]"
-                  />
-                </div>
-                <button onClick={handleHeroVideoAdd} disabled={!heroVideoUrl.trim() || heroUploading}
-                  className="rounded-[8px] bg-[#EF2C58] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
-                  Нэмэх
-                </button>
-              </div>
-            </div>
-            {heroUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#555555]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" /> Байршуулж байна...</div>}
-          </div>
-
-          {/* Music */}
-          <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#555555]">Арын хөгжим</span>
-              <button
-                onClick={handleMusicToggle}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${heroMusicEnabled ? "bg-[#EF2C58]" : "bg-[#333333]"}`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${heroMusicEnabled ? "translate-x-6" : "translate-x-1"}`} />
-              </button>
-            </div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-2 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] px-3 py-2">
-                <svg className="h-4 w-4 text-[#EF2C58]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-                <span className="text-[12px] text-[#999999] max-w-[200px] truncate">{heroMusicUrl === "/fire-again.mp3" ? "fire-again.mp3 (default)" : heroMusicUrl.split("/").pop()}</span>
-              </div>
-              <audio src={heroMusicUrl} controls className="h-8" style={{maxWidth: 200}} />
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div>
-                <label className="mb-1 block text-[11px] font-medium text-[#555555]">Хөгжим солих</label>
-                <input type="file" accept="audio/*" onChange={handleMusicUpload} disabled={musicUploading}
-                  className="text-[12px] text-[#999999] file:mr-2 file:rounded-[8px] file:border-0 file:bg-[#EF2C58] file:px-4 file:py-2 file:text-[11px] file:font-bold file:text-white file:cursor-pointer" />
-              </div>
-              {heroMusicUrl !== "/fire-again.mp3" && (
-                <button onClick={handleMusicReset} disabled={musicUploading}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:border-[rgba(239,44,88,0.3)] hover:text-[#EF2C58]">
-                  Default сэргээх
-                </button>
-              )}
-            </div>
-            {musicUploading && <div className="mt-3 flex items-center gap-2 text-[12px] text-[#555555]"><div className="h-3 w-3 animate-spin rounded-full border-2 border-[#EF2C58] border-t-transparent" /> Байршуулж байна...</div>}
-          </div>
+            </Card>
+          )}
         </div>
-      )}
 
-      {/* Tasks Tab */}
-      {activeTab === "tasks" && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
-          <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Даалгавар удирдлага</div>
-          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input value={taskForm.title} onChange={e => setTaskForm(f => ({...f, title: e.target.value}))} placeholder="Даалгаврын нэр"
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
-              <input value={taskForm.xpReward} onChange={e => setTaskForm(f => ({...f, xpReward: e.target.value}))} placeholder="XP (200-5000)"
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" type="number" min={200} max={5000} />
-            </div>
-            <input value={taskForm.description} onChange={e => setTaskForm(f => ({...f, description: e.target.value}))} placeholder="Тайлбар (заавал биш)"
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={2000} />
-            <button onClick={handleTaskCreate} disabled={!taskForm.title.trim() || taskSaving}
-              className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
-              {taskSaving ? "Нэмж байна..." : "+ Даалгавар нэмэх"}
-            </button>
-          </div>
-          <div className="space-y-2">
-            {tasks.map((t, i) => (
-              <div key={t._id} className="flex items-center justify-between gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[12px] font-bold text-[#EF2C58]">#{i+1}</span>
-                    <span className="text-[13px] font-bold text-[#E8E8E8] truncate">{t.title}</span>
-                    <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-2 py-0.5 text-[10px] font-bold text-[#EF2C58]">+{t.xpReward} XP</span>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusColors[t.status] || "bg-[rgba(255,255,255,0.06)] text-[#555555]"}`}>{statusLabels[t.status] || t.status}</span>
+        <div>
+          <SectionHeader title="Модулиуд" />
+          <div className="grid grid-cols-2 gap-3">
+            {MODULES.map((m) => (
+              <Link key={m.href} href={m.href}>
+                <Card hover className="group flex items-center gap-3 p-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px]" style={{ background: "rgba(16,128,202,0.12)", color: T.primary }}>
+                    <Ico d={m.icon} className="h-[18px] w-[18px]" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[13px] font-semibold" style={{ color: T.text }}>{m.label}</div>
+                    <div className="mt-0.5 truncate text-[11px]" style={{ color: T.faint }}>{m.desc}</div>
                   </div>
-                  {t.description && <div className="mt-0.5 text-[11px] text-[#555555] line-clamp-1">{t.description}</div>}
-                </div>
-                <div className="flex shrink-0 gap-2">
-                  {t.status === "submitted" && (
-                    <>
-                      <button onClick={() => handleTaskAction(t._id, "accept")} className="rounded-[6px] bg-[rgba(34,197,94,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#22C55E] transition hover:bg-[rgba(34,197,94,0.2)]">Батлах</button>
-                      <button onClick={() => handleTaskAction(t._id, "reject")} className="rounded-[6px] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-[11px] font-bold text-[#EF4444] transition hover:bg-[rgba(239,68,68,0.2)]">Татгалзах</button>
-                    </>
-                  )}
-                  <button onClick={() => handleTaskDelete(t._id)} className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
-                </div>
-              </div>
+                </Card>
+              </Link>
             ))}
-            {tasks.length === 0 && <div className="py-8 text-center text-[12px] text-[#555555]">Даалгавар байхгүй</div>}
           </div>
         </div>
-      )}
-
-      {/* Announcements Tab */}
-      {activeTab === "announcements" && (
-        <div className="rounded-[8px] border border-[rgba(255,255,255,0.06)] bg-[#141414] p-5">
-          <div className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#EF2C58]">Мэдэгдэл удирдлага</div>
-          <div className="mb-5 space-y-3 rounded-[8px] bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)] p-4">
-            <input value={annForm.title} onChange={e => setAnnForm(f => ({...f, title: e.target.value}))} placeholder="Гарчиг"
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58]" maxLength={200} />
-            <textarea value={annForm.content} onChange={e => setAnnForm(f => ({...f, content: e.target.value}))} placeholder="Агуулга..."
-              className="w-full rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#444444] outline-none transition focus:border-[#EF2C58] min-h-[80px] resize-y" maxLength={5000} />
-            <div className="flex flex-wrap items-center gap-3">
-              <select value={annForm.tag} onChange={e => setAnnForm(f => ({...f, tag: e.target.value}))}
-                className="rounded-[8px] border border-[rgba(255,255,255,0.08)] bg-[#141414] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none">
-                {["мэдэгдэл","шинэчлэл","AI","эвент","бусад"].map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
-              </select>
-              <label className="flex items-center gap-1.5 text-[12px] text-[#999999] cursor-pointer">
-                <input type="checkbox" checked={annForm.pinned} onChange={e => setAnnForm(f => ({...f, pinned: e.target.checked}))} className="accent-[#EF2C58]" />
-                Pinned
-              </label>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={handleAnnSave} disabled={!annForm.title.trim() || !annForm.content.trim() || annSaving}
-                className="rounded-[8px] bg-[#EF2C58] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#D4264E] disabled:opacity-40">
-                {annSaving ? "..." : annEditing ? "Шинэчлэх" : "Нэмэх"}
-              </button>
-              {annEditing && (
-                <button onClick={() => { setAnnEditing(null); setAnnForm({title:"",content:"",image:"",tag:"мэдэгдэл",pinned:false}); }}
-                  className="rounded-[8px] border border-[rgba(255,255,255,0.08)] px-4 py-2 text-[12px] text-[#666666] transition hover:text-[#999999]">Болих</button>
-              )}
-            </div>
-          </div>
-          <div className="space-y-2">
-            {announcements.map(a => (
-              <div key={a._id} className="flex items-start justify-between gap-3 rounded-[8px] border border-[rgba(255,255,255,0.06)] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    {a.pinned && <span className="rounded-full bg-[rgba(239,44,88,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#EF2C58]">PIN</span>}
-                    <span className="rounded-full bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[9px] font-bold text-[#666666] uppercase">{a.tag}</span>
-                  </div>
-                  <div className="text-[13px] font-bold text-[#E8E8E8] truncate">{a.title}</div>
-                  <div className="text-[11px] text-[#555555] line-clamp-1">{a.content}</div>
-                </div>
-                <div className="flex shrink-0 gap-2">
-                  <button onClick={() => { setAnnEditing(a._id); setAnnForm({title:a.title,content:a.content,image:a.image||"",tag:a.tag,pinned:a.pinned}); setActiveTab("announcements"); }}
-                    className="rounded-[6px] px-2.5 py-1 text-[11px] font-bold text-[#EF2C58] transition hover:bg-[rgba(239,44,88,0.08)]">Засах</button>
-                  <button onClick={() => handleAnnDelete(a._id)}
-                    className="rounded-[6px] px-2 py-1 text-[11px] text-[#555555] transition hover:bg-[rgba(239,68,68,0.1)] hover:text-[#EF4444]">Устгах</button>
-                </div>
-              </div>
-            ))}
-            {announcements.length === 0 && <div className="py-8 text-center text-[12px] text-[#555555]">Мэдэгдэл байхгүй</div>}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

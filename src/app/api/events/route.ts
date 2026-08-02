@@ -24,9 +24,13 @@ export async function GET(req: Request) {
 
     const query: Record<string, unknown> = {};
 
+    const status = searchParams.get("status"); // "live", "upcoming", or "ended"
+
     if (month) {
       const [y, m] = month.split("-").map(Number);
       query.date = { $gte: new Date(y, m - 1, 1), $lt: new Date(y, m, 1) };
+    } else if (status === "live" || status === "upcoming" || status === "ended") {
+      query.status = status;
     } else {
       query.status = { $in: ["upcoming", "live"] };
     }
@@ -37,7 +41,7 @@ export async function GET(req: Request) {
 
     const events = await Event.find(query)
       .sort({ date: 1 })
-      .select("title description type date endDate liveLink location status color attendees image")
+      .select("title description type date endDate liveLink liveStreamUrl liveProvider viewerCount location status color attendees image")
       .populate("createdBy", "name avatar")
       .lean();
 

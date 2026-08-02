@@ -1,65 +1,203 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import NotificationBell from "./NotificationBell";
 
+// ─── Edgerunner header — sticky 56px, hairline border, slash-mark logo. ───
+// Desktop tabs mirror the mobile BottomBar funnels. Active = brand-accent underline.
+
+// Plan CTA shown only to logged-in non-members. Command-button style (dark,
+// brand-accent border) so it reads as the one attention item without glow noise.
+function PlanChip() {
+  const { data: session, status } = useSession();
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/clan/status")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d) setIsMember(!!d.isMember);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [status, session]);
+
+  if (!session?.user || isMember !== false) return null;
+
+  return (
+    <Link
+      href="/pricing"
+      title="Plan сонгох"
+      className="chrome inline-flex items-center gap-1.5 rounded-[4px] border border-[#1080CA] px-3 py-1.5 text-[9px] font-bold text-[#1080CA] transition hover:bg-[#1080CA] hover:text-[#161618]"
+    >
+      PLAN &gt;
+    </Link>
+  );
+}
+
+// Мокапын `LIVE · 18/20` чип — зочдод өнөөдрийн элсэлтийг амьдаар харуулна.
+function LiveSeatsChip() {
+  const [seats, setSeats] = useState<{ taken: number; total: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const total = Number(d?.seatsTotal) || 20;
+        const rawLeft = Number(d?.seatsLeft);
+        const left = Math.max(0, Math.min(total, Number.isFinite(rawLeft) ? rawLeft : total));
+        setSeats({ taken: total - left, total });
+      })
+      .catch(() => {});
+  }, []);
+
+  if (!seats) return null;
+  return (
+    <span
+      className="chrome hidden items-center gap-2 rounded-full border border-[#3A3A40] px-3.5 py-1.5 text-[9px] font-bold text-[#B4B4BA] lg:inline-flex"
+      style={{ fontVariantNumeric: "tabular-nums" }}
+    >
+      <span
+        className="h-1.5 w-1.5 rounded-full bg-[#1080CA]"
+        style={{ animation: "landingPulse 2s linear infinite" }}
+      />
+      LIVE · {seats.taken}/{seats.total}
+    </span>
+  );
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [hidden, setHidden] = useState(false);
 
-  const tabs = [
-    { href: "/", label: "Мэдээ", check: (p: string) => p === "/" || p.startsWith("/posts") },
-    { href: "/calendar", label: "Хуваарь", check: (p: string) => p.startsWith("/calendar") },
-    { href: "/classroom", label: "Хичээл", check: (p: string) => p.startsWith("/classroom") },
-    { href: "/services", label: "Үйлчилгээ", check: (p: string) => p.startsWith("/services") || p.startsWith("/tools") },
-    { href: "/members", label: "Гишүүд", check: (p: string) => p.startsWith("/members") },
-  ];
+  // Auto-hide nav on scroll-down — only when running as installed PWA.
+  // Browser tabs keep the nav visible always.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const nav = window.navigator as Navigator & { standalone?: boolean };
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: minimal-ui)").matches ||
+      window.matchMedia("(display-mode: fullscreen)").matches ||
+      nav.standalone === true ||
+      document.referrer.startsWith("android-app://");
+    if (!isStandalone) return;
+
+    let lastY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const dy = y - lastY;
+        if (dy > 4 && y > 80) setHidden(true);
+        else if (dy < -4) setHidden(false);
+        lastY = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // ─── Yuki/Erchis takeover — those areas own their entire chrome ───
+  // (checked after hooks so the hook order stays stable across routes)
+  if (pathname.startsWith("/yuki")) return null;
+  if (pathname.startsWith("/erchis")) return null;
+
+  const myId = (session?.user as { id?: string })?.id || "";
+  const profileHref = myId ? `/profile/${myId}` : "/profile";
+
+  const tabs = session
+    ? [
+        { href: "/", label: "Нүүр", check: (p: string) => p === "/" || p.startsWith("/onboarding") },
+        { href: "/classroom", label: "Курс", check: (p: string) => p.startsWith("/classroom") || p.startsWith("/calendar") },
+        { href: "/chat/live", label: "Chat", check: (p: string) => p.startsWith("/chat") },
+        { href: "/prompts", label: "Prompt", check: (p: string) => p.startsWith("/prompts") },
+        { href: "/feed", label: "Feed", check: (p: string) => p.startsWith("/feed") || p.startsWith("/posts") || p.startsWith("/community") },
+        { href: profileHref, label: "Профайл", check: (p: string) => p.startsWith("/profile") || p.startsWith("/credits") || p.startsWith("/services") },
+      ]
+    : [
+        { href: "/", label: "Нүүр", check: (p: string) => p === "/" },
+        { href: "/classroom", label: "Курс", check: (p: string) => p.startsWith("/classroom") || p.startsWith("/reels") },
+        { href: "/prompts", label: "Prompt", check: (p: string) => p.startsWith("/prompts") },
+        { href: "/pricing", label: "Plan", check: (p: string) => p.startsWith("/pricing") || p.startsWith("/clan") },
+      ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.92)] backdrop-blur-xl">
-      <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-8 lg:px-12">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/favicon.png" alt="Antaqor" width={28} height={28} className="rounded-[4px]" />
-          <span className="text-[15px] font-bold tracking-[3px] text-[#E8E8E8]">
-            ANTAQOR
-          </span>
-        </Link>
+    <nav
+      className="sticky top-0 z-50 border-b"
+      style={{
+        transform: hidden ? "translateY(-100%)" : "translateY(0)",
+        transition: "transform 0.25s ease",
+        willChange: "transform",
+        background: "rgba(22,22,24,0.85)",
+        borderColor: "#2E2E33",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8 lg:px-12">
+        {/* Left — slash-mark logo + desktop tabs */}
+        <div className="flex items-center gap-5 md:gap-8">
+          <Link href="/" aria-label="Antaqor" className="flex items-center gap-2">
+            <span className="block h-3.5 w-3.5 bg-[#1080CA]" />
+            <span
+              className="text-[13px] font-extrabold tracking-[0.08em] text-[#FFFFFF]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              ANTAQOR<span className="text-[#1080CA]">///</span>
+            </span>
+          </Link>
 
-        {/* Center pill tabs - desktop */}
-        <div className="hidden items-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-1 md:flex">
-          {tabs.map((tab) => {
-            const active = tab.check(pathname);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`rounded-[4px] px-5 py-1.5 text-[13px] font-semibold transition-all duration-200 ${
-                  active
-                    ? "bg-[#EF2C58] text-white"
-                    : "text-[#AAAAAA] hover:text-[#E8E8E8]"
-                }`}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
+          <nav className="hidden items-center gap-1 md:flex">
+            {tabs.map((tab) => {
+              const active = tab.check(pathname);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`chrome relative inline-flex items-center px-3.5 py-2 text-[10px] font-bold transition-colors duration-150 ${
+                    active ? "text-[#1080CA]" : "text-[#B4B4BA] hover:text-[#FFFFFF]"
+                  }`}
+                >
+                  {tab.label}
+                  {active && <span className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-[#1080CA]" />}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
+        {/* Right */}
+        <div className="flex items-center gap-2.5">
           {session ? (
             <>
+              <Link
+                href="/posts/new"
+                className="hidden items-center gap-1.5 bg-[#1080CA] px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.04em] text-[#0E0E10] transition hover:bg-[#4FA8E8] md:inline-flex"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="square" d="M12 5v14M5 12h14" />
+                </svg>
+                Пост
+              </Link>
+              <PlanChip />
               <NotificationBell />
               <Link
-                href={`/profile/${(session.user as { id?: string })?.id || ""}`}
-                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] text-[12px] font-bold text-[#EF2C58] transition-all duration-200 hover:border-[rgba(239,44,88,0.4)] hover:shadow-[0_0_16px_rgba(239,44,88,0.1)] overflow-hidden"
+                href={profileHref}
+                className="flex h-8 w-8 items-center justify-center overflow-hidden border border-[#3A3A40] bg-[#1E1E21] text-[12px] font-bold text-[#1080CA] transition hover:border-[#1080CA]"
               >
                 {session.user?.image ? (
-                  <img src={session.user.image} alt={session.user?.name || ""} className="h-8 w-8 rounded-[4px] object-cover" />
+                  <img src={session.user.image} alt={session.user?.name || ""} className="h-8 w-8 object-cover" />
                 ) : (
                   session.user?.name?.charAt(0).toUpperCase() || "U"
                 )}
@@ -67,17 +205,21 @@ export default function Navbar() {
             </>
           ) : (
             <>
+              <LiveSeatsChip />
               <Link
                 href="/auth/signin"
-                className="text-[13px] font-medium text-[#AAAAAA] transition-colors duration-200 hover:text-[#E8E8E8]"
+                className="chrome hidden px-2 py-2 text-[10px] font-bold text-[#B4B4BA] transition hover:text-[#1080CA] sm:inline-block"
               >
                 Нэвтрэх
               </Link>
               <Link
-                href="/auth/signup"
-                className="rounded-[4px] bg-[#EF2C58] px-5 py-2 text-[12px] font-bold text-white transition-all duration-200 hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
+                href="/auth/signup?plan=starter"
+                className="inline-flex items-center gap-1.5 bg-[#1080CA] px-5 py-2.5 text-[13px] font-semibold text-[#0E0E10] transition hover:bg-[#4FA8E8] hover:shadow-[0_0_0_1px_#1080CA,0_0_24px_0_rgba(16,128,202,.30)]"
               >
-                Бүртгүүлэх
+                Бүртгүүл
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="square" d="M14 5l7 7-7 7M21 12H3" />
+                </svg>
               </Link>
             </>
           )}

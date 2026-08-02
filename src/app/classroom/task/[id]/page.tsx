@@ -1,0 +1,320 @@
+"use client";
+
+import { useEffect, useRef, useState, use } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import PaywallGate from "@/components/PaywallGate";
+import { motion } from "framer-motion";
+
+interface Task {
+  _id: string;
+  title: string;
+  description: string;
+  attachments?: { url: string; name: string; size?: number }[];
+  deadline?: string;
+  maxScore: number;
+  course: string;
+  subsection: string;
+}
+
+interface Submission {
+  _id: string;
+  answerText: string;
+  attachments: { url: string; name: string }[];
+  score?: number;
+  feedback: string;
+  state: "submitted" | "graded";
+  submittedAt: string;
+  gradedAt?: string;
+}
+
+export default function TaskPageWrapper({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <PaywallGate>
+      <TaskPage params={params} />
+    </PaywallGate>
+  );
+}
+
+function TaskPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const { data: session } = useSession();
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [task, setTask] = useState<Task | null>(null);
+  const [submission, setSubmission] = useState<Submission | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const [answer, setAnswer] = useState("");
+  const [attachments, setAttachments] = useState<{ url: string; name: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`/api/classroom/lesson-tasks/${id}`).then((r) => r.json()),
+      fetch(`/api/classroom/lesson-tasks/${id}/submission`).then((r) => r.json()),
+    ])
+      .then(([t, s]) => {
+        setTask(t.task || null);
+        if (s.submission) {
+          setSubmission(s.submission);
+          setAnswer(s.submission.answerText || "");
+          setAttachments(s.submission.attachments || []);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setError("");
+    const nonPdf = files.find((f) => f.type !== "application/pdf" && !f.name.toLowerCase().endsWith(".pdf"));
+    if (nonPdf) {
+      setError("Зөвхөн PDF файл (.pdf) хүлээж авна");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+    const tooBig = files.find((f) => f.size > 25 * 1024 * 1024);
+    if (tooBig) {
+      setError("PDF 25MB-аас бага байх ёстой");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/classroom/upload-pdf", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "PDF хадгалах алдаа");
+          continue;
+        }
+        if (data.url) {
+          setAttachments((p) => [...p, { url: data.url, name: file.name }].slice(0, 5));
+        }
+      }
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const submit = async () => {
+    if (submitting) return;
+    if (attachments.length === 0) {
+      setError("PDF файл хавсаргана уу");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    setSuccess(false);
+    try {
+      const res = await fetch(`/api/classroom/lesson-tasks/${id}/submission`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answerText: answer, attachments }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Илгээх амжилтгүй");
+        return;
+      }
+      setSubmission(data.submission);
+      setSuccess(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-3 w-3 animate-pulse rounded-none bg-[#1080CA]" /></div>;
+  }
+  if (!task) {
+    return <div className="py-20 text-center text-[14px] text-[#5b6573]">Даалгавар олдсонгүй</div>;
+  }
+
+  const isGraded = submission?.state === "graded" && typeof submission.score === "number";
+  const pct = isGraded ? Math.round((submission!.score! / task.maxScore) * 100) : 0;
+  const deadlineMs = task.deadline ? +new Date(task.deadline) : null;
+  const deadlinePast = deadlineMs ? Date.now() > deadlineMs : false;
+
+  return (
+    <div className="mx-auto max-w-[760px] pb-12">
+      <Link href={`/classroom/course/${task.course}`} className="mb-3 inline-flex items-center gap-1 text-[11px] text-[#6b7280] transition hover:text-[#1080CA]">
+        ← Курс руу буцах
+      </Link>
+
+      {/* Task header */}
+      <div className="mb-5 rounded-none border border-[rgba(16,128,202,0.22)] bg-gradient-to-br from-[rgba(16,128,202,0.06)] via-[#ffffff] to-[#ffffff] p-5">
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-[#1080CA] px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#0E0E10]">
+            ДААЛГАВАР
+          </span>
+          {isGraded && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(16,128,202,0.4)] bg-[rgba(16,128,202,0.08)] px-2 py-1 text-[10px] font-black text-[#1080CA]">
+              {submission!.score}/{task.maxScore} · {pct}%
+            </span>
+          )}
+        </div>
+        <h1 className="mt-2 text-[22px] font-black leading-tight text-[#0e1726] sm:text-[26px]">{task.title}</h1>
+        {task.description && (
+          <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-[#52525B]">{task.description}</p>
+        )}
+
+        {/* Task PDF — main content (instructions, questions) */}
+        {task.attachments && task.attachments.length > 0 && (
+          <div className="mt-4 space-y-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1080CA]">Даалгаврын файл</div>
+            {task.attachments.map((a, i) => (
+              <a
+                key={i}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)] px-3 py-2.5 transition hover:bg-[rgba(16,128,202,0.12)]"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-[rgba(16,128,202,0.18)] text-[#1080CA]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6M7 21h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1 leading-tight">
+                  <span className="block truncate text-[13px] font-bold text-[#0e1726]">{a.name}</span>
+                  <span className="block text-[10px] text-[#5b6573]">PDF · нээх / татах</span>
+                </span>
+                <svg className="h-3.5 w-3.5 shrink-0 text-[#6b7280]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-[#5b6573]">
+          <span>Хамгийн их оноо: <strong className="text-[#0e1726]">{task.maxScore}</strong></span>
+          {task.deadline && (
+            <>
+              <span className="text-[#A1A1A6]">·</span>
+              <span className={deadlinePast ? "text-[#1080CA] font-bold" : ""}>
+                Хугацаа: {new Date(task.deadline).toLocaleDateString("mn-MN", { year: "numeric", month: "long", day: "numeric" })}
+                {deadlinePast && " (өнгөрсөн)"}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {!session ? (
+        <div className="rounded-none border border-[rgba(15,23,38,0.10)] bg-black p-6 text-center">
+          <p className="text-[13px] text-[#5b6573]">Даалгавар илгээхийн тулд нэвтэрнэ үү</p>
+          <Link href="/auth/signin" className="mt-3 inline-block rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-black text-[#0E0E10]">Нэвтрэх</Link>
+        </div>
+      ) : (
+        <div className="rounded-none border border-[rgba(15,23,38,0.10)] bg-black p-5">
+          {/* Status */}
+          {submission && (
+            <div className={`mb-4 rounded-none border px-3 py-2 ${isGraded ? "border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)]" : "border-[rgba(255,193,7,0.3)] bg-[rgba(255,193,7,0.06)]"}`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${isGraded ? "text-[#1080CA]" : "text-[#FFC107]"}`}>
+                  {isGraded ? `ҮНЭЛЭГДСЭН · ${submission.score}/${task.maxScore}` : "ИЛГЭЭСЭН · ҮНЭЛГЭЭ ХҮЛЭЭЖ БАЙНА"}
+                </span>
+                <span className="text-[10px] text-[#5b6573]">
+                  {new Date(submission.submittedAt).toLocaleDateString("mn-MN")}
+                </span>
+              </div>
+              {isGraded && submission.feedback && (
+                <p className="mt-2 text-[12px] leading-relaxed text-[#334155]">
+                  <strong className="text-[#5b6573]">Тайлбар:</strong> {submission.feedback}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* PDF upload — primary submission */}
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#5b6573]">PDF хавсралт <span className="text-[#1080CA]">*</span></span>
+            <span className="text-[9px] text-[#6b7280]">{attachments.length}/5</span>
+          </div>
+          {attachments.length > 0 && (
+            <ul className="mb-2 space-y-1">
+              {attachments.map((a, i) => (
+                <li key={i} className="flex items-center gap-2 rounded-none border border-[rgba(16,128,202,0.2)] bg-[rgba(16,128,202,0.05)] px-2.5 py-2">
+                  <span className="rounded-none bg-[rgba(16,128,202,0.18)] px-1.5 py-0.5 text-[9px] font-black text-[#1080CA]">PDF</span>
+                  <span className="min-w-0 flex-1 truncate text-[12px] text-[#0e1726]">{a.name}</span>
+                  <button onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#6b7280] hover:text-[#1080CA]" aria-label="Устгах">
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {attachments.length < 5 && (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex w-full items-center gap-2.5 rounded-none border-2 border-dashed border-[rgba(16,128,202,0.35)] bg-black px-3 py-3 text-left transition hover:border-[rgba(16,128,202,0.55)] hover:bg-[rgba(16,128,202,0.04)] disabled:opacity-50"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA]">
+                {uploading ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+                ) : (
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6M7 21h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v15a2 2 0 002 2z" />
+                  </svg>
+                )}
+              </span>
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block text-[12px] font-bold text-[#0e1726]">
+                  {uploading ? "Хадгалж байна..." : attachments.length === 0 ? "PDF сонгох" : "Дахин PDF нэмэх"}
+                </span>
+                <span className="block text-[10px] text-[#6b7280]">.pdf · 25MB хүртэл · хамгийн их 5 файл</span>
+              </span>
+            </button>
+          )}
+          <input ref={fileRef} type="file" accept=".pdf,application/pdf" multiple onChange={handlePick} className="hidden" />
+
+          {/* Optional notes */}
+          <div className="mt-4 mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#5b6573]">Тэмдэглэл <span className="text-[#6b7280] normal-case font-normal tracking-normal">(заавал биш)</span></div>
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Багшид нэмж хэлэх зүйл байвал бичнэ үү..."
+            rows={3}
+            maxLength={10000}
+            className="w-full resize-y rounded-none border border-[rgba(15,23,38,0.10)] bg-black p-3 text-[12px] leading-relaxed text-[#0e1726] placeholder-[#A1A1A6] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          />
+
+          {error && (
+            <div className="mt-3 rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] text-[#1080CA]">
+              {error}
+            </div>
+          )}
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-3 rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] font-bold text-[#1080CA]"
+            >
+              ✓ Илгээлээ. Багш үнэлэхийг хүлээгээрэй.
+            </motion.div>
+          )}
+
+          <button
+            onClick={submit}
+            disabled={submitting || uploading || attachments.length === 0}
+            className="mt-4 w-full rounded-none bg-[#1080CA] py-3 text-[13px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40"
+          >
+            {submitting ? "Илгээж байна..." : submission ? "Дахин илгээх" : "PDF илгээх"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

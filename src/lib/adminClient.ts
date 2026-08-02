@@ -1,4 +1,4 @@
-const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
+const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com", "cyberempire4444@gmail.com"];
 
 export function isAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false;

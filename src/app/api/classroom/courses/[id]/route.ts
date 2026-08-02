@@ -39,7 +39,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { title, description, thumbnail, order, requiredLevel } = await req.json();
+    const { title, description, thumbnail, coverImage, order, requiredLevel, category } = await req.json();
 
     await dbConnect();
     const course = await Course.findByIdAndUpdate(
@@ -48,8 +48,10 @@ export async function PUT(
         ...(title && { title: title.trim() }),
         ...(description !== undefined && { description: description.trim() }),
         ...(thumbnail !== undefined && { thumbnail }),
+        ...(coverImage !== undefined && { coverImage }),
         ...(order !== undefined && { order }),
         ...(requiredLevel !== undefined && { requiredLevel }),
+        ...(category !== undefined && { category: typeof category === "string" ? category.trim() : "" }),
       },
       { new: true, runValidators: true }
     );

@@ -38,8 +38,8 @@ const EMPTY_FORM = {
 const CATEGORIES = ["Зугаа цэнгэл", "Боловсрол", "Технологи", "AI & Automation", "Бизнес"];
 const STATUSES = [
   { value: "active", label: "Active", color: "text-green-400" },
-  { value: "coming_soon", label: "Coming Soon", color: "text-yellow-400" },
-  { value: "inactive", label: "Inactive", color: "text-red-400" },
+  { value: "coming_soon", label: "Coming Soon", color: "text-[#1080CA]" },
+  { value: "inactive", label: "Inactive", color: "text-[#4E94D0]" },
 ];
 
 export default function AdminServicesPage() {
@@ -146,13 +146,13 @@ export default function AdminServicesPage() {
     } catch {}
   };
 
-  const inputClass = "w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]";
-  const selectClass = "rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)]";
+  const inputClass = "w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(16,128,202,0.4)] placeholder:text-[#5b6573]";
+  const selectClass = "rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(16,128,202,0.4)]";
 
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#1080CA] border-t-transparent" />
       </div>
     );
   }
@@ -162,30 +162,30 @@ export default function AdminServicesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl tracking-[2px]">
-            ҮЙЛЧИЛГЭЭ <span className="text-[#EF2C58]">УДИРДЛАГА</span>
+            ҮЙЛЧИЛГЭЭ <span className="text-[#1080CA]">УДИРДЛАГА</span>
           </h1>
-          <p className="mt-1 text-[11px] text-[#999999]">
+          <p className="mt-1 text-[11px] text-[#5b6573]">
             {services.length} үйлчилгээ бүртгэгдсэн
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)]"
+          className="rounded-none bg-[#1080CA] px-5 py-2.5 text-[12px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.25)]"
         >
           + Нэмэх
         </button>
       </div>
 
       {msg && (
-        <div className={`rounded-[4px] px-4 py-2.5 text-[12px] font-medium ${msg.startsWith("Алдаа") ? "border border-red-900/50 bg-red-950/30 text-red-400" : "border border-green-900/50 bg-green-950/30 text-green-400"}`}>
+        <div className={`rounded-none px-4 py-2.5 text-[12px] font-medium ${msg.startsWith("Алдаа") ? "border border-[#0C3050]/50 bg-[#07203A]/30 text-[#4E94D0]" : "border border-green-900/50 bg-green-950/30 text-green-400"}`}>
           {msg}
         </div>
       )}
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-5 space-y-3">
-          <div className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] mb-2">
+        <div className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] p-5 space-y-3">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#1080CA] mb-2">
             {editing ? "Засварлах" : "Шинэ үйлчилгээ"}
           </div>
 
@@ -277,12 +277,12 @@ export default function AdminServicesPage() {
               className={`${inputClass} w-20`}
             />
 
-            <label className="flex items-center gap-1.5 text-[11px] text-[#CCCCCC] cursor-pointer">
+            <label className="flex items-center gap-1.5 text-[11px] text-[#8A8A92] cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.featured}
                 onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-                className="accent-[#EF2C58]"
+                className="accent-[#1080CA]"
               />
               Featured
             </label>
@@ -299,13 +299,13 @@ export default function AdminServicesPage() {
             <button
               onClick={handleSave}
               disabled={!form.name.trim() || !form.slug.trim() || saving}
-              className="rounded-[4px] bg-[#EF2C58] px-5 py-2.5 text-[12px] font-bold text-[#F8F8F6] transition hover:shadow-[0_0_24px_rgba(239,44,88,0.25)] disabled:opacity-40"
+              className="rounded-none bg-[#1080CA] px-5 py-2.5 text-[12px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.25)] disabled:opacity-40"
             >
               {saving ? "Хадгалж байна..." : editing ? "Шинэчлэх" : "Нэмэх"}
             </button>
             <button
               onClick={resetForm}
-              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-4 py-2.5 text-[12px] text-[#999999] transition hover:text-[#CCCCCC]"
+              className="rounded-none border border-[rgba(255,255,255,0.08)] px-4 py-2.5 text-[12px] text-[#5b6573] transition hover:text-[#8A8A92]"
             >
               Болих
             </button>
@@ -318,9 +318,9 @@ export default function AdminServicesPage() {
         {services.map((s) => {
           const statusInfo = STATUSES.find((st) => st.value === s.status);
           return (
-            <div key={s._id} className="flex items-center gap-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-4">
+            <div key={s._id} className="flex items-center gap-4 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] p-4">
               {/* Icon */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[#E8E8E6] text-[14px] font-black text-[#EF2C58]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[#E8E8E6] text-[14px] font-black text-[#1080CA]">
                 {s.name.charAt(0)}
               </div>
 
@@ -329,18 +329,18 @@ export default function AdminServicesPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-[14px] font-bold text-[#E8E8E8]">{s.name}</span>
                   {s.featured && (
-                    <span className="rounded-[4px] bg-[rgba(239,44,88,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#EF2C58]">
+                    <span className="rounded-none bg-[rgba(16,128,202,0.12)] px-1.5 py-0.5 text-[8px] font-black text-[#1080CA]">
                       FEATURED
                     </span>
                   )}
-                  <span className={`text-[10px] font-bold ${statusInfo?.color || "text-[#999999]"}`}>
+                  <span className={`text-[10px] font-bold ${statusInfo?.color || "text-[#5b6573]"}`}>
                     {statusInfo?.label}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] text-[#999999]">{s.category}</span>
-                  {s.domain && <span className="text-[11px] text-[#999999]">· {s.domain}</span>}
-                  <span className="text-[10px] text-[#999999]">order: {s.order}</span>
+                  <span className="text-[11px] text-[#5b6573]">{s.category}</span>
+                  {s.domain && <span className="text-[11px] text-[#5b6573]">· {s.domain}</span>}
+                  <span className="text-[10px] text-[#5b6573]">order: {s.order}</span>
                 </div>
               </div>
 
@@ -348,13 +348,13 @@ export default function AdminServicesPage() {
               <div className="flex shrink-0 gap-2">
                 <button
                   onClick={() => startEdit(s)}
-                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-[#EF2C58] transition hover:border-[rgba(239,44,88,0.3)]"
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-[#1080CA] transition hover:border-[rgba(16,128,202,0.3)]"
                 >
                   Засах
                 </button>
                 <button
                   onClick={() => handleDelete(s._id)}
-                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-red-400 transition hover:border-red-900/50"
+                  className="rounded-none border border-[rgba(255,255,255,0.08)] px-3 py-1.5 text-[11px] text-[#4E94D0] transition hover:border-[#0C3050]/50"
                 >
                   Устгах
                 </button>
@@ -363,7 +363,7 @@ export default function AdminServicesPage() {
           );
         })}
         {services.length === 0 && (
-          <p className="py-10 text-center text-[13px] text-[#999999]">Үйлчилгээ бүртгэгдээгүй</p>
+          <p className="py-10 text-center text-[13px] text-[#5b6573]">Үйлчилгээ бүртгэгдээгүй</p>
         )}
       </div>
     </div>

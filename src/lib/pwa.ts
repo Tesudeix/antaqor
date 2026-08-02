@@ -88,24 +88,44 @@ export async function unsubscribeFromPush(userId: string): Promise<boolean> {
   return success;
 }
 
-/** Register service worker and handle updates */
+/** Register service worker and AUTO-APPLY updates.
+ *
+ * Previously a new worker only fired an "update available" event and waited for
+ * a UI prompt to call skipWaiting — so if nothing called it, the new worker sat
+ * in "waiting" forever and the OLD worker kept controlling the page (serving its
+ * stale caches, e.g. a cached 404 for an admin route). Now we activate a new
+ * worker the instant it installs and reload ONCE when it takes control, so a
+ * client can never be stranded on an outdated service worker. */
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!("serviceWorker" in navigator)) return null;
 
   const reg = await navigator.serviceWorker.register("/sw.js");
 
-  // Listen for updates
+  // Reload exactly once when a new worker takes control (clean page on new SW).
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+
+  // Promote a worker that's already waiting from a previous visit.
+  if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
+
+  // Force-activate any worker that installs, no manual prompt needed.
   reg.addEventListener("updatefound", () => {
     const newWorker = reg.installing;
     if (!newWorker) return;
-
     newWorker.addEventListener("statechange", () => {
-      if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-        // New version available
+      if (newWorker.state === "installed") {
         window.dispatchEvent(new CustomEvent("sw-update-available", { detail: { registration: reg } }));
+        if (navigator.serviceWorker.controller) newWorker.postMessage("SKIP_WAITING");
       }
     });
   });
+
+  // Proactively check for a newer worker on every load.
+  reg.update().catch(() => {});
 
   return reg;
 }

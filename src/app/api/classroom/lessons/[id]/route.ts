@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Lesson from "@/models/Lesson";
 import Course from "@/models/Course";
+import LessonTask from "@/models/LessonTask";
 
 export async function GET(
   req: NextRequest,
@@ -38,6 +39,17 @@ export async function PUT(
     const body = await req.json();
 
     await dbConnect();
+    const safeAttachments = Array.isArray(body.attachments)
+      ? body.attachments
+          .filter((a: { url?: string; name?: string }) => a?.url && a?.name)
+          .map((a: { url: string; name: string; size?: number }) => ({
+            url: String(a.url),
+            name: String(a.name),
+            size: typeof a.size === "number" ? a.size : undefined,
+          }))
+          .slice(0, 10)
+      : undefined;
+
     const lesson = await Lesson.findByIdAndUpdate(
       id,
       {
@@ -48,6 +60,10 @@ export async function PUT(
         ...(body.videoType && { videoType: body.videoType }),
         ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
         ...(body.order !== undefined && { order: body.order }),
+        ...(body.durationSec !== undefined && { durationSec: Math.max(0, Number(body.durationSec) || 0) }),
+        ...(body.section !== undefined && { section: body.section || null }),
+        ...(body.subsection !== undefined && { subsection: body.subsection || null }),
+        ...(safeAttachments !== undefined && { attachments: safeAttachments }),
       },
       { new: true, runValidators: true }
     );
@@ -78,6 +94,7 @@ export async function DELETE(
 
     const lesson = await Lesson.findByIdAndDelete(id);
     if (lesson) {
+      await LessonTask.deleteMany({ lesson: id });
       await Course.findByIdAndUpdate(lesson.course, { $inc: { lessonsCount: -1 } });
     }
 

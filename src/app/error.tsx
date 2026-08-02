@@ -9,10 +9,10 @@ export default function Error({
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
       <div className="text-center">
-        <div className="text-[48px] font-bold tracking-[2px] text-[#EF2C58]">
+        <div className="text-[48px] font-bold tracking-[2px] text-[#1080CA]">
           ERROR
         </div>
-        <p className="mt-4 text-[12px] text-[#999999]">
+        <p className="mt-4 text-[12px] text-[#5b6573]">
           Something went wrong. Please try again.
         </p>
         <div className="mt-6 flex gap-3 justify-center">

@@ -5,10 +5,16 @@ export interface IEvent extends Document {
   title: string;
   description: string;
   image: string;
-  type: "event" | "live" | "class" | "deadline" | "workshop";
+  type: "event" | "live" | "class" | "deadline" | "workshop" | "challenge" | "mentor";
   date: Date;
   endDate: Date;
   liveLink: string;
+  // Live video provider for /live/[id]. The embed iframe is built from these.
+  // `liveStreamUrl` is the public viewing URL (YouTube, Twitch, or HLS .m3u8).
+  // `liveProvider` is auto-detected if omitted.
+  liveStreamUrl: string;
+  liveProvider: "youtube" | "twitch" | "hls" | "";
+  viewerCount: number;
   location: string;
   status: "upcoming" | "live" | "ended";
   color: string;
@@ -49,9 +55,24 @@ const EventSchema = new Schema<IEvent>(
       default: "",
       trim: true,
     },
+    liveStreamUrl: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    liveProvider: {
+      type: String,
+      enum: ["youtube", "twitch", "hls", ""],
+      default: "",
+    },
+    viewerCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     type: {
       type: String,
-      enum: ["event", "live", "class", "deadline", "workshop"],
+      enum: ["event", "live", "class", "deadline", "workshop", "challenge", "mentor"],
       default: "event",
     },
     location: {

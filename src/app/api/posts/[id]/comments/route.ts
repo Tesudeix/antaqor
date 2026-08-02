@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Comment from "@/models/Comment";
+import { broadcastSSE } from "@/lib/sseHub";
 import Post from "@/models/Post";
 import { awardXP } from "@/lib/xp";
 
@@ -66,6 +67,7 @@ export async function POST(
 
     awardXP(userId, "COMMENT", 10, comment._id.toString()).catch(() => {});
 
+    try { broadcastSSE("comment-created", { postId: id, comment: populated }); } catch { /* non-fatal */ }
     return NextResponse.json({ comment: populated }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal server error";

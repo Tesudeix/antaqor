@@ -83,8 +83,8 @@ export default function CommentSection({ postId }: { postId: string }) {
           </div>
         </form>
       ) : (
-        <p className="mb-8 text-[12px] text-[#999999]">
-          <Link href="/auth/signin" className="text-[#EF2C58] hover:text-[#D4264E]">
+        <p className="mb-8 text-[12px] text-[#5b6573]">
+          <Link href="/auth/signin" className="text-[#1080CA] hover:text-[#4FA8E8]">
             Нэвтэрнэ үү
           </Link>{" "}
           сэтгэгдэл бичихийн тулд.
@@ -93,10 +93,10 @@ export default function CommentSection({ postId }: { postId: string }) {
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="h-3 w-3 animate-pulse bg-[#EF2C58]" />
+          <div className="h-3 w-3 animate-pulse bg-[#1080CA]" />
         </div>
       ) : comments.length === 0 ? (
-        <p className="py-6 text-center text-[12px] text-[#999999]">
+        <p className="py-6 text-center text-[12px] text-[#5b6573]">
           Сэтгэгдэл байхгүй байна. Эхлээд та бичээрэй.
         </p>
       ) : (
@@ -112,22 +112,22 @@ export default function CommentSection({ postId }: { postId: string }) {
             return (
               <div
                 key={comment._id}
-                className="border-l-2 border-[rgba(255,255,255,0.08)] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#EF2C58]"
+                className="border-l-2 border-[rgba(15,23,38,0.08)] bg-[rgba(15,15,15,0.5)] p-4 transition hover:border-[#1080CA]"
               >
                 <div className="mb-2 flex items-center gap-2">
                   <Link href={`/profile/${comment.author._id}`} className="flex items-center gap-2">
                     {comment.author.avatar ? (
                       <img src={comment.author.avatar} alt="" className="h-6 w-6 object-cover" />
                     ) : (
-                      <div className="flex h-6 w-6 items-center justify-center bg-[#E8E8E6] text-[9px] font-bold text-[#CCCCCC]">
+                      <div className="flex h-6 w-6 items-center justify-center bg-[#E8E8E6] text-[9px] font-bold text-[#334155]">
                         {initials}
                       </div>
                     )}
-                    <span className="text-[12px] font-bold text-[#E8E8E8]">
+                    <span className="text-[12px] font-bold text-[#0e1726]">
                       {comment.author.name}
                     </span>
                   </Link>
-                  <span className="text-[10px] tracking-[2px] text-[#999999]">
+                  <span className="text-[10px] tracking-[2px] text-[#5b6573]">
                     {formatDistanceToNow(comment.createdAt)}
                   </span>
                 </div>

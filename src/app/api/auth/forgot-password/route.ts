@@ -1,41 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import { Resend } from "resend";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const BRANDED_FROM = "Antaqor <noreply@antaqor.com>";
-const FALLBACK_FROM = "Antaqor <onboarding@resend.dev>";
+import { sendEmail } from "@/lib/email";
 
 function buildEmailHtml(name: string, resetUrl: string) {
   return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #0A0A0A; color: #E8E8E8; padding: 40px; border-radius: 8px;">
-      <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #E8E8E8;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 480px; margin: 0 auto; background: #ffffff; color: #0e1726; padding: 40px; border-radius: 8px;">
+      <div style="font-size: 20px; font-weight: 800; letter-spacing: 4px; margin-bottom: 24px; color: #0e1726;">
         ANTAQOR
       </div>
-      <p style="font-size: 14px; color: #999999; line-height: 1.8; margin-bottom: 24px;">
-        Сайн байна уу, <strong style="color: #E8E8E8;">${name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
+      <p style="font-size: 14px; color: #5b6573; line-height: 1.8; margin-bottom: 24px;">
+        Сайн байна уу, <strong style="color: #0e1726;">${name}</strong>. Та нууц үгээ сэргээх хүсэлт илгээсэн байна.
       </p>
-      <a href="${resetUrl}" style="display: inline-block; background: #EF2C58; color: #ffffff; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
+      <a href="${resetUrl}" style="display: inline-block; background: #1080CA; color: #ffffff; padding: 12px 32px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 4px;">
         Нууц үг сэргээх
       </a>
-      <p style="font-size: 11px; color: #666666; margin-top: 24px; line-height: 1.8;">
-        Энэ холбоос 1 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлти��г илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
+      <p style="font-size: 11px; color: #6b7280; margin-top: 24px; line-height: 1.8;">
+        Энэ холбоос 24 цагийн дотор хүчинтэй. Хэрэв та энэ хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.
       </p>
-      <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: #666666; letter-spacing: 2px;">
-        ANTAQOR · CYBER EMPIRE
+      <p style="font-size: 11px; color: #6b7280; margin-top: 8px; line-height: 1.6;">
+        Холбоос ажиллахгүй бол доорх линкийг хуулна уу:<br />
+        <span style="color: #5b6573; word-break: break-all;">${resetUrl}</span>
+      </p>
+      <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(15,23,38,0.08); font-size: 10px; color: #6b7280; letter-spacing: 2px;">
+        ANTAQOR · EDGERUNNERS
       </div>
     </div>
   `;
 }
 
+function buildEmailText(name: string, resetUrl: string) {
+  return [
+    `Сайн байна уу, ${name}.`,
+    "",
+    "Та нууц үгээ сэргээх хүсэлт илгээсэн байна. Дараах холбоосыг ашиглана уу:",
+    resetUrl,
+    "",
+    "Энэ холбоос 24 цагийн дотор хүчинтэй. Хэрэв та хүсэлтийг илгээгээгүй бол энэ имэйлийг үл тоомсорлоно уу.",
+    "",
+    "— Antaqor",
+  ].join("\n");
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const { email } = (await req.json()) as { email?: string };
 
-    if (!email) {
+    if (!email || typeof email !== "string") {
       return NextResponse.json(
         { error: "Имэйл хаяг шаардлагатай" },
         { status: 400 }
@@ -43,47 +55,57 @@ export async function POST(req: NextRequest) {
     }
 
     await dbConnect();
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Anti-enumeration — always return the same friendly message regardless
+    // of whether the email exists.
+    const successMessage = "Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдлээ.";
 
-    // Always return success message to prevent email enumeration
     if (!user) {
-      return NextResponse.json({
-        message: "Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдлээ.",
-      });
+      return NextResponse.json({ message: successMessage });
     }
 
     const resetToken = randomBytes(32).toString("hex");
-    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
+    const resetTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     await User.updateOne(
       { _id: user._id },
       { resetToken, resetTokenExpiry }
     );
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
-    const html = buildEmailHtml(user.name, resetUrl);
-    const payload = { to: user.email, subject: "Нууц үг сэргээх — Antaqor", html };
+    const baseUrl = process.env.NEXTAUTH_URL || "https://antaqor.com";
+    const resetUrl = `${baseUrl}/auth/reset-password?token=${resetToken}`;
 
-    // Try branded domain first, fall back to resend.dev if domain not yet verified
-    let result = await resend.emails.send({ from: BRANDED_FROM, ...payload });
-
-    if (result.error) {
-      result = await resend.emails.send({ from: FALLBACK_FROM, ...payload });
+    try {
+      const result = await sendEmail({
+        to: user.email,
+        subject: "Нууц үг сэргээх — Antaqor",
+        html: buildEmailHtml(user.name || "", resetUrl),
+        text: buildEmailText(user.name || "", resetUrl),
+      });
+      console.log(`[forgot-password] sent via ${result.via} → ${user.email}`);
+    } catch (sendErr) {
+      // Don't expose the failure to the public response; log + still claim
+      // success to prevent enumeration. The token is invalidated below so a
+      // bad actor can't reuse a half-generated state.
+      console.error("[forgot-password] sendEmail failed:", sendErr);
+      // Wipe the token so an unsent reset doesn't leave the account in an
+      // inconsistent "reset pending but no email" state.
+      await User.updateOne(
+        { _id: user._id },
+        { $unset: { resetToken: "", resetTokenExpiry: "" } }
+      );
+      return NextResponse.json(
+        { error: "Имэйл илгээхэд алдаа гарлаа. Дахин оролдоно уу." },
+        { status: 502 }
+      );
     }
 
-    if (result.error) {
-      console.error("Resend error:", result.error);
-      throw new Error(result.error.message);
-    }
-
-    return NextResponse.json({
-      message: "Хэрэв бүртгэлтэй имэйл бол нууц үг сэргээх холбоос илгээгдлээ.",
-    });
+    return NextResponse.json({ message: successMessage });
   } catch (error: unknown) {
-    console.error("Forgot password error:", error);
+    console.error("[forgot-password] unhandled:", error);
     return NextResponse.json(
-      { error: "Имэйл илгээхэд алдаа гарлаа. Дахин оролдоно уу." },
+      { error: "Алдаа гарлаа. Дахин оролдоно уу." },
       { status: 500 }
     );
   }

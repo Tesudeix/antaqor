@@ -5,11 +5,24 @@ export interface IPayment extends Document {
   user: mongoose.Types.ObjectId;
   invoiceId: string;
   senderCode: string;
+  referenceCode: string;
   amount: number;
   description: string;
+  // What this payment is for. Defaults to "membership" so legacy rows keep
+  // working (clan join). "credits" → award creditAmount on approval.
+  kind: "membership" | "credits" | "product";
+  creditAmount: number; // populated when kind === "credits"
+  plan: string; // membership payments: plan tier ("starter" | "builder" | "operator")
+  wireIntentId: string; // Wire PaymentIntent id when paid via hosted checkout
+  periodDays: number; // subscription length granted on approval (30 or 365)
+  packageId: string;    // optional id of the credit package, e.g. "popular"
   status: "pending" | "paid" | "failed";
   qrImage: string;
   qrText: string;
+  receiptImage: string;
+  receiptUploadedAt?: Date;
+  claimedAt?: Date;
+  adminNote: string;
   paidAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +44,11 @@ const PaymentSchema = new Schema<IPayment>(
       type: String,
       required: true,
     },
+    referenceCode: {
+      type: String,
+      default: "",
+      index: true,
+    },
     amount: {
       type: Number,
       required: true,
@@ -38,6 +56,34 @@ const PaymentSchema = new Schema<IPayment>(
     description: {
       type: String,
       default: "",
+    },
+    kind: {
+      type: String,
+      enum: ["membership", "credits", "product"],
+      default: "membership",
+      index: true,
+    },
+    creditAmount: {
+      type: Number,
+      default: 0,
+    },
+    plan: {
+      type: String,
+      enum: ["", "starter", "builder", "operator"],
+      default: "",
+      index: true,
+    },
+    packageId: {
+      type: String,
+      default: "",
+    },
+    wireIntentId: {
+      type: String,
+      default: "",
+    },
+    periodDays: {
+      type: Number,
+      default: 30,
     },
     status: {
       type: String,
@@ -51,6 +97,21 @@ const PaymentSchema = new Schema<IPayment>(
     qrText: {
       type: String,
       default: "",
+    },
+    receiptImage: {
+      type: String,
+      default: "",
+    },
+    receiptUploadedAt: {
+      type: Date,
+    },
+    claimedAt: {
+      type: Date,
+    },
+    adminNote: {
+      type: String,
+      default: "",
+      maxlength: 500,
     },
     paidAt: {
       type: Date,

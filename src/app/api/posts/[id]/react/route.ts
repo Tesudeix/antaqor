@@ -3,8 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
-
-const ALLOWED_EMOJIS = ["fire", "heart", "clap", "rocket", "think", "hundred", "haha"];
+import User from "@/models/User";
+import Notification from "@/models/Notification";
+import { REACTION_ORDER, REACTIONS, ReactionKey, legacyToCanonical, normalizeReactions } from "@/lib/reactions";
+import { sendPushToUser } from "@/lib/push-server";
 
 export async function POST(
   req: NextRequest,
@@ -18,9 +20,9 @@ export async function POST(
 
     const { id } = await params;
     const { emoji } = await req.json();
-
-    if (!emoji || !ALLOWED_EMOJIS.includes(emoji)) {
-      return NextResponse.json({ error: "Invalid emoji" }, { status: 400 });
+    const target = typeof emoji === "string" ? legacyToCanonical(emoji) : null;
+    if (!target) {
+      return NextResponse.json({ error: "Invalid reaction" }, { status: 400 });
     }
 
     const userId = (session.user as { id: string }).id;
@@ -35,30 +37,77 @@ export async function POST(
       post.reactions = new Map();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rawUsers: any[] = post.reactions.get(emoji) || [];
-    const users: string[] = rawUsers.map((u) => String(u));
-    const alreadyReacted = users.includes(userId);
+    // Toggle: if user already used `target`, remove it. Otherwise remove from any other key first, then add.
+    const rawCurrent: Record<string, string[]> = {};
+    for (const [k, v] of post.reactions.entries()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rawCurrent[k] = (v as any[]).map((u) => String(u));
+    }
+    const normalized = normalizeReactions(rawCurrent);
+    const alreadyOnTarget = normalized[target].includes(userId);
 
-    if (alreadyReacted) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      post.reactions.set(emoji, users.filter((u) => u !== userId) as any);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      post.reactions.set(emoji, [...users, userId] as any);
+    // Wipe user from all canonical keys
+    for (const k of REACTION_ORDER) {
+      normalized[k] = normalized[k].filter((u) => u !== userId);
+    }
+    if (!alreadyOnTarget) {
+      normalized[target].push(userId);
     }
 
+    // Persist: replace the reactions map with only canonical keys
+    post.reactions.clear();
+    for (const k of REACTION_ORDER) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      post.reactions.set(k, normalized[k] as any);
+    }
+    post.markModified("reactions");
     await post.save();
 
-    const reactionCounts: Record<string, { count: number; reacted: boolean }> = {};
-    for (const key of ALLOWED_EMOJIS) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rawArr: any[] = post.reactions.get(key) || [];
-      const arr: string[] = rawArr.map((u) => String(u));
-      reactionCounts[key] = { count: arr.length, reacted: arr.includes(userId) };
+    // Push to post author when someone NEW reacts (not when toggling off, not when reacting to your own post).
+    // Fire-and-forget so the response isn't blocked.
+    if (!alreadyOnTarget) {
+      const authorId = String(post.author);
+      if (authorId !== userId) {
+        (async () => {
+          try {
+            const reactor = await User.findById(userId).select("name").lean<{ name?: string }>();
+            const reactorName = reactor?.name || "Хэн нэгэн";
+            const r = REACTIONS[target];
+            const title = `${reactorName} ${r.label} react хийсэн`;
+            const body = post.content?.slice(0, 80) || "Таны постонд.";
+            const link = `/posts/${post._id}`;
+            // Persist in-app + push
+            await Notification.create({
+              recipient: post.author,
+              type: "system",
+              title,
+              message: body,
+              link,
+              read: false,
+            });
+            await sendPushToUser(authorId, { title, body, url: link, tag: `react-${post._id}` });
+          } catch (e) {
+            console.error("[react] notify author failed:", e);
+          }
+        })();
+      }
     }
 
-    return NextResponse.json({ reactions: reactionCounts });
+    const reactionCounts: Record<ReactionKey, { count: number; reacted: boolean }> = {
+      like: { count: 0, reacted: false },
+      love: { count: 0, reacted: false },
+      fire: { count: 0, reacted: false },
+      idea: { count: 0, reacted: false },
+      haha: { count: 0, reacted: false },
+      celebrate: { count: 0, reacted: false },
+    };
+    for (const k of REACTION_ORDER) {
+      reactionCounts[k] = { count: normalized[k].length, reacted: normalized[k].includes(userId) };
+    }
+
+    const userReaction: ReactionKey | null = alreadyOnTarget ? null : target;
+
+    return NextResponse.json({ reactions: reactionCounts, userReaction });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to react";
     return NextResponse.json({ error: message }, { status: 500 });

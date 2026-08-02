@@ -128,7 +128,7 @@ export default function RepliesManagementPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#1080CA] border-t-transparent" />
       </div>
     );
   }
@@ -137,9 +137,9 @@ export default function RepliesManagementPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          REPLY <span className="text-[#EF2C58]">MANAGEMENT</span>
+          REPLY <span className="text-[#1080CA]">MANAGEMENT</span>
         </h1>
-        <p className="mt-2 text-[11px] tracking-[2px] text-[#999999]">
+        <p className="mt-2 text-[11px] tracking-[2px] text-[#5b6573]">
           SELECT A THREAD TO VIEW AND MANAGE ITS REPLIES
         </p>
       </div>
@@ -148,7 +148,7 @@ export default function RepliesManagementPage() {
         <div
           className={`border px-4 py-3 text-[12px] ${
             flash.type === "error"
-              ? "border-red-900/50 bg-red-950/30 text-red-400"
+              ? "border-[#0C3050]/50 bg-[#07203A]/30 text-[#4E94D0]"
               : "border-green-900/50 bg-green-950/30 text-green-400"
           }`}
         >
@@ -159,7 +159,7 @@ export default function RepliesManagementPage() {
       <div className="grid gap-6 lg:grid-cols-5">
         {/* Thread Selector */}
         <div className="lg:col-span-2">
-          <div className="text-[9px] uppercase tracking-[0.5px] text-[#999999] mb-3">
+          <div className="text-[9px] uppercase tracking-[0.5px] text-[#5b6573] mb-3">
             Your Threads
           </div>
           <div className="max-h-[60vh] space-y-2 overflow-y-auto border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
@@ -171,20 +171,20 @@ export default function RepliesManagementPage() {
                   onClick={() => loadReplies(post.id)}
                   className={`w-full text-left p-3 border transition ${
                     selectedPost === post.id
-                      ? "border-[#EF2C58] bg-[rgba(0,100,145,0.08)]"
+                      ? "border-[#1080CA] bg-[rgba(0,100,145,0.08)]"
                       : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(240,236,227,0.1)]"
                   }`}
                 >
-                  <p className="text-[12px] leading-relaxed text-[#CCCCCC] line-clamp-2">
+                  <p className="text-[12px] leading-relaxed text-[#8A8A92] line-clamp-2">
                     {post.text || "[Media post]"}
                   </p>
-                  <span className="mt-1 block text-[9px] text-[#999999]">
+                  <span className="mt-1 block text-[9px] text-[#5b6573]">
                     {formatDate(post.timestamp)}
                   </span>
                 </button>
               ))}
             {posts.filter((p) => p.has_replies).length === 0 && (
-              <p className="py-6 text-center text-[11px] text-[#999999]">
+              <p className="py-6 text-center text-[11px] text-[#5b6573]">
                 No threads with replies yet
               </p>
             )}
@@ -195,23 +195,23 @@ export default function RepliesManagementPage() {
         <div className="lg:col-span-3">
           {!selectedPost ? (
             <div className="flex h-full min-h-[300px] items-center justify-center border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-8">
-              <p className="text-[12px] text-[#999999]">
+              <p className="text-[12px] text-[#5b6573]">
                 Select a thread to view its replies
               </p>
             </div>
           ) : loadingReplies ? (
             <div className="flex h-full min-h-[300px] items-center justify-center border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
-              <div className="h-6 w-6 animate-spin border-2 border-[#EF2C58] border-t-transparent" />
+              <div className="h-6 w-6 animate-spin border-2 border-[#1080CA] border-t-transparent" />
             </div>
           ) : (
             <div className="border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
               <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)] px-4 py-3">
-                <span className="text-[10px] uppercase tracking-[2px] text-[#999999]">
+                <span className="text-[10px] uppercase tracking-[2px] text-[#5b6573]">
                   {replies.length} {replies.length === 1 ? "Reply" : "Replies"}
                 </span>
                 <Link
                   href={`/admin/threads/${selectedPost}`}
-                  className="text-[10px] uppercase tracking-[2px] text-[#EF2C58] transition hover:text-[#D4264E]"
+                  className="text-[10px] uppercase tracking-[2px] text-[#1080CA] transition hover:text-[#4FA8E8]"
                 >
                   Open Chat View
                 </Link>
@@ -219,7 +219,7 @@ export default function RepliesManagementPage() {
 
               <div className="max-h-[40vh] space-y-0 overflow-y-auto">
                 {replies.length === 0 ? (
-                  <p className="py-8 text-center text-[11px] text-[#999999]">
+                  <p className="py-8 text-center text-[11px] text-[#5b6573]">
                     No replies to this thread
                   </p>
                 ) : (
@@ -232,19 +232,19 @@ export default function RepliesManagementPage() {
                           isHidden ? "opacity-40" : ""
                         }`}
                       >
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[10px] font-bold text-[#999999]">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[10px] font-bold text-[#5b6573]">
                           {reply.username?.charAt(0).toUpperCase() || "?"}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-[#CCCCCC]">
+                            <span className="text-[11px] font-bold text-[#8A8A92]">
                               @{reply.username || "unknown"}
                             </span>
-                            <span className="text-[9px] text-[#999999]">
+                            <span className="text-[9px] text-[#5b6573]">
                               {formatDate(reply.timestamp)}
                             </span>
                             {isHidden && (
-                              <span className="text-[8px] uppercase tracking-[1px] text-yellow-600 border border-yellow-900/30 px-1.5 py-0.5">
+                              <span className="text-[8px] uppercase tracking-[1px] text-[#1080CA] border border-[rgba(16,128,202,0.3)] px-1.5 py-0.5">
                                 Hidden
                               </span>
                             )}
@@ -259,7 +259,7 @@ export default function RepliesManagementPage() {
                               href={reply.permalink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#999999] hover:text-[#CCCCCC]"
+                              className="flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#5b6573] hover:text-[#8A8A92]"
                               title="View on Threads"
                             >
                               <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +273,7 @@ export default function RepliesManagementPage() {
                             className={`flex h-7 w-7 items-center justify-center border border-[rgba(255,255,255,0.08)] transition ${
                               isHidden
                                 ? "text-green-600 hover:text-green-400"
-                                : "text-yellow-600 hover:text-yellow-400"
+                                : "text-[#1080CA] hover:text-[rgba(16,128,202,0.7)]"
                             }`}
                             title={isHidden ? "Unhide" : "Hide"}
                           >

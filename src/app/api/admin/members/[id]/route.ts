@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminSession, unauthorized } from "@/lib/adminAuth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { maybeAwardReferralPayment } from "@/lib/credits";
 
 export async function PATCH(
   req: Request,
@@ -40,6 +41,10 @@ export async function PATCH(
         }
         user.subscriptionExpiresAt = expiresAt;
         await user.save();
+
+        // Fire the "friend-paid" referral bonus to the referrer (if applicable).
+        // Idempotent: only awards once per referee.
+        maybeAwardReferralPayment(String(user._id)).catch(() => {});
 
         return NextResponse.json({
           message: `${user.name}-д ${duration} хоногийн гишүүнчлэл олголоо`,
@@ -111,6 +116,28 @@ export async function PATCH(
         return NextResponse.json({
           message: `${user.name}-н админ эрхийг хаслаа`,
           user: { _id: user._id, role: "user" },
+        });
+      }
+
+      case "ban": {
+        user.banned = true;
+        user.bannedAt = new Date();
+        user.bannedReason = (typeof body.reason === "string" ? body.reason : "").slice(0, 500);
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-г түр түдгэлзүүлсэн`,
+          user: { _id: user._id, banned: true, bannedReason: user.bannedReason },
+        });
+      }
+
+      case "unban": {
+        user.banned = false;
+        user.bannedAt = undefined;
+        user.bannedReason = "";
+        await user.save();
+        return NextResponse.json({
+          message: `${user.name}-н блокыг цуцаллаа`,
+          user: { _id: user._id, banned: false },
         });
       }
 

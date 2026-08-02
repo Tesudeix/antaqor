@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const errorDesc =
       req.nextUrl.searchParams.get("error_description") || "Authorization failed";
     return NextResponse.redirect(
-      `${BASE}/admin?error=${encodeURIComponent(errorDesc)}`
+      `${BASE}/admin/threads?error=${encodeURIComponent(errorDesc)}`
     );
   }
 
@@ -52,11 +52,26 @@ export async function GET(req: NextRequest) {
 
     const userId = (session.user as { id: string }).id;
 
+    // shortLived.user_id arrives as a JSON *number*, and 64-bit Threads IDs
+    // overflow JS number precision (…581 parsed as …580, after which every
+    // /{uid}/threads call 404s). /me returns the id as a string — use that.
+    let threadsUserId = "";
+    try {
+      const meRes = await fetch(
+        `https://graph.threads.net/v1.0/me?fields=id&access_token=${longLived.access_token}`
+      );
+      const me = await meRes.json();
+      if (me.id) threadsUserId = String(me.id);
+    } catch {
+      // fall through to the (possibly imprecise) exchange value below
+    }
+    if (!threadsUserId) threadsUserId = String(shortLived.user_id);
+
     await ThreadsToken.findOneAndUpdate(
       { userId },
       {
         userId,
-        threadsUserId: shortLived.user_id,
+        threadsUserId,
         accessToken: longLived.access_token,
         tokenType: longLived.token_type || "bearer",
         expiresAt: new Date(
@@ -66,11 +81,11 @@ export async function GET(req: NextRequest) {
       { upsert: true, new: true }
     );
 
-    return NextResponse.redirect(`${BASE}/admin?connected=true`);
+    return NextResponse.redirect(`${BASE}/admin/threads?connected=true`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "OAuth failed";
     return NextResponse.redirect(
-      `${BASE}/admin?error=${encodeURIComponent(msg)}`
+      `${BASE}/admin/threads?error=${encodeURIComponent(msg)}`
     );
   }
 }

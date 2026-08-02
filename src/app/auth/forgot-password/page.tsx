@@ -38,17 +38,17 @@ export default function ForgotPassword() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-[400px]">
-        <div className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#141414] p-8">
-          <h1 className="mb-1 text-[22px] font-bold text-[#E8E8E8]">
+        <div className="rounded-none border border-[rgba(15,23,38,0.10)] bg-black p-8">
+          <h1 className="mb-1 text-[22px] font-bold text-[#0e1726]">
             Нууц үг сэргээх
           </h1>
-          <p className="mb-6 text-[12px] text-[#999999]">
+          <p className="mb-6 text-[12px] text-[#5b6573]">
             Бүртгэлтэй имэйлээ оруулна уу
           </p>
 
           {success ? (
             <div>
-              <div className="mb-5 rounded-[4px] bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] px-4 py-3 text-[12px] text-green-400">
+              <div className="mb-5 rounded-none bg-[rgba(16,128,202,0.08)] border border-[rgba(16,128,202,0.2)] px-4 py-3 text-[12px] text-green-400">
                 <p className="font-medium">Имэйл илгээгдлээ</p>
                 <p className="mt-1 text-[11px] text-green-400/60">
                   Имэйлээ шалгаад нууц үг сэргээх холбоос дээр дарна уу.
@@ -56,7 +56,7 @@ export default function ForgotPassword() {
               </div>
               <Link
                 href="/auth/signin"
-                className="block w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-transparent py-2.5 text-center text-[13px] font-medium text-[#999999] transition hover:text-[#E8E8E8] hover:border-[rgba(255,255,255,0.15)]"
+                className="block w-full rounded-none border border-[rgba(15,23,38,0.10)] bg-transparent py-2.5 text-center text-[13px] font-medium text-[#5b6573] transition hover:text-[#0e1726] hover:border-[rgba(15,23,38,0.20)]"
               >
                 Нэвтрэх хуудас руу буцах
               </Link>
@@ -64,14 +64,14 @@ export default function ForgotPassword() {
           ) : (
             <>
               {error && (
-                <div className="mb-5 rounded-[4px] bg-[rgba(239,44,88,0.06)] border border-[rgba(239,44,88,0.15)] px-4 py-3 text-[12px] text-[#EF2C58]">
+                <div className="mb-5 rounded-none bg-[rgba(16,128,202,0.06)] border border-[rgba(16,128,202,0.15)] px-4 py-3 text-[12px] text-[#1080CA]">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-[12px] font-medium text-[#999999]">
+                  <label className="mb-1.5 block text-[12px] font-medium text-[#5b6573]">
                     Имэйл хаяг
                   </label>
                   <input
@@ -79,7 +79,7 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[rgba(239,44,88,0.4)] placeholder:text-[#999999]"
+                    className="w-full rounded-none border border-[rgba(15,23,38,0.10)] bg-black px-3 py-2.5 text-[13px] text-[#0e1726] outline-none transition focus:border-[rgba(16,128,202,0.4)] placeholder:text-[#5b6573]"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -87,15 +87,15 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-[4px] bg-[#EF2C58] py-2.5 text-[13px] font-bold text-[#F8F8F6] transition hover:brightness-110 disabled:opacity-50"
+                  className="w-full rounded-none bg-[#1080CA] py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:brightness-110 disabled:opacity-50"
                 >
                   {loading ? "Илгээж байна..." : "Холбоос илгээх"}
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-[12px] text-[#999999]">
+              <p className="mt-6 text-center text-[12px] text-[#5b6573]">
                 Нууц үгээ санаж байна уу?{" "}
-                <Link href="/auth/signin" className="text-[#EF2C58] transition hover:brightness-110">
+                <Link href="/auth/signin" className="text-[#1080CA] transition hover:brightness-110">
                   Нэвтрэх
                 </Link>
               </p>

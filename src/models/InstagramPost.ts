@@ -9,6 +9,9 @@ export interface IInstagramPost extends Document {
   caption?: string;
   timestamp: Date;
   fetchedAt: Date;
+  views?: number;
+  likes?: number;
+  comments?: number;
 }
 
 const InstagramPostSchema = new Schema<IInstagramPost>(
@@ -21,6 +24,9 @@ const InstagramPostSchema = new Schema<IInstagramPost>(
     caption: { type: String },
     timestamp: { type: Date, required: true },
     fetchedAt: { type: Date, default: Date.now },
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+    comments: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

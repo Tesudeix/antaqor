@@ -27,6 +27,11 @@ export async function PUT(
     if (body.date !== undefined) update.date = new Date(body.date);
     if (body.endDate !== undefined) update.endDate = new Date(body.endDate);
     if (body.liveLink !== undefined) update.liveLink = body.liveLink.trim();
+    if (body.liveStreamUrl !== undefined) update.liveStreamUrl = body.liveStreamUrl.trim();
+    if (body.liveProvider !== undefined) {
+      const v = body.liveProvider;
+      update.liveProvider = ["youtube", "twitch", "hls", ""].includes(v) ? v : "";
+    }
     if (body.location !== undefined) update.location = body.location.trim();
     if (body.status !== undefined) update.status = body.status;
     if (body.type !== undefined) update.type = body.type;

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { initializeReferral } from "@/lib/credits";
+import { rateLimit, clientIp, LIMITS } from "@/lib/rateLimit";
 
 const VALID_INTERESTS = [
   "ai_tools",
@@ -18,14 +20,40 @@ const VALID_INTERESTS = [
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, username, email, phone, password, age, aiExperience, interests } =
+    // IP-based rate limit — prevents signup farming
+    const ip = clientIp(req.headers);
+    const rl = rateLimit(`signup:ip:${ip}`, LIMITS.SIGNUP_PER_IP);
+    if (!rl.ok) {
+      const mins = Math.ceil(rl.resetInMs / 60_000);
+      return NextResponse.json(
+        { error: `Дэндүү олон бүртгэлийн оролдлого. ~${mins} минутын дараа дахин оролдоорой.` },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.resetInMs / 1000)) } }
+      );
+    }
+
+    const { name, username, email, phone, password, age, aiExperience, creativeRole, interests, referralCode, instagram } =
       await req.json();
 
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: "Нэр, имэйл, нууц үг шаардлагатай" },
-        { status: 400 }
-      );
+    // Per-field validation in Mongolian — the previous combined "Нэр, имэйл,
+    // нууц үг шаардлагатай" message was firing when ANY of the three was
+    // missing, so a user with a typed name + missing email was told "name
+    // required." Be specific so the form points to the actual broken field.
+    const trimmedName = typeof name === "string" ? name.trim() : "";
+    const trimmedEmail = typeof email === "string" ? email.trim() : "";
+    if (!trimmedName) {
+      return NextResponse.json({ error: "Нэрээ оруулна уу" }, { status: 400 });
+    }
+    if (trimmedName.length < 2 || trimmedName.length > 50) {
+      return NextResponse.json({ error: "Нэр 2-50 тэмдэгт байх ёстой" }, { status: 400 });
+    }
+    if (!trimmedEmail) {
+      return NextResponse.json({ error: "Имэйлээ оруулна уу" }, { status: 400 });
+    }
+    if (!/^\S+@\S+\.\S+$/.test(trimmedEmail)) {
+      return NextResponse.json({ error: "Имэйл буруу байна" }, { status: 400 });
+    }
+    if (!password) {
+      return NextResponse.json({ error: "Нууц үгээ оруулна уу" }, { status: 400 });
     }
 
     if (username) {
@@ -65,13 +93,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Creative identity — Edgerunner · Engineer · Creator. Legacy values
+    // (entrepreneur/emperor) are still accepted so old clients don't break.
+    const validRoles = ["ai_edgerunner", "ai_engineer", "ai_creator", "ai_entrepreneur", "ai_emperor"];
+    const safeRole =
+      typeof creativeRole === "string" && validRoles.includes(creativeRole)
+        ? creativeRole
+        : "ai_edgerunner";
+
     const safeInterests = Array.isArray(interests)
       ? interests.filter((i: string) => VALID_INTERESTS.includes(i))
       : [];
 
     await dbConnect();
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: trimmedEmail.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
         { error: "Энэ имэйлээр бүртгэл аль хэдийн байна" },
@@ -91,21 +127,38 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const normalizedInstagram = typeof instagram === "string"
+      ? instagram.trim().replace(/^@+/, "").toLowerCase().slice(0, 60)
+      : "";
+
     const user = await User.create({
-      name,
+      name: trimmedName,
       username: username ? username.toLowerCase() : undefined,
-      email,
+      email: trimmedEmail,
       phone: phone || "",
       password: hashedPassword,
       age: age || undefined,
       aiExperience: aiExperience || "",
+      creativeRole: safeRole,
       interests: safeInterests,
+      instagram: normalizedInstagram,
     });
+
+    // Fire referral + welcome bonus. Non-blocking if it errors.
+    const ref = typeof referralCode === "string" ? referralCode.trim().toLowerCase() : null;
+    let referrerId: string | null = null;
+    try {
+      const result = await initializeReferral(String(user._id), ref);
+      referrerId = result.referrer;
+    } catch {
+      /* swallow — signup itself succeeded */
+    }
 
     return NextResponse.json(
       {
         message: "Бүртгэл амжилттай үүслээ",
         user: { id: user._id, name: user.name, email: user.email },
+        referral: referrerId ? { referrer: referrerId } : null,
       },
       { status: 201 }
     );

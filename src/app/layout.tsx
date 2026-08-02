@@ -1,71 +1,59 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import BottomBar from "@/components/BottomBar";
 import InstallPrompt from "@/components/InstallPrompt";
+import SubscriptionBanner from "@/components/SubscriptionBanner";
+
+const SITE_DESCRIPTION =
+  "7 хоногт AI-г ажилдаа нэвтрүүл: өдөр бүр нэг хичээл, нэг бодит даалгавар — ChatGPT, Claude, Grok. Монголын AI builder community.";
 
 export const metadata: Metadata = {
   title: {
-    default: "ANTAQOR — Mongolia's #1 AI Community & Cyber Empire",
-    template: "%s | ANTAQOR",
+    default: "Antaqor — 7 хоногийн AI хөтөлбөр",
+    template: "%s | Antaqor",
   },
-  description:
-    "Монголын хамгийн том AI нийгэмлэг. AI сурах, бүтээх, хэрэгслээ хөгжүүлэх — бүтээгчид, инженерүүд, антрепренёруудын нэгдсэн платформ. Mongolia's largest AI community for creators, engineers & entrepreneurs.",
+  description: SITE_DESCRIPTION,
   keywords: [
-    "AI community Mongolia",
     "Antaqor",
-    "Монгол AI",
-    "AI нийгэмлэг",
-    "artificial intelligence Mongolia",
+    "Edgerunners",
+    "AI",
+    "хиймэл оюун",
     "AI сургалт",
-    "AI курс Монгол",
-    "machine learning Mongolia",
+    "промпт",
+    "AI агент",
     "Монгол бүтээгчид",
-    "Cyber Empire",
-    "AI хэрэгсэл",
-    "tech community Mongolia",
-    "startup Mongolia",
-    "AI education",
-    "Монгол программистууд",
+    "AI бизнес",
   ],
   authors: [{ name: "Antaqor" }],
   creator: "Antaqor",
-  publisher: "Antaqor",
   manifest: "/manifest.json",
   metadataBase: new URL("https://antaqor.com"),
   alternates: { canonical: "/" },
-  icons: {
-    icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon.png", sizes: "any", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-  },
   openGraph: {
     type: "website",
     locale: "mn_MN",
     url: "https://antaqor.com",
-    siteName: "ANTAQOR",
-    title: "ANTAQOR — Mongolia's #1 AI Community",
-    description:
-      "Монголын хамгийн том AI нийгэмлэг. AI сурах, бүтээх, хамтдаа хөгжих — бүтээгчид, инженерүүд, антрепренёруудын платформ. Join Mongolia's largest AI community.",
+    siteName: "Antaqor",
+    title: "Antaqor — 7 хоногийн AI хөтөлбөр",
+    description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/opengraph-image",
+        url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "ANTAQOR — Mongolia AI Community",
+        alt: "Antaqor — 7 хоногийн AI хөтөлбөр",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ANTAQOR — Mongolia's #1 AI Community",
-    description: "Монголын хамгийн том AI нийгэмлэг. AI сурах, бүтээх, хамтдаа хөгжих платформ.",
+    title: "Antaqor — 7 хоногийн AI хөтөлбөр",
+    description: SITE_DESCRIPTION,
     creator: "@antaqor",
-    images: ["/opengraph-image"],
+    images: ["/og.png"],
   },
   robots: {
     index: true,
@@ -73,18 +61,43 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
-  verification: {},
-  category: "technology",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "ANTAQOR",
+    statusBarStyle: "black",
+    title: "Antaqor",
   },
+};
+
+// Dark browser chrome + safe areas on mobile (notch / status bar / home
+// indicator). viewportFit:"cover" lets the dark page bg fill the insets and
+// enables the env(safe-area-inset-*) padding the nav/bottom bar use.
+export const viewport: Viewport = {
+  themeColor: "#161618",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
+// Organization schema — keeps the brand card in search results consistent
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Antaqor",
+  alternateName: "Antaqor Edgerunners community",
+  url: "https://antaqor.com",
+  logo: "https://antaqor.com/icon-512.png",
+  description: SITE_DESCRIPTION,
+  sameAs: [
+    "https://www.instagram.com/tesudei",
+    "https://www.threads.net/@tesudei",
+    "https://www.facebook.com/antaqor",
+    "https://www.youtube.com/@antaqor",
+  ],
 };
 
 export default function RootLayout({
@@ -97,19 +110,27 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* v8 EVENT HORIZON type system — full Cyrillic (§02):
+            Unbounded — DISPLAY: wide, machined headlines / hero numbers
+            Golos Text — TEXT/UI: Cyrillic-native grotesk body
+            JetBrains Mono — MONO/DATA: serials, tags, timestamps */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#0A0A0A" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }}
+        />
       </head>
-      <body className="bg-[#0A0A0A] text-[#E8E8E8]">
+      <body>
         <Providers>
+          <SubscriptionBanner />
           <Navbar />
-          <main className="min-h-screen w-full px-4 pb-28 pt-6 sm:px-6 md:px-8 md:pb-12 lg:px-12">
+          <main className="px-4 pb-24 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12">
             {children}
           </main>
+          <Footer />
           <BottomBar />
           <InstallPrompt />
         </Providers>
