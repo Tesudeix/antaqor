@@ -29,7 +29,7 @@
 .app .out { padding: 6px 2px; border: 0; background: none; color: var(--ink2); font: 600 13px Manrope, sans-serif; cursor: pointer; }
 
 .page { flex: 1; width: 100%; max-width: 1520px; margin: 0 auto; padding: 4px 24px 20px; display: grid; grid-template-columns: minmax(0, 1fr) 356px; gap: 0 36px; align-items: start; }
-.read { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.read { position: sticky; top: 8px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .read h1 { font-size: clamp(19px, 1.5vw, 23px); line-height: 1.25; font-weight: 700; letter-spacing: -.012em; min-height: 1.25em; }
 .tabBar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .split { flex: none; display: flex; gap: 2px; }
@@ -90,6 +90,19 @@
 .dot { position: absolute; top: 4px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--bg); }
 .span { position: relative; height: 8px; border-radius: 4px; background: var(--fill); }
 .span i { position: absolute; left: 50%; top: -2px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--bg); }
+.stops { display: grid; gap: 5px; }
+.stops li { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink2); }
+.stops b { font-size: 15px; font-weight: 800; color: var(--ink); }
+.stops span { min-width: 62px; text-align: right; white-space: nowrap; }
+.meter { height: 8px; border-radius: 4px; background: var(--fill); }
+.meter i { display: block; height: 100%; border-radius: 4px; background: var(--ink2); }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.pair[data-one] { grid-template-columns: minmax(0, 1fr); }
+.pair .big { flex-direction: column; gap: 2px; }
+.day { display: grid; gap: 4px; }
+.hours { display: flex; align-items: flex-end; gap: 2px; height: 44px; }
+.hours i { flex: 1; min-width: 0; border-radius: 2px 2px 0 0; background: var(--ink3); }
+.hours i[data-p] { background: var(--ink); }
 .timeline { position: relative; height: 12px; }
 .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: var(--fill); }
 .timeline i { position: absolute; top: 2px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--ink2); background: var(--bg); }
@@ -126,6 +139,7 @@
 @keyframes cellIn { from { opacity: 0; } }
 @media (max-width: 1040px) {
   .page { grid-template-columns: minmax(0, 1fr); padding: 2px 16px 12px; }
+  .read { position: static; }
   .frame { height: calc(clamp(360px, 62dvh, 620px) + var(--subs, 0) * 72px); }
   .side { margin-top: 12px; }
   .side section:first-child { border-top: 1px solid var(--line); padding-top: 13px; }

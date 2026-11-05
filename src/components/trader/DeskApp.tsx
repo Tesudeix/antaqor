@@ -7,8 +7,8 @@ import DeskChart, { type ChartData, type Draw, type Layer, type Plan, type Tick 
 import s from "./desk.module.css";
 
 /* ─── TESLA TRADER v9 · НЭГ ДЭЛГЭЦ (2026-11-06) ──────────────────────────────
-   Сонголт, алхам, товч алга: хугацаа дармагц 18 индикатор бүгд уншигдаж, таван асуултад хариулна.
-   Хаашаа? Итгэж болох уу? Хэр хол? Дараагийн мэдээ? Төлөвлөгөө?
+   Сонголт, алхам, товч алга: хугацаа дармагц 18 индикатор бүгд уншигдаж, зургаан асуултад хариулна.
+   Хаашаа? Итгэж болох уу? Хэр хол? Алдагдлын хязгаар хэр хол? Хэзээ? Төлөвлөгөө?
    Чарт 1-3 хугацаагаар зэрэгцэж, бүгд нэг tick авна. Сонгосон чарт баруун талын уншилтыг удирдана.
    Гол мессеж нь чиглэл биш, тэр чиглэл түүхэнд ажилласан эсэх. Ихэнх үед хариулт нь «зоос шидэхтэй адил» бөгөөд
    үүнийг нуухгүй. Төлөвлөгөө батлагдаагүй бол чартад зурахгүй. Арилжаа хэзээ ч автоматаар хийгдэхгүй. */
@@ -16,17 +16,19 @@ import s from "./desk.module.css";
 type Cell = { id: string; label: string; g: number; v: number; read: string; n?: number; hit?: number; exp?: number; ok?: boolean };
 type Truth = { kind: string; p: number | null; base: number | null; lo: number | null; hi: number | null; n: number; wins: number; up: boolean };
 type Row = { k: string; mn: string; exp: number | null; se: number | null; n: number; ok: boolean; live: number; has: boolean };
+type Stop = { p: number; d: number; oos: number };
+type Hours = { rel: number[]; w: number; len: number; lift: number };
 type News = { next: { t: number; name: string; also: number; soon: boolean } | null; line: { t: number; high: boolean }[] };
 type Read = {
   sym: string; tf: string; barAt: number; px: number; horizon: number; cells: Cell[]; up: number; dn: number; flat: number; dir: number; neff: number | null; voters: number; truth: Truth | null; sentence: string;
-  range: { half: number; pct: number; lo: number; hi: number; unit: number; cov: number; covN: number; ratio: number; lift: number } | null; levels: { sup: number | null; res: number | null }; plans: Row[]; plan: Plan | null; levelsPlan: Plan | null; verified: boolean; draw: Draw;
+  range: { half: number; pct: number; lo: number; hi: number; unit: number; cov: number; covN: number; ratio: number; lift: number } | null; stops: Stop[] | null; hours: Hours | null; levels: { sup: number | null; res: number | null }; plans: Row[]; plan: Plan | null; levelsPlan: Plan | null; verified: boolean; draw: Draw;
   live: { fired: number; tp: number; sl: number; open: number } | null; news: News | null; matrix: { tf: string; dir: number }[];
 };
 type Msg = { role: "user" | "ai"; text: string };
 type Live = Tick & { got: number; moved: number };
 
 const SYMS = [{ id: "XAUUSD", mn: "Алт", d: 2 }, { id: "BTCUSDT", mn: "Биткойн", d: 2 }];
-const TFS = [{ id: "1m", mn: "1 мин", after: "12 минутын дараа" }, { id: "5m", mn: "5 мин", after: "1 цагийн дараа" }, { id: "15m", mn: "15 мин", after: "3 цагийн дараа" }, { id: "1H", mn: "1 цаг", after: "12 цагийн дараа" }, { id: "4H", mn: "4 цаг", after: "2 өдрийн дараа" }, { id: "1D", mn: "1 өдөр", after: "12 өдрийн дараа" }];
+const TFS = [{ id: "1m", mn: "1 мин", after: "12 минутын дараа", within: "12 минутад" }, { id: "5m", mn: "5 мин", after: "1 цагийн дараа", within: "1 цагт" }, { id: "15m", mn: "15 мин", after: "3 цагийн дараа", within: "3 цагт" }, { id: "1H", mn: "1 цаг", after: "12 цагийн дараа", within: "12 цагт" }, { id: "4H", mn: "4 цаг", after: "2 өдрийн дараа", within: "2 өдөрт" }, { id: "1D", mn: "1 өдөр", after: "12 өдрийн дараа", within: "12 өдөрт" }];
 const GROUPS = ["Тренд", "Импульс", "Хэмжээ"];
 const HINT: Record<string, string> = { ema: "Сүүлийн үнэд жинтэй дундаж", sma: "Энгийн дундаж үнэ", st: "Тренд дагагч шугам", ichi: "Богино ба дунд трендийн харьцаа", sar: "Тренд эргэх цэгүүд", vwap: "Өнөөдрийн дундаж арилжааны үнэ", bb: "Үнийн ердийн хязгаар", rsi: "Хөдөлгөөний хүч, 0-100", macd: "Хоёр дунджийн зөрүү", stoch: "Үнэ хүрээнийхээ аль хэсэгт байна", kst: "Олон хугацааны хурд", pctb: "Bollinger доторх байрлал", mfi: "Мөнгөний урсгалын хүч", dpo: "Трендийг хассан мөчлөг", atr: "Хэлбэлзлийн хэмжээ, чиглэл заахгүй", adx: "Трендийн хүч", rvol: "Хэмжээ ердийнхөөс хэд дахин их", ad: "Хуримтлал эсвэл тархалт" };
 /* индикаторын өөрийн түүхэн нарийвчлал: санамсаргүй хүлээлттэй шууд жишнэ */
@@ -38,6 +40,7 @@ const glyph = (v: number) => (v > 0 ? "▲" : v < 0 ? "▼" : "–");
 const sgn = (n: number) => (n > 0 ? "+" : n < 0 ? "−" : "");
 function load<T>(k: string, d: T): T { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }
 function save(k: string, v: unknown) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* хувийн горим */ } }
+const HOUR = 3600e3, clock = (t: number) => `${String(new Date(t).getHours()).padStart(2, "0")}:00`;
 function until(ms: number) { const m = Math.max(0, Math.floor(ms / 60000)); if (m < 60) return `${m} минут`; const h = Math.floor(m / 60); return h < 48 ? `${h} цаг ${m % 60} мин` : `${Math.floor(h / 24)} өдөр`; }
 
 /* 18 нүд: өнгө, тэмдэг хоёулаа чиглэлийг заана. Дарвал чартад зурна. */
@@ -65,6 +68,23 @@ function Odds({ t }: { t: Truth }) {
 }
 function Rows({ rows }: { rows: Row[] }) {
   return <ul className={s.plans}>{rows.map((r) => { const e = r.exp ?? 0, w = Math.min(50, (Math.abs(e) / 0.5) * 50); return <li key={r.k}><span>{r.mn}</span><div className={s.bar} role="img" aria-label={`${r.mn}: ${e}R`}><i data-d={e >= 0 ? "up" : "dn"} style={{ width: `${w}%`, [e >= 0 ? "left" : "right"]: "50%" }} /></div><b>{r.n ? `${sgn(e)}${Math.abs(e).toFixed(2)}R` : "—"}</b></li>; })}</ul>;
+}
+
+/* Багана нь бодит зайтай пропорциональ: ойр хязгаарыг ердийн савлагаа илүү олон удаа дайрна */
+function Stops({ rows }: { rows: Stop[] }) {
+  const far = rows[rows.length - 1].d;
+  return <ul className={s.stops}>{rows.map((r) => <li key={r.p}><b>${fx(r.d, r.d < 100 ? 2 : 0)}</b><div className={s.meter} role="img" aria-label={`${r.p}% магадлал`}><i style={{ width: `${(r.d / far) * 100}%` }} /></div><span>{Math.round(100 / r.p)} удаад 1</span></li>)}</ul>;
+}
+/* Ойрын 24 цаг нэг тэнхлэгт: багана нь тухайн цагийн түүхэн хөдөлгөөн, цэг нь том мэдээ. Цаг нь үзэгчийн орон нутгийн цаг. */
+function Day({ hours, dots, start }: { hours: Hours | null; dots: News["line"]; start: number }) {
+  const top = hours ? Math.max(...hours.rel) : 1;
+  return (
+    <div className={s.day} role="img" aria-label="Ойрын 24 цагийн идэвх ба том мэдээ">
+      {!!dots.length && <div className={s.timeline}>{dots.map((e) => <i key={e.t} data-h={e.high || undefined} style={{ left: `${((e.t - start) / (24 * HOUR)) * 100}%` }} />)}</div>}
+      {hours && <div className={s.hours}>{Array.from({ length: 24 }, (_, k) => { const t = start + k * HOUR, u = new Date(t).getUTCHours(), r = hours.rel[u]; return <i key={t} data-p={(u - hours.w + 24) % 24 < hours.len || undefined} style={{ height: `${Math.max(6, (r / top) * 100)}%` }} title={`${clock(t)}: ердийн цагаас ${r.toFixed(1)} дахин`} />; })}</div>}
+      <div className={s.ends}><span>Одоо</span><span>{clock(start + 12 * HOUR)}</span><span>{clock(start + 24 * HOUR)}</span></div>
+    </div>
+  );
 }
 
 /* Нэг хугацааны чарт: өөрийн лаа, уншилттай. Идэвхтэй бол уншилтаа дээш өгнө. */
@@ -148,7 +168,11 @@ export default function DeskApp() {
 
   const live = !tick || !now ? "wait" : now - tick.got > 6000 ? "lost" : now - tick.moved > 240000 ? "closed" : "live";
   const liveTxt = { wait: "Холбогдож байна", lost: "Дахин холбогдож байна", closed: "Зах зээл хаалттай", live: "Шууд" }[live];
-  const cell = view?.cells.find((c) => c.id === focus), nx = view?.news?.next, t = view?.truth;
+  const cell = view?.cells.find((c) => c.id === focus), nx = view?.news?.next, t = view?.truth, heat = view?.hours ?? null;
+  const hourStart = now - (now % HOUR), dots = (view?.news?.line ?? []).filter((e) => e.t >= now && e.t < hourStart + 24 * HOUR);
+  const peakAt = heat ? (() => { const x = now - (now % (24 * HOUR)) + heat.w * HOUR; return x > now ? x : x + 24 * HOUR; })() : 0, inPeak = !!heat && !!now && (new Date(now).getUTCHours() - heat.w + 24) % 24 < heat.len, shut = live === "closed";
+  const peakFrom = inPeak && heat ? hourStart - ((new Date(now).getUTCHours() - heat.w + 24) % 24) * HOUR : peakAt;
+  const dayNote = [heat && `Ихэвчлэн ${clock(peakFrom)}–${clock(peakFrom + heat.len * HOUR)}, бусад цагаас ${heat.lift.toFixed(1)} дахин их хөдөлдөг.`, dots.length ? "Цэг бол том мэдээ." : "", nx?.soon ? "Мэдээ ойрхон байна, энэ үед хөдөлгөөн ихэсч болно." : ""].filter(Boolean).join(" ");
 
   return (
     <div className={s.app}>
@@ -192,12 +216,19 @@ export default function DeskApp() {
               <div className={s.ends}><span>{fx(view.range.lo, d)}</span><span>{fx(view.range.hi, d)}</span></div>
               <p className={s.note}>{T.after} энэ хооронд байх магадлал 80%, шалгахад {Math.round(view.range.cov)}% таарсан.{view.range.lift >= 1.3 ? ` Хэлбэлзэл өндөр үед дараагийн хөдөлгөөн ${view.range.lift} дахин их байсан.` : ""}</p></> : <p className={s.big}>Хэмжиж байна</p>}
           </section>
+          {view?.stops && <section>
+            <h2>Алдагдлын хязгаар хэр хол?</h2>
+            <Stops rows={view.stops} />
+            <p className={s.note}>Ердийн савлагаа {T.within} ийм зайд хүрэх давтамж. Шалгахад {view.stops.map((x) => `${Math.round(x.oos)}%`).join(", ")} гарсан.</p>
+          </section>}
           <section>
-            <h2>Дараагийн том мэдээ</h2>
-            {nx ? <><p className={s.big}>{until(nx.t - now)}<small>{nx.name}{nx.also ? ` ба өөр ${nx.also}` : ""}</small></p>
-              <div className={s.timeline} role="img" aria-label="Ойрын 48 цагийн мэдээ">{view?.news?.line.map((e) => <i key={e.t} data-h={e.high || undefined} style={{ left: `${Math.min(100, Math.max(0, ((e.t - now) / (48 * 3600e3)) * 100))}%` }} />)}</div>
-              <div className={s.ends}><span>Одоо</span><span>48 цаг</span></div>
-              {nx.soon && <p className={s.note}>Ойрхон байна. Энэ үед хөдөлгөөн ихэсч болно.</p>}</> : <p className={s.big}>{view ? "48 цагт алга" : "—"}</p>}
+            <h2>Хэзээ хөдлөх вэ?</h2>
+            <div className={s.pair} data-one={!heat || undefined}>
+              {heat && <p className={s.big}>{shut ? "Хаалттай" : inPeak ? "Одоо" : until(peakAt - now)}<small>{shut ? "зах зээл" : inPeak ? "идэвхтэй цаг" : "идэвхтэй цаг хүртэл"}</small></p>}
+              <p className={s.big}>{nx ? until(nx.t - now) : view ? "48 цагт алга" : "—"}<small>{nx ? `${nx.name}${nx.also ? ` ба өөр ${nx.also}` : ""}` : "том мэдээ"}</small></p>
+            </div>
+            {view && !!now && <Day hours={heat} dots={dots} start={hourStart} />}
+            {dayNote && <p className={s.note}>{dayNote}</p>}
           </section>
           <section>
             <h2>Төлөвлөгөө</h2>

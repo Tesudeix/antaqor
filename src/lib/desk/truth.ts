@@ -16,11 +16,14 @@ import { nextNews } from "./news";
    · Индикатор бүрийн нарийвчлал: саналаа өгсөн үед хэдэн хувь зөв байсан, санамсаргүй үеийн хүлээлттэй жишнэ.
      204 шалгалт хийж байгаа тул «батлагдсан» босго нь z≥3.7 (Bonferroni), хагас хоёр хугацаа хоёулаа эерэг.
    · Хэлбэлзлийн төлөв: одоогийн ATR% түүхэн медианаас хэд дахин их вэ, өндөр үед дараагийн хөдөлгөөн бодитоор хэд дахин их байсан.
+   · Алдагдлын хязгаар: дараагийн 12 лаанд үнэ эсрэг тал руу хэр хол явсан. Эхний хагаст босго тогтоож, хоёр дахь хагаст бодит хүрэлтийг шалгана.
+   · Идэвхтэй цаг: 1H лааны H-L/c-ийн медиан UTC цагаар. Эхний хагаст сонгосон 3 цагийг хоёр дахь хагаст шалгана, тогтвортой бол л харуулна.
+     Цаг нь хэлбэлзлийг тайлбарладаг ч 80% хүрээг цагаар засахад хамрах хувь сайжраагүй (2026-11-06), тиймээс хүрээг засаагүй.
    Индикаторын мэдээ, гарчгийн сэтгэл хөдлөл зэрэг хэмжээгүй зүйл энд орохгүй. Босгыг сулруулахгүй. */
 
 export const READ_TFS: TF[] = ["1m", "5m", "15m", "1H", "4H", "1D"];
 export const H = 12;
-const WARM = 200, DIR = 0.2, ALL = INDICATORS.map((q) => ({ id: q.id, p: q.p || undefined }));
+const WARM = 200, DIR = 0.2, STOP_P = [0.5, 0.25, 0.1], PEAK = 3, ALL = INDICATORS.map((q) => ({ id: q.id, p: q.p || undefined }));
 /* 0 тренд · 1 импульс · 2 хэмжээ. ATR чиглэл заадаггүй: уншигдана, хүрээнд ашиглагдана, санал тоолохгүй. */
 const GROUP: Record<string, number> = { ema: 0, sma: 0, st: 0, ichi: 0, sar: 0, vwap: 0, bb: 0, rsi: 1, macd: 1, stoch: 1, kst: 1, pctb: 1, mfi: 1, dpo: 1, adx: 2, rvol: 2, ad: 2, atr: 2 };
 const VOTERS = ALL.length - 1;
@@ -28,12 +31,20 @@ const VOTERS = ALL.length - 1;
 const bucketOf = (x: number) => (x <= -0.5 ? 0 : x <= -DIR ? 1 : x < DIR ? 2 : x < 0.5 ? 3 : 4);
 function wilson(w: number, n: number, z = 1.96) { const p = w / n, d = 1 + (z * z) / n, m = p + (z * z) / (2 * n), r = z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n)); return [(m - r) / d, (m + r) / d]; }
 const pct = (v: number[], q: number) => { const s = [...v].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))] ?? 0; };
+const mean = (v: number[]) => (v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0);
+function spearman(a: number[], b: number[]) {
+  const rank = (v: number[]) => { const r = new Array<number>(v.length); v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]).forEach((p, k) => { r[p[1]] = k; }); return r; };
+  const x = rank(a), y = rank(b), m = (a.length - 1) / 2; let s = 0, d = 0;
+  for (let i = 0; i < x.length; i++) { s += (x[i] - m) * (y[i] - m); d += (x[i] - m) ** 2; }
+  return s / d;
+}
 const all = (b: Bar[], d: number) => ALL.map((q) => indicator(q.id, q.p, b, d)).filter((v): v is IndOut => !!v);
 const netOf = (v: number[]) => { const up = v.filter((x) => x > 0).length, dn = v.filter((x) => x < 0).length; return { up, dn, flat: v.length - up - dn, net: (up - dn) / VOTERS }; };
 
 type Bk = { n: number; up: number; a: [number, number]; b: [number, number]; sum: number };
 type Each = { n: number; hit: number; exp: number; ok: boolean };
-export type Truth = { at: number; bars: number; from: number; to: number; n: number; baseUp: number; bk: Bk[]; k: number; cov: number; covN: number; neff: number; each: Record<string, Each>; medA: number; lift: number };
+export type Truth = { at: number; bars: number; from: number; to: number; n: number; baseUp: number; bk: Bk[]; k: number; cov: number; covN: number; neff: number; each: Record<string, Each>; medA: number; lift: number; stops: { p: number; k: number; oos: number }[] };
+export type Hours = { at: number; n: number; rel: number[]; w: number; lift: number; rho: number; ok: boolean };
 
 async function compute(sym: Sym, tf: TF): Promise<Truth | null> {
   const b = closedOf(await deep(sym, tf), tf), n = b.length;
@@ -71,17 +82,40 @@ async function compute(sym: Sym, tf: TF): Promise<Truth | null> {
   const vol: number[] = []; for (let i = WARM; i < n; i++) if (x.a[i] > 0) vol.push(x.a[i] / c[i]);
   const q1 = pct(vol, 0.25), q3 = pct(vol, 0.75); let sl = 0, nl = 0, sh = 0, nh = 0;
   for (let i = WARM; i + H < n; i += H) { const v = x.a[i] / c[i], m = Math.abs(c[i + H] - c[i]) / c[i]; if (v <= q1) { sl += m; nl++; } else if (v >= q3) { sh += m; nh++; } }
+  /* алдагдлын хязгаар: хоёр чиглэлийг тус тусд нь тоолно. Босго эхний хагаст, шалгалт хоёр дахь хагаст. */
+  const adv: number[] = [];
+  for (let i = WARM; i + H < n; i += H) {
+    if (!(x.a[i] > 0)) continue;
+    let hi = -Infinity, lo = Infinity;
+    for (let q = i + 1; q <= i + H; q++) { hi = Math.max(hi, b[q].h); lo = Math.min(lo, b[q].l); }
+    const u = x.a[i] * Math.sqrt(H); adv.push((c[i] - lo) / u, (hi - c[i]) / u);
+  }
+  const cut = (adv.length >> 2) << 1, fit = adv.slice(0, cut), hold = adv.slice(cut);
+  const stops = STOP_P.map((p) => { const d = pct(fit, 1 - p); return { p: p * 100, k: +pct(adv, 1 - p).toFixed(3), oos: hold.length ? +((hold.filter((v) => v >= d).length / hold.length) * 100).toFixed(1) : 0 }; });
   /* бие даасан саналын тоо: n²/Σr² (корреляцийн матрицын participation ratio) */
   const live = V.filter((v) => { let a = 0; for (let i = WARM; i < n; i++) a += v[i] * v[i]; return a > 0; }).map((v) => { let m = 0; for (let i = WARM; i < n; i++) m += v[i]; m /= n - WARM; let s = 0; const d = new Float64Array(n); for (let i = WARM; i < n; i++) { d[i] = v[i] - m; s += d[i] * d[i]; } return { d, s: Math.sqrt(s) }; });
   let rr = 0;
   for (const p of live) for (const q of live) { let r = 0; for (let i = WARM; i < n; i++) r += p.d[i] * q.d[i]; rr += (r / (p.s * q.s)) ** 2; }
-  return { at: Date.now(), bars: n, from: b[WARM].t, to: b[n - 1].t, n: tot, baseUp, bk, each, medA: pct(vol, 0.5), lift: nl && nh && sl ? +((sh / nh) / (sl / nl)).toFixed(1) : 0, k: pct(zs, 0.8), cov: test.length ? test.filter((z) => z <= k1).length / test.length : 0, covN: test.length, neff: +((live.length * live.length) / rr).toFixed(1) };
+  return { at: Date.now(), bars: n, from: b[WARM].t, to: b[n - 1].t, n: tot, baseUp, bk, each, stops, medA: pct(vol, 0.5), lift: nl && nh && sl ? +((sh / nh) / (sl / nl)).toFixed(1) : 0, k: pct(zs, 0.8), cov: test.length ? test.filter((z) => z <= k1).length / test.length : 0, covN: test.length, neff: +((live.length * live.length) / rr).toFixed(1) };
+}
+
+/* Цагийн идэвх нь сар бүр өөрчлөгддөггүй. 1H гүн дата нь хангалттай, 6 цаг тутам шинэчилнэ. */
+async function computeHours(sym: Sym): Promise<Hours | null> {
+  const b = closedOf(await deep(sym, "1H"), "1H"), n = b.length, mid = n >> 1;
+  if (n < 24 * 120) return null;
+  const by = [0, 1, 2].map(() => Array.from({ length: 24 }, () => [] as number[]));
+  b.forEach((r, i) => { const h = new Date(r.t).getUTCHours(), v = (r.h - r.l) / r.c; by[i < mid ? 0 : 1][h].push(v); by[2][h].push(v); });
+  const [pa, pb, all24] = by.map((q) => q.map((v) => pct(v, 0.5))), base = pct(all24, 0.5), inW = (h: number, w: number) => (h - w + 24) % 24 < PEAK;
+  let w = 0, top = -1;
+  for (let h = 0; h < 24; h++) { const v = pa.reduce((s, x, k) => s + (inW(k, h) ? x : 0), 0); if (v > top) { top = v; w = h; } }
+  const lift = mean(pb.filter((_, h) => inW(h, w))) / mean(pb.filter((_, h) => !inW(h, w))), rho = spearman(pa, pb);
+  return { at: Date.now(), n, rel: all24.map((v) => +(v / base).toFixed(2)), w, lift: +lift.toFixed(2), rho: +rho.toFixed(2), ok: rho >= 0.5 && lift >= 1.3 };
 }
 
 type Cell = { id: string; label: string; g: number; v: number; read: string };
 type Snap = { cells: Cell[]; up: number; dn: number; flat: number; net: number; dir: number };
-const G = globalThis as { __deskTruth?: Map<string, Truth | null>; __deskTruthRun?: boolean; __deskSnap?: Map<string, Snap> };
-const box: Map<string, Truth | null> = (G.__deskTruth ??= new Map()), snaps: Map<string, Snap> = (G.__deskSnap ??= new Map());
+const G = globalThis as { __deskTruth?: Map<string, Truth | null>; __deskTruthRun?: boolean; __deskSnap?: Map<string, Snap>; __deskHours?: Map<Sym, Hours> };
+const box: Map<string, Truth | null> = (G.__deskTruth ??= new Map()), snaps: Map<string, Snap> = (G.__deskSnap ??= new Map()), day: Map<Sym, Hours> = (G.__deskHours ??= new Map());
 const STALE = 30 * 60e3;
 async function truthOf(sym: Sym, tf: TF) {
   const key = `${sym}:${tf}`, c = box.get(key);
@@ -90,11 +124,18 @@ async function truthOf(sym: Sym, tf: TF) {
   if (v) box.set(key, v);
   return v ?? c ?? null;
 }
+async function hoursOf(sym: Sym) {
+  const c = day.get(sym);
+  if (c && Date.now() - c.at < 6 * 3600e3) return c;
+  const v = await computeHours(sym).catch(() => null);
+  if (v) day.set(sym, v);
+  return v ?? c ?? null;
+}
 /* сервер асахад ба 20 минут тутам дэвсгэрт бэлдэнэ, хэрэглэгч хүлээхгүй */
 export function startTruthWarm() {
   if (G.__deskTruthRun) return;
   G.__deskTruthRun = true;
-  const go = async () => { for (const sym of Object.keys(SYMBOLS) as Sym[]) for (const tf of READ_TFS) { await truthOf(sym, tf).catch(() => null); await new Promise((r) => setTimeout(r, 400)); } };
+  const go = async () => { for (const sym of Object.keys(SYMBOLS) as Sym[]) { await hoursOf(sym).catch(() => null); for (const tf of READ_TFS) { await truthOf(sym, tf).catch(() => null); await new Promise((r) => setTimeout(r, 400)); } } };
   setTimeout(() => go().catch(() => {}), 60e3).unref?.();
   setInterval(() => go().catch(() => {}), 20 * 60e3).unref?.();
 }
@@ -150,7 +191,7 @@ function liveOf(sym: Sym) {
 }
 
 export async function read(sym: Sym, tf: TF) {
-  const [{ b, s }, q, t, st0, lv, news, others] = await Promise.all([snapOf(sym, tf), quote(sym).catch(() => null), truthOf(sym, tf), stats().catch(() => null), liveOf(sym), nextNews(sym).catch(() => null), Promise.all(READ_TFS.map(async (x) => ({ tf: x, dir: (await snapOf(sym, x)).s.dir })))]);
+  const [{ b, s }, q, t, st0, lv, news, others, hours] = await Promise.all([snapOf(sym, tf), quote(sym).catch(() => null), truthOf(sym, tf), stats().catch(() => null), liveOf(sym), nextNews(sym).catch(() => null), Promise.all(READ_TFS.map(async (x) => ({ tf: x, dir: (await snapOf(sym, x)).s.dir }))), hoursOf(sym)]);
   const S = SYMBOLS[sym], x = ctxOf(b, tf, S.cost), i = b.length - 1, px = q?.px || b[i].c, v = judge(t, s);
   if (!ctxReady(x, i)) throw new Error("Дата хангалтгүй байна");
   const st = structureAt(x, i), pat = patternAt(x, i, st.z), unit = t ? t.k * x.a[i] : 0, half = unit * Math.sqrt(H), ratio = t?.medA ? x.a[i] / b[i].c / t.medA : 0;
@@ -166,6 +207,7 @@ export async function read(sym: Sym, tf: TF) {
     sym, tf, at: Date.now(), barAt: b[i].t, px, h: hLabel(tf), horizon: H, cells: s.cells.map((c) => ({ ...c, ...(t?.each[c.id] ?? {}) })), up: s.up, dn: s.dn, flat: s.flat, net: +s.net.toFixed(2), dir: s.dir, neff: t?.neff ?? null, voters: VOTERS,
     truth: v, sample: t && { n: t.n, from: t.from, to: t.to }, sentence: sentence(s.dir, v?.kind, v?.p, ratio),
     range: t && { half: +half.toFixed(S.digits), pct: +((half / px) * 100).toFixed(2), lo: +(px - half).toFixed(S.digits), hi: +(px + half).toFixed(S.digits), unit: +unit.toFixed(S.digits + 1), cov: +(t.cov * 100).toFixed(1), covN: t.covN, ratio: +ratio.toFixed(2), lift: t.lift },
+    stops: t ? t.stops.map((r) => ({ p: r.p, d: +(r.k * x.a[i] * Math.sqrt(H)).toFixed(S.digits), oos: r.oos })) : null, hours: hours?.ok ? { rel: hours.rel, w: hours.w, len: PEAK, lift: hours.lift } : null,
     levels: { sup: below?.p ?? null, res: above?.p ?? null }, plans: plans.map((p) => ({ ...p, plan: undefined, has: !!p.plan })), plan: verified?.plan ?? null, planK: shown?.mn ?? null, levelsPlan: shown?.plan ?? null, verified: !!verified,
     draw: drawAt(x, i, st, shown?.plan ?? null, pat), live: lv && { fired: lv.fired, tp: lv.tp, sl: lv.sl, open: lv.open }, news, matrix: others,
   };
