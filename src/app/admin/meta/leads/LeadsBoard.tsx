@@ -29,10 +29,10 @@ type LeadStatus = NonNullable<LeanConv["leadStatus"]>;
 
 const STATUS: { value: LeadStatus; label: string; color: string }[] = [
   { value: "new", label: "Шинэ", color: T.faint },
-  { value: "contacted", label: "Холбогдсон", color: T.secondary },
-  { value: "qualified", label: "Qualified", color: T.warn },
-  { value: "won", label: "Won", color: T.ok },
-  { value: "lost", label: "Lost", color: T.bad },
+  { value: "contacted", label: "Холбогдсон", color: T.secondaryInk },
+  { value: "qualified", label: "Qualified", color: T.warnInk },
+  { value: "won", label: "Won", color: T.okInk },
+  { value: "lost", label: "Lost", color: T.badInk },
 ];
 const STATUS_BY = Object.fromEntries(STATUS.map((s) => [s.value, s]));
 const INTENT_COLOR: Record<string, string> = { hot: T.bad, warm: T.warn, cold: T.secondary, fan: "#ef6b75", support: T.ok, unknown: T.faint };
@@ -95,7 +95,7 @@ export default function LeadsBoard({ initialConvs }: { initialConvs: LeanConv[] 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-7">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primary }}>Хүмүүс</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primaryInk }}>Хүмүүс</div>
         <h1 className="mt-1 text-[26px] font-semibold tracking-tight" style={{ color: T.text }}>Leads</h1>
         <p className="mt-0.5 text-[12px]" style={{ color: T.faint }}>Meta DM-ээс ирсэн lead-ийн pipeline</p>
       </div>
@@ -111,13 +111,13 @@ export default function LeadsBoard({ initialConvs }: { initialConvs: LeanConv[] 
         <div className="relative flex-1" style={{ minWidth: 200 }}>
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ color: T.faint }}><Ico d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" className="h-4 w-4" /></span>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Lead хайх…"
-            className="w-full rounded-none border bg-[#0E0E12] py-2.5 pl-9 pr-3 text-[14px] outline-none transition focus:border-[rgba(16,128,202,0.5)]" style={{ borderColor: T.border, color: T.text }} />
+            className="w-full rounded-[4px] border bg-[#0A0A0A] py-2.5 pl-9 pr-3 text-[14px] outline-none transition focus:border-[rgba(46,41,255,0.5)]" style={{ borderColor: T.border, color: T.text }} />
         </div>
         <div className="flex flex-wrap gap-1.5">
           {TABS.map((tb) => {
             const active = tab === tb.key;
             return (
-              <button key={tb.key} onClick={() => setTab(tb.key)} className="rounded-none px-3 py-1.5 text-[12px] font-semibold transition"
+              <button key={tb.key} onClick={() => setTab(tb.key)} className="rounded-[4px] px-3 py-1.5 text-[12px] font-semibold transition"
                 style={active ? { background: T.primary, color: "#fff" } : { color: T.muted, background: "rgba(255,255,255,0.03)" }}>{tb.label}</button>
             );
           })}
@@ -153,7 +153,7 @@ export default function LeadsBoard({ initialConvs }: { initialConvs: LeanConv[] 
                           className="cursor-pointer border-b transition hover:bg-[rgba(255,255,255,0.02)]" style={{ borderColor: T.border }}>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2.5">
-                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none text-[11px] font-bold" style={{ background: "rgba(16,128,202,0.12)", color: T.primary }}>
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[11px] font-bold" style={{ background: "rgba(46,41,255,0.12)", color: T.primaryInk }}>
                                 {(c.partnerName || c.partnerUsername || "?")[0]?.toUpperCase()}
                               </span>
                               <div className="min-w-0">
@@ -170,7 +170,7 @@ export default function LeadsBoard({ initialConvs }: { initialConvs: LeanConv[] 
                           </td>
                           <td className="px-4 py-3 text-[12px]" style={{ color: T.muted }}><div className="max-w-[260px] truncate">{c.lastMessagePreview || "—"}</div></td>
                           <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-1.5 rounded-none px-2 py-1 text-[11px] font-semibold" style={{ color: st.color, background: `${st.color}1A` }}>
+                            <span className="inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[11px] font-semibold" style={{ color: st.color, background: `${st.color}1A` }}>
                               <span className="h-1.5 w-1.5 rounded-full" style={{ background: st.color }} />{st.label}
                             </span>
                           </td>
@@ -187,24 +187,24 @@ export default function LeadsBoard({ initialConvs }: { initialConvs: LeanConv[] 
                                       const on = (c.leadStatus || "new") === s.value;
                                       return (
                                         <button key={s.value} disabled={busy === c._id} onClick={() => patch(c._id, { leadStatus: s.value })}
-                                          className="rounded-none px-2.5 py-1 text-[11px] font-semibold transition disabled:opacity-40"
-                                          style={on ? { background: s.color, color: "#0A0A0A" } : { border: `1px solid ${T.border}`, color: T.muted }}>{s.label}</button>
+                                          className="rounded-[4px] px-2.5 py-1 text-[11px] font-semibold transition disabled:opacity-40"
+                                          style={on ? { background: s.color, color: "#FFFFFF" } : { border: `1px solid ${T.border}`, color: T.muted }}>{s.label}</button>
                                       );
                                     })}
                                   </div>
                                   <div className="mt-4 mb-2 text-[10px] uppercase tracking-[0.1em]" style={{ color: T.faint }}>Тэмдэглэл</div>
                                   <textarea value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} rows={3}
-                                    className="w-full resize-none rounded-none border bg-[#0E0E12] px-3 py-2 text-[13px] outline-none focus:border-[rgba(16,128,202,0.5)]" style={{ borderColor: T.border, color: T.text }} />
+                                    className="w-full resize-none rounded-[4px] border bg-[#0A0A0A] px-3 py-2 text-[13px] outline-none focus:border-[rgba(46,41,255,0.5)]" style={{ borderColor: T.border, color: T.text }} />
                                   <Btn size="sm" variant="secondary" className="mt-2" onClick={() => patch(c._id, { adminNotes: noteDraft })} loading={busy === c._id}>Тэмдэглэл хадгалах</Btn>
                                 </div>
-                                <div className="rounded-none border p-3" style={{ borderColor: T.border }}>
+                                <div className="rounded-[4px] border p-3" style={{ borderColor: T.border }}>
                                   <div className="text-[10px] uppercase tracking-[0.1em]" style={{ color: T.faint }}>Холбоотой гишүүн</div>
                                   {u ? (
                                     <div className="mt-2 text-[12px]" style={{ color: T.muted }}>
                                       <div className="font-semibold" style={{ color: T.text }}>{u.name || u.username}</div>
                                       {u.email && <div className="mt-0.5">{u.email}</div>}
                                       <div className="mt-1" style={{ fontFamily: MONO }}>L{u.level || 1} · {u.xp || 0} XP</div>
-                                      <Link href={`/admin/members?search=${encodeURIComponent(u.email || u.username || "")}`} className="mt-2 inline-block text-[11px] font-semibold" style={{ color: T.secondary }}>Гишүүн удирдах →</Link>
+                                      <Link href={`/admin/members?search=${encodeURIComponent(u.email || u.username || "")}`} className="mt-2 inline-block text-[11px] font-semibold" style={{ color: T.secondaryInk }}>Гишүүн удирдах →</Link>
                                     </div>
                                   ) : <div className="mt-2 text-[12px]" style={{ color: T.faint }}>Холбогдоогүй</div>}
                                 </div>

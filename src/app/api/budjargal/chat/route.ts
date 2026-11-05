@@ -54,9 +54,31 @@ export async function POST(req: NextRequest) {
   const userInput = String(rawMessage || "").trim().slice(0, MAX_INPUT_CHARS);
   if (!userInput) return NextResponse.json({ error: "Мессеж бичнэ үү" }, { status: 400 });
 
+  /* ─── 2026-08-26: ЗОЧНЫ ҮНЭГҮЙ ЧАТ ХААГДАВ ─────────────────────────────
+     Өмнө нь зочин цагийн хязгаартайгаар үнэгүй бичиж чаддаг байв. Сайт
+     бүхэлдээ төлбөрт шилжсэн тул тэр хаалга ч хаагдана. Клиент талын хана
+     (SiteGate) хуудсыг нууна; ЭНЭ мөр нь API руу шууд хандсан хүнийг
+     зогсооно — жинхэнэ хамгаалалт нь дандаа энд байна.
+
+     Доорх зочны код УСТГААГҮЙ: хаалгыг дахин нээх шийдвэр гарвал энэ
+     хамгаалалтыг л авчихна. `String(...)` нь TypeScript-ийн narrowing-ийг
+     ЗОРИУД таслаж байгаа — эс тэгвээс компилятор доорх зочны салбаруудыг
+     "хүрэшгүй код" гэж үзэн build унагана. */
+  if (String(subject.kind) !== "user") {
+    return NextResponse.json(
+      {
+        error: "AI ашиглахын тулд нэвтэрч, гишүүн болно уу.",
+        code: "NEEDS_MEMBERSHIP",
+        needsAuth: true,
+        buyHref: "/pricing",
+      },
+      { status: 401 }
+    );
+  }
+
   await dbConnect();
 
-  // ─── Credit gate (logged-in users only; guests metered by lifetime cap) ───
+  // ─── Гишүүнчлэлийн хаалга. Зочин ба төлбөргүй хэрэглэгч аль аль нь орохгүй. ───
   let gate: Awaited<ReturnType<typeof gateAiMessage>> | null = null;
   if (subject.kind === "user") {
     const session = await getServerSession(authOptions);
@@ -68,11 +90,10 @@ export async function POST(req: NextRequest) {
     if (!gate.ok) {
       return NextResponse.json(
         {
-          error: `Кредит дууссан. ${gate.required}₵ хэрэгтэй, үлдэгдэл ${gate.balance}₵.`,
-          code: "INSUFFICIENT_CREDITS",
-          balance: gate.balance,
-          required: gate.required,
-          buyHref: "/credits/buy",
+          error: "Гишүүнчлэл шаардлагатай.",
+          code: "NEEDS_MEMBERSHIP",
+          needsMembership: true,
+          buyHref: "/pricing",
         },
         { status: 402 }
       );

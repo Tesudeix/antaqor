@@ -10,7 +10,8 @@ export interface IPayment extends Document {
   description: string;
   // What this payment is for. Defaults to "membership" so legacy rows keep
   // working (clan join). "credits" → award creditAmount on approval.
-  kind: "membership" | "credits" | "product";
+  // "agent" → Antaqor Agent бизнес багц (lib/agentBilling.ts гүйцээнэ).
+  kind: "membership" | "credits" | "product" | "agent";
   creditAmount: number; // populated when kind === "credits"
   plan: string; // membership payments: plan tier ("starter" | "builder" | "operator")
   wireIntentId: string; // Wire PaymentIntent id when paid via hosted checkout
@@ -24,6 +25,9 @@ export interface IPayment extends Document {
   claimedAt?: Date;
   adminNote: string;
   paidAt?: Date;
+  /** Хэдэн сэргээх сануулга илгээгдсэн (0–3). cron/payment-recovery. */
+  remindersSent: number;
+  lastReminderAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,7 +63,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     kind: {
       type: String,
-      enum: ["membership", "credits", "product"],
+      enum: ["membership", "credits", "product", "agent"],
       default: "membership",
       index: true,
     },
@@ -116,6 +120,20 @@ const PaymentSchema = new Schema<IPayment>(
     paidAt: {
       type: Date,
     },
+    /* ─── Сэргээх шат ───────────────────────────────────────────────────
+       Хаягдсан нэхэмжлэх рүү илгээсэн сануулгын тоо. Payment дээр байх нь
+       санамсаргүй биш: сануулга нь ХЭРЭГЛЭГЧИД биш, тухайн НЭХЭМЖЛЭХЭД
+       харьяалагдана — нэг хүн шинэ нэхэмжлэх нээвэл шат нь дахин 0-ээс
+       эхлэх ёстой, эс бөгөөс хоёр дахь удаагаа оролдож буй хүн ямар ч
+       сануулга авахгүй өнгөрнө. */
+    remindersSent: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    lastReminderAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -123,6 +141,8 @@ const PaymentSchema = new Schema<IPayment>(
 );
 
 PaymentSchema.index({ user: 1, createdAt: -1 });
+/* cron/payment-recovery-ийн хайлт: pending + төрөл + нас + шат. */
+PaymentSchema.index({ status: 1, kind: 1, remindersSent: 1, createdAt: -1 });
 PaymentSchema.index({ invoiceId: 1 });
 
 const Payment: Model<IPayment> =

@@ -29,8 +29,8 @@ export interface MarketCardData {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Prompt: "#1080CA", Course: "#1080CA", Template: "#06B6D4",
-  Agent: "#F59E0B", Service: "#EC4899", Digital: "#1080CA",
+  Prompt: "#2E29FF", Course: "#2E29FF", Template: "#06B6D4",
+  Agent: "#F59E0B", Service: "#2E29FF", Digital: "#2E29FF",
 };
 
 function fmtPrice(mnt: number): string {
@@ -44,7 +44,7 @@ function readWishlist(): string[] {
 }
 
 export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?: number }) {
-  const color = CATEGORY_COLORS[p.category] || "#1080CA";
+  const color = CATEGORY_COLORS[p.category] || "#2E29FF";
   const gallery = (p.gallery || []).filter(Boolean);
   // Swatches = cover + gallery, de-duplicated. First is the default angle.
   const swatches = Array.from(new Set([p.coverImage, ...gallery].filter(Boolean)));
@@ -106,7 +106,7 @@ export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?
         </Link>
 
         {/* category (top-left) */}
-        <span className="pointer-events-none absolute left-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-black uppercase" style={{ background: `${color}F2`, color: "#fff" }}>
+        <span className="pointer-events-none absolute left-2 top-2 rounded-[4px] px-2 py-0.5 text-[11px] font-black uppercase" style={{ background: `${color}F2`, color: "#fff" }}>
           {p.category}
         </span>
 
@@ -116,13 +116,13 @@ export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?
           onClick={toggleWish}
           aria-pressed={wished}
           aria-label={wished ? "Хадгалснаас хасах" : "Хадгалах"}
-          className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/35 backdrop-blur transition hover:bg-black/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1080CA]"
+          className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/35 backdrop-blur transition hover:bg-black/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E29FF]"
         >
           <motion.svg
             key={wished ? "on" : "off"}
             initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 18 }}
             className="h-4 w-4" viewBox="0 0 24 24"
-            fill={wished ? "#1080CA" : "none"} stroke={wished ? "#1080CA" : "#fff"} strokeWidth={1.8}
+            fill={wished ? "#2E29FF" : "none"} stroke={wished ? "#2E29FF" : "#fff"} strokeWidth={1.8}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
           </motion.svg>
@@ -161,7 +161,7 @@ export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?
           {hasDiscount ? (
             <>
               <span className="text-[15px] font-black text-[#E32B2B]">{fmtPrice(p.price)}</span>
-              <span className="text-[11px] text-[#94a3b8] line-through">{fmtPrice(p.compareAtPrice || 0)}</span>
+              <span className="text-[11px] text-[#E2E4E8] line-through">{fmtPrice(p.compareAtPrice || 0)}</span>
               <span className="text-[11px] font-bold text-[#E32B2B]">−{off}%</span>
             </>
           ) : (
@@ -170,7 +170,7 @@ export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?
         </div>
 
         {/* name */}
-        <h3 className="mt-0.5 line-clamp-2 text-[13px] font-semibold leading-snug text-[#0e1726] transition-colors group-hover:text-[#1080CA]">
+        <h3 className="mt-0.5 line-clamp-2 text-[13px] font-semibold leading-snug text-[#0e1726] transition-colors group-hover:text-[#2E29FF]">
           {p.title}
         </h3>
 
@@ -184,7 +184,7 @@ export default function MarketCard({ p, index = 0 }: { p: MarketCardData; index?
         <div className="mt-0.5 flex items-center gap-2">
           {badge && <span className="text-[11px] font-bold text-[#0e1726]">{badge}</span>}
           {(p.views || 0) > 0 && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] text-[#94a3b8]">
+            <span className="inline-flex items-center gap-0.5 text-[10px] text-[#E2E4E8]">
               <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><circle cx="12" cy="12" r="3" /></svg>
               {(p.views || 0).toLocaleString()}
             </span>

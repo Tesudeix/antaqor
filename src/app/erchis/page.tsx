@@ -87,13 +87,13 @@ const hashtags = ["ЭрчисВолейболКлуб", "ВолейболСур�
 function GroupCard({ g }: { g: Group }) {
   const isChild = g.kind === "child";
   return (
-    <div className="rounded-[6px] border border-white/10 bg-[#141416] p-4 transition hover:border-[#FF6B1A]/40">
+    <div className="rounded-[4px] border border-white/10 bg-[#141416] p-4 transition hover:border-[#1BD1C6]/40">
       <div className="flex items-start justify-between gap-3">
         <span
           className={`inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1 text-[12px] font-bold ${
             isChild
               ? "bg-[rgba(255,196,0,0.12)] text-[#FFC400]"
-              : "bg-[rgba(255,107,26,0.12)] text-[#FF8A3D]"
+              : "bg-[rgba(255,107,26,0.12)] text-[#3DA8FF]"
           }`}
         >
           <span>{isChild ? "👧" : "👨"}</span>
@@ -107,7 +107,7 @@ function GroupCard({ g }: { g: Group }) {
 
       {g.venue && (
         <p className="mt-3 flex items-start gap-1.5 text-[13px] font-semibold text-[#E8E8E8]">
-          <span className="text-[#FF6B1A]">📍</span>
+          <span className="text-[#1BD1C6]">📍</span>
           <span>
             {g.venue}
             {g.venueNote && <span className="block text-[11px] font-normal text-[#888]">{g.venueNote}</span>}
@@ -118,7 +118,7 @@ function GroupCard({ g }: { g: Group }) {
       <ul className="mt-3 space-y-1.5">
         {g.schedule.map((s) => (
           <li key={s} className="flex items-center gap-2 text-[13px] text-[#BBBBBB]">
-            <span className="text-[#FF6B1A]">🕒</span>
+            <span className="text-[#1BD1C6]">🕒</span>
             {s}
           </li>
         ))}
@@ -140,7 +140,7 @@ export default function ErchisPage() {
             <span className="text-[22px] leading-none">🏐</span>
             <span className="flex flex-col leading-none">
               <span className="text-[15px] font-extrabold tracking-[0.18em] text-white">ЭРЧИС</span>
-              <span className="mt-1 text-[8px] font-bold tracking-[0.3em] text-[#FF6B1A]">ВОЛЕЙБОЛ КЛУБ</span>
+              <span className="mt-1 text-[8px] font-bold tracking-[0.3em] text-[#1BD1C6]">ВОЛЕЙБОЛ КЛУБ</span>
             </span>
           </a>
           <nav className="hidden items-center gap-7 sm:flex">
@@ -156,7 +156,7 @@ export default function ErchisPage() {
           </nav>
           <a
             href={`tel:${PHONE_TEL}`}
-            className="rounded-[4px] bg-[#FF6B1A] px-4 py-2 text-[13px] font-bold text-black transition hover:bg-[#ff7d33]"
+            className="rounded-[4px] bg-[#1BD1C6] px-4 py-2 text-[13px] font-bold text-white transition hover:bg-[#33A3FF]"
           >
             📞 Залгах
           </a>
@@ -174,13 +174,13 @@ export default function ErchisPage() {
         />
         <div className="relative mx-auto max-w-3xl">
           <div className="text-[64px] leading-none sm:text-[88px]">🏐</div>
-          <span className="mt-4 inline-flex items-center gap-2 rounded-[4px] border border-[#FF6B1A]/30 bg-[rgba(255,107,26,0.10)] px-3 py-1.5 text-[12px] font-bold tracking-wide text-[#FF8A3D]">
+          <span className="mt-4 inline-flex items-center gap-2 rounded-[4px] border border-[#1BD1C6]/30 bg-[rgba(255,107,26,0.10)] px-3 py-1.5 text-[12px] font-bold tracking-wide text-[#3DA8FF]">
             📣 7-Р САРЫН БҮРТГЭЛ ЭХЭЛЛЭЭ!
           </span>
-          <h1 className="mt-5 text-[44px] font-extrabold leading-[0.95] tracking-[0.04em] text-white sm:text-[72px]">
+          <h1 className="mt-5 text-[26px] md:text-[44px] font-extrabold leading-[0.95] tracking-[0.04em] text-white sm:text-[72px]">
             ЭРЧИС
           </h1>
-          <p className="mt-1 text-[15px] font-bold tracking-[0.35em] text-[#FF6B1A] sm:text-[18px]">
+          <p className="mt-1 text-[15px] font-bold tracking-[0.35em] text-[#1BD1C6] sm:text-[18px]">
             ВОЛЕЙБОЛ КЛУБ
           </p>
           <p className="mx-auto mt-5 max-w-md text-[14px] leading-relaxed text-[#AAAAAA]">
@@ -190,13 +190,13 @@ export default function ErchisPage() {
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
               href={`tel:${PHONE_TEL}`}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#FF6B1A] px-7 py-3 text-[15px] font-bold text-black transition hover:bg-[#ff7d33] hover:shadow-[0_0_28px_rgba(255,107,26,0.35)] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#1BD1C6] px-7 py-3 text-[15px] font-bold text-white transition hover:bg-[#33A3FF] hover:shadow-[0_0_28px_rgba(255,107,26,0.35)] sm:w-auto"
             >
               📞 {PHONE_DISPLAY}
             </a>
             <a
               href="#salbaruud"
-              className="inline-flex w-full items-center justify-center rounded-[4px] border border-white/15 px-7 py-3 text-[15px] font-semibold text-[#E8E8E8] transition hover:border-[#FF6B1A]/50 hover:text-white sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-[4px] border border-white/15 px-7 py-3 text-[15px] font-semibold text-[#E8E8E8] transition hover:border-[#1BD1C6]/50 hover:text-white sm:w-auto"
             >
               Хуваарь үзэх
             </a>
@@ -214,9 +214,9 @@ export default function ErchisPage() {
             {advantages.map((a) => (
               <div
                 key={a}
-                className="flex items-start gap-3 rounded-[6px] border border-white/10 bg-[#141416] p-4"
+                className="flex items-start gap-3 rounded-[4px] border border-white/10 bg-[#141416] p-4"
               >
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FF6B1A] text-[12px] font-black text-black">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-[#1BD1C6] text-[12px] font-black text-white">
                   ✓
                 </span>
                 <p className="text-[14px] leading-relaxed text-[#D8D8D8]">{a}</p>
@@ -234,7 +234,7 @@ export default function ErchisPage() {
             {discounts.map((d) => (
               <div
                 key={d.t}
-                className="flex items-center gap-3 rounded-[6px] border border-[#FFC400]/20 bg-[rgba(255,196,0,0.05)] p-4"
+                className="flex items-center gap-3 rounded-[4px] border border-[#FFC400]/20 bg-[rgba(255,196,0,0.05)] p-4"
               >
                 <span className="text-[24px]">{d.icon}</span>
                 <p className="text-[14px] font-semibold text-[#E8E8E8]">{d.t}</p>
@@ -250,9 +250,9 @@ export default function ErchisPage() {
           </h2>
           <div className="mt-5 space-y-5">
             {districts.map((dist) => (
-              <div key={dist.code} className="rounded-[8px] border border-white/10 bg-[#0e0e10] p-4 sm:p-5">
+              <div key={dist.code} className="rounded-[4px] border border-white/10 bg-[#000000] p-4 sm:p-5">
                 <div className="mb-4 flex items-baseline gap-2.5">
-                  <span className="rounded-[4px] bg-[#FF6B1A] px-2.5 py-1 text-[13px] font-extrabold text-black">
+                  <span className="rounded-[4px] bg-[#1BD1C6] px-2.5 py-1 text-[13px] font-extrabold text-white">
                     {dist.code}
                   </span>
                   <span className="text-[14px] font-medium text-[#888]">{dist.name}</span>
@@ -268,20 +268,20 @@ export default function ErchisPage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="mt-14 overflow-hidden rounded-[10px] border border-[#FF6B1A]/25 bg-gradient-to-b from-[rgba(255,107,26,0.08)] to-[#0e0e10] p-7 text-center">
+        <section className="mt-14 overflow-hidden rounded-[4px] border border-[#1BD1C6]/25 bg-gradient-to-b from-[rgba(255,107,26,0.08)] to-[#000000] p-7 text-center">
           <h2 className="text-[22px] font-extrabold text-white sm:text-[26px]">
             🔥 Спортоор хичээллэж, өөрийгөө хөгжүүлье!
           </h2>
-          <p className="mt-2 text-[14px] font-semibold text-[#FF8A3D]">📌 Бүртгэл хязгаартай</p>
+          <p className="mt-2 text-[14px] font-semibold text-[#3DA8FF]">📌 Бүртгэл хязгаартай</p>
           <a
             href={`tel:${PHONE_TEL}`}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#FF6B1A] px-8 py-3.5 text-[16px] font-bold text-black transition hover:bg-[#ff7d33] hover:shadow-[0_0_28px_rgba(255,107,26,0.35)]"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#1BD1C6] px-8 py-3.5 text-[16px] font-bold text-white transition hover:bg-[#33A3FF] hover:shadow-[0_0_28px_rgba(255,107,26,0.35)]"
           >
             📞 Холбоо барих: {PHONE_DISPLAY}
           </a>
           <div className="mt-7 flex flex-wrap justify-center gap-2">
             {hashtags.map((h) => (
-              <span key={h} className="text-[12px] font-medium text-[#FF8A3D]">
+              <span key={h} className="text-[12px] font-medium text-[#3DA8FF]">
                 #{h}
               </span>
             ))}
@@ -304,7 +304,7 @@ export default function ErchisPage() {
             <span className="text-[18px] leading-none">🎯</span>
             <span className="text-[10px] font-semibold">Хөнгөлөлт</span>
           </a>
-          <a href={`tel:${PHONE_TEL}`} className="flex flex-col items-center gap-0.5 py-1.5 text-[#FF6B1A] transition active:text-[#ff7d33]">
+          <a href={`tel:${PHONE_TEL}`} className="flex flex-col items-center gap-0.5 py-1.5 text-[#1BD1C6] transition active:text-[#33A3FF]">
             <span className="text-[18px] leading-none">📞</span>
             <span className="text-[10px] font-extrabold">Залгах</span>
           </a>

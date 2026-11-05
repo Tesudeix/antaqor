@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const body = await req.json();
-    if (!body.section || !["ai_solution", "resource"].includes(body.section)) {
+    if (!body.section || !["ai_solution", "resource", "tool"].includes(body.section)) {
       return NextResponse.json({ error: "Invalid section" }, { status: 400 });
     }
     if (!body.title || !body.href) {

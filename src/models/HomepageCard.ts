@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export type HomepageCardSection = "ai_solution" | "resource";
+export type HomepageCardSection = "ai_solution" | "resource" | "tool";
 
 export interface IHomepageCard extends Document {
   section: HomepageCardSection;
@@ -17,7 +17,7 @@ export interface IHomepageCard extends Document {
 
 const HomepageCardSchema = new Schema<IHomepageCard>(
   {
-    section: { type: String, enum: ["ai_solution", "resource"], required: true, index: true },
+    section: { type: String, enum: ["ai_solution", "resource", "tool"], required: true, index: true },
     title: { type: String, required: true },
     desc: { type: String, default: "" },
     emoji: { type: String, default: "✨" },

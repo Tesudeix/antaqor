@@ -15,12 +15,12 @@ const STORAGE_KEY = "antaqor:lastSeenLevel";
 function levelColor(lvl: number): string {
   if (lvl >= 96) return "#F472B6";
   if (lvl >= 81) return "#FF4473";
-  if (lvl >= 61) return "#1080CA";
-  if (lvl >= 41) return "#1080CA";
-  if (lvl >= 26) return "#1080CA";
-  if (lvl >= 16) return "#1080CA";
-  if (lvl >= 6) return "#1080CA";
-  return "#5b6573";
+  if (lvl >= 61) return "#2E29FF";
+  if (lvl >= 41) return "#2E29FF";
+  if (lvl >= 26) return "#2E29FF";
+  if (lvl >= 16) return "#2E29FF";
+  if (lvl >= 6) return "#2E29FF";
+  return "#E2E4E8";
 }
 
 interface LevelSnapshot {
@@ -109,39 +109,39 @@ export default function LevelUpToast() {
           className="fixed inset-x-3 top-3 z-[80] mx-auto max-w-md"
         >
           <div
-            className="relative overflow-hidden rounded-none border bg-gradient-to-br p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
+            className="relative overflow-hidden rounded-[4px] border bg-gradient-to-br p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
             style={{
               borderColor: `${color}66`,
               backgroundImage: `linear-gradient(135deg, ${color}22, #eef2f6 40%, #f2f5f8)`,
             }}
           >
             {/* Sparkle flourish */}
-            <div className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-30"
+            <div className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-[4px] opacity-30"
               style={{ background: `radial-gradient(circle, ${color}88, transparent 70%)` }}
             />
 
             <div className="relative flex items-center gap-3">
               <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[18px] font-black text-white shadow-lg"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] text-[18px] font-black text-white shadow-lg"
                 style={{ background: color, boxShadow: `0 0 32px ${color}66` }}
               >
                 L{toast.toLevel}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color }}>
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color }}>
                   <span>LEVEL UP</span>
-                  <span className="text-[#94a3b8]">·</span>
+                  <span className="text-[#E2E4E8]">·</span>
                   <span className="text-[#475569]">L{toast.fromLevel} → L{toast.toLevel}</span>
                 </div>
                 <div className="mt-0.5 text-[15px] font-black leading-tight text-[#0e1726]">
                   {title.titleMN}
                 </div>
-                <div className="text-[11px] text-[#6b7280]">Том ахиц! Тавтай морил.</div>
+                <div className="text-[11px] text-[#E2E4E8]">Том ахиц! Тавтай морил.</div>
               </div>
               <button
                 onClick={() => setToast(null)}
                 aria-label="close"
-                className="h-6 w-6 shrink-0 rounded-full text-[#6b7280] transition hover:bg-white/5 hover:text-[#475569]"
+                className="h-6 w-6 shrink-0 rounded-[4px] text-[#E2E4E8] transition hover:bg-white/5 hover:text-[#475569]"
               >
                 ×
               </button>
@@ -151,16 +151,16 @@ export default function LevelUpToast() {
               <Link
                 href="/clan?pay=1"
                 onClick={() => setToast(null)}
-                className="mt-3 flex items-center justify-between rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 transition hover:bg-[rgba(16,128,202,0.14)]"
+                className="mt-3 flex items-center justify-between rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-3 py-2 transition hover:bg-[rgba(46,41,255,0.14)]"
               >
                 <div className="text-[11px] text-[#334155]">
                   {nudgeUnlockCap ? (
-                    <>Free cap L5 хүрлээ — <span className="font-bold text-[#1080CA]">хязгаарыг тайлах</span></>
+                    <>Free cap L5 хүрлээ — <span className="font-bold text-[#2E29FF]">хязгаарыг тайлах</span></>
                   ) : (
-                    <>1.5× XP-ээр <span className="font-bold text-[#1080CA]">2 дахин хурдан</span> өс</>
+                    <>1.5× XP-ээр <span className="font-bold text-[#2E29FF]">2 дахин хурдан</span> өс</>
                   )}
                 </div>
-                <span className="flex items-center gap-1 text-[11px] font-bold text-[#1080CA]">
+                <span className="flex items-center gap-1 text-[11px] font-bold text-[#2E29FF]">
                   ₮9k
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </span>

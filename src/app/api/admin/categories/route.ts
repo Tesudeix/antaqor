@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Нэр 1–50 тэмдэгт" }, { status: 400 });
     }
     const slug = (typeof body.slug === "string" ? body.slug : name).trim().toLowerCase();
-    const color = typeof body.color === "string" ? body.color : "#1080CA";
+    const color = typeof body.color === "string" ? body.color : "#2E29FF";
     const iconPath = typeof body.iconPath === "string" ? body.iconPath.trim().slice(0, 2000) : "";
     const order = typeof body.order === "number" ? body.order : 999;
 

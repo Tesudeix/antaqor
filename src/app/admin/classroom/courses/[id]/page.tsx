@@ -6,6 +6,8 @@
 
 import { useCallback, useEffect, useState, use } from "react";
 import Link from "next/link";
+import CourseGroups from "@/components/classroom/CourseGroups";
+import CourseReviews from "@/components/classroom/CourseReviews";
 import { useRouter } from "next/navigation";
 
 interface CourseInfo {
@@ -30,6 +32,8 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
   const router = useRouter();
   const [course, setCourse] = useState<CourseInfo | null>(null);
   const [lessons, setLessons] = useState<LessonRow[]>([]);
+  const [search, setSearch] = useState("");
+  const [shown, setShown] = useState(30);
   const [loading, setLoading] = useState(true);
 
   // ─── Meta editing ─────────────────────────────────────────────────────
@@ -99,15 +103,15 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
     if (res.ok) router.push("/admin/classroom");
   };
 
-  if (loading) return <div className="py-12 text-center text-[12px] text-[#8A8A92]">Ачаалж байна…</div>;
-  if (!course) return <div className="py-12 text-center text-[12px] text-[#8A8A92]">Курс олдсонгүй.</div>;
+  if (loading) return <div className="py-12 text-center text-[12px] text-[#E2E4E8]">Ачаалж байна…</div>;
+  if (!course) return <div className="py-12 text-center text-[12px] text-[#E2E4E8]">Курс олдсонгүй.</div>;
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <Link
         href="/admin/classroom"
-        className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#8A8A92] transition hover:text-[#1080CA]"
+        className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF]"
       >
         <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -116,13 +120,13 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
       </Link>
 
       {/* Meta editor */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12] p-4">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-[14px] font-black text-[#E8E8E8]">Курсийн мэдээлэл</h2>
           <button
             type="button"
             onClick={removeCourse}
-            className="text-[10px] font-bold text-[#8A8A92] transition hover:text-[#4E94D0]"
+            className="text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#4C47FF]"
           >
             Курс устгах
           </button>
@@ -148,21 +152,21 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
             />
           </div>
           <div className="flex items-center gap-3">
-            <label className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8A8A92]">Шаардах түвшин</label>
+            <label className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">Шаардах түвшин</label>
             <input
               type="number"
               min={0}
               max={100}
               value={meta.requiredLevel}
               onChange={(e) => setMeta((m) => ({ ...m, requiredLevel: Math.max(0, parseInt(e.target.value) || 0) }))}
-              className="w-20 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-1.5 text-center text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(16,128,202,0.4)]"
+              className="w-20 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-1.5 text-center text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(46,41,255,0.4)]"
             />
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <Link
               href={`/classroom/course/${id}`}
               target="_blank"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[11px] font-bold text-[#8A8A92] transition hover:border-[rgba(255,255,255,0.2)] hover:text-[#E8E8E8]"
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-3 py-2 text-[11px] font-bold text-[#E2E4E8] transition hover:border-[rgba(255,255,255,0.2)] hover:text-[#E8E8E8]"
             >
               Үзэх
             </Link>
@@ -170,7 +174,7 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
               type="button"
               onClick={saveMeta}
               disabled={savingMeta || !!uploadingField}
-              className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#FF3D69] disabled:opacity-50"
+              className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-black text-white transition hover:bg-[#FF3D69] disabled:opacity-50"
             >
               {savingMeta ? "..." : "Хадгалах"}
             </button>
@@ -178,16 +182,17 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
+      <CourseGroups courseId={id} />
       {/* Lessons */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12]">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
         <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] px-4 py-3">
           <div className="flex items-baseline gap-2">
             <h2 className="text-[14px] font-black text-[#E8E8E8]">Хичээл</h2>
-            <span className="font-mono text-[10px] tabular-nums text-[#8A8A92]">{lessons.length}</span>
+            <span className="font-mono text-[10px] tabular-nums text-[#E2E4E8]">{lessons.length}</span>
           </div>
           <Link
             href={`/admin/classroom/courses/${id}/lessons/new`}
-            className="inline-flex items-center gap-1.5 rounded-none bg-[#1080CA] px-3 py-1.5 text-[11px] font-black text-[#0E0E10] transition hover:bg-[#FF3D69]"
+            className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[11px] font-black text-white transition hover:bg-[#FF3D69]"
           >
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -195,8 +200,9 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
             Шинэ хичээл
           </Link>
         </div>
+        <div className="p-4"><input aria-label="Хичээл хайх" type="search" value={search} onChange={e=>{setSearch(e.target.value);setShown(30);}} placeholder="Хичээл хайх…" className="w-full rounded border border-[#262626] bg-[#141414] p-3 text-sm text-[#E8E8E8]" /></div>
         {lessons.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[#8A8A92]">
+          <div className="p-8 text-center text-[12px] text-[#E2E4E8]">
             Хичээл байхгүй. Дээрх «+ Шинэ хичээл» товчоор эхлүүлнэ үү.
           </div>
         ) : (
@@ -204,12 +210,14 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
             {lessons
               .slice()
               .sort((a, b) => (a.order || 0) - (b.order || 0))
+              .filter(l=>l.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
+              .slice(0,shown)
               .map((l, i) => (
                 <li key={l._id} className="flex items-center gap-3 px-4 py-2.5">
-                  <span className="w-6 shrink-0 font-mono text-[10px] tabular-nums text-[#56565E]">
+                  <span className="w-6 shrink-0 font-mono text-[10px] tabular-nums text-[#E2E4E8]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div className="h-10 w-16 shrink-0 overflow-hidden rounded-none bg-[#0A0A0A]">
+                  <div className="h-10 w-16 shrink-0 overflow-hidden rounded-[4px] bg-[#0A0A0A]">
                     {l.thumbnail ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={l.thumbnail} alt="" className="h-full w-full object-cover" />
@@ -217,14 +225,14 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
                   </div>
                   <Link
                     href={`/admin/classroom/courses/${id}/lessons/${l._id}`}
-                    className="min-w-0 flex-1 truncate text-[13px] font-bold text-[#E8E8E8] transition hover:text-[#1080CA]"
+                    className="min-w-0 flex-1 truncate text-[13px] font-bold text-[#E8E8E8] transition hover:text-[#2E29FF]"
                   >
                     {l.title || "Untitled"}
                   </Link>
                   <div className="flex shrink-0 items-center gap-1.5">
                     {l.videoUrl && (
                       <span
-                        className="rounded-full px-1.5 py-0.5 font-mono text-[8.5px] font-bold uppercase tracking-[0.18em]"
+                        className="rounded-[4px] px-1.5 py-0.5 font-mono text-[8.5px] font-bold uppercase tracking-[0.18em]"
                         style={{ background: "rgba(79,224,101,0.1)", color: "#4FE065" }}
                       >
                         VIDEO
@@ -232,8 +240,8 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
                     )}
                     {l.content && l.content.trim().length > 20 && (
                       <span
-                        className="rounded-full px-1.5 py-0.5 font-mono text-[8.5px] font-bold uppercase tracking-[0.18em]"
-                        style={{ background: "rgba(16,128,202,0.1)", color: "#1080CA" }}
+                        className="rounded-[4px] px-1.5 py-0.5 font-mono text-[8.5px] font-bold uppercase tracking-[0.18em]"
+                        style={{ background: "rgba(46,41,255,0.1)", color: "#2E29FF" }}
                       >
                         BLOG
                       </span>
@@ -241,14 +249,14 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
                   </div>
                   <Link
                     href={`/admin/classroom/courses/${id}/lessons/${l._id}`}
-                    className="rounded-none border border-[rgba(255,255,255,0.08)] px-2.5 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.35)] hover:text-[#1080CA]"
+                    className="rounded-[4px] border border-[rgba(255,255,255,0.08)] px-2.5 py-1 text-[10px] font-bold text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.35)] hover:text-[#2E29FF]"
                   >
                     Засах
                   </Link>
                   <button
                     type="button"
                     onClick={() => removeLesson(l)}
-                    className="rounded-none px-2 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:text-[#4E94D0]"
+                    className="rounded-[4px] px-2 py-1 text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#4C47FF]"
                     title="Устгах"
                   >
                     ✕
@@ -256,8 +264,11 @@ export default function AdminCoursePage({ params }: { params: Promise<{ id: stri
                 </li>
               ))}
           </ul>
+
         )}
+        {lessons.filter(l=>l.title.toLocaleLowerCase().includes(search.toLocaleLowerCase())).length>shown && <button onClick={()=>setShown(n=>n+30)} className="m-4 rounded border px-4 py-2 text-sm">Дараагийн 30 хичээл</button>}
       </div>
+      <div className="rounded-[4px] border border-[#262626] bg-[#141414]"><CourseReviews courseId={id} readOnly /></div>
     </div>
   );
 }
@@ -268,7 +279,7 @@ function Field({
 }: { label: string; value: string; onChange: (v: string) => void; textarea?: boolean }) {
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8A8A92]">
+      <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">
         {label}
       </span>
       {textarea ? (
@@ -276,14 +287,14 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] outline-none focus:border-[rgba(46,41,255,0.4)]"
         />
       ) : (
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[rgba(46,41,255,0.4)]"
         />
       )}
     </label>
@@ -295,10 +306,10 @@ function ImageField({
 }: { label: string; value: string; onUpload: (f: File) => void; onClear: () => void; busy: boolean }) {
   return (
     <div>
-      <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8A8A92]">
+      <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">
         {label}
       </span>
-      <label className="flex aspect-[16/9] w-full cursor-pointer items-center justify-center overflow-hidden rounded-none border border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(16,128,202,0.35)]">
+      <label className="flex aspect-[16/9] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[4px] border border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.35)]">
         <input
           type="file"
           accept="image/*"
@@ -313,16 +324,16 @@ function ImageField({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={value} alt="" className="h-full w-full object-cover" />
         ) : busy ? (
-          <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#2E29FF] border-t-transparent" />
         ) : (
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#56565E]">+ Зураг</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#E2E4E8]">+ Зураг</span>
         )}
       </label>
       {value && (
         <button
           type="button"
           onClick={onClear}
-          className="mt-1 text-[10px] font-bold text-[#8A8A92] transition hover:text-[#4E94D0]"
+          className="mt-1 text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#4C47FF]"
         >
           Цэвэрлэх
         </button>

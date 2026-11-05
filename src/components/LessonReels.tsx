@@ -41,7 +41,7 @@ export default function LessonReels() {
   useEffect(() => {
     trackOnce("reels_view");
     if (status !== "authenticated") return;
-    fetch("/api/reels")
+    fetch("/api/classroom/reels")
       .then((r) => r.json())
       .then((d) => setItems(d.items ?? []))
       .catch(() => setItems([]));
@@ -85,21 +85,21 @@ export default function LessonReels() {
   // ── Guest gate ──
   if (status === "unauthenticated") {
     return (
-      <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#161618] px-6 text-center">
-        <div className="chrome mb-3 text-[10px] text-[#1080CA]">ANTAQOR // REEL ХИЧЭЭЛ</div>
+      <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#0A0A0A] px-6 text-center">
+        <div className="chrome mb-3 text-[10px] text-[#2E29FF]">ANTAQOR // REEL ХИЧЭЭЛ</div>
         <h1 className="headline mb-3 text-[26px]">Скролл хийгээд л сур</h1>
-        <p className="mb-8 max-w-sm text-[14px] leading-relaxed text-[#B4B4BA]">
+        <p className="mb-8 max-w-sm text-[14px] leading-relaxed text-[#E2E4E8]">
           60 секундын богино хичээлүүд — reel үзэх шиг амархан. Үнэгүй бүртгүүлээд
           эхний хичээлүүдээ одоо үз.
         </p>
         <Link
           href="/auth/signup"
           onClick={() => track("free_signup_clicked", { source: "reels_gate" })}
-          className="bg-[#1080CA] px-8 py-4 text-[14px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+          className="bg-[#2E29FF] px-8 py-4 text-[14px] font-bold text-white transition hover:bg-[#1F1AD9]"
         >
           Нэгдэх
         </Link>
-        <Link href="/auth/signin" className="mt-4 text-[13px] text-[#B4B4BA] underline underline-offset-4">
+        <Link href="/auth/signin" className="mt-4 text-[13px] text-[#E2E4E8] underline underline-offset-4">
           Нэвтрэх
         </Link>
       </div>
@@ -108,7 +108,7 @@ export default function LessonReels() {
 
   if (!items) {
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black text-[#B4B4BA]">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black text-[#E2E4E8]">
         Ачаалж байна…
       </div>
     );
@@ -125,15 +125,15 @@ export default function LessonReels() {
         >
           ←
         </button>
-        <span className="chrome text-[10px] text-[#1080CA]">REEL ХИЧЭЭЛ</span>
-        <span className="chrome text-[10px] text-[#84848C]">
+        <span className="chrome text-[10px] text-[#2E29FF]">REEL ХИЧЭЭЛ</span>
+        <span className="chrome text-[10px] text-[#E2E4E8]">
           {items.length ? `${Math.min(active + 1, items.length)}/${items.length}` : ""}
         </span>
       </div>
 
       <div ref={containerRef} className="no-scrollbar h-full snap-y snap-mandatory overflow-y-scroll">
         {items.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-[#B4B4BA]">
+          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-[#E2E4E8]">
             <p>Одоогоор reel хичээл алга.</p>
             <Link href="/classroom" className="text-[#F2F2F4] underline underline-offset-4">
               Курсууд руу очих →
@@ -173,7 +173,7 @@ export default function LessonReels() {
 
                 {/* bottom overlay */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-4 pb-6 pt-16">
-                  <div className="chrome mb-1.5 text-[9px] text-[#84848C]">
+                  <div className="chrome mb-1.5 text-[11px] text-[#E2E4E8]">
                     {item.courseTitle.toUpperCase()}
                   </div>
                   <h2 className="mb-3 text-[16px] font-bold text-white">{item.title}</h2>
@@ -184,7 +184,7 @@ export default function LessonReels() {
                       className={`px-4 py-2.5 text-[12px] font-bold transition ${
                         item.completed
                           ? "bg-[#1f2b22] text-green-400"
-                          : "bg-[#1080CA] text-[#0E0E10] hover:bg-[#4FA8E8]"
+                          : "bg-[#2E29FF] text-white hover:bg-[#1F1AD9]"
                       }`}
                     >
                       {item.completed ? "✓ Дууссан" : "Хичээл дуусгасан ✓"}
@@ -210,22 +210,22 @@ function LockedReel({ item }: { item: ReelItem }) {
   const plan = PLAN_LABEL[item.requiredPlan] ?? item.requiredPlan.toUpperCase();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-[#131316] px-6 text-center">
-      <div className="flex h-16 w-16 items-center justify-center border border-[#2E2E33] bg-black/60 text-3xl">
+      <div className="flex h-16 w-16 items-center justify-center bg-[#141414] bg-black/60 text-3xl">
         🔒
       </div>
-      <div className="chrome mt-5 text-[10px] text-[#84848C]">{item.courseTitle.toUpperCase()}</div>
+      <div className="chrome mt-5 text-[10px] text-[#E2E4E8]">{item.courseTitle.toUpperCase()}</div>
       <h2 className="headline mt-2 text-[20px]">{item.title}</h2>
-      <p className="mt-2 max-w-xs text-[13px] text-[#B4B4BA]">
-        Энэ хичээл <span className="font-bold text-[#1080CA]">{plan}</span> plan-аар нээгдэнэ.
+      <p className="mt-2 max-w-xs text-[13px] text-[#E2E4E8]">
+        Энэ хичээл <span className="font-bold text-[#2E29FF]">{plan}</span> plan-аар нээгдэнэ.
       </p>
       <Link
         href={`/pricing?plan=${item.requiredPlan}`}
         onClick={() => track("upgrade_prompt_viewed", { source: "reels", plan: item.requiredPlan })}
-        className="mt-6 bg-[#1080CA] px-8 py-3.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+        className="mt-6 bg-[#2E29FF] px-8 py-3.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9]"
       >
         {plan} болох →
       </Link>
-      <Link href="/classroom" className="mt-4 text-[12px] text-[#B4B4BA] underline underline-offset-4">
+      <Link href="/classroom" className="mt-4 text-[12px] text-[#E2E4E8] underline underline-offset-4">
         Хөтөлбөр үзэх
       </Link>
     </div>
@@ -282,7 +282,7 @@ function FileReel({
         </div>
       )}
       <div className="absolute inset-x-0 bottom-0 z-10 h-[3px] bg-white/10">
-        <div className="h-full bg-[#1080CA]" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-[#2E29FF]" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

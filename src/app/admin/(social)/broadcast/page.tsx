@@ -15,12 +15,12 @@ interface Broadcast {
   imageUrl: string;
   flowId?: string | null;
   status: "draft" | "sending" | "paused" | "done" | "failed";
-  stats: { targeted: number; accepted: number; failed: number; skipped: number };
+  stats?: { targeted?: number; accepted?: number; failed?: number; skipped?: number };
   lastError?: string;
   createdAt: string;
 }
 
-const INP = "w-full rounded-none border bg-[#0E0E12] px-3 py-2.5 text-[13px] outline-none focus:border-[rgba(16,128,202,0.5)]";
+const INP = "w-full rounded-[4px] border bg-[#0A0A0A] px-3 py-2.5 text-[13px] outline-none focus:border-[rgba(46,41,255,0.5)]";
 
 // Ready-made messages a shop owner can send in one tap. Kept deliberately
 // short and benefit-led — the "[Реклам]" label is added automatically by the
@@ -49,7 +49,10 @@ export default function BroadcastPage() {
   // Compose form
   const [name, setName] = useState("");
   const [platform, setPlatform] = useState<"instagram" | "messenger" | "both">("both");
-  const [account, setAccount] = useState("antaqor");
+  // "all" — never default to one hard-coded page: the old default was the
+  // antaqor account, whose token is dead and whose audience is always 0.
+  const [account, setAccount] = useState("all");
+  const [pageOptions, setPageOptions] = useState<{ key: string; label: string; reach: number }[]>([]);
   const [contentType, setContentType] = useState<"flow" | "text">("text");
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -69,6 +72,7 @@ export default function BroadcastPage() {
         fetch("/api/admin/flows").catch(() => null),
       ]);
       const db = await rb.json();
+      if (Array.isArray(db.accounts)) setPageOptions(db.accounts);
       if (db.broadcasts) setList(db.broadcasts);
       if (rf && rf.ok) {
         const df = await rf.json();
@@ -183,7 +187,7 @@ export default function BroadcastPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       {flash && (
-        <div className="rounded-none border-l-2 px-4 py-2.5 text-[12px]" style={{ borderColor: T.primary, background: "rgba(16,128,202,0.06)", color: T.primary }}>
+        <div className="rounded-[4px] border-l-2 px-4 py-2.5 text-[12px]" style={{ borderColor: T.primary, background: "rgba(46,41,255,0.06)", color: T.primaryInk }}>
           {flash}
         </div>
       )}
@@ -205,11 +209,15 @@ export default function BroadcastPage() {
         <div>
           <div className="mb-1.5 text-[11px] font-semibold" style={{ color: T.muted }}>Хуудас</div>
           <div className="flex flex-wrap gap-1.5">
-            {([["antaqor", "Antaqor · IG + FB"], ["joymassage", "Joy Massage"], ["joybilliard", "Joy Billiard"]] as const).map(([v, l]) => (
-              <button key={v} onClick={() => setAccount(v)}
+            {(pageOptions.length ? pageOptions : [{ key: "all", label: "Бүх хуудас", reach: 0 }]).map((o) => (
+              <button key={o.key} onClick={() => setAccount(o.key)}
+                title={`${o.reach} хүн 24 цагийн цонхонд байна`}
                 className="rounded-[4px] px-3.5 py-2 text-[12px] font-semibold transition"
-                style={account === v ? { background: T.primary, color: "#1080CA" } : { background: T.surface, color: T.muted }}>
-                {l}
+                style={account === o.key ? { background: T.primary, color: "#2E29FF" } : { background: T.surface, color: T.muted }}>
+                {o.label}
+                <span className="ml-1.5 text-[10px] font-normal" style={{ opacity: 0.75 }}>
+                  {o.reach}
+                </span>
               </button>
             ))}
           </div>
@@ -221,7 +229,7 @@ export default function BroadcastPage() {
           <div className="flex flex-wrap gap-1.5">
             {([["both", "Бүгд"], ["instagram", "Instagram"], ["messenger", "Messenger"]] as const).map(([v, l]) => (
               <button key={v} onClick={() => setPlatform(v)}
-                className="rounded-none px-3.5 py-2 text-[12px] font-semibold transition"
+                className="rounded-[4px] px-3.5 py-2 text-[12px] font-semibold transition"
                 style={platform === v ? { background: T.primary, color: "#fff" } : { background: T.surface, color: T.muted }}>
                 {l}
               </button>
@@ -235,7 +243,7 @@ export default function BroadcastPage() {
           <div className="flex flex-wrap gap-1.5">
             {([["text", "Текст / зураг"], ["flow", "Flow"]] as const).map(([v, l]) => (
               <button key={v} onClick={() => setContentType(v)}
-                className="rounded-none px-3.5 py-2 text-[12px] font-semibold transition"
+                className="rounded-[4px] px-3.5 py-2 text-[12px] font-semibold transition"
                 style={contentType === v ? { background: T.secondary, color: "#06222a" } : { background: T.surface, color: T.muted }}>
                 {l}
               </button>
@@ -248,7 +256,7 @@ export default function BroadcastPage() {
             <div className="flex flex-wrap gap-1.5">
               {PRESETS.map((p) => (
                 <button key={p.label} onClick={() => setText(p.text)}
-                  className="rounded-none border px-2.5 py-1 text-[11px] font-medium transition hover:border-[rgba(16,128,202,0.5)]"
+                  className="rounded-[4px] border px-2.5 py-1 text-[11px] font-medium transition hover:border-[rgba(46,41,255,0.5)]"
                   style={{ borderColor: T.border, color: T.muted }}>
                   {p.label}
                 </button>
@@ -256,17 +264,17 @@ export default function BroadcastPage() {
             </div>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} maxLength={1000}
               placeholder="Илгээх мессеж…"
-              className="w-full resize-none rounded-none border bg-[#0E0E12] px-3 py-2.5 text-[13px] outline-none focus:border-[rgba(16,128,202,0.5)]"
+              className="w-full resize-none rounded-[4px] border bg-[#0A0A0A] px-3 py-2.5 text-[13px] outline-none focus:border-[rgba(46,41,255,0.5)]"
               style={{ borderColor: T.border, color: T.text }} />
             <div className="flex items-center gap-3">
               {imageUrl ? (
                 <div className="relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imageUrl} alt="" className="h-16 w-16 rounded-none border object-cover" style={{ borderColor: T.border }} />
-                  <button onClick={() => setImageUrl("")} className="absolute right-1 top-1 rounded-none px-1 text-[10px] font-bold" style={{ background: "rgba(14,23,38,0.65)", color: "#fff" }}>×</button>
+                  <img src={imageUrl} alt="" className="h-16 w-16 rounded-[4px] border object-cover" style={{ borderColor: T.border }} />
+                  <button onClick={() => setImageUrl("")} className="absolute right-1 top-1 rounded-[4px] px-1 text-[10px] font-bold" style={{ background: "rgba(14,23,38,0.65)", color: "#fff" }}>×</button>
                 </div>
               ) : (
-                <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-none border border-dashed text-[10px]" style={{ borderColor: T.borderHi, color: T.faint }}>
+                <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-[4px] border border-dashed text-[10px]" style={{ borderColor: T.borderHi, color: T.faint }}>
                   {uploading ? <Spinner className="h-4 w-4" /> : (<><span className="text-[16px] leading-none">＋</span><span>Зураг</span></>)}
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} />
                 </label>
@@ -291,20 +299,20 @@ export default function BroadcastPage() {
           <div className="mb-1.5 text-[11px] font-semibold" style={{ color: T.muted }}>Хэнд илгээх</div>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={() => setHotOnly(false)}
-              className="rounded-none border px-3.5 py-2 text-[12px] font-medium transition"
-              style={!hotOnly ? { borderColor: T.primary, color: T.primary, background: "rgba(16,128,202,0.06)" } : { borderColor: T.border, color: T.muted }}>
+              className="rounded-[4px] border px-3.5 py-2 text-[12px] font-medium transition"
+              style={!hotOnly ? { borderColor: T.primary, color: T.primaryInk, background: "rgba(46,41,255,0.06)" } : { borderColor: T.border, color: T.muted }}>
               Сүүлд чатлсан бүгд
             </button>
             <button onClick={() => setHotOnly(true)}
-              className="rounded-none border px-3.5 py-2 text-[12px] font-medium transition"
-              style={hotOnly ? { borderColor: T.primary, color: T.primary, background: "rgba(16,128,202,0.06)" } : { borderColor: T.border, color: T.muted }}>
+              className="rounded-[4px] border px-3.5 py-2 text-[12px] font-medium transition"
+              style={hotOnly ? { borderColor: T.primary, color: T.primaryInk, background: "rgba(46,41,255,0.06)" } : { borderColor: T.border, color: T.muted }}>
               🔥 Халуун лийд
             </button>
           </div>
         </div>
 
         {/* Recipient count */}
-        <div className="flex items-center justify-between rounded-none px-3 py-2.5" style={{ background: T.surface }}>
+        <div className="flex items-center justify-between rounded-[4px] px-3 py-2.5" style={{ background: T.surface }}>
           <span className="text-[12px]" style={{ color: T.muted }}>Хүлээн авах хүн</span>
           <span className="text-[16px] font-bold" style={{ color: count ? T.primary : T.faint }}>
             {counting ? "…" : count == null ? "—" : count}
@@ -312,7 +320,7 @@ export default function BroadcastPage() {
         </div>
 
         {/* Compliance note */}
-        <div className="rounded-none border px-3 py-2.5 text-[11px] leading-relaxed" style={{ borderColor: "rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.06)", color: "#a16207" }}>
+        <div className="rounded-[4px] border px-3 py-2.5 text-[11px] leading-relaxed" style={{ borderColor: "rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.06)", color: "#a16207" }}>
           ⚠ Meta-гийн дүрмээр зөвхөн <strong>сүүлийн 24 цагт</strong> танд бичсэн хүмүүст л илгээгдэнэ. “Зогс” гэж бичсэн хүн жагсаалтаас автоматаар хасагдана. Нэг хүнд 24 цагт нэг л удаа очно.
         </div>
 
@@ -337,14 +345,17 @@ export default function BroadcastPage() {
         ) : (
           <div className="space-y-2">
             {list.map((b) => {
-              const st = STATUS_LABEL[b.status];
+              const st = STATUS_LABEL[b.status] ?? { t: b.status || "—", c: T.faint };
+              // Rows written before `stats` existed have none. Never reach into
+              // it unguarded: one legacy document crashes the entire list.
+              const stats = b.stats ?? { targeted: 0, accepted: 0, failed: 0, skipped: 0 };
               return (
                 <Card key={b._id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="truncate text-[13px] font-semibold" style={{ color: T.text }}>{b.name}</div>
                       <div className="mt-0.5 text-[11px]" style={{ color: T.faint }}>
-                        {b.platform === "both" ? "Бүгд" : b.platform} · {b.contentType === "flow" ? "Flow" : "Текст"} · {new Date(b.createdAt).toLocaleDateString("mn-MN")}
+                        {b.platform === "both" ? "Бүгд" : b.platform} · {b.contentType === "flow" ? "Flow" : "Текст"} · {b.createdAt ? new Date(b.createdAt).toLocaleDateString("mn-MN") : "—"}
                       </div>
                     </div>
                     <span className="shrink-0 text-[11px] font-bold" style={{ color: st.c }}>{st.t}</span>
@@ -353,14 +364,14 @@ export default function BroadcastPage() {
                   {b.text && <div className="mt-2 line-clamp-2 text-[12px]" style={{ color: T.muted }}>{b.text}</div>}
 
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]" style={{ color: T.muted }}>
-                    <span>🎯 {b.stats.targeted}</span>
-                    <span style={{ color: T.ok }}>✓ {b.stats.accepted}</span>
-                    {b.stats.failed > 0 && <span style={{ color: T.bad }}>✕ {b.stats.failed}</span>}
-                    {b.stats.skipped > 0 && <span style={{ color: T.faint }}>↷ {b.stats.skipped}</span>}
+                    <span>🎯 {stats.targeted ?? 0}</span>
+                    <span style={{ color: T.okInk }}>✓ {stats.accepted ?? 0}</span>
+                    {(stats.failed ?? 0) > 0 && <span style={{ color: T.badInk }}>✕ {stats.failed}</span>}
+                    {(stats.skipped ?? 0) > 0 && <span style={{ color: T.faint }}>↷ {stats.skipped}</span>}
                   </div>
 
                   {b.lastError && b.status !== "done" && (
-                    <div className="mt-2 rounded-none px-2 py-1 text-[10px]" style={{ background: "rgba(78,148,208,0.08)", color: T.bad }}>{b.lastError}</div>
+                    <div className="mt-2 rounded-[4px] px-2 py-1 text-[10px]" style={{ background: "rgba(78,148,208,0.08)", color: T.badInk }}>{b.lastError}</div>
                   )}
 
                   <div className="mt-3 flex justify-end gap-2">

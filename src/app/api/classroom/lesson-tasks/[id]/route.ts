@@ -1,3 +1,4 @@
+import { classroomContentGate } from "@/lib/classroomContentGate";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -6,6 +7,8 @@ import dbConnect from "@/lib/mongodb";
 import LessonTask from "@/models/LessonTask";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await classroomContentGate();
+  if (denied) return denied;
   const { id } = await params;
   await dbConnect();
   const task = await LessonTask.findById(id).lean();

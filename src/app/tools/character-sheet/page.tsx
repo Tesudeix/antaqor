@@ -10,7 +10,7 @@ import { useCallback, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-const PINK = "#1080CA";
+const PINK = "#2E29FF";
 const COST = 25;
 
 interface CharForm {
@@ -121,24 +121,24 @@ export default function CharacterSheetPage() {
       {/* ─── Hero ─── */}
       <header className="mb-6 flex items-start justify-between gap-4 sm:mb-8">
         <div>
-          <Link href="/tools" className="mb-3 inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-[#6b7280] transition hover:text-[#0e1726]">
+          <Link href="/tools" className="mb-3 inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-[#E2E4E8] transition hover:text-[#0e1726]">
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             ALL TOOLS
           </Link>
-          <h1 className="text-[28px] font-black leading-tight tracking-tight text-[#0e1726] sm:text-[36px]">
+          <h1 className="text-[28px] font-black leading-tight tracking-tight text-[#0e1726] sm:text-[22px] md:text-[36px]">
             Character Reference <span style={{ color: PINK }}>Sheet</span>
           </h1>
-          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#6b7280]">
+          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#E2E4E8]">
             Studio-grade character bible — turnaround, expressions, postures,
             wardrobe details, color system. One reference photo in,
             production-ready sheet out.
           </p>
         </div>
         <div className="hidden flex-col items-end gap-1 sm:flex">
-          <span className="rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.08)] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.2em]" style={{ color: PINK }}>
+          <span className="rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.08)] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.2em]" style={{ color: PINK }}>
             POWERED BY NANO BANANA
           </span>
-          <span className="font-mono text-[10px] tracking-wider text-[#6b7280]">
+          <span className="font-mono text-[10px] tracking-wider text-[#E2E4E8]">
             {COST} КРЕДИТ / SHEET
           </span>
         </div>
@@ -157,10 +157,10 @@ export default function CharacterSheetPage() {
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
               onDragLeave={() => setDragging(false)}
               onDrop={onDrop}
-              className={`flex aspect-[16/9] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-none border-2 border-dashed transition ${
+              className={`flex aspect-[16/9] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-[4px] border-2 border-dashed transition ${
                 dragging
-                  ? "border-[rgba(16,128,202,0.6)] bg-[rgba(16,128,202,0.05)]"
-                  : "border-[rgba(15,23,38,0.1)] bg-[#ffffff] hover:border-[rgba(16,128,202,0.35)]"
+                  ? "border-[rgba(46,41,255,0.6)] bg-[rgba(46,41,255,0.05)]"
+                  : "border-[rgba(15,23,38,0.1)] bg-[#ffffff] hover:border-[rgba(46,41,255,0.35)]"
               }`}
             >
               <input
@@ -170,13 +170,13 @@ export default function CharacterSheetPage() {
                 className="hidden"
                 onChange={(e) => e.target.files && handleFiles(e.target.files)}
               />
-              <svg className="h-7 w-7 text-[#94a3b8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <svg className="h-7 w-7 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
               <span className="text-[13px] font-semibold text-[#0e1726]">
                 Зургаа чирж тавь эсвэл сонго
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#94a3b8]">
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">
                 PNG · JPG · WEBP · 8MB
               </span>
             </label>
@@ -184,14 +184,14 @@ export default function CharacterSheetPage() {
             {refs.length > 0 && (
               <div className="mt-3 grid grid-cols-4 gap-2">
                 {refs.map((src, i) => (
-                  <div key={i} className="group relative aspect-square overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
+                  <div key={i} className="group relative aspect-square overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeRef(i)}
                       aria-label="Устгах"
-                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white opacity-0 transition group-hover:opacity-100"
+                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-black/70 text-white opacity-0 transition group-hover:opacity-100"
                     >
                       <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
@@ -221,28 +221,28 @@ export default function CharacterSheetPage() {
               onChange={(e) => set("description", e.target.value)}
               rows={5}
               placeholder="Шинж чанар, төрх, хувцас, дадал зуршил, зэр зэвсэг — нэг параграф бичих. Хоосон үлдээсэн талбаруудыг энд бичсэнээс уншиж бөглөнө."
-              className="w-full resize-y rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-3 py-2.5 text-[13px] leading-relaxed text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[rgba(16,128,202,0.4)]"
+              className="w-full resize-y rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-3 py-2.5 text-[13px] leading-relaxed text-[#0e1726] placeholder-[#62666F] outline-none transition focus:border-[rgba(46,41,255,0.4)]"
             />
-            <p className="mt-1 text-[10px] text-[#94a3b8]">
+            <p className="mt-1 text-[10px] text-[#E2E4E8]">
               💡 Энэ нь хамгийн чухал input. Тодорхой бич — model үүнийг “authoritative source” болгож ашиглана.
             </p>
           </Section>
 
           {/* 4. Pro fields */}
-          <div className="rounded-none border border-[rgba(15,23,38,0.06)] bg-[#0B0B0C]">
+          <div className="rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#0B0B0C]">
             <button
               type="button"
               onClick={() => setPro((p) => !p)}
               className="flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-[rgba(15,23,38,0.02)]"
             >
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-none bg-[rgba(15,23,38,0.05)] font-mono text-[10px] font-bold text-[#6b7280]">
+                <span className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-[rgba(15,23,38,0.05)] font-mono text-[10px] font-bold text-[#E2E4E8]">
                   4
                 </span>
                 <span className="text-[13px] font-bold text-[#0e1726]">Pro details</span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#94a3b8]">optional</span>
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">optional</span>
               </div>
-              <svg className={`h-4 w-4 text-[#6b7280] transition-transform ${pro ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className={`h-4 w-4 text-[#E2E4E8] transition-transform ${pro ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -271,7 +271,7 @@ export default function CharacterSheetPage() {
 
           {/* Error */}
           {err && (
-            <div className="rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.05)] px-3 py-2 text-[12px] text-[#FF8B8B]">
+            <div className="rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.05)] px-3 py-2 text-[12px] text-[#FF8B8B]">
               {err}
             </div>
           )}
@@ -280,7 +280,7 @@ export default function CharacterSheetPage() {
           {!session ? (
             <Link
               href="/auth/signin"
-              className="flex w-full items-center justify-center gap-2 rounded-none border border-[rgba(16,128,202,0.4)] bg-[rgba(16,128,202,0.06)] px-4 py-3.5 text-[13px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.12)]"
+              className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(46,41,255,0.4)] bg-[rgba(46,41,255,0.06)] px-4 py-3.5 text-[13px] font-bold text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.12)]"
             >
               Нэвтэрч ашиглах
             </Link>
@@ -289,8 +289,8 @@ export default function CharacterSheetPage() {
               type="button"
               onClick={generate}
               disabled={!canGenerate}
-              className="flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] px-4 py-3.5 text-[13px] font-black text-[#0E0E10] transition hover:bg-[#FF3D69] disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ boxShadow: canGenerate ? "0 8px 28px rgba(16,128,202,0.35)" : undefined }}
+              className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] px-4 py-3.5 text-[13px] font-black text-white transition hover:bg-[#FF3D69] disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ boxShadow: canGenerate ? "0 8px 28px rgba(46,41,255,0.35)" : undefined }}
             >
               {busy ? (
                 <>
@@ -300,7 +300,7 @@ export default function CharacterSheetPage() {
               ) : (
                 <>
                   Sheet үүсгэх
-                  <span className="rounded-none bg-black/20 px-1.5 py-0.5 font-mono text-[10px]">
+                  <span className="rounded-[4px] bg-black/20 px-1.5 py-0.5 font-mono text-[10px]">
                     {COST} КРЕДИТ
                   </span>
                 </>
@@ -311,11 +311,11 @@ export default function CharacterSheetPage() {
 
         {/* ═══ RIGHT — RESULT ═══ */}
         <div className="lg:sticky lg:top-6 lg:self-start">
-          <div className="overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
+          <div className="overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
             <div className="flex items-center justify-between border-b border-[rgba(15,23,38,0.06)] px-4 py-2.5">
               <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_6px_rgba(16,128,202,0.7)]" />
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">
+                <span className="h-1.5 w-1.5 rotate-45 bg-[#2E29FF] shadow-[0_0_6px_rgba(46,41,255,0.7)]" />
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">
                   PREVIEW · 16:9
                 </span>
               </div>
@@ -323,7 +323,7 @@ export default function CharacterSheetPage() {
                 <a
                   href={result.url}
                   download={`character-sheet-${form.name || "untitled"}.png`}
-                  className="inline-flex items-center gap-1 rounded-none bg-[rgba(15,23,38,0.05)] px-2.5 py-1 text-[11px] font-bold text-[#0e1726] transition hover:bg-[rgba(15,23,38,0.1)]"
+                  className="inline-flex items-center gap-1 rounded-[4px] bg-[rgba(15,23,38,0.05)] px-2.5 py-1 text-[11px] font-bold text-[#0e1726] transition hover:bg-[rgba(15,23,38,0.1)]"
                 >
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                   Татах
@@ -336,13 +336,13 @@ export default function CharacterSheetPage() {
                 <img src={result.url} alt="Character sheet" className="h-full w-full object-contain" />
               ) : busy ? (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)]">
-                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.06)]">
+                    <span className="h-5 w-5 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
                   </div>
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">
                     NANO BANANA RENDERING
                   </p>
-                  <p className="max-w-xs text-[11px] leading-relaxed text-[#6b7280]">
+                  <p className="max-w-xs text-[11px] leading-relaxed text-[#E2E4E8]">
                     Turnaround, expressions, postures, wardrobe details — 8 zones, single composition. Ihэвчлэн 20-40 сек.
                   </p>
                 </div>
@@ -350,13 +350,13 @@ export default function CharacterSheetPage() {
                 <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center">
                   <div className="grid grid-cols-4 gap-0.5">
                     {[0, 1, 2, 3].map((i) => (
-                      <div key={i} className="h-10 w-7 rounded-none bg-[rgba(15,23,38,0.04)]" />
+                      <div key={i} className="h-10 w-7 rounded-[4px] bg-[rgba(15,23,38,0.04)]" />
                     ))}
                   </div>
-                  <p className="text-[12px] font-semibold text-[#6b7280]">
+                  <p className="text-[12px] font-semibold text-[#E2E4E8]">
                     Sheet тэнд гарна
                   </p>
-                  <p className="max-w-xs text-[11px] leading-relaxed text-[#94a3b8]">
+                  <p className="max-w-xs text-[11px] leading-relaxed text-[#E2E4E8]">
                     1. Reference зураг 2. Нэр + role 3. Тайлбар → Sheet үүсгэх
                   </p>
                 </div>
@@ -365,7 +365,7 @@ export default function CharacterSheetPage() {
           </div>
 
           {result && (
-            <div className="mt-3 flex items-center justify-between text-[11px] text-[#6b7280]">
+            <div className="mt-3 flex items-center justify-between text-[11px] text-[#E2E4E8]">
               <span className="font-mono uppercase tracking-wider">
                 {form.name} · {form.role}
               </span>
@@ -373,7 +373,7 @@ export default function CharacterSheetPage() {
                 type="button"
                 onClick={generate}
                 disabled={busy}
-                className="font-bold text-[#6b7280] transition hover:text-[#1080CA] disabled:opacity-40"
+                className="font-bold text-[#E2E4E8] transition hover:text-[#2E29FF] disabled:opacity-40"
               >
                 ↻ Дахин үүсгэх
               </button>
@@ -394,11 +394,11 @@ function Section({
   return (
     <section className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="flex h-5 w-5 items-center justify-center rounded-none bg-[rgba(16,128,202,0.1)] font-mono text-[10px] font-bold text-[#1080CA]">
+        <span className="flex h-5 w-5 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] font-mono text-[10px] font-bold text-[#2E29FF]">
           {step}
         </span>
         <h2 className="text-[13px] font-bold text-[#0e1726]">{title}</h2>
-        {hint && <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#94a3b8]">{hint}</span>}
+        {hint && <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">{hint}</span>}
       </div>
       {children}
     </section>
@@ -412,7 +412,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.18em] text-[#6b7280]">
+      <span className="mb-1 block font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">
         {label}
       </span>
       <input
@@ -420,7 +420,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12px] text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[rgba(16,128,202,0.4)]"
+        className="w-full rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12px] text-[#0e1726] placeholder-[#62666F] outline-none transition focus:border-[rgba(46,41,255,0.4)]"
       />
     </label>
   );

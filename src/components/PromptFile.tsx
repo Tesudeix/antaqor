@@ -85,7 +85,7 @@ function renderHighlighted(text: string): React.ReactNode {
     parts.push(
       <span
         key={`v${i++}`}
-        className="rounded-none bg-[rgba(16,128,202,0.18)] px-0.5 text-[#7E22CE]"
+        className="rounded-[4px] bg-[rgba(46,41,255,0.18)] px-0.5 text-[#7E22CE]"
       >
         {m[0]}
       </span>
@@ -152,30 +152,30 @@ export default function PromptFile({
     return (
       <Link
         href="/auth/signup"
-        className="group block overflow-hidden rounded-none border border-[rgba(16,128,202,0.28)] bg-gradient-to-br from-[rgba(16,128,202,0.10)] via-[#ffffff] to-[#ffffff] transition hover:border-[#1080CA]"
+        className="group block overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.28)] bg-gradient-to-br from-[rgba(46,41,255,0.10)] via-[#ffffff] to-[#ffffff] transition hover:border-[#2E29FF]"
       >
-        <div className="flex items-center justify-between gap-2 border-b border-[rgba(16,128,202,0.18)] px-3 py-2">
+        <div className="flex items-center justify-between gap-2 border-b border-[rgba(46,41,255,0.18)] px-3 py-2">
           <div className="flex items-center gap-2">
-            <FileGlyph color="#1080CA" />
+            <FileGlyph color="#2E29FF" />
             <span
-              className="font-mono text-[10px] font-black tracking-[0.22em] text-[#1080CA]"
+              className="font-mono text-[10px] font-black tracking-[0.22em] text-[#2E29FF]"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
               PROMPT.FILE · ТҮГЖЭЭТЭЙ
             </span>
           </div>
-          <span className="font-mono text-[9px] tracking-[0.18em] text-[#6b7280] group-hover:text-[#1080CA]">
+          <span className="font-mono text-[11px] tracking-[0.18em] text-[#E2E4E8] group-hover:text-[#2E29FF]">
             ГИШҮҮН БОЛОХ →
           </span>
         </div>
         <div className="space-y-1.5 p-3">
-          <div className="h-2 w-[88%] animate-pulse rounded-full bg-[rgba(16,128,202,0.16)]" />
-          <div className="h-2 w-[72%] animate-pulse rounded-full bg-[rgba(16,128,202,0.13)]" style={{ animationDelay: "120ms" }} />
-          <div className="h-2 w-[56%] animate-pulse rounded-full bg-[rgba(16,128,202,0.10)]" style={{ animationDelay: "240ms" }} />
+          <div className="h-2 w-[88%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.16)]" />
+          <div className="h-2 w-[72%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.13)]" style={{ animationDelay: "120ms" }} />
+          <div className="h-2 w-[56%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.10)]" style={{ animationDelay: "240ms" }} />
         </div>
-        <div className="flex items-center justify-between gap-2 border-t border-[rgba(16,128,202,0.18)] px-3 py-2 text-[10px] text-[#6b7280]">
+        <div className="flex items-center justify-between gap-2 border-t border-[rgba(46,41,255,0.18)] px-3 py-2 text-[10px] text-[#E2E4E8]">
           <span>{stats.lines} мөр · ~{stats.tokens.toLocaleString()} token</span>
-          <span className="font-mono tracking-wide text-[#6b7280]">{bytesLabel(text)}</span>
+          <span className="font-mono tracking-wide text-[#E2E4E8]">{bytesLabel(text)}</span>
         </div>
       </Link>
     );
@@ -189,26 +189,26 @@ export default function PromptFile({
   })();
 
   return (
-    <div className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.22)] bg-gradient-to-br from-[rgba(16,128,202,0.08)] via-[#ffffff] to-[#ffffff]">
+    <div className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.22)] bg-gradient-to-br from-[rgba(46,41,255,0.08)] via-[#ffffff] to-[#ffffff]">
       {/* header */}
-      <div className="flex items-center justify-between gap-2 border-b border-[rgba(16,128,202,0.16)] px-3 py-2">
+      <div className="flex items-center justify-between gap-2 border-b border-[rgba(46,41,255,0.16)] px-3 py-2">
         <div className="flex min-w-0 items-center gap-2">
-          <FileGlyph color="#1080CA" />
+          <FileGlyph color="#2E29FF" />
           <span
-            className="font-mono text-[10px] font-black tracking-[0.22em] text-[#1080CA]"
+            className="font-mono text-[10px] font-black tracking-[0.22em] text-[#2E29FF]"
             style={{ fontFamily: "Inter, system-ui, sans-serif" }}
           >
             PROMPT.FILE
           </span>
-          <span className="truncate font-mono text-[10px] text-[#6b7280]" title={stats.filename}>
+          <span className="truncate font-mono text-[10px] text-[#E2E4E8]" title={stats.filename}>
             · {stats.filename}
           </span>
         </div>
-        <span className="shrink-0 font-mono text-[9px] tracking-wide text-[#6b7280]">{bytesLabel(text)}</span>
+        <span className="shrink-0 font-mono text-[11px] tracking-wide text-[#E2E4E8]">{bytesLabel(text)}</span>
       </div>
 
       {/* stats bar */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-[rgba(16,128,202,0.10)] px-3 py-1.5 text-[10px] text-[#6b7280]">
+      <div className="flex flex-wrap items-center gap-3 border-b border-[rgba(46,41,255,0.10)] px-3 py-1.5 text-[10px] text-[#E2E4E8]">
         <span><b className="text-[#0e1726]">{stats.lines}</b> мөр</span>
         <span><b className="text-[#0e1726]">{text.length.toLocaleString()}</b> chars</span>
         <span>~<b className="text-[#0e1726]">{stats.tokens.toLocaleString()}</b> token</span>
@@ -226,11 +226,11 @@ export default function PromptFile({
 
       {/* sections preview chips (only when expanded + non-compact) */}
       {!compact && open && stats.sections.length > 0 && (
-        <div className="flex flex-wrap gap-1 border-b border-[rgba(16,128,202,0.10)] px-3 py-1.5">
+        <div className="flex flex-wrap gap-1 border-b border-[rgba(46,41,255,0.10)] px-3 py-1.5">
           {stats.sections.map((sec, i) => (
             <span
               key={i}
-              className="rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-[#7E22CE]"
+              className="rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-1.5 py-0.5 font-mono text-[11px] tracking-wide text-[#7E22CE]"
             >
               {sec.slice(0, 24)}
             </span>
@@ -254,11 +254,11 @@ export default function PromptFile({
       </div>
 
       {/* actions */}
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-[rgba(16,128,202,0.16)] px-3 py-2">
+      <div className="flex flex-wrap items-center gap-1.5 border-t border-[rgba(46,41,255,0.16)] px-3 py-2">
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1.5 rounded-none bg-[#1080CA] px-3 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-[#0E0E10] transition hover:bg-[#FF3D69]"
+          className="inline-flex items-center gap-1.5 rounded-[4px] bg-[#2E29FF] px-3 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-white transition hover:bg-[#FF3D69]"
         >
           {copied ? (
             <>
@@ -279,7 +279,7 @@ export default function PromptFile({
         <button
           type="button"
           onClick={download}
-          className="inline-flex items-center gap-1.5 rounded-none border border-[rgba(15,23,38,0.14)] bg-[rgba(15,23,38,0.04)] px-2.5 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-[#0e1726] transition hover:border-[#1080CA] hover:text-[#1080CA]"
+          className="inline-flex items-center gap-1.5 rounded-[4px] border border-[rgba(15,23,38,0.14)] bg-[rgba(15,23,38,0.04)] px-2.5 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-[#0e1726] transition hover:border-[#2E29FF] hover:text-[#2E29FF]"
         >
           <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -289,7 +289,7 @@ export default function PromptFile({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto inline-flex items-center gap-1 font-mono text-[10px] font-black tracking-[0.2em] text-[#6b7280] transition hover:text-[#0e1726]"
+          className="ml-auto inline-flex items-center gap-1 font-mono text-[10px] font-black tracking-[0.2em] text-[#E2E4E8] transition hover:text-[#0e1726]"
         >
           {open ? "БУУЛГАХ" : "БҮТНЭЭР"}
           <svg

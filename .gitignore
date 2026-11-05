@@ -43,3 +43,21 @@ next-env.d.ts
 # uploads (user-uploaded files)
 /public/uploads/*
 !/public/uploads/.gitkeep
+.next-staging
+.next-prev
+
+# 2026-11-05: нууц, гишүүдийн дата, лог, том файл repo-д орохгүй
+*.bak
+*.bak.*
+*.tmp.ts
+._*
+/.next*/
+/data/
+/logs/
+/_theme_backup/
+/.ytfiles/
+/.idea/
+/.claude/
+/*.webm
+/*.mp4
+/*.mp3

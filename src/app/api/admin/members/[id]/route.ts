@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminSession, unauthorized } from "@/lib/adminAuth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
-import { maybeAwardReferralPayment } from "@/lib/credits";
+import { activateMembership } from "@/lib/membershipGrant";
 
 export async function PATCH(
   req: Request,
@@ -23,38 +23,46 @@ export async function PATCH(
     }
 
     switch (action) {
+      /* /reels рүү видео оруулах эрхийг асаах/унтраах. */
+      case "reel_upload": {
+        user.canUploadReels = !user.canUploadReels;
+        await user.save();
+        return NextResponse.json({
+          ok: true,
+          canUploadReels: user.canUploadReels,
+          message: user.canUploadReels ? "Reel оруулах эрх НЭЭГДЛЭЭ" : "Reel оруулах эрх хаагдлаа",
+        });
+      }
+      /* ─── ЭНЭ САЛАА НЬ ХАМГИЙН ИХ ХЭРЭГЛЭГДДЭГ БӨГӨӨД ХАМГИЙН ДУТУУ
+             БАЙСАН. 2026-08-24-нд идэвхтэй 50 гишүүний 46-гийн төлбөр
+             `pending` хэвээр өлгөөтэй байв — өөрөөр хэлбэл админ энэ
+             товчоор эрхийг нь нээж, төлбөрийн бичлэг нь хэзээ ч хаагдаагүй.
+             Үр дагавар нь тайлан эмх замбараагүй болох төдий биш: сэргээх
+             сануулга нь тэр хүмүүсийг "төлөөгүй" гэж үзэж, ТӨЛСӨН хүн рүү
+             "төлбөрөө дуусгана уу" гэж бичих байсан. Одоо нээх үйлдэл
+             бүхэлдээ `activateMembership`-д шилжсэн: эрх, шат, төлбөрийн
+             бичлэг, мэдэгдэл дөрвүүлээ нэг дор. */
       case "grant": {
         const duration = days || 30;
-        const now = new Date();
-        let expiresAt: Date;
-
-        if (user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now) {
-          expiresAt = new Date(user.subscriptionExpiresAt);
-          expiresAt.setDate(expiresAt.getDate() + duration);
-        } else {
-          expiresAt = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
-        }
-
-        user.clan = "antaqor";
-        if (!user.clanJoinedAt) {
-          user.clanJoinedAt = now;
-        }
-        user.subscriptionExpiresAt = expiresAt;
-        await user.save();
-
-        // Fire the "friend-paid" referral bonus to the referrer (if applicable).
-        // Idempotent: only awards once per referee.
-        maybeAwardReferralPayment(String(user._id)).catch(() => {});
+        const res = await activateMembership({
+          userId: String(user._id),
+          days: duration,
+          plan: typeof body.plan === "string" ? body.plan : undefined,
+          source: "admin-grant",
+        });
+        if (!res) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй" }, { status: 404 });
 
         return NextResponse.json({
           message: `${user.name}-д ${duration} хоногийн гишүүнчлэл олголоо`,
+          closedPaymentId: res.closedPaymentId,
           user: {
             _id: user._id,
             name: user.name,
             email: user.email,
-            clan: user.clan,
+            clan: "antaqor",
             clanJoinedAt: user.clanJoinedAt,
-            subscriptionExpiresAt: user.subscriptionExpiresAt,
+            subscriptionExpiresAt: res.expiresAt,
+            plan: res.plan,
           },
         });
       }
@@ -83,10 +91,12 @@ export async function PATCH(
           return NextResponse.json({ error: "Хэрэглэгч гишүүнчлэлгүй байна" }, { status: 400 });
         }
 
-        const newExpiry = new Date(user.subscriptionExpiresAt);
-        newExpiry.setDate(newExpiry.getDate() + extDays);
-        user.subscriptionExpiresAt = newExpiry;
-        await user.save();
+        const res = await activateMembership({
+          userId: String(user._id),
+          days: extDays,
+          source: "admin-extend",
+        });
+        if (!res) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй" }, { status: 404 });
 
         return NextResponse.json({
           message: `${user.name}-н гишүүнчлэлийг ${extDays} хоногоор сунгалаа`,
@@ -96,7 +106,8 @@ export async function PATCH(
             email: user.email,
             clan: user.clan,
             clanJoinedAt: user.clanJoinedAt,
-            subscriptionExpiresAt: user.subscriptionExpiresAt,
+            subscriptionExpiresAt: res.expiresAt,
+            plan: res.plan,
           },
         });
       }

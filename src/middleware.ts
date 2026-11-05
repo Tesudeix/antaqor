@@ -53,6 +53,7 @@ if (typeof setInterval !== "undefined") {
 // Endpoints that long-poll from the client and shouldn't count against the
 // floor. They are already protected by NextAuth at the route level.
 const POLLING_GET_PREFIXES = [
+  "/api/broadcast",
   "/api/auth/session",
   "/api/auth/providers",
   "/api/auth/csrf",
@@ -70,6 +71,17 @@ function isPollingRead(req: NextRequest, pathname: string): boolean {
   if (req.method !== "GET") return false;
   return POLLING_GET_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/") || pathname.startsWith(p + "?"));
 }
+
+/* Тусдаа домэйн дээрх апп-ууд (trader 2026-10-31, studio 2026-11-01). Ижил Next апп:
+   "/" → home руу дотооддоо rewrite, home → "/" (308), API/файл хэвээр, `keep`-д
+   таарсан хуудас (нэвтрэх, кредит) тэр хост дээрээ, бусад нь antaqor.com руу.
+   antaqor.com/<home> → тэр домэйн гэсэн 301 нь nginx-д (snippets/antaqor-app.conf). */
+const SUB_APPS: Record<string, { home: string; keep: RegExp }> = {
+  "trader.antaqor.com": { home: "/trader-agent", keep: /^\/auth(\/|$)/ },
+  "studio.antaqor.com": { home: "/content-agent", keep: /^\/(auth|credits)(\/|$)/ },
+};
+
+const AI_TOOL_PAGE = /^\/tools\/(video|nano-banano|generate-image|brand-shot|character-sheet|compose|extract-product|swap-product)(\/|$)/;
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -90,6 +102,36 @@ export function middleware(req: NextRequest) {
     return new NextResponse(null, { status: 404 });
   }
 
+  const host = (req.headers.get("host") || "").split(":")[0];
+  /* Чат 2026-11-02-нд бүрэн хасагдав (эзний хүсэлт): хуучин холбоос нүүр рүү. Өгөгдөл Mongo-д хэвээр. */
+  if (pathname === "/chat" || pathname.startsWith("/chat/")) return NextResponse.redirect(new URL("/", req.url), 307);
+  const sub = SUB_APPS[host];
+  if (sub) {
+    if (pathname === sub.home) {
+      return NextResponse.redirect(`https://${host}/${req.nextUrl.search}`, 308);
+    }
+    if (pathname === "/") {
+      const url = req.nextUrl.clone();
+      url.pathname = sub.home;
+      return withSecurityHeaders(NextResponse.rewrite(url));
+    }
+    if (!pathname.startsWith("/api/") && !/\.[a-z0-9]+$/i.test(pathname) && !sub.keep.test(pathname)) {
+      return NextResponse.redirect(`https://antaqor.com${pathname}${req.nextUrl.search}`, 307);
+    }
+  }
+
+  /* AI зураг / видеоны хуучин хэрэгслүүд (2026-10-26, эзний хүсэлт) antaqor.com-оос
+     хасагдсан. Хуучин холбоос, хадгалсан хуудас → Antaqor Agent-ийн AI зураг. */
+  if (AI_TOOL_PAGE.test(pathname)) {
+    const url = req.nextUrl.clone();
+    const prompt = req.nextUrl.searchParams.get("prompt");
+    url.pathname = "/content-agent";
+    url.search = "";
+    url.searchParams.set("v", "image");
+    if (prompt) url.searchParams.set("prompt", prompt.slice(0, 2000));
+    return NextResponse.redirect(url, 307);
+  }
+
   if (pathname.startsWith("/api/")) {
     const ip = getRateLimitKey(req);
 
@@ -104,6 +146,13 @@ export function middleware(req: NextRequest) {
     // global floor; their own handlers do session-level checks. Otherwise an
     // open feed + chat + balance-pill could trip a single user.
     if (isPollingRead(req, pathname)) {
+      return withSecurityHeaders(NextResponse.next());
+    }
+
+    // Chunked course videos send up to 512 bounded, admin-authenticated parts.
+    if (pathname === "/api/classroom/video-upload") {
+      const r = check(`course-upload:${ip}`, 720, 60_000);
+      if (!r.ok) return tooMany("Видео илгээх хүсэлт хэтэрлээ.", r.retryAfter);
       return withSecurityHeaders(NextResponse.next());
     }
 
@@ -134,16 +183,16 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  return withSecurityHeaders(NextResponse.next());
+  return withSecurityHeaders(NextResponse.next(), pathname === "/admin/live");
 }
 
-function withSecurityHeaders(response: NextResponse): NextResponse {
+function withSecurityHeaders(response: NextResponse, allowCapture = false): NextResponse {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set("Permissions-Policy", allowCapture ? "camera=(self), microphone=(self), display-capture=(self), geolocation=()" : "camera=(), microphone=(), geolocation=()");
   return response;
 }
 

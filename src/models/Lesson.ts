@@ -5,6 +5,7 @@ export interface ILessonAttachment {
   url: string;        // /uploads/foo.pdf эсвэл external URL
   name: string;       // user-facing нэр (lecture_notes.pdf)
   size?: number;      // bytes
+  kind?: "file" | "link"; // optional — хуучин мөрүүдэд байхгүй
 }
 
 export interface ILesson extends Document {
@@ -20,7 +21,13 @@ export interface ILesson extends Document {
   thumbnail: string;
   order: number;
   requiredLevel: number;
+  /* Курс нээлттэй ч ЭНЭ хичээл нь идэвхтэй гишүүнчлэл шаардана.
+     Курсын түвшний хаалтаас ТУСДАА: нэвтрэлтийн хуудас шиг ажилладаг —
+     хүн эхний хэдэн хичээлийг үзээд үнэ цэнийг мэдэрсний дараа
+     шийддэг. Бүх хичээлийг хаах нь тэр боломжийг устгана. */
+  isPremium: boolean;
   durationSec: number;
+  releaseAt?: Date | null;   // хуваарь — ирээдүйн огноо бол тэр хүртэл түгжээтэй
   attachments: ILessonAttachment[];
   completedBy: mongoose.Types.ObjectId[];
   likes: mongoose.Types.ObjectId[];
@@ -52,6 +59,7 @@ const LessonSchema = new Schema<ILesson>(
         url: { type: String, required: true },
         name: { type: String, required: true },
         size: { type: Number },
+        kind: { type: String, enum: ["file", "link"] },
         _id: false,
       },
     ],
@@ -79,6 +87,11 @@ const LessonSchema = new Schema<ILesson>(
       default: 0,
       min: 0,
     },
+    releaseAt: {
+      type: Date,
+      default: null,
+      index: true,
+    },
     videoType: {
       type: String,
       enum: ["link", "upload"],
@@ -92,6 +105,7 @@ const LessonSchema = new Schema<ILesson>(
       type: Number,
       default: 0,
     },
+    isPremium: { type: Boolean, default: false },
     requiredLevel: {
       type: Number,
       default: 0,

@@ -11,12 +11,12 @@ import MarketCard, { type MarketCardData } from "@/components/MarketCard";
 type Params = Promise<{ slug: string }>;
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Prompt: "#1080CA",
-  Course: "#1080CA",
+  Prompt: "#2E29FF",
+  Course: "#2E29FF",
   Template: "#06B6D4",
   Agent: "#F59E0B",
-  Service: "#EC4899",
-  Digital: "#1080CA",
+  Service: "#2E29FF",
+  Digital: "#2E29FF",
 };
 
 function fmtPrice(mnt: number): string {
@@ -109,7 +109,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title: p.title,
       description: p.summary,
       url: `/market/${p.slug}`,
-      images: p.coverImage ? [{ url: p.coverImage, alt: p.title }] : ["/opengraph-image"],
+      images: p.coverImage ? [{ url: p.coverImage, alt: p.title }] : ["/brand/cover"],
     },
   };
 }
@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   const p = await loadProduct(slug);
   if (!p) notFound();
 
-  const color = CATEGORY_COLORS[p.category] || "#1080CA";
+  const color = CATEGORY_COLORS[p.category] || "#2E29FF";
   const hasDiscount = p.compareAtPrice > p.price;
   const related = await loadRelated(p.category, p.slug);
 
@@ -149,18 +149,18 @@ export default async function ProductPage({ params }: { params: Params }) {
       />
 
       {/* Breadcrumb */}
-      <nav className="mb-5 flex items-center gap-2 text-[11px] text-[#94a3b8]">
+      <nav className="mb-5 flex items-center gap-2 text-[11px] text-[#E2E4E8]">
         <Link href="/" className="hover:text-[#475569]">Нүүр</Link>
         <span className="text-[#dde3ea]">/</span>
         <Link href="/market" className="hover:text-[#475569]">Market</Link>
         <span className="text-[#dde3ea]">/</span>
-        <span className="truncate text-[#6b7280]">{p.category}</span>
+        <span className="truncate text-[#E2E4E8]">{p.category}</span>
       </nav>
 
       <div className="grid gap-6 md:grid-cols-[1.1fr_1fr]">
         {/* Cover */}
         <div className="space-y-3">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#F2F2F4]">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#F2F2F4]">
             {p.coverImage ? (
               <img src={p.coverImage} alt={p.title} className="h-full w-full object-cover" />
             ) : (
@@ -168,14 +168,14 @@ export default async function ProductPage({ params }: { params: Params }) {
                 <span className="text-[10px] tracking-[0.3em] text-[#d5dce3]">ANTAQOR MARKET</span>
               </div>
             )}
-            <div className="absolute top-3 left-3 rounded-full px-2.5 py-1 text-[10px] font-black uppercase" style={{ background: `${color}F2`, color: "#fff" }}>
+            <div className="absolute top-3 left-3 rounded-[4px] px-2.5 py-1 text-[10px] font-black uppercase" style={{ background: `${color}F2`, color: "#fff" }}>
               {p.category}
             </div>
           </div>
           {p.gallery.length > 0 && (
             <div className="grid grid-cols-4 gap-2">
               {p.gallery.slice(0, 8).map((g, i) => (
-                <div key={i} className="aspect-square overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#F2F2F4]">
+                <div key={i} className="aspect-square overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#F2F2F4]">
                   <img src={g} alt="" className="h-full w-full object-cover" />
                 </div>
               ))}
@@ -185,58 +185,58 @@ export default async function ProductPage({ params }: { params: Params }) {
 
         {/* Info */}
         <div className="flex flex-col">
-          <h1 className="text-[24px] font-black leading-tight text-[#0e1726] md:text-[32px]">
+          <h1 className="text-[24px] font-black leading-tight text-[#0e1726] md:text-[22px] md:text-[32px]">
             {p.title}
           </h1>
-          {p.summary && <p className="mt-3 text-[14px] leading-relaxed text-[#5b6573]">{p.summary}</p>}
+          {p.summary && <p className="mt-3 text-[14px] leading-relaxed text-[#E2E4E8]">{p.summary}</p>}
 
           <div className="mt-5 flex items-baseline gap-3">
             {hasDiscount && (
-              <span className="text-[14px] text-[#94a3b8] line-through">{fmtPrice(p.compareAtPrice)}</span>
+              <span className="text-[14px] text-[#E2E4E8] line-through">{fmtPrice(p.compareAtPrice)}</span>
             )}
-            <span className="text-[28px] font-black text-[#1080CA]">{fmtPrice(p.price)}</span>
+            <span className="text-[28px] font-black text-[#2E29FF]">{fmtPrice(p.price)}</span>
             {hasDiscount && (
-              <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 text-[10px] font-black text-[#1080CA]">
+              <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 text-[10px] font-black text-[#2E29FF]">
                 −{Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100)}% off
               </span>
             )}
           </div>
 
-          {/* Primary CTA — QR payment (reuses static /qpay.png) */}
+          {/* Primary CTA — банкны шилжүүлэг (QPay-г 2026-09-18-нд авсан) */}
           <ProductPayButton slug={p.slug} price={p.price} title={p.title} />
           {p.externalUrl && (
-            <a href={p.externalUrl} target="_blank" rel="noopener noreferrer sponsored" className="mt-3 block text-[12px] text-[#6b7280] underline hover:text-[#5b6573]">Гадаад линкээр авах →</a>
+            <a href={p.externalUrl} target="_blank" rel="noopener noreferrer sponsored" className="mt-3 block text-[12px] text-[#E2E4E8] underline hover:text-[#E2E4E8]">Гадаад линкээр авах →</a>
           )}
 
           {/* Trust row — reduces purchase anxiety at the CTA */}
           <div className="mt-4 grid grid-cols-3 gap-2">
             {[
               { t: "Шуурхай хүргэлт", d: "Төлмөгц нээгдэнэ", icon: "M13 10V3L4 14h7v7l9-11h-7z" },
-              { t: "Найдвартай", d: "QPay · банк шилжүүлэг", icon: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+              { t: "Найдвартай", d: "Банкны шилжүүлэг", icon: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
               { t: "Дэмжлэг", d: "Асуудалд тусална", icon: "M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM12 15.75a3.75 3.75 0 003.75-3.75h-7.5A3.75 3.75 0 0012 15.75zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
             ].map((f) => (
-              <div key={f.t} className="rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-2.5 text-center">
-                <svg className="mx-auto h-4 w-4 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={f.icon} /></svg>
+              <div key={f.t} className="rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-2.5 text-center">
+                <svg className="mx-auto h-4 w-4 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={f.icon} /></svg>
                 <div className="mt-1.5 text-[10px] font-bold text-[#0e1726]">{f.t}</div>
-                <div className="text-[9px] leading-tight text-[#94a3b8]">{f.d}</div>
+                <div className="text-[11px] leading-tight text-[#E2E4E8]">{f.d}</div>
               </div>
             ))}
           </div>
 
           {/* Seller */}
-          <div className="mt-5 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
-            <div className="text-[9px] font-bold uppercase tracking-wider text-[#94a3b8]">Seller</div>
+          <div className="mt-5 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#E2E4E8]">Seller</div>
             <div className="mt-1 flex items-center gap-2.5">
               {p.sellerAvatar ? (
                 <img src={p.sellerAvatar} alt="" className="h-8 w-8 rounded-full object-cover" />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(16,128,202,0.12)] text-[12px] font-bold text-[#1080CA]">
+                <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[12px] font-bold text-[#2E29FF]">
                   {p.sellerName.charAt(0)}
                 </div>
               )}
               <div className="min-w-0 leading-tight">
                 <div className="text-[13px] font-bold text-[#0e1726]">{p.sellerName}</div>
-                <div className="text-[10px] text-[#94a3b8]">{p.views.toLocaleString()} үзсэн · {p.clicks.toLocaleString()} click</div>
+                <div className="text-[10px] text-[#E2E4E8]">{p.views.toLocaleString()} үзсэн · {p.clicks.toLocaleString()} click</div>
               </div>
             </div>
           </div>
@@ -245,7 +245,7 @@ export default async function ProductPage({ params }: { params: Params }) {
           {p.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {p.tags.map((t) => (
-                <span key={t} className="rounded-full border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-2.5 py-1 text-[10px] text-[#6b7280]">
+                <span key={t} className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-2.5 py-1 text-[10px] text-[#E2E4E8]">
                   #{t}
                 </span>
               ))}
@@ -256,9 +256,9 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       {/* Description */}
       {p.description && (
-        <section className="mt-10 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-5 md:p-7">
+        <section className="mt-10 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-5 md:p-7">
           <div className="mb-3 flex items-center gap-2">
-            <div className="h-[2px] w-4 bg-[#1080CA]" />
+            <div className="h-[2px] w-4 bg-[#2E29FF]" />
             <span className="text-[11px] font-bold tracking-[0.12em] text-[#0e1726]">ТАЙЛБАР</span>
           </div>
           <div className="whitespace-pre-line text-[14px] leading-[1.8] text-[#C8C8C8]">{p.description}</div>
@@ -269,7 +269,7 @@ export default async function ProductPage({ params }: { params: Params }) {
       {related.length > 0 && (
         <section className="mt-12">
           <div className="mb-4 flex items-center gap-2">
-            <div className="h-[2px] w-4 bg-[#1080CA]" />
+            <div className="h-[2px] w-4 bg-[#2E29FF]" />
             <span className="text-[11px] font-bold tracking-[0.12em] text-[#0e1726]">ХОЛБООТОЙ БҮТЭЭГДЭХҮҮН</span>
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -282,7 +282,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       {/* Back to market */}
       <div className="mt-10 text-center">
-        <Link href="/market" className="text-[12px] font-semibold text-[#6b7280] transition hover:text-[#1080CA]">
+        <Link href="/market" className="text-[12px] font-semibold text-[#E2E4E8] transition hover:text-[#2E29FF]">
           ← Market-д буцах
         </Link>
       </div>
@@ -292,8 +292,8 @@ export default async function ProductPage({ params }: { params: Params }) {
         style={{ bottom: "calc(58px + env(safe-area-inset-bottom))" }}>
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <div className="min-w-0 shrink-0">
-            <div className="text-[9px] font-bold uppercase tracking-wider text-[#94a3b8]">Үнэ</div>
-            <div className="text-[18px] font-black leading-none" style={{ color: p.price === 0 ? "#22C55E" : "#1080CA" }}>{fmtPrice(p.price)}</div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#E2E4E8]">Үнэ</div>
+            <div className="text-[18px] font-black leading-none" style={{ color: p.price === 0 ? "#22C55E" : "#2E29FF" }}>{fmtPrice(p.price)}</div>
           </div>
           <ProductPayButton slug={p.slug} price={p.price} title={p.title} className="flex-1 px-4 py-3 text-[13px]" />
         </div>

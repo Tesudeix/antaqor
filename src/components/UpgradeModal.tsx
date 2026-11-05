@@ -35,7 +35,7 @@ export default function UpgradeModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md border border-[#2E2E33] bg-[#1E1E21] p-6 sm:p-8"
+        className="w-full max-w-md bg-[#141414] bg-[#0A0A0A] p-6 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="chrome mb-2 text-[10px]" style={{ color: plan.accent }}>
@@ -44,9 +44,9 @@ export default function UpgradeModal({
         <h3 className="headline mb-2 text-[20px] leading-snug">
           {contextTitle}-г {plan.name} plan-аар нээнэ
         </h3>
-        <p className="mb-5 text-[13px] text-[#B4B4BA]">{plan.tagline}</p>
+        <p className="mb-5 text-[13px] text-[#E2E4E8]">{plan.tagline}</p>
 
-        <div className="chrome mb-2 text-[9px] text-[#84848C]">ШУУД НЭЭГДЭХ ЗҮЙЛС</div>
+        <div className="chrome mb-2 text-[11px] text-[#E2E4E8]">ШУУД НЭЭГДЭХ ЗҮЙЛС</div>
         <ul className="mb-6 space-y-2">
           {items.map((b) => (
             <li key={b} className="flex items-start gap-2 text-[13px] leading-snug text-[#F2F2F4]">
@@ -61,13 +61,13 @@ export default function UpgradeModal({
             track(`${plan.id}_plan_selected`, { source: "upgrade_modal", context: contextTitle });
             router.push(`/pricing?plan=${plan.id}`);
           }}
-          className="w-full bg-[#1080CA] py-4 text-[14px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+          className="w-full bg-[#2E29FF] py-4 text-[14px] font-bold text-white transition hover:bg-[#1F1AD9]"
         >
           {plan.name} plan нээх — {formatMNT(plan.price)}
         </button>
         <button
           onClick={onClose}
-          className="mt-3 w-full py-2 text-[12px] text-[#84848C] transition hover:text-[#F2F2F4]"
+          className="mt-3 w-full py-2 text-[12px] text-[#E2E4E8] transition hover:text-[#F2F2F4]"
         >
           Дараа
         </button>

@@ -296,7 +296,7 @@ export default function ThreadsAutomationPage() {
               className="flex items-center gap-2 border px-3 py-2 text-[10px] font-bold uppercase tracking-[2px] transition"
               style={{
                 borderColor: settings.killSwitch ? T.primary : T.border,
-                background: settings.killSwitch ? "rgba(16,128,202,0.12)" : "transparent",
+                background: settings.killSwitch ? "rgba(46,41,255,0.12)" : "transparent",
                 color: settings.killSwitch ? T.primary : T.muted,
               }}>
               <span className={`h-2 w-2 rounded-full ${settings.killSwitch ? "animate-pulse" : ""}`}
@@ -308,7 +308,7 @@ export default function ThreadsAutomationPage() {
       </div>
 
       {msg && (
-        <div className="mb-4 border-l-2 px-4 py-2.5 text-[12px]" style={{ borderColor: T.secondary, background: "rgba(34,211,238,0.06)", color: T.secondary }}>
+        <div className="mb-4 border-l-2 px-4 py-2.5 text-[12px]" style={{ borderColor: T.secondary, background: "rgba(46,41,255,0.06)", color: T.secondaryInk }}>
           {msg}
         </div>
       )}
@@ -324,7 +324,7 @@ export default function ThreadsAutomationPage() {
             }}>
             {t.label}
             {t.id === "logs" && logCounts?.errors ? (
-              <span className="ml-1.5 rounded-full px-1.5 text-[9px]" style={{ background: "rgba(16,128,202,0.15)", color: T.primary }}>{logCounts.errors}</span>
+              <span className="ml-1.5 rounded-[4px] px-1.5 text-[11px]" style={{ background: "rgba(46,41,255,0.15)", color: T.primaryInk }}>{logCounts.errors}</span>
             ) : null}
           </button>
         ))}
@@ -335,7 +335,7 @@ export default function ThreadsAutomationPage() {
         <div className="space-y-6">
           {statsErr ? (
             <Card className="p-6 text-center">
-              <p className="text-[12px]" style={{ color: T.primary }}>{statsErr}</p>
+              <p className="text-[12px]" style={{ color: T.primaryInk }}>{statsErr}</p>
               <Btn variant="ghost" className="mt-3" onClick={loadStats}>Дахин ачаалах</Btn>
             </Card>
           ) : !stats ? (
@@ -351,12 +351,12 @@ export default function ThreadsAutomationPage() {
                 </Card>
                 <Card className="p-4">
                   <div className="text-[10px] uppercase tracking-[1px]" style={{ color: T.faint }}>Хариу илгээсэн</div>
-                  <div className="mt-1 text-2xl" style={{ color: T.primary, fontFamily: MONO }}>{stats.sentToday}</div>
-                  <div className="text-[9px]" style={{ color: T.faint }}>7 хоног: {stats.sentWeek}</div>
+                  <div className="mt-1 text-2xl" style={{ color: T.primaryInk, fontFamily: MONO }}>{stats.sentToday}</div>
+                  <div className="text-[11px]" style={{ color: T.faint }}>7 хоног: {stats.sentWeek}</div>
                 </Card>
                 <Card className="p-4">
                   <div className="text-[10px] uppercase tracking-[1px]" style={{ color: T.faint }}>Lead (24ц)</div>
-                  <div className="mt-1 text-2xl" style={{ color: T.secondary, fontFamily: MONO }}>{stats.leadsToday}</div>
+                  <div className="mt-1 text-2xl" style={{ color: T.secondaryInk, fontFamily: MONO }}>{stats.leadsToday}</div>
                 </Card>
                 <Card className="p-4">
                   <div className="text-[10px] uppercase tracking-[1px]" style={{ color: T.faint }}>Алдаа (24ц)</div>
@@ -374,12 +374,12 @@ export default function ThreadsAutomationPage() {
                       {stats.topAutomations.map((a) => (
                         <div key={a._id} className="flex items-center justify-between border px-3 py-2" style={{ borderColor: T.border }}>
                           <div className="flex items-center gap-2 text-[12px]" style={{ color: T.text }}>
-                            <span className="text-[9px] uppercase" style={{ color: a.triggerType === "new_like" ? T.warn : T.secondary, fontFamily: MONO }}>
+                            <span className="text-[11px] uppercase" style={{ color: a.triggerType === "new_like" ? T.warn : T.secondary, fontFamily: MONO }}>
                               {a.triggerType === "new_like" ? "LIKE" : "CMT"}
                             </span>
                             {a.name}
                           </div>
-                          <span style={{ color: T.primary, fontFamily: MONO }}>{a.hitCount}×</span>
+                          <span style={{ color: T.primaryInk, fontFamily: MONO }}>{a.hitCount}×</span>
                         </div>
                       ))}
                     </div>
@@ -407,7 +407,7 @@ export default function ThreadsAutomationPage() {
                     {stats.topPost && (
                       <div className="flex items-center justify-between">
                         <span>Топ пост (7 хоног)</span>
-                        <span style={{ color: T.secondary, fontFamily: MONO }}>{stats.topPost.count} хариу</span>
+                        <span style={{ color: T.secondaryInk, fontFamily: MONO }}>{stats.topPost.count} хариу</span>
                       </div>
                     )}
                     <p className="border-t pt-3 text-[10px] leading-relaxed" style={{ borderColor: T.border, color: T.faint }}>
@@ -434,9 +434,9 @@ export default function ThreadsAutomationPage() {
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {TEMPLATES.map((t) => (
               <div key={t.title}
-                className="flex flex-col rounded-[4px] border p-3 text-left transition hover:border-[rgba(16,128,202,0.4)]"
+                className="flex flex-col rounded-[4px] border p-3 text-left transition hover:border-[rgba(46,41,255,0.4)]"
                 style={{ borderColor: T.border, background: T.surface }}>
-                <div className="text-[9px] font-bold uppercase tracking-[2px]" style={{ color: T.secondary, fontFamily: MONO }}>ЗАГВАР</div>
+                <div className="text-[11px] font-bold uppercase tracking-[2px]" style={{ color: T.secondaryInk, fontFamily: MONO }}>ЗАГВАР</div>
                 <div className="mt-1 text-[13px] font-bold" style={{ color: T.text }}>{t.title}</div>
                 <div className="mt-0.5 flex-1 text-[11px]" style={{ color: T.muted }}>{t.desc}</div>
                 <div className="mt-2.5 flex gap-1.5">
@@ -449,7 +449,7 @@ export default function ThreadsAutomationPage() {
 
           {autosErr ? (
             <Card className="p-6 text-center">
-              <p className="text-[12px]" style={{ color: T.primary }}>{autosErr}</p>
+              <p className="text-[12px]" style={{ color: T.primaryInk }}>{autosErr}</p>
               <Btn variant="ghost" className="mt-3" onClick={loadAutos}>Дахин ачаалах</Btn>
             </Card>
           ) : autos === null ? (
@@ -465,7 +465,7 @@ export default function ThreadsAutomationPage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[1px]"
-                          style={{ background: a.triggerType === "new_like" ? "rgba(251,191,36,0.12)" : "rgba(34,211,238,0.1)", color: a.triggerType === "new_like" ? T.warn : T.secondary, fontFamily: MONO }}>
+                          style={{ background: a.triggerType === "new_like" ? "rgba(251,191,36,0.12)" : "rgba(46,41,255,0.1)", color: a.triggerType === "new_like" ? T.warn : T.secondary, fontFamily: MONO }}>
                           {a.triggerType === "new_like" ? "ШИНЭ ЛАЙК" : "ШИНЭ СЭТГЭГДЭЛ"}
                         </span>
                         <span className="text-[14px] font-bold" style={{ color: T.text }}>{a.name}</span>
@@ -483,7 +483,7 @@ export default function ThreadsAutomationPage() {
                             <span style={{ color: T.faint }}>→</span>
                           </>
                         )}
-                        <span className="border px-1.5 py-0.5" style={{ borderColor: "rgba(16,128,202,0.3)", color: T.primary }}>
+                        <span className="border px-1.5 py-0.5" style={{ borderColor: "rgba(46,41,255,0.3)", color: T.primaryInk }}>
                           {a.action === "log_lead" ? "LEAD БҮРТГЭХ" : a.action === "reply_and_log" ? "ХАРИУ + LEAD" : "ХАРИУ БИЧИХ"}
                         </span>
                         <span className="ml-2" style={{ color: T.faint }}>{a.hitCount}× ажилласан</span>
@@ -491,9 +491,9 @@ export default function ThreadsAutomationPage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <button onClick={() => toggleAuto(a)} title={a.enabled ? "Түр зогсоох" : "Идэвхжүүлэх"}
-                        className="relative h-6 w-11 rounded-full transition"
+                        className="relative h-6 w-11 rounded-[4px] transition"
                         style={{ background: a.enabled ? T.primary : "rgba(255,255,255,0.12)" }}>
-                        <span className="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all" style={{ left: a.enabled ? 22 : 2 }} />
+                        <span className="absolute top-0.5 h-5 w-5 rounded-[4px] bg-white transition-all" style={{ left: a.enabled ? 22 : 2 }} />
                       </button>
                       <Btn variant="ghost" size="sm" onClick={() => editAuto(a)}>Засах</Btn>
                       <Btn variant="ghost" size="sm" onClick={() => duplicateAuto(a)}>Хуулах</Btn>
@@ -539,7 +539,7 @@ export default function ThreadsAutomationPage() {
               <ChipBtn on={form.triggerType === "new_like"} onClick={() => setForm({ ...form, triggerType: "new_like" })}>❤️ Шинэ лайк</ChipBtn>
             </div>
             {isLike && (
-              <p className="mt-2 border-l-2 pl-2 text-[10px] leading-relaxed" style={{ borderColor: T.warn, color: T.warn }}>
+              <p className="mt-2 border-l-2 pl-2 text-[10px] leading-relaxed" style={{ borderColor: T.warn, color: T.warnInk }}>
                 Threads API нь ХЭН лайк дарсныг өгдөггүй — {"{{username}}"} ажиллахгүй, {"{{count}}"} (нийт лайк) ажиллана.
                 Талархлын хариу нэг пост дээр 24 цагт нэг л удаа бичигдэнэ.
               </p>
@@ -642,7 +642,7 @@ export default function ThreadsAutomationPage() {
             )}
           </FlowCard>
 
-          {formErr && <div className="border-l-2 px-3 py-2 text-[12px]" style={{ borderColor: T.primary, background: "rgba(16,128,202,0.07)", color: T.primary }}>{formErr}</div>}
+          {formErr && <div className="border-l-2 px-3 py-2 text-[12px]" style={{ borderColor: T.primary, background: "rgba(46,41,255,0.07)", color: T.primaryInk }}>{formErr}</div>}
 
           <div className="flex items-center gap-2">
             <Btn onClick={saveForm} loading={saving}>{form._id ? "Хадгалах" : "Automation үүсгэх"}</Btn>
@@ -663,8 +663,8 @@ export default function ThreadsAutomationPage() {
             <div className="flex gap-1.5">
               {([["", "Гол"], ["sent", "Амжилттай"], ["error", "Алдаа"], ["skipped", "Алгассан"], ["seeded", "Хуучин"]] as const).map(([v, l]) => (
                 <button key={v} onClick={() => setLogFilter(v)}
-                  className="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[1.5px] transition"
-                  style={{ color: logFilter === v ? T.primary : T.faint, background: logFilter === v ? "rgba(16,128,202,0.08)" : "transparent" }}>
+                  className="px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[1.5px] transition"
+                  style={{ color: logFilter === v ? T.primary : T.faint, background: logFilter === v ? "rgba(46,41,255,0.08)" : "transparent" }}>
                   {l}{logCounts && v ? ` ${logCounts[v] ?? 0}` : ""}
                 </button>
               ))}
@@ -673,7 +673,7 @@ export default function ThreadsAutomationPage() {
 
           {logsErr ? (
             <Card className="p-6 text-center">
-              <p className="text-[12px]" style={{ color: T.primary }}>{logsErr}</p>
+              <p className="text-[12px]" style={{ color: T.primaryInk }}>{logsErr}</p>
               <Btn variant="ghost" className="mt-3" onClick={() => loadLogs(logFilter)}>Дахин ачаалах</Btn>
             </Card>
           ) : logs === null ? (
@@ -689,22 +689,22 @@ export default function ThreadsAutomationPage() {
                       <div className="flex flex-wrap items-center gap-2 text-[11px]">
                         <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[1px]" style={{
                           fontFamily: MONO,
-                          background: row.status === "sent" ? "rgba(74,222,128,0.1)" : row.status === "error" ? "rgba(16,128,202,0.12)" : "rgba(255,255,255,0.05)",
+                          background: row.status === "sent" ? "rgba(74,222,128,0.1)" : row.status === "error" ? "rgba(46,41,255,0.12)" : "rgba(255,255,255,0.05)",
                           color: row.status === "sent" ? T.ok : row.status === "error" ? T.primary : T.faint,
                         }}>
                           {row.status === "sent" ? "SUCCESS" : row.status === "error" ? "FAILED" : row.status === "skipped" ? "SKIPPED" : "SEEDED"}
                         </span>
                         <span style={{ color: T.faint, fontFamily: MONO }}>{row.eventType === "like" ? "❤️ LIKE" : "💬 CMT"}</span>
-                        {row.username && <span style={{ color: T.secondary }}>@{row.username}</span>}
+                        {row.username && <span style={{ color: T.secondaryInk }}>@{row.username}</span>}
                         {row.triggerName && <span style={{ color: T.muted }}>→ {row.triggerName}</span>}
-                        {row.retryCount > 0 && <span style={{ color: T.warn, fontFamily: MONO }}>retry×{row.retryCount}</span>}
+                        {row.retryCount > 0 && <span style={{ color: T.warnInk, fontFamily: MONO }}>retry×{row.retryCount}</span>}
                         <span style={{ color: T.faint, fontFamily: MONO }}>
                           {new Date(row.createdAt).toLocaleString("mn-MN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
                       {row.replyText && <p className="mt-1 truncate text-[12px]" style={{ color: T.muted }}>«{row.replyText}»</p>}
-                      {row.sentText && <p className="mt-0.5 truncate text-[12px]" style={{ color: T.ok }}>↳ {row.sentText}</p>}
-                      {row.error && <p className="mt-0.5 text-[11px]" style={{ color: T.primary, fontFamily: MONO }}>{row.error}</p>}
+                      {row.sentText && <p className="mt-0.5 truncate text-[12px]" style={{ color: T.okInk }}>↳ {row.sentText}</p>}
+                      {row.error && <p className="mt-0.5 text-[11px]" style={{ color: T.primaryInk, fontFamily: MONO }}>{row.error}</p>}
                     </div>
                     {row.status === "error" && (
                       <Btn variant="ghost" size="sm" onClick={() => retryLog(row)} loading={retrying === row._id}>↻ Дахин</Btn>
@@ -726,7 +726,7 @@ export default function ThreadsAutomationPage() {
           </div>
           {accountsErr ? (
             <Card className="p-6 text-center">
-              <p className="text-[12px]" style={{ color: T.primary }}>{accountsErr}</p>
+              <p className="text-[12px]" style={{ color: T.primaryInk }}>{accountsErr}</p>
               <Btn variant="ghost" className="mt-3" onClick={loadAccounts}>Дахин ачаалах</Btn>
             </Card>
           ) : accounts === null ? (
@@ -753,7 +753,7 @@ export default function ThreadsAutomationPage() {
                       <div className="mt-1 text-[10px]" style={{ color: T.faint, fontFamily: MONO }}>
                         {acc.automations} automation · token дуусах: {new Date(acc.expiresAt).toLocaleDateString("mn-MN")}
                         {acc.backoffUntil && new Date(acc.backoffUntil) > new Date() && (
-                          <span style={{ color: T.warn }}> · backoff: {new Date(acc.backoffUntil).toLocaleTimeString("mn-MN")}</span>
+                          <span style={{ color: T.warnInk }}> · backoff: {new Date(acc.backoffUntil).toLocaleTimeString("mn-MN")}</span>
                         )}
                       </div>
                     </div>
@@ -778,7 +778,7 @@ export default function ThreadsAutomationPage() {
 
 // ── Small UI atoms ──
 function FieldLabel({ children }: { children: ReactNode }) {
-  return <div className="mb-1.5 mt-1 text-[9px] font-bold uppercase tracking-[1.5px]" style={{ color: T.faint, fontFamily: MONO }}>{children}</div>;
+  return <div className="mb-1.5 mt-1 text-[11px] font-bold uppercase tracking-[1.5px]" style={{ color: T.faint, fontFamily: MONO }}>{children}</div>;
 }
 
 function ChipBtn({ children, on, onClick, disabled }: { children: ReactNode; on: boolean; onClick: () => void; disabled?: boolean }) {
@@ -787,7 +787,7 @@ function ChipBtn({ children, on, onClick, disabled }: { children: ReactNode; on:
       className="border px-2 py-2 text-[11px] font-bold transition disabled:cursor-not-allowed disabled:opacity-40"
       style={{
         borderColor: on ? T.primary : T.border,
-        background: on ? "rgba(16,128,202,0.08)" : "transparent",
+        background: on ? "rgba(46,41,255,0.08)" : "transparent",
         color: on ? T.text : T.muted,
       }}>
       {children}
@@ -797,7 +797,7 @@ function ChipBtn({ children, on, onClick, disabled }: { children: ReactNode; on:
 
 function DisabledChip({ children }: { children: ReactNode }) {
   return (
-    <span className="border border-dashed px-2 py-1 text-[9px] uppercase tracking-[1px]"
+    <span className="border border-dashed px-2 py-1 text-[11px] uppercase tracking-[1px]"
       style={{ borderColor: T.border, color: T.faint, fontFamily: MONO }}>
       🚫 {children}
     </span>

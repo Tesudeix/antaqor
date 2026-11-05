@@ -61,11 +61,11 @@ export default function PasskeySignIn() {
         type="button"
         onClick={signInWithPasskey}
         disabled={busy}
-        className="flex w-full items-center justify-center rounded-none border border-[#E6E6E6] bg-white px-4 py-2.5 text-[13px] font-bold text-[#171717] transition hover:border-[rgba(16,128,202,0.4)] active:scale-[0.98] disabled:opacity-60"
+        className="flex w-full items-center justify-center rounded-[4px] border border-[#E6E6E6] bg-white px-4 py-2.5 text-[13px] font-bold text-[#171717] transition hover:border-[rgba(46,41,255,0.4)] active:scale-[0.98] disabled:opacity-60"
       >
         {busy ? "Шалгаж байна..." : "Face ID-аар нэвтрэх"}
       </button>
-      {err && <p className="mt-2 text-[11px] text-[#1080CA]">{err}</p>}
+      {err && <p className="mt-2 text-[11px] text-[#2E29FF]">{err}</p>}
     </div>
   );
 }

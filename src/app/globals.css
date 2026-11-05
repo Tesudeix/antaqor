@@ -1,38 +1,53 @@
 @import "tailwindcss";
+/* 2026-10-01: сайт ДАХИН ХАРАНХУЙ боллоо — #0A0A0A суурь, #2E29FF
+   өргөлт. `<html>` дээрээс `data-theme="light"` авснаар доорх бүх
+   cohesion дүрэм (`html:not([data-theme="light"])`) эргэж асна.
+
+   Гэрлийн хоёр давхарга нь БАЙРАНДАА, зөвхөн тайлбарлагдсан. Тэдгээр нь
+   ЦАГААН дэвсгэрт тооцсон контрасттай тул палитрын сэглэлтэд ЗОРИУД
+   оруулаагүй — өдрийн горим хэрэг болбол эдгээрийг сэргээхийн өмнө
+   өнгийг нь шинээр тооцох шаардлагатай.
+
+   2026-10-06: ӨДРИЙН ГОРИМ ДАХИН АНХДАГЧ (#F8F9FC) + солих товч. Өнгийг
+   #F8F9FC дээр шинээр тооцсон — theme-light-extra.css §10. */
+@import "./theme-light.css";
+@import "./theme-light-extra.css";
+@import "./theme-day.css";
+@import "./theme-day-extra.css";
 
 @theme inline {
-  /* ══ ANTAQOR DS v8.0 — EVENT HORIZON ══
-     Void is the material: cold, blue-shifted near-blacks carry ≥85% of
-     every viewport. SIGNAL #1080CA is the single saturated hue — it
+  /* ══ TESUDEI DS v10.0 — TENGER ══
+     Night is the material: cold, blue-shifted near-blacks carry ≥85% of
+     every viewport. TENGER #2E29FF is the single saturated hue — it
      appears only where meaning or action lives (Law of Emission).
      --color-black is the base so literal `bg-black` resolves to the page
-     base; literal text-black is re-lit by the cohesion layer below. */
+     base; literal text-white is re-lit by the cohesion layer below. */
 
-  /* SIGNAL — the singularity. One hue, one ramp. */
-  --color-signal-300: #4FA8E8;   /* hover / tint / warning */
-  --color-signal-500: #1080CA;   /* CORE — CTA, live, key data, focus */
-  --color-signal-600: #0C669E;   /* pressed / active */
-  --color-signal-900: #0D2338;   /* ember — blue-tinted dark surface */
+  /* TENGER — the singularity. One hue, one ramp. */
+  --color-tenger-300: #1F1AD9;   /* hover / tint / warning */
+  --color-tenger-500: #2E29FF;   /* CORE — CTA, live, key data, focus */
+  --color-tenger-600: #1E1E1E;   /* pressed / active */
+  --color-tenger-900: #141414;   /* ember — blue-tinted dark surface */
 
-  /* VOID — mass. Each step is a real elevation level. */
-  --color-void-950: #0E0E10;     /* absolute void — hero, posters */
-  --color-void-900: #161618;     /* web canvas */
-  --color-void-800: #1E1E21;     /* surface — cards, inputs */
-  --color-void-700: #26262A;     /* elevated — modals, dropdowns */
-  --color-void-600: #2E2E33;     /* hairline borders */
-  --color-void-500: #3A3A40;     /* strong borders, disabled */
+  /* NIGHT — mass. Each step is a real elevation level. */
+  --color-night-950: #0A0A0A;     /* deepest night — hero, posters */
+  --color-night-900: #0A0A0A;     /* web canvas */
+  --color-night-800: #141414;     /* surface — cards, inputs */
+  --color-night-700: #1E1E1E;     /* elevated — modals, dropdowns */
+  --color-night-600: #262626;     /* hairline borders */
+  --color-night-500: #333333;     /* strong borders, disabled */
 
-  /* GHOST — matter/text. Headline mass sits at true white; the ladder
+  /* TSAGAAN — matter/text. Headline mass sits at true white; the ladder
      steps down from there for hierarchy. */
-  --color-ghost-50: #FFFFFF;
-  --color-ghost-100: #F2F2F4;
-  --color-ghost-300: #B4B4BA;
-  --color-ghost-500: #84848C;
-  --color-ghost-700: #5C5C64;
+  --color-tsagaan-50: #FFFFFF;
+  --color-tsagaan-100: #F2F2F4;
+  --color-tsagaan-300: #E2E4E8;
+  --color-tsagaan-500: #E2E4E8;
+  --color-tsagaan-700: #E2E4E8;
 
-  /* STATIC + semantic */
-  --color-static-400: #8C96A6;
-  --color-static-700: #3A404C;
+  /* MIST + semantic */
+  --color-mist-400: #E2E4E8;
+  --color-mist-700: #333333;
   --color-pulse: #2FBF8F;        /* success — UI feedback only */
   /* Success utilities collapse into the dimmed pulse ramp (§1.5) */
   --color-green-400: #2FBF8F;
@@ -41,62 +56,80 @@
   --color-green-900: #143D30;
   --color-green-950: #0D251E;
 
-  /* Legacy aliases — keep every existing utility resolving into v8 */
-  --color-black: #161618;
-  --color-surface: #1E1E21;      /* card/panel — void-800 */
-  --color-border: #2E2E33;       /* hairline — void-600 */
-  --color-accent: #1080CA;
-  --color-accent-hover: #4FA8E8;
-  --color-accent-deep: #0C669E;
-  --color-blue-400: #1080CA;
-  --color-blue-500: #1080CA;
-  --color-blue-600: #1080CA;
-  --color-blue-700: #0C669E;
-  --color-indigo-400: #4FA8E8;
-  --color-indigo-500: #1080CA;
-  --color-indigo-600: #0C669E;
-  --color-ink: #F2F2F4;          /* primary text — ghost-100 */
-  --color-muted: #B4B4BA;        /* secondary text — ghost-300 */
-  --color-dim: #84848C;          /* tertiary — ghost-500 */
-  --color-background: #161618;   /* THE page base — void-900 */
+  /* Legacy aliases — keep every existing utility resolving into v10 */
+  --color-black: #0A0A0A;
+  --color-surface: #141414;      /* card/panel — night-800 */
+  --color-border: #262626;       /* hairline — night-600 */
+  --color-accent: #2E29FF;
+  --color-accent-hover: #1F1AD9;
+  /* 2026-10-09: ХОЁРДОГЧ брэнд өнгө — тодруулга, шошго, хоёрдогч товч. */
+  --color-coral: #FCEE0A;
+  --color-accent-deep: #1E1E1E;
+  --color-blue-400: #2E29FF;
+  --color-blue-500: #2E29FF;
+  --color-blue-600: #2E29FF;
+  --color-blue-700: #1E1E1E;
+  --color-indigo-400: #1F1AD9;
+  --color-indigo-500: #2E29FF;
+  --color-indigo-600: #1E1E1E;
+  --color-ink: #F2F2F4;          /* primary text — tsagaan-100 */
+  --color-muted: #E2E4E8;        /* secondary text — tsagaan-300 */
+  --color-dim: #E2E4E8;          /* tertiary — tsagaan-500 */
+  --color-background: #0A0A0A;   /* THE page base — брэндийн харанхуй */
   --color-foreground: #F2F2F4;
-  --font-sans: "Golos Text", system-ui, sans-serif;
-  --font-display: "Unbounded", "Golos Text", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* ONE TYPEFACE. Manrope carries display, text and HUD chrome — it has a
+     full Cyrillic set, a real 200–800 weight axis and tabular figures, which
+     is everything the three families it replaced were here for.
+
+     The three variables are KEPT rather than collapsed into one: every
+     component in the app already asks for --font-display or --font-mono by
+     role, and the roles are still real even when the family is shared.
+     Changing one line here re-cuts a whole tier of the site; deleting them
+     would mean editing hundreds of call sites to say the same thing. */
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-mono: "Manrope", system-ui, -apple-system, sans-serif;
 }
 
 :root {
-  --signal-a32: rgba(16,128,202,.32);
-  --signal-a12: rgba(16,128,202,.12);
-  --signal-a06: rgba(16,128,202,.06);
-  --glow: 0 0 0 1px #1080CA, 0 0 24px 0 rgba(16,128,202,.30);
+  --tenger-a28: rgba(46,41,255,.28);
+  --tenger-a12: rgba(46,41,255,.12);
+  --tenger-a06: rgba(46,41,255,.06);
+  --glow: 0 0 0 1px #2E29FF, 0 0 24px 0 rgba(46,41,255,.28);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --t-instant: 80ms; --t-fast: 160ms; --t-base: 240ms;
   --t-slow: 400ms; --t-cinematic: 700ms;
 }
 
-/* ─── Headline system — ghost-50 mass, ONE signal accent per headline
+/* ─── Headline system — tsagaan-50 mass, ONE tenger accent per headline
    (Law of Singularity). The accent is the only emission. ─── */
 .headline {
   font-family: var(--font-display);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.005em;
+  line-height: 1.04;
+  /* Unbounded is a wide display face; Manrope is not. At headline sizes it
+     needs to be pulled tighter or the line reads loose and undersized. */
+  letter-spacing: -0.028em;
   color: #FFFFFF;
 }
 .headline .accent {
   color: var(--color-accent);
   font-weight: 800;
-  text-shadow: 0 0 28px rgba(16,128,202, 0.32);
+  text-shadow: 0 0 28px rgba(46,41,255, 0.32);
 }
-.headline .dot { color: var(--color-accent); text-shadow: 0 0 22px rgba(16,128,202, 0.32); }
+.headline .dot { color: var(--color-accent); text-shadow: 0 0 22px rgba(46,41,255, 0.32); }
 
 /* HUD chrome class — eyebrows, meta strips, patch IDs */
 .chrome {
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  /* Manrope is proportional, so tabular figures have to be requested by name.
+     Without this every countdown and seat counter reflows as its digits
+     change — the one thing the old monospace was actually doing here. */
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 /* Layout-ийн padded main дотроос viewport ирмэг хүртэл гаргана */
@@ -106,8 +139,25 @@
   margin-right: calc(50% - 50vw);
 }
 
-/* ─── Hero layer — v8 "signal acquisition" entrance + single EMISSION
-   vignette. Glitch/RGB-split retired (§05 forbidden list); .hero-glitch
+/* `calc(50% - 50vw)` нь эзэн блок нь ДЭЛГЭЦИЙН ТӨВД байна гэж үзнэ.
+   lg-ээс дээш AgentShell нь 300px хажуугийн цэс + завсар нэмдэг тул
+   агуулгын багана төвөөс хазайдаг: тооцоо дутуу татаж, хэсэг баруун
+   тийш гулсан зүүн ирмэг нь цэсний ДЭЭГҮҮР зурагдаад, баруун талаараа
+   дэлгэцнээс ~160px хальж хэвтээ гүйлт үүсгэж байв.
+
+   Хажуугийн цэстэй байрлалд "full bleed" гэдэг нь дэлгэцийн ирмэг биш,
+   АГУУЛГЫН БАГАНЫ ирмэг гэсэн утгатай — тиймээс breakout-г унтраана.
+   lg-ээс доош цэс нуугддаг тул анхны тооцоо зөв ажиллаж, хэвээр үлдэнэ. */
+@media (min-width: 1024px) {
+  [data-shell="sidebar"] .full-bleed {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* ─── Hero layer — v10 "tenger acquisition" entrance + single EMISSION
+   vignette. Glitch/RGB-split retired (§04 forbidden list); .hero-glitch
    is kept as a class name so existing markup gets the new flicker. ─── */
 @keyframes signalAcquire {
   0% { opacity: 0; }
@@ -127,7 +177,7 @@
   inset: -10%;
   pointer-events: none;
   /* The ONLY allowed gradient: one emission behind the focal point */
-  background: radial-gradient(46% 38% at 50% 62%, var(--signal-a06), transparent 70%);
+  background: radial-gradient(46% 38% at 50% 62%, var(--tenger-a06), transparent 70%);
   animation: smokeDrift 16s ease-in-out infinite alternate;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -135,14 +185,14 @@
   .hero-smoke { animation: none; opacity: 0.8; }
 }
 
-/* ─── v8 tag — signal chip. Dark-on-orange (never white on signal),
+/* ─── v10 tag — tenger chip. Dark-on-blue (never white on tenger),
    mono uppercase, pill radius (chips are objects in orbit, §03). ─── */
 .tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #1080CA;
-  color: #0E0E10;
+  background: #2E29FF;
+  color: #FFFFFF;
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 10px;
@@ -150,7 +200,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 4px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -159,7 +209,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: #161618;
+  background: var(--color-background);
   color: #F2F2F4;
   font-family: var(--font-sans);
   font-size: 15px;
@@ -175,7 +225,7 @@ body:has(.yuki-root) {
   color: #2A1B2A;
 }
 body:has(.yuki-root) ::selection {
-  background: #EC4899;
+  background: #2E29FF;
   color: #FFFFFF;
 }
 
@@ -185,35 +235,34 @@ body:has(.yuki-root) ::selection {
    margins/overscroll. */
 html:has(.light-page),
 body:has(.light-page) {
-  background: #161618;
+  background: #0A0A0A;
   color: #F2F2F4;
 }
 body:has(.light-page) ::selection {
-  background: #1080CA;
-  color: #0E0E10;
+  background: #2E29FF;
+  color: #FFFFFF;
 }
-body:has(.light-page) ::-webkit-scrollbar-thumb { background: #3A3A40; }
+body:has(.light-page) ::-webkit-scrollbar-thumb { background: #333333; }
 
 ::selection {
-  /* Dark-on-signal — ghost text never sits on signal (§1.7) */
+  /* Dark-on-tenger — tsagaan text never sits on tenger (§01) */
   background: var(--color-accent);
-  color: #0E0E10;
+  color: #FFFFFF;
 }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #3A3A40; border-radius: 0; }
+::-webkit-scrollbar-thumb { background: #333333; border-radius: 0; }
 
 html {
-  /* Site is a dark theme — pin color-scheme to dark so native controls
-     (select popups, inputs, scrollbars, date pickers) and the UA canvas
-     render dark chrome instead of defaulting to a light system theme. */
+  /* Сайт ХАРАНХУЙ — төрөлх хяналтууд (select цэс, input, гүйлгэх
+     зурвас, огнооны сонгогч) болон UA canvas харанхуй байх ёстой. */
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: 72px;
   /* Dark fills the notch / status-bar / home-indicator safe areas */
-  background: #161618;
+  background: #0A0A0A;
 }
 input, textarea, select {
   font-family: var(--font-sans);
@@ -227,7 +276,7 @@ input, textarea, select {
   justify-content: center;
   gap: 8px;
   background: var(--color-accent);
-  color: #0E0E10;
+  color: #FFFFFF;
   padding: 10px 24px;
   font-size: 13px;
   font-weight: 600;
@@ -237,7 +286,7 @@ input, textarea, select {
   transition: background var(--t-fast), box-shadow var(--t-fast);
 }
 .btn-primary:hover { background: var(--color-accent-hover); box-shadow: var(--glow); }
-.btn-primary:active { background: #0C669E; }
+.btn-primary:active { background: #1E1E1E; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-neon, .btn-blood {
@@ -246,7 +295,7 @@ input, textarea, select {
   justify-content: center;
   gap: 8px;
   background: var(--color-accent);
-  color: #0E0E10;
+  color: #FFFFFF;
   padding: 10px 24px;
   font-size: 13px;
   font-weight: 600;
@@ -256,7 +305,7 @@ input, textarea, select {
   transition: background var(--t-fast), box-shadow var(--t-fast);
 }
 .btn-neon:hover, .btn-blood:hover { background: var(--color-accent-hover); box-shadow: var(--glow); }
-.btn-neon:active, .btn-blood:active { background: #0C669E; }
+.btn-neon:active, .btn-blood:active { background: #1E1E1E; }
 .btn-neon:disabled, .btn-blood:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-ghost {
@@ -265,7 +314,7 @@ input, textarea, select {
   justify-content: center;
   gap: 8px;
   background: transparent;
-  color: var(--color-muted);
+  color: #FCEE0A;
   padding: 10px 24px;
   font-size: 13px;
   font-weight: 500;
@@ -275,14 +324,25 @@ input, textarea, select {
   transition: all 0.2s;
 }
 .btn-ghost:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: #FCEE0A;
+  color: #FCEE0A;
+  background: rgba(252,238,10, 0.12);
+}
+
+/* ─── 2026-10-09: #2E29FF нь ЦАЙВАР teal — цагаан бичиг 1.91:1 (уншигдахгүй),
+   бараан #0A0A0A бичиг 10.12:1. Анги (`bg-[#2E29FF]`)-тай дүүргэлтийг доорх
+   cohesion дүрэм барина; энэ нь INLINE style-оор будсан дүүргэлтийг барина
+   (`style={{ background: NEON }}` + text-white). `:not(#_)` — cohesion-ий
+   `.text-white` дүрмийг ялна. */
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) :is([style*="background:#2E29FF" i],[style*="background: #2E29FF" i],[style*="background: rgb(27, 209, 198)"],[style*="background-color: rgb(27, 209, 198)"],[style*="background:var(--accent-ink, #2E29FF)" i],[style*="background: var(--accent-ink, #2E29FF)" i]):not(#_),
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) :is([style*="background:#2E29FF" i],[style*="background: #2E29FF" i],[style*="background: rgb(27, 209, 198)"],[style*="background-color: rgb(27, 209, 198)"],[style*="background:var(--accent-ink, #2E29FF)" i],[style*="background: var(--accent-ink, #2E29FF)" i]) :is(.text-white,[class*="text-white"]):not(#_) {
+  color: #FFFFFF !important; /* 2026-10-13: улаан дүүргэлт → ЦАГААН бичиг (4.4:1) */
 }
 
 /* ─── Inputs ─── */
 .input-dark {
   width: 100%;
-  background: #1E1E21;
+  background: #141414;
   border: 1px solid var(--color-border);
   color: var(--color-ink);
   padding: 10px 14px;
@@ -291,11 +351,11 @@ input, textarea, select {
   border-radius: 0;
   transition: border-color 0.2s;
 }
-.input-dark::placeholder { color: #84848C; }
+.input-dark::placeholder { color: #E2E4E8; }
 .input-dark:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 24px 0 var(--signal-a12);
+  box-shadow: 0 0 24px 0 var(--tenger-a12);
 }
 
 /* ─── Cards ─── */
@@ -305,7 +365,7 @@ input, textarea, select {
   border-radius: 0;
   transition: border-color 0.2s;
 }
-.card:hover { border-color: #3A3A40; }
+.card:hover { border-color: #333333; }
 
 /* ─── Section label ─── */
 .section-label {
@@ -325,13 +385,13 @@ input, textarea, select {
 }
 .animate-fade-up { animation: fadeUp 0.4s ease forwards; }
 
-h1, h2 { font-family: var(--font-display); line-height: 1.1; }
+h1, h2 { font-family: var(--font-display); line-height: 1.1; letter-spacing: -0.025em; }
 h3, h4, h5, h6 { font-family: var(--font-sans); }
 p { line-height: 1.7; }
 
 /* ─── Dropdown items ─── */
 .dropdown-item { display: block; width: 100%; padding: 6px 10px; border-radius: 0; text-align: left; color: #F2F2F4; transition: background 0.15s; }
-.dropdown-item:hover { background: rgba(16,128,202,0.12); }
+.dropdown-item:hover { background: rgba(46,41,255,0.12); }
 
 /* ─── Scrollbar hide for emoji tabs ─── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -342,17 +402,17 @@ p { line-height: 1.7; }
 .rich-editor-content h2 { font-size: 22px; font-weight: 700; color: #F2F2F4; margin: 20px 0 6px; line-height: 1.35; }
 .rich-editor-content h3 { font-size: 18px; font-weight: 700; color: #F2F2F4; margin: 16px 0 4px; line-height: 1.4; }
 .rich-editor-content p { margin: 0 0 12px; }
-.rich-editor-content a { color: #1080CA; text-decoration: underline; text-underline-offset: 3px; }
-.rich-editor-content a:hover { color: #4FA8E8; }
+.rich-editor-content a { color: #2E29FF; text-decoration: underline; text-underline-offset: 3px; }
+.rich-editor-content a:hover { color: #4C47FF; }
 .rich-editor-content ul, .rich-editor-content ol { padding-left: 24px; margin: 8px 0 16px; }
 .rich-editor-content li { margin: 4px 0; }
 .rich-editor-content ul li { list-style: disc; }
 .rich-editor-content ol li { list-style: decimal; }
-.rich-editor-content blockquote { border-left: 3px solid #1080CA; padding: 12px 20px; margin: 16px 0; background: rgba(16,128,202,0.07); border-radius: 0; color: #B4B4BA; font-style: italic; }
+.rich-editor-content blockquote { border-left: 3px solid #2E29FF; padding: 12px 20px; margin: 16px 0; background: rgba(46,41,255,0.07); border-radius: 0; color: #E2E4E8; font-style: italic; }
 .rich-editor-content pre.re-code,
-.rich-editor-content pre { background: #1E1E21; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: #B4B4BA; }
+.rich-editor-content pre { background: #141414; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: #E2E4E8; }
 .rich-editor-content pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
-.rich-editor-content code { background: rgba(16,128,202,0.14); color: #4FA8E8; padding: 2px 6px; border-radius: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
+.rich-editor-content code { background: rgba(46,41,255,0.14); color: #4C47FF; padding: 2px 6px; border-radius: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
 .rich-editor-content hr, .rich-editor-content hr.re-hr { border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent); margin: 32px 0; }
 .rich-editor-content img, .rich-editor-content img.re-img { max-width: 100%; border-radius: 0; margin: 16px 0; border: 1px solid rgba(255,255,255,0.07); }
 .rich-editor-content .re-img-wrap { margin: 16px 0; }
@@ -367,8 +427,8 @@ p { line-height: 1.7; }
 .re-callout-info { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.28); }
 .re-callout-warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.28); }
 .re-callout-success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.28); }
-.re-callout-tip { background: rgba(16,128,202,0.12); border: 1px solid rgba(16,128,202,0.28); }
-.re-callout-note { background: rgba(16,128,202,0.10); border: 1px solid rgba(16,128,202,0.24); }
+.re-callout-tip { background: rgba(46,41,255,0.12); border: 1px solid rgba(46,41,255,0.28); }
+.re-callout-note { background: rgba(46,41,255,0.10); border: 1px solid rgba(46,41,255,0.24); }
 
 /* ─── Prompt Lab Blocks (system=red / user=blue / assistant=green coding kept) ─── */
 .re-prompt-block { margin: 16px 0; border-radius: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
@@ -376,66 +436,66 @@ p { line-height: 1.7; }
 .re-prompt-body { padding: 14px 18px; font-size: 14px; line-height: 1.7; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; min-height: 40px; }
 .re-prompt-system { border-color: rgba(245,158,11,0.35); }
 .re-prompt-system .re-prompt-label { background: rgba(245,158,11,0.18); color: #fbbf24; }
-.re-prompt-system .re-prompt-body { background: rgba(245,158,11,0.07); color: #B4B4BA; }
+.re-prompt-system .re-prompt-body { background: rgba(245,158,11,0.07); color: #E2E4E8; }
 .re-prompt-user { border-color: rgba(59,130,246,0.35); }
-.re-prompt-user .re-prompt-label { background: rgba(59,130,246,0.18); color: #4FA8E8; }
-.re-prompt-user .re-prompt-body { background: rgba(59,130,246,0.07); color: #B4B4BA; }
+.re-prompt-user .re-prompt-label { background: rgba(59,130,246,0.18); color: #4C47FF; }
+.re-prompt-user .re-prompt-body { background: rgba(59,130,246,0.07); color: #E2E4E8; }
 .re-prompt-assistant { border-color: rgba(34,197,94,0.35); }
 .re-prompt-assistant .re-prompt-label { background: rgba(34,197,94,0.18); color: #4ade80; }
-.re-prompt-assistant .re-prompt-body { background: rgba(34,197,94,0.07); color: #B4B4BA; }
+.re-prompt-assistant .re-prompt-body { background: rgba(34,197,94,0.07); color: #E2E4E8; }
 
 /* Prompt template */
-.re-prompt-template { margin: 16px 0; border: 1px solid rgba(16,128,202,0.28); border-radius: 0; overflow: hidden; }
-.re-prompt-template-title { padding: 10px 18px; background: rgba(16,128,202,0.10); font-size: 15px; font-weight: 700; color: #F2F2F4; border-bottom: 1px solid rgba(16,128,202,0.22); }
-.re-prompt-template-body { padding: 16px 18px; font-size: 14px; line-height: 1.8; color: #B4B4BA; }
+.re-prompt-template { margin: 16px 0; border: 1px solid rgba(46,41,255,0.28); border-radius: 0; overflow: hidden; }
+.re-prompt-template-title { padding: 10px 18px; background: rgba(46,41,255,0.10); font-size: 15px; font-weight: 700; color: #F2F2F4; border-bottom: 1px solid rgba(46,41,255,0.22); }
+.re-prompt-template-body { padding: 16px 18px; font-size: 14px; line-height: 1.8; color: #E2E4E8; }
 
 /* Challenge block */
-.re-challenge { margin: 16px 0; border: 1px solid rgba(16,128,202,0.35); border-radius: 0; overflow: hidden; background: rgba(16,128,202,0.05); }
-.re-challenge-header { padding: 8px 18px; background: rgba(16,128,202,0.12); font-size: 12px; font-weight: 800; letter-spacing: 2px; color: #4FA8E8; }
-.re-challenge-body { padding: 16px 18px; font-size: 14px; line-height: 1.8; color: #B4B4BA; }
+.re-challenge { margin: 16px 0; border: 1px solid rgba(46,41,255,0.35); border-radius: 0; overflow: hidden; background: rgba(46,41,255,0.05); }
+.re-challenge-header { padding: 8px 18px; background: rgba(46,41,255,0.12); font-size: 12px; font-weight: 800; letter-spacing: 2px; color: #4C47FF; }
+.re-challenge-body { padding: 16px 18px; font-size: 14px; line-height: 1.8; color: #E2E4E8; }
 
 /* Table */
 .re-table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 0; overflow: hidden; }
-.re-table th { background: rgba(16,128,202,0.10); border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #F2F2F4; }
-.re-table td { border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; font-size: 13px; color: #B4B4BA; }
+.re-table th { background: rgba(46,41,255,0.10); border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #F2F2F4; }
+.re-table td { border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; font-size: 13px; color: #E2E4E8; }
 .re-table tr:hover td { background: rgba(255,255,255,0.03); }
 
 /* Card box */
 .re-card-box { margin: 16px 0; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; overflow: hidden; }
-.re-card-title { padding: 10px 16px; background: #1E1E21; font-size: 14px; font-weight: 700; color: #F2F2F4; border-bottom: 1px solid rgba(255,255,255,0.08); }
-.re-card-body { padding: 14px 16px; font-size: 14px; line-height: 1.7; color: #B4B4BA; }
+.re-card-title { padding: 10px 16px; background: #141414; font-size: 14px; font-weight: 700; color: #F2F2F4; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.re-card-body { padding: 14px 16px; font-size: 14px; line-height: 1.7; color: #E2E4E8; }
 
 /* Link card */
-.re-link-card { display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; background: #1E1E21; }
+.re-link-card { display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; background: #141414; }
 .re-link-icon { font-size: 20px; }
 .re-link-title { font-size: 14px; font-weight: 600; color: #F2F2F4; }
-.re-link-url { font-size: 12px; color: #1080CA; margin-top: 2px; }
+.re-link-url { font-size: 12px; color: #2E29FF; margin-top: 2px; }
 
 /* Steps */
 .re-steps { margin: 16px 0; }
 .re-step { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .re-step:last-child { border-bottom: none; }
-.re-step-num { flex-shrink: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(16,128,202,0.14); color: #1080CA; font-size: 12px; font-weight: 700; }
+.re-step-num { flex-shrink: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: rgba(46,41,255,0.14); color: #2E29FF; font-size: 12px; font-weight: 700; }
 
 /* Checklist */
 .re-checklist { margin: 12px 0; }
-.re-check-item { padding: 6px 0; font-size: 14px; color: #B4B4BA; }
+.re-check-item { padding: 6px 0; font-size: 14px; color: #E2E4E8; }
 
 /* ─── Blog display mode (view) ─── */
 .blog-content h1 { font-size: 28px; font-weight: 800; color: #F2F2F4; margin: 32px 0 12px; line-height: 1.3; }
 .blog-content h2 { font-size: 22px; font-weight: 700; color: #F2F2F4; margin: 28px 0 10px; line-height: 1.35; }
 .blog-content h3 { font-size: 18px; font-weight: 700; color: #F2F2F4; margin: 24px 0 8px; line-height: 1.4; }
-.blog-content p { margin: 0 0 16px; color: #B4B4BA; }
-.blog-content a { color: #1080CA; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
-.blog-content a:hover { color: #4FA8E8; }
+.blog-content p { margin: 0 0 16px; color: #E2E4E8; }
+.blog-content a { color: #2E29FF; text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
+.blog-content a:hover { color: #4C47FF; }
 .blog-content ul, .blog-content ol { padding-left: 24px; margin: 12px 0 20px; }
-.blog-content li { margin: 6px 0; color: #B4B4BA; }
+.blog-content li { margin: 6px 0; color: #E2E4E8; }
 .blog-content ul li { list-style: disc; }
 .blog-content ol li { list-style: decimal; }
-.blog-content blockquote { border-left: 3px solid #1080CA; padding: 14px 24px; margin: 24px 0; background: rgba(16,128,202,0.06); border-radius: 0; color: #B4B4BA; font-style: italic; font-size: 16px; line-height: 1.8; }
-.blog-content pre { background: #1E1E21; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 20px 24px; margin: 24px 0; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.7; color: #B4B4BA; }
+.blog-content blockquote { border-left: 3px solid #2E29FF; padding: 14px 24px; margin: 24px 0; background: rgba(46,41,255,0.06); border-radius: 0; color: #E2E4E8; font-style: italic; font-size: 16px; line-height: 1.8; }
+.blog-content pre { background: #141414; border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 20px 24px; margin: 24px 0; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.7; color: #E2E4E8; }
 .blog-content pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
-.blog-content code { background: rgba(16,128,202,0.14); color: #4FA8E8; padding: 2px 6px; border-radius: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
+.blog-content code { background: rgba(46,41,255,0.14); color: #4C47FF; padding: 2px 6px; border-radius: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
 .blog-content hr { border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent); margin: 40px 0; }
 .blog-content img { max-width: 100%; border-radius: 0; margin: 24px 0; border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
 .blog-content strong { color: #F2F2F4; font-weight: 700; }
@@ -464,7 +524,7 @@ p { line-height: 1.7; }
 .blog-content .re-steps { margin: 24px 0; }
 .blog-content .re-step { padding: 12px 0; }
 .blog-content .re-checklist { margin: 16px 0; }
-.blog-content .re-check-item { padding: 8px 0; font-size: 15px; color: #B4B4BA; }
+.blog-content .re-check-item { padding: 8px 0; font-size: 15px; color: #E2E4E8; }
 
 /* ══════════════════════════════════════════════════════════════════════
    WHITE→DARK COHESION LAYER
@@ -478,146 +538,146 @@ p { line-height: 1.7; }
    Attribute selectors match the literal class string (case-insensitive).
    ════════════════════════════════════════════════════════════════════ */
 
-/* Page-level surfaces (near-blacks + whites/off-whites) → base #161618 */
-body:not(:has(.yuki-root)) .bg-black,
-body:not(:has(.yuki-root)) .bg-white,
-body:not(:has(.yuki-root)) [class*="bg-white/" i],
-body:not(:has(.yuki-root)) [class*="bg-[#000]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#000000]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#060608]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#06060a]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#0a0a0c]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#161618]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#ffffff]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fff]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fefefe]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fdfdfd]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fcfcfc]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fbfbfb]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fafafa]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f9f9f9]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f8f8f8]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f8f8f6]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f7f7f7]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f7f9fb]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f6f6f7]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f6f6f6]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f6f6f4]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f5f5f7]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f5f5f5]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f4f6f8]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f4f4f5]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f4f4f2]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f3f3f3]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f2f2f2]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f2f2f0]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f1f1f1]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f0f0f0]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f0f0ee]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#efefef]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#efefed]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f6f8fb]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#fafaf8]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#ececea]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#e8e8e6]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#e8e8e5]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#e2e2df]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#e6e6e6]" i] {
-  background-color: #161618 !important;
+/* Page-level surfaces (near-blacks + whites/off-whites) → base #0A0A0A */
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-black,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-white/" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#000]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#0A0A0A]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#060608]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#06060a]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#0A0A0A]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#0A0A0A]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#ffffff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fefefe]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fdfdfd]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fcfcfc]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fbfbfb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fafafa]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f9f9f9]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f8f8f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f8f8f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f7f7f7]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f7f9fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f6f6f7]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f6f6f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f6f6f4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f5f5f7]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f5f5f5]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f4f6f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f4f4f5]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f4f4f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f3f3f3]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f2f2f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f2f2f0]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f1f1f1]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f0f0f0]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f0f0ee]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#efefef]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#efefed]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f6f8fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#fafaf8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#ececea]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#e8e8e6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#e8e8e5]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#e2e2df]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#e6e6e6]" i] {
+  background-color: #0A0A0A !important;
 }
 
-/* Elevated panels/cards (near-blacks + light panel grays) → surface #1E1E21 */
-body:not(:has(.yuki-root)) [class*="bg-[#0e0e14]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#141420]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#181818]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#18181b]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#1a1a1e]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#1c1c22]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#202023]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#232323]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#eef2f6]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#F2F2F4]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#e2e8ef]" i],
-body:not(:has(.yuki-root)) [class*="bg-[#f2f5f8]" i] {
-  background-color: #1E1E21 !important;
+/* Elevated panels/cards (near-blacks + light panel grays) → surface #141414 */
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#0e0e14]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#141420]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#181818]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#141414]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#1a1a1e]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#1c1c22]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#202023]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#232323]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#eef2f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#e2e8ef]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="bg-[#f2f5f8]" i] {
+  background-color: #141414 !important;
 }
 
 /* Light gradients → flatten to dark base */
-body:not(:has(.yuki-root)) [class*="from-[#ffffff]" i],
-body:not(:has(.yuki-root)) [class*="via-[#ffffff]" i],
-body:not(:has(.yuki-root)) [class*="to-[#ffffff]" i],
-body:not(:has(.yuki-root)) [class*="from-[#fff]" i],
-body:not(:has(.yuki-root)) [class*="to-[#fff]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f6f6f7]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f6f6f7]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f4f4f2]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f2f2f0]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f0f0ee]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f4f6f8]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f4f6f8]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f4f6f8]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f6f8fb]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f6f8fb]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f6f8fb]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f7f9fb]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f7f9fb]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f7f9fb]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f2f5f8]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f2f5f8]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f2f5f8]" i],
-body:not(:has(.yuki-root)) [class*="from-[#eef2f6]" i],
-body:not(:has(.yuki-root)) [class*="via-[#eef2f6]" i],
-body:not(:has(.yuki-root)) [class*="to-[#eef2f6]" i],
-body:not(:has(.yuki-root)) [class*="from-[#F2F2F4]" i],
-body:not(:has(.yuki-root)) [class*="via-[#F2F2F4]" i],
-body:not(:has(.yuki-root)) [class*="to-[#F2F2F4]" i],
-body:not(:has(.yuki-root)) [class*="from-[#f4f4f2]" i],
-body:not(:has(.yuki-root)) [class*="via-[#f4f4f2]" i],
-body:not(:has(.yuki-root)) [class*="to-[#f4f4f2]" i],
-body:not(:has(.yuki-root)) [class*="from-[#ececea]" i],
-body:not(:has(.yuki-root)) [class*="via-[#ececea]" i],
-body:not(:has(.yuki-root)) [class*="to-[#ececea]" i] {
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#ffffff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#ffffff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#ffffff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#fff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#fff]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f6f6f7]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f6f6f7]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f4f4f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f2f2f0]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f0f0ee]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f4f6f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f4f6f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f4f6f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f6f8fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f6f8fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f6f8fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f7f9fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f7f9fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f7f9fb]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f2f5f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f2f5f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f2f5f8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#eef2f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#eef2f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#eef2f6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#f4f4f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#f4f4f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#f4f4f2]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="from-[#ececea]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="via-[#ececea]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="to-[#ececea]" i] {
   background-image: none !important;
-  background-color: #161618 !important;
+  background-color: #0A0A0A !important;
 }
 
-/* Dark-on-light text → soft white. Catches literal text-black and the
+/* Dark-on-light text → soft white. Catches literal text-white and the
    dark slate/ink hexes components hard-coded for the old light theme. */
-body:not(:has(.yuki-root)) .text-black,
-body:not(:has(.yuki-root)) [class*="text-[#000]" i],
-body:not(:has(.yuki-root)) [class*="text-[#000000]" i],
-body:not(:has(.yuki-root)) [class*="text-[#0e1726]" i],
-body:not(:has(.yuki-root)) [class*="text-[#0f172a]" i],
-body:not(:has(.yuki-root)) [class*="text-[#111827]" i],
-body:not(:has(.yuki-root)) [class*="text-[#171717]" i],
-body:not(:has(.yuki-root)) [class*="text-[#1a1a1e]" i],
-body:not(:has(.yuki-root)) [class*="text-[#1e293b]" i],
-body:not(:has(.yuki-root)) [class*="text-[#1f2937]" i],
-body:not(:has(.yuki-root)) [class*="text-[#334155]" i],
-body:not(:has(.yuki-root)) [class*="text-[#3f3f46]" i] {
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .text-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#0e1726]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#0f172a]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#111827]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#171717]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#1a1a1e]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#1e293b]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#1f2937]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#334155]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#3f3f46]" i] {
   color: #F2F2F4 !important;
 }
 
 /* Secondary dark text (slate-500/600) → readable muted on dark */
-body:not(:has(.yuki-root)) [class*="text-[#475569]" i],
-body:not(:has(.yuki-root)) [class*="text-[#52525b]" i],
-body:not(:has(.yuki-root)) [class*="text-[#5b6573]" i] {
-  color: #B4B4BA !important;
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#475569]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#52525b]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="text-[#E2E4E8]" i] {
+  color: #E2E4E8 !important;
 }
 
 /* Light borders → faint light veil */
-body:not(:has(.yuki-root)) [class*="border-[#e6e6e6]" i],
-body:not(:has(.yuki-root)) [class*="border-[#ededed]" i],
-body:not(:has(.yuki-root)) [class*="border-[#efefef]" i],
-body:not(:has(.yuki-root)) [class*="border-[#eee]" i],
-body:not(:has(.yuki-root)) [class*="border-[#dedede]" i],
-body:not(:has(.yuki-root)) [class*="border-[#dddddd]" i],
-body:not(:has(.yuki-root)) [class*="border-[#ddd]" i],
-body:not(:has(.yuki-root)) [class*="border-[#d8d8d8]" i],
-body:not(:has(.yuki-root)) [class*="border-[#d5dce3]" i],
-body:not(:has(.yuki-root)) [class*="border-[#d4d4d8]" i],
-body:not(:has(.yuki-root)) [class*="border-[#dde3ea]" i],
-body:not(:has(.yuki-root)) [class*="border-[#e2e8ef]" i] {
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#e6e6e6]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#ededed]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#efefef]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#eee]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#dedede]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#dddddd]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#ddd]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#d8d8d8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#d5dce3]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#d4d4d8]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#dde3ea]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) [class*="border-[#e2e8ef]" i] {
   border-color: rgba(255,255,255,0.10) !important;
 }
 
@@ -656,21 +716,39 @@ svg:not([data-sharp]) circle {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   V8 DOCTRINE LAYER — EVENT HORIZON geometry, light & machine layer
+   V10 DOCTRINE LAYER — TENGER geometry, light & machine layer
    Same technique as the cohesion layer above: global rules re-govern the
    hard-coded Tailwind utilities scattered across 100+ files so the whole
-   product obeys the v8 physics without touching every component.
+   product obeys the v10 physics without touching every component.
    Scoped :not(:has(.yuki-root)) so the intentional light salon survives.
    ════════════════════════════════════════════════════════════════════ */
 
-/* ─── Sharpness doctrine (§03): radius 0 everywhere. Nothing bends near
-   a singularity. Exception: rounded-full = objects in orbit (chips,
-   avatars, status dots) keep their pill/circle form. */
-body:not(:has(.yuki-root)) [class*="rounded"] { border-radius: 0 !important; }
-body:not(:has(.yuki-root)) [class*="rounded-full"] { border-radius: 999px !important; }
+/* ─── §03 (2026-08-19: 0 → 4px) ───────────────────────────────────────────
+   Энэ дүрэм өмнө нь БҮХ буланг 0 болгодог байсан. Асуудал нь: код дотор
+   1300 гаруй элемент `rounded-[4px]` гэж бичсэн байсан — өөрөөр хэлбэл
+   зохиогчийн санаа 4px байсан атал дэлгэц дээр хэзээ ч хэрэгжээгүй.
+   Кодод бичсэн зүйл ба нүдэнд харагдах зүйл хоёр зөрөх нь хамгийн муу
+   төрлийн зөрчил: шинэ элемент нэмэх хүн `rounded-[4px]` бичээд яагаад
+   ажиллахгүй байгааг ойлгохгүй, эсвэл ойлгохын тулд энэ файлыг олох
+   хэрэгтэй болно.
 
-/* ─── No cast shadows (§04): there is no light source in a void. Depth =
-   surface step + hairline. The only "shadow" is emitted signal glow. */
+   Одоо радиус нь `--r` (4px) — нэг тоо, нэг эх сурвалж. Дүрэм өөрөө
+   ҮЛДСЭН (устгаагүй) шалтгаан нь: `rounded-[10px]`, `rounded-[16px]`
+   гэх мэт янз бүрийн утга кодод тарсан хэвээр байгаа тул тэдгээрийг
+   нэг утга руу барих зүйл хэрэгтэй. Устгавал булангийн хэмжээ дахин
+   арав орчим өөр утгад тархана.
+
+   Онцгой тохиолдол: `rounded-full` нь тойрог/шахмал хэлбэрээ хадгална
+   (аватар, чип, төлвийн цэг) — тэдгээр нь булан биш, хэлбэр өөрөө. */
+body:not(:has(.yuki-root)) [class*="rounded"] { border-radius: var(--r, 4px) !important; }
+body:not(:has(.yuki-root)) [class*="rounded-full"] { border-radius: 999px !important; }
+/* Радиусыг ЗОРИУД авах хэрэгтэй элементэд (ирмэг хүрсэн зураг, бүтэн
+   өргөний зурвас) — энэ ангийг өг. */
+body:not(:has(.yuki-root)) .radius-none,
+body:not(:has(.yuki-root)) [class*="rounded-none"] { border-radius: 0 !important; }
+
+/* ─── No cast shadows (§04): there is no light source in the night. Depth =
+   surface step + hairline. The only "shadow" is emitted tenger glow. */
 body:not(:has(.yuki-root)) [class*="shadow-"]:not([class*="shadow-none"]) {
   box-shadow: none !important;
 }
@@ -679,9 +757,9 @@ body:not(:has(.yuki-root)) .btn-neon:hover,
 body:not(:has(.yuki-root)) .btn-blood:hover { box-shadow: var(--glow) !important; }
 body:not(:has(.yuki-root)) .glow { box-shadow: var(--glow) !important; }
 
-/* ─── Focus: 2px signal ring, offset 2 (§04) */
+/* ─── Focus: 2px tenger ring, offset 2 (§04) */
 :focus-visible {
-  outline: 2px solid #1080CA;
+  outline: 2px solid #2E29FF;
   outline-offset: 2px;
 }
 
@@ -703,7 +781,7 @@ body:not(:has(.yuki-root)) .glow { box-shadow: var(--glow) !important; }
     0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px);
 }
 /* Static ramp — signature divider */
-.static-ramp { font-family: var(--font-mono); color: #5C5C64; letter-spacing: .2em; }
+.static-ramp { font-family: var(--font-mono); color: #E2E4E8; letter-spacing: .2em; }
 .static-ramp::before { content: "░▒▓█"; }
 
 /* ─── Machine layer (§06) — status chips ─── */
@@ -711,11 +789,11 @@ body:not(:has(.yuki-root)) .glow { box-shadow: var(--glow) !important; }
   display: inline-flex; align-items: center; gap: 6px;
   font-family: var(--font-mono); font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
-  padding: 4px 10px; border-radius: 999px; border: 1px solid #2E2E33;
+  padding: 4px 10px; border-radius: 4px; border: 1px solid #262626;
 }
-.chip-live { color: #1080CA; border-color: rgba(16,128,202,.4); }
-.chip-sync { color: #8C96A6; }
-.chip-archive { color: #84848C; }
+.chip-live { color: #2E29FF; border-color: rgba(46,41,255,.4); }
+.chip-sync { color: #E2E4E8; }
+.chip-archive { color: #E2E4E8; }
 
 /* ─── Numbers are data: tabular everywhere they appear ─── */
 body { font-variant-numeric: tabular-nums; }
@@ -728,3 +806,685 @@ body { font-variant-numeric: tabular-nums; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══ SOFT UTILITY LAYER ═══════════════════════════════════════════════════
+   Calm, utility-first, operational. Replaces the cyberpunk HUD treatment:
+   no glow, no scan-lines, no 0-radius "terminal" edges, no decorative rules.
+   Brand colour is unchanged — #2E29FF still carries every primary action.
+
+   RADIUS. The reference system specifies a 32/20/16/12 nesting ladder; the
+   brief specifies 10 px. 10 px wins, and the ladder is rebuilt around it so
+   nesting still reads: 10 outer, 8 inner, 6 micro, full for pills. A flat
+   10-everywhere would make a chip and a page card look like the same object.
+
+   These are utility classes rather than a component library because the app
+   has ~90 pages of existing Tailwind; a class an existing div can adopt is a
+   migration, a new <Card> is a rewrite. */
+:root {
+  --r-xs: 4px;    /* chips inside a control */
+  --r-sm: 4px;    /* nested / inner surfaces */
+  --r: 4px;      /* THE radius — cards, buttons, inputs, rows */
+  --r-lg: 4px;   /* page-level containers on desktop */
+  --r-full: 999px;
+
+  --line: rgba(255,255,255,0.10);      /* hairline, idle */
+  --line-strong: rgba(255,255,255,0.18);
+  --surface: #141416;
+  --surface-2: #141414;
+  --surface-hover: #141414;
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-12: 48px;
+
+  --h-compact: 36px; --h-std: 44px; --h-touch: 52px;
+}
+
+/* Surface before line (§2.1): the card is a surface, the border only clarifies
+   its edge. One elevation tier inside a card, never a shadow on everything. */
+.su-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: var(--sp-5);
+}
+@media (min-width: 768px) { .su-card { padding: var(--sp-6); border-radius: var(--r-lg); } }
+.su-card--flush { padding: 0; overflow: hidden; }
+
+/* Nested surface — always one tier smaller than its parent (§2.2). */
+.su-inner {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: var(--sp-4);
+}
+
+/* A whole row is the target, not the control inside it (§7.8). */
+.su-row {
+  display: flex; align-items: center; gap: var(--sp-3);
+  min-height: var(--h-std);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out);
+}
+.su-row:hover { background: var(--surface-hover); border-color: var(--line-strong); }
+.su-row[aria-selected="true"], .su-row[data-selected="true"] {
+  border-color: var(--color-accent);
+  background: rgba(46,41,255,0.08);
+}
+
+/* Controls that sit beside each other share a height (§2.3). */
+.su-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  height: var(--h-std); padding: 0 18px;
+  border-radius: var(--r); border: 1px solid transparent;
+  font-size: 14px; font-weight: 600; line-height: 1;
+  cursor: pointer; white-space: nowrap;
+  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out),
+              color 140ms var(--ease-out);
+}
+.su-btn--primary { background: var(--color-accent); color: #0A0A0A; }
+.su-btn--primary:hover { background: #1F1AD9; }
+/* Хүрээгүй: хоёрдогч товч нь гадаргуугаараа товч болно, зураасаараа биш. */
+.su-btn--secondary { border-color: transparent; color: var(--color-foreground); background: var(--surface-2); }
+.su-btn--secondary:hover { background: var(--surface-hover); color: var(--color-accent); }
+.su-btn--ghost { color: var(--color-muted); background: transparent; }
+.su-btn--ghost:hover { color: var(--color-foreground); background: var(--surface-hover); }
+.su-btn--lg { height: var(--h-touch); padding: 0 24px; font-size: 15px; }
+.su-btn--sm { height: var(--h-compact); padding: 0 14px; font-size: 13px; }
+.su-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 44×44 minimum target, always — including when the glyph is 20px (§13). */
+.su-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--h-std); height: var(--h-std);
+  border-radius: var(--r); border: 0;
+  color: var(--color-muted); background: var(--surface-2);
+  transition: color 140ms var(--ease-out), border-color 140ms var(--ease-out),
+              background 140ms var(--ease-out);
+}
+.su-iconbtn:hover { color: var(--color-foreground); background: var(--surface-hover); }
+
+.su-field {
+  width: 100%; height: var(--h-std);
+  padding: 0 var(--sp-4);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--color-foreground); font-size: 15px;
+  transition: border-color 140ms var(--ease-out);
+}
+.su-field::placeholder { color: var(--color-dim); }
+.su-field:focus { outline: none; border-color: var(--color-accent); }
+@media (max-width: 767px) { .su-field, .su-btn { height: var(--h-touch); } }
+
+.su-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 12px;
+  border-radius: var(--r-full);
+  font-size: 12.5px; font-weight: 600; line-height: 1;
+  border: 1px solid var(--line);
+  color: var(--color-muted);
+}
+.su-badge--accent { color: var(--color-accent); border-color: rgba(46,41,255,.32); background: rgba(46,41,255,.10); }
+.su-badge--warn { color: #d9a441; border-color: rgba(217,164,65,.32); background: rgba(217,164,65,.10); }
+
+/* Section label. Replaces the old ///// rule — a label, not a decoration. */
+.su-overline {
+  font-size: 12px; font-weight: 700; line-height: 16px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--color-dim);
+}
+
+/* Keyboard focus must always be visible (§13). */
+.su-btn:focus-visible, .su-iconbtn:focus-visible, .su-row:focus-visible, .su-field:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px;
+}
+
+/* Reading measure — body text stops at ~70 characters (§5.3). */
+.su-prose { max-width: 68ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .su-row, .su-btn, .su-iconbtn, .su-field { transition: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   INTRO SPLASH — brand wordmark on full page load, then auto-fades.
+   Pure CSS on purpose: it self-dismisses even if JS never runs, so a
+   stalled bundle can never strand a user behind a permanent overlay.
+   Lives in the root layout, which Next keeps mounted — so it fires on
+   first paint / refresh only, not on client-side route changes.
+   ════════════════════════════════════════════════════════════════════ */
+.intro-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0A0A0A;
+  pointer-events: none;              /* never trap a click, even mid-animation */
+  animation: intro-veil 1450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-splash__mark {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  /* "ANTAQOR" (7 латин үсэг) → "Ирээдүйг эзэл" (13 кирилл тэмдэгт).
+     0.34em зай нь богино нэг үгэнд тохирсон байв; урт хэллэгт тэр нь
+     утсан дэлгэцээс халина. Зай багасаж, хэмжээ нь vw-ээр илүү уян
+     болов — хоёр үг нэг мөрөнд багтана. */
+  font-size: clamp(30px, 9vw, 64px); /* 2026-10-11: "Antaqor" (7 үсэг) — дахин томсгов */
+  letter-spacing: 0.12em;
+  text-indent: 0.12em;               /* offset trailing letter-space, keeps it optically centred */
+  text-align: center;
+  padding: 0 20px;
+  color: #2E29FF;
+  animation: intro-mark 1450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* hold ~1s, then fade the veil out */
+@keyframes intro-veil {
+  0%, 69%  { opacity: 1; }
+  100%     { opacity: 0; visibility: hidden; }
+}
+
+@keyframes intro-mark {
+  0%   { opacity: 0; transform: scale(0.94); letter-spacing: 0.04em; }
+  26%  { opacity: 1; transform: scale(1);    letter-spacing: 0.12em; }
+  69%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.015); }
+}
+
+/* /yuki salon is intentionally light — no dark veil there */
+body:has(.yuki-root) .intro-splash { display: none; }
+
+/* respect reduced-motion: no intro at all rather than a jarring flash */
+@media (prefers-reduced-motion: reduce) {
+  .intro-splash { display: none; }
+}
+
+/* ─── Нүүрний hero хавтангийн үл хамаарах зүйл ──────────────────────────
+   Дээрх §03 (радиус 0 хаа сайгүй) дүрэм нь сайтын ИНТЕРФЭЙСЭД зориулагдсан
+   — карт, товч, талбар. Нүүрний hero нь интерфэйсийн карт биш: хар дэвсгэр
+   дээр тавьсан, гадуураа гэрэлтэлттэй зурагт хавтан. Тиймээс тэр дүрмийг
+   ЗӨВХӨН энэ нэг элемент дээр, нэрээр нь дуудаж сулруулна — сайтын
+   стандарт --r (4px) руу. §03 нь 0 болгодог тул 4px-ийг ингэж нэрлэхээс
+   өөр аргаар авч чадахгүй.
+   §03 дүрмийг ӨӨРИЙГ нь бүү өөрчил — тэр 1300+ элемент барьж байгаа. */
+body:not(:has(.yuki-root)) .hero-panel { border-radius: 4px !important; }
+
+/* ─── §05 Товч хүрээ зүүхгүй (2026-08-17) ────────────────────────────────
+   §03 (радиус 0) ба §04 (сүүдэргүй)-ийн үргэлжлэл: товч бол ГАДАРГУУ, зурсан
+   хүрээ биш. Хүрээ нь зөвхөн төлөв дамжуулах үедээ зөвтгөгдөнө — тиймээс
+   focus-ийн цагираг үлдэнэ (доорх :focus-visible нь outline, border биш тул
+   энэ дүрэмд хамаарахгүй).
+
+   ЗААВАЛ ХАМТ ЯВАХ ЗҮЙЛ: хүрээг авахдаа оронд нь дүүргэлт тавь. Хүрээ нь
+   тухайн товчийн ЦОРЫН ГАНЦ харагдах хэлбэр байсан бол зүгээр л border: 0
+   бичих нь товчийг үзэгдэхгүй болгоно. admin/kit.tsx-ийн secondary/ghost/
+   danger, .su-btn--secondary, .su-iconbtn бүгд гадаргуутай болсон.
+
+   button ба [role="button"]-д хамаарна. Дотор нь байгаа элементэд хамаарахгүй
+   (сонгогч нь товчийг өөрийг л заана) — үүний ачаар Btn-ийн loading spinner
+   `border-2 border-current border-t-transparent`-ээр эргэсээр байна. */
+body:not(:has(.yuki-root)) button,
+body:not(:has(.yuki-root)) [role="button"] { border-width: 0 !important; }
+
+/* ─── Хажуугийн цэсний өнгө — токен болгож гаргасан ─────────────────────
+   SideNav эдгээрийг л уншина. Гэрэл/харанхуй горим нэмэхэд зөвхөн энэ
+   дөрвөн утгыг сольвол цэс бүхэлдээ дагана — компонент хөндөхгүй. */
+:root {
+  /* ─── CHROME (сайтын дээд/доод мөр) ───────────────────────────────
+     Navbar, BottomBar, CreateSheet гурвуулаа `var(--chrome-bg, …)` гэж
+     дууддаг байсан ч ЭНЭ ХУВЬСАГЧ ХААНА Ч ТОДОРХОЙЛОГДООГҮЙ байв —
+     өөрөөр хэлбэл зөвхөн fallback нь (цэвэр хар) ажиллаж, хуудас
+     #0A0A0A болсны дараа chrome нь тусдаа хар зурвас болж харагдаж
+     байлаа. Одоо хуудасны өнгийг тунгалагаар дагана: blur-тай хослоод
+     доогуур гүйх агуулга мэдрэгдэх ч өнгө нь нэг гэр бүл хэвээр. */
+  --chrome-bg: rgba(22, 22, 24, 0.88);
+  --chrome-line: #262626;
+
+  --nav-fg: #E2E4E8;
+  --nav-fg-strong: #FFFFFF;
+  --nav-hover-bg: #141414;
+  --nav-active-bg: rgba(46,41,255, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ANTAQOR DESIGN TOKENS (2026-08-31)
+   ───────────────────────────────────────────────────────────────────────
+   Нэг дэлгэц дээр ижил зүйл ижил харагдах ганц эх сурвалж. Энэ блок нь
+   ГЕОМЕТР — зай, радиус, өндөр, үсгийн хэмжээ. Өнгө энд БАЙХГҮЙ: өнгө нь
+   cohesion давхарга (дээр) ба theme-light.css-ийн ажил бөгөөд горимоос
+   хамаарна. Геометр горимоос хамаардаггүй тул энэ бүхэн scope-гүй.
+
+   Яагаад Tailwind-ийн шатлал хангалтгүй вэ: Tailwind-д `mt-5` ба `mt-6`
+   хоёулаа хууль ёсны — тиймээс нэг хуудсанд 20px, дараагийнх нь 24px
+   болж, ямар ч алдаа заахгүйгээр хэмнэл алдагдана. Энд долоон утга л
+   байна; өөр утга бичих гэж байвал энэ жагсаалтыг өөрчлөх ёстой. */
+:root {
+  /* Зай — 4-ийн үржвэр, долоон шат. Үүнээс өөр зай гаргаж болохгүй. */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* Радиус — `--r` (4px) нь §03-д аль хэдийн үндсэн утга. Хоёр дахь утга
+     нь ЗӨВХӨН хөвөгч элементэд (dock, modal, toast) — газраас тасарсан
+     зүйл л илүү зөөлөн буланд эрхтэй. */
+  --r-float: 8px;
+
+  /* Хүрэх өндөр — гурван л хэмжээ. */
+  --h-compact: 40px;   /* чип, хоёрдогч товч */
+  --h-standard: 48px;  /* талбар, жагсаалтын мөр */
+  --h-cta: 56px;       /* хуудасны үндсэн үйлдэл */
+
+  /* Системийн давхарга. Доод цэс агуулгыг ХЭЗЭЭ Ч халхлахгүй — хуудасны
+     доод зай үүнээс тооцогдоно (--sp-5 нь амьсгал). */
+  --nav-h: 64px;
+  --nav-safe: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Үсгийн шатлал ─────────────────────────────────────────────────────
+   Долоон үүрэг, долоон хэмжээ. Монгол бичвэр англиас 20–30% урт болдог
+   тул мөр хоорондын зай англи UI-гийнхаас өгөөмөр: бие 1.55, гарчиг
+   1.15–1.3. Шахсан мөр нь кирилл дээр шууд уншигдахгүй болдог. */
+.t-meta    { font-size: 12px;   line-height: 1.4;  letter-spacing: 0.01em; }
+.t-sec     { font-size: 14px;   line-height: 1.5; }
+.t-body    { font-size: 16px;   line-height: 1.55; }
+.t-h3      { font-size: 20px;   line-height: 1.3;  font-weight: 700; letter-spacing: -0.012em; }
+.t-h2      { font-size: 24px;   line-height: 1.25; font-weight: 700; letter-spacing: -0.018em; }
+.t-h1      { font-size: 32px;   line-height: 1.18; font-weight: 800; letter-spacing: -0.024em; }
+.t-display { font-size: 48px;   line-height: 1.05; font-weight: 800; letter-spacing: -0.032em; }
+
+/* Уншигдах хамгийн их өргөн. Монгол урт үгтэй тул мөрөнд 60–70 тэмдэгт
+   орох нь дээд хязгаар — түүнээс урт мөр нүд буцаж олохгүй болно. */
+.t-measure { max-width: 62ch; }
+
+/* ─── Хэмнэл ────────────────────────────────────────────────────────────
+   Хуудасны шатлалыг ХҮРЭЭ биш ЗАЙ үүсгэнэ. Дөрвөн л алслалт байна:
+   hero → 32, хэсэг → 48, зүйл → 16, хамаатан зүйл → 8. */
+.stack-hero    > * + * { margin-top: var(--sp-6); }
+.stack-section > * + * { margin-top: var(--sp-7); }
+.stack-item    > * + * { margin-top: var(--sp-4); }
+.stack-tight   > * + * { margin-top: var(--sp-2); }
+
+/* ─── Хөвөгч гадаргуу ───────────────────────────────────────────────────
+   §03 нь бүх буланг 4px болгодог. Газраас тасарсан цөөн элемент (доод
+   цэс, toast) 8px эрхтэй — тэдэнд НЭРЭЭР нь өгнө, дүрмийг нь сулруулахгүй. */
+body:not(:has(.yuki-root)) .r-float { border-radius: var(--r-float) !important; }
+
+/* ─── Микро-хариу үйлдэл ────────────────────────────────────────────────
+   Дарагдсаныг мэдрүүлэх нь чимэглэл биш — хүрсэн эсэхийг хэлж буй ГАНЦ
+   баталгаа (гар утсанд hover гэж байхгүй). 0.96 нь харагдана, гэхдээ
+   байрлалыг нь хөдөлгөхгүй. */
+.press { transition: transform 120ms cubic-bezier(0.2, 0, 0, 1); }
+.press:active { transform: scale(0.96); }
+
+/* Хуудас хоорондын шилжилтийн стандарт хугацаа — 150–200ms. */
+.t-fast { transition-duration: 150ms; }
+.t-base { transition-duration: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active { transform: none; }
+}
+
+/* ─── Ачаалалтын араг яс ────────────────────────────────────────────────
+   Хоосон дэлгэц биш, ирэх агуулгын хэлбэр. Өнгө нь одоогийн горимын
+   гадаргуугаас урсана — тиймээс хоёр горимд ажиллана. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 10%, transparent),
+    transparent
+  );
+  animation: skeletonSweep 1.4s ease-in-out infinite;
+}
+@keyframes skeletonSweep { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}
+
+/* ─── Брэндийн скелетон ────────────────────────────────────────────────
+   Энгийн `.skeleton` нь `currentColor`-оор саарал долгион гүйлгэдэг —
+   аль ч сайт дээр байж болох "хүлээж байна" гэсэн ерөнхий дохио.
+   Ачаалах агшин бол хэрэглэгчийн ХАМГИЙН ЭХНИЙ сэтгэгдэл: тэнд брэнд
+   байхгүй бол хуудас эзэнгүй мэт эхэлнэ. Энэ хувилбар нь Antaqor-ын
+   өнгөөр амьсгалж, долгион нь тодхон гүйнэ. */
+.skeleton-brand {
+  position: relative;
+  overflow: hidden;
+  background: rgba(46,41,255, 0.07);
+  animation: skelBreath 2.2s ease-in-out infinite;
+}
+.skeleton-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(46,41,255, 0.18),
+    transparent
+  );
+  animation: skeletonSweep 1.5s ease-in-out infinite;
+}
+@keyframes skelBreath {
+  0%, 100% { background-color: rgba(46,41,255, 0.06); }
+  50%      { background-color: rgba(46,41,255, 0.11); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-brand { animation: none; }
+  .skeleton-brand::after { animation: none; }
+}
+
+/* ─── XP-ийн мэдэгдэл ───────────────────────────────────────────────────
+   Antaqor-ийн гарын үсэг: юм бүтээх бүрд дэлгэцийн доод талд богино
+   баталгаа гарч ирнэ. Доод цэсний ДЭЭР сууна (--nav-h), тэгэхгүй бол
+   цэсэн доор орж алга болно. */
+@keyframes xpToastIn {
+  0%   { opacity: 0; transform: translate3d(-50%, 14px, 0) scale(0.96); }
+  100% { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+}
+@keyframes xpToastOut {
+  0%   { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(-50%, -8px, 0) scale(0.98); }
+}
+
+/* Доод цэс нь ХӨВӨГЧ бүлүүр байхаа больж, ирмэгээс ирмэг хүрсэн системийн
+   давхарга болсон (BottomBar.tsx). Өдрийн горимд гүнийг сүүдрээр илэрхийлдэг
+   тул сүүдрийн ЧИГЛЭЛ өөрчлөгдөнө: доошоо биш, ДЭЭШЭЭ — доор нь дэлгэцийн
+   ирмэг байна, унах зай алга. theme-light.css нь өөрөө үүсгэгддэг файл тул
+   тэрхүү дүрмийг эндээс дарж бичив (энэ файл түүнийг импортолсны ДАРАА
+   уншигддаг, ижил жинтэй сонгогч сүүлд бичигдсэн нь ялна). */
+:root[data-theme="light"] .app-chrome-dock {
+  box-shadow: 0 -6px 24px -14px rgba(23, 23, 26, 0.22);
+}
+
+
+/* ─── ГЭРЭЛТ ДҮҮРГЭЛТ ДЭЭРХ БИЧИГ VOID БАЙНА ────────────────────────────
+   Signal болон Outer Glow нь ГЭРЭЛТЭЙ тул тэдгээр дээр цайвар бичиг
+   уншигдахгүй:
+
+     цагаан / #2E29FF =  1.61:1   (бараг үл үзэгдэнэ)
+     Void   / #2E29FF = 12.53:1   (зөв)
+     цагаан / #1F1AD9 =  4.00:1   (сул)
+     Void   / #1F1AD9 =  5.04:1   (зөв)
+
+   CONQUEROR (#1E1E1E) ЭНД ЗОРИУД ОРООГҮЙ. Тэр нь ХАРАНХУЙ дүүргэлт:
+     Void   / #1E1E1E =  1.82:1   (үл үзэгдэнэ)
+     цагаан / #1E1E1E = 11.10:1   (зөв)
+   Түүн дээрх бичиг цайвар хэвээр байх ёстой бөгөөд доорх cohesion
+   давхарга (мөр ~624) түүнийг өөрөө хийнэ — энд гар хүрэхгүй.
+
+   ЯАГААД ИЙМ УРТ СОНГОГЧ: тэр cohesion давхарга
+   `html:not([data-theme="light"]) body:not(:has(.yuki-root)) .text-white`
+   гэж бичигдэж `color:#F2F2F4 !important` тавьдаг. Хоёулаа `!important`
+   тул specificity шийднэ — тиймээс угтварыг нь ДАГАЖ, дээр нь дэвсгэрийн
+   ангийг нэмж давуулна.
+
+   Бүдэг дэвсгэр (`bg-[#2E29FF]/10` гэх мэт) ЭНД ОРОХГҮЙ — тэнд Void
+   суурь тодорч харагддаг тул цайвар бичиг зөв хэвээр. */
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\].text-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\] .text-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\][class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\] [class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\][class*="text-[#FFFFFF]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\] [class*="text-[#FFFFFF]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\][class*="text-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\] [class*="text-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\].text-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\] .text-white,
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\][class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\] [class*="text-white" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\][class*="text-[#FFFFFF]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\] [class*="text-[#FFFFFF]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\][class*="text-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\] [class*="text-[#F2F2F4]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\][class*="text-[#0A0A0A]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#2E29FF\] [class*="text-[#0A0A0A]" i],
+html:not([data-theme="light"]) body:not(:has(.yuki-root)) .bg-\[\#1F1AD9\][class*="text-[#0A0A0A]" i] {
+  color: #FFFFFF !important; /* 2026-10-13: улаан брэнд — цагаан бичиг */
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §12 — RED SIGNAL БРЭНД (2026-10-13, эзний шийдвэр)
+   Мэдрэмж: аюул, яаралтай байдал, хяналтгүй эрч.
+     #2E29FF  брэнд / signal CTA   (цагаан бичиг 4.4:1)
+     #1F1AD9  hover / гүн CTA      (цагаан 6.4:1)
+     #FCEE0A  label chip, хүрээ, hazard stripe, дүрийн дэвсгэр (бараан бичиг 15.9:1)
+     #0A0A0A -> #1E1E1E  тогтмол anchor суурь (градиент)
+   Цагаан/саарал дэвсгэр БАЙХГҮЙ — өдрийн горим унтарсан (layout.tsx clock = dark).
+   ══════════════════════════════════════════════════════════════════════════ */
+html { background-color: #0A0A0A; color-scheme: dark; }
+body {
+  background: #0A0A0A !important; /* 2026-10-19: цэвэр хар */
+  background-color: #0A0A0A !important;
+}
+/* Hazard stripe — бүх хуудасны дээд ирмэг (3px). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  z-index: 70;
+  pointer-events: none;
+  background: repeating-linear-gradient(-45deg, #FCEE0A 0 10px, #0A0A0A 10px 20px);
+}
+.hazard-stripe { background: repeating-linear-gradient(-45deg, #FCEE0A 0 10px, #0A0A0A 10px 20px); }
+.chip-signal { background: #FCEE0A; color: #0A0A0A; font-weight: 800; border-radius: 4px; }
+.frame-signal { border: 1px solid #FCEE0A; }
+
+/* ══ 2026-10-18 — ADMIN: хар/цагаан minimal ══════════════════════════════
+   Админ бүхэлдээ: хар суурь, цагаан үндсэн үйлдэл, саарал хоёрдогч. Өнгө
+   зөвхөн жижиг төлөвийн дохионд (ногоон = зөв, улаан = алдаа). `class~=` нь
+   ЯГ тэр токеныг (hover: хувилбаргүйгээр) тааруулна — зөвхөн hover дээр улаан
+   болдог товч байнга цагаан болохгүй. Inline style-ийн 4 өнгийг ч доор. */
+html:not([data-theme="light"]) body:has(.adm-mono){background:#0A0A0A!important}html:not([data-theme="light"]) body:has(.adm-mono)::before,html:not([data-theme="light"]) body:has(.adm-mono)::after{display:none!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono:not(#_a):not(#_b){background:#0A0A0A;color:#EDEDED;--adm-line:rgba(255,255,255,.09)}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#0A0A0A]"]:not(#_a):not(#_b){background-color:#0B0B0C!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#0A0A0A]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#141414]"]:not(#_a):not(#_b){background-color:#141416!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#141414]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#1E1E1E]"]:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#1E1E1E]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#111111]"]:not(#_a):not(#_b){background-color:#121214!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#111111]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#101010]"]:not(#_a):not(#_b){background-color:#111113!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#101010]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#0C0C0C]"]:not(#_a):not(#_b){background-color:#0E0E10!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#0C0C0C]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#080808]"]:not(#_a):not(#_b){background-color:#0B0B0C!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#080808]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#262626]"]:not(#_a):not(#_b){background-color:#232326!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#262626]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#0C3050]"]:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#0C3050]"]:hover:not(#_a):not(#_b){background-color:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#2E29FF]"]:not(#_a):not(#_b){background-color:#FAFAFA!important;color:#0A0A0A!important;border-color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#2E29FF]"]:hover:not(#_a):not(#_b){background-color:#FFFFFF!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#1F1AD9]"]:not(#_a):not(#_b){background-color:#FAFAFA!important;color:#0A0A0A!important;border-color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#1F1AD9]"]:hover:not(#_a):not(#_b){background-color:#FFFFFF!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#FF3D69]"]:not(#_a):not(#_b){background-color:#FAFAFA!important;color:#0A0A0A!important;border-color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#FF3D69]"]:hover:not(#_a):not(#_b){background-color:#FFFFFF!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[#1F1AD9]"]:not(#_a):not(#_b){background-color:#FAFAFA!important;color:#0A0A0A!important;border-color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[#1F1AD9]"]:hover:not(#_a):not(#_b){background-color:#FFFFFF!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#2E29FF]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#2E29FF]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#4C47FF]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#4C47FF]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#F87171]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#F87171]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#FCEE0A]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#FCEE0A]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#FFD300]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#FFD300]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#FF8A8F]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#FF8A8F]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#FBBF24]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#FBBF24]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#FB923C]"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:text-[#FB923C]"]:hover:not(#_a):not(#_b){color:#FFFFFF!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#2E29FF]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.28)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:border-[#2E29FF]"]:hover:not(#_a):not(#_b){border-color:rgba(255,255,255,.4)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#1F1AD9]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.28)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:border-[#1F1AD9]"]:hover:not(#_a):not(#_b){border-color:rgba(255,255,255,.4)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#FCEE0A]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.28)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:border-[#FCEE0A]"]:hover:not(#_a):not(#_b){border-color:rgba(255,255,255,.4)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#1E1E1E]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.08)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#262626]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.08)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#141414]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.08)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[#0C3050]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,.08)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.04)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.022)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.04)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.032)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.04)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.096)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.04)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.024)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.06)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.033)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.06)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.048)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.06)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.114)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.06)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.036)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.08)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.044)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.08)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.064)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.08)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.132)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.08)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.048)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.1)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.055)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.1)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.08)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.1)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.15)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.1)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.06)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.12)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.066)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.12)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.096)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.12)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.168)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.12)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.072)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.14)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.077)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.14)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.112)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.14)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.186)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.14)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.084)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.15)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.083)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.15)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.12)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.15)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.195)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.15)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.09)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.2)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.11)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.2)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.16)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.2)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.24)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.2)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.12)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.25)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.138)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.25)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.2)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.25)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.285)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.25)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.15)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.3)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.165)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.3)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.24)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.3)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.33)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.3)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.18)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.35)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.193)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.35)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.28)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.35)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.35)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.35)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.21)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.4)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.22)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.4)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.32)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.4)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.35)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.4)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.24)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(46,41,255,0.5)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.275)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="hover:bg-[rgba(46,41,255,0.5)]"]:hover:not(#_a):not(#_b){background-color:rgba(255,255,255,0.4)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="border-[rgba(46,41,255,0.5)]"]:not(#_a):not(#_b){border-color:rgba(255,255,255,0.35)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="bg-[rgba(0,100,145,0.5)]"]:not(#_a):not(#_b){background-color:rgba(255,255,255,0.3)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#0A0A0A]"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="text-[#140F05]"]:not(#_a):not(#_b){color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="accent-[#2E29FF]"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono input[type=checkbox]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono input[type=radio]:not(#_a):not(#_b){accent-color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="ring-[#2E29FF]"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="focus:ring-[#FCEE0A]"]:focus:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class~="focus:border-[#1F1AD9]"]:focus:not(#_a):not(#_b){--tw-ring-color:#FAFAFA!important;border-color:rgba(255,255,255,.45)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class*="from-[rgba(229,48,60"]:not(#_a):not(#_b){--tw-gradient-from:rgba(255,255,255,.04) var(--tw-gradient-from-position)!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class*="shadow-[0_0_28px_rgba(229,48,60"],html:not([data-theme="light"]) .adm-mono [class*="shadow-[0_8px_20px_rgba(229"]:not(#_a):not(#_b){box-shadow:none!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style^="color: rgb(46, 41, 255)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="; color: rgb(46, 41, 255)"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background: rgb(46, 41, 255)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background-color: rgb(46, 41, 255)"]:not(#_a):not(#_b){background:#FAFAFA!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style^="color: rgb(31, 26, 217)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="; color: rgb(31, 26, 217)"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background: rgb(31, 26, 217)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background-color: rgb(31, 26, 217)"]:not(#_a):not(#_b){background:#FAFAFA!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="color: rgb(30, 30, 30)"]:not([style*="background"]):not(#_a):not(#_b){color:#EDEDED!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background: rgb(30, 30, 30)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background-color: rgb(30, 30, 30)"]:not(#_a):not(#_b){background:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="color: rgb(20, 20, 20)"]:not([style*="background"]):not(#_a):not(#_b){color:#EDEDED!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background: rgb(20, 20, 20)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background-color: rgb(20, 20, 20)"]:not(#_a):not(#_b){background:#1C1C1F!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style^="color: rgb(252, 238, 10)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="; color: rgb(252, 238, 10)"]:not(#_a):not(#_b){color:#FAFAFA!important}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background: rgb(252, 238, 10)"]:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [style*="background-color: rgb(252, 238, 10)"]:not(#_a):not(#_b){background:#FAFAFA!important;color:#0A0A0A!important}
+html:not([data-theme="light"]) .adm-mono ::selection{background:#FAFAFA;color:#0A0A0A}
+html:not([data-theme="light"]) .adm-mono ::-webkit-scrollbar{width:8px;height:8px}html:not([data-theme="light"]) .adm-mono ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}.adm-mono ::-webkit-scrollbar-track{background:transparent}
+/* ── хөдөлгөөн: хуудас орж ирэх, агуулга дараалан, hover/press ── */
+@keyframes admIn{from{opacity:0;transform:translate3d(0,10px,0);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.adm-page{animation:admIn .45s cubic-bezier(.16,.84,.24,1) both}
+.adm-page>div>*{animation:admIn .55s cubic-bezier(.16,.84,.24,1) both}
+.adm-page>div>*:nth-child(1){animation-delay:85ms}
+.adm-page>div>*:nth-child(2){animation-delay:130ms}
+.adm-page>div>*:nth-child(3){animation-delay:175ms}
+.adm-page>div>*:nth-child(4){animation-delay:220ms}
+.adm-page>div>*:nth-child(5){animation-delay:265ms}
+.adm-page>div>*:nth-child(6){animation-delay:310ms}
+.adm-page>div>*:nth-child(7){animation-delay:355ms}
+.adm-page>div>*:nth-child(8){animation-delay:400ms}
+.adm-page>div>*:nth-child(9){animation-delay:445ms}
+.adm-page>div>*:nth-child(10){animation-delay:490ms}
+.adm-page>div>*:nth-child(n+11){animation-delay:500ms}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono a:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono button:not(#_a):not(#_b){transition:background-color .18s ease,border-color .18s ease,color .18s ease,transform .18s cubic-bezier(.2,.7,.2,1),opacity .18s ease}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono button:not(:disabled):active:not(#_a):not(#_b),html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono a:active:not(#_a):not(#_b){transform:scale(.975)}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono a[class*="rounded-[1"]:hover,.adm-mono button[class*="rounded-[1"]:not(:disabled):hover:not(#_a):not(#_b){transform:translateY(-1px)}
+html:not([data-theme="light"]) body .adm-mono.adm-mono.adm-mono [class*="animate-pulse"]:not(#_a):not(#_b){animation:admShim 1.4s ease-in-out infinite!important}
+@keyframes admShim{0%,100%{opacity:.5}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.adm-page,.adm-page>div>*{animation:none!important}.adm-mono a,.adm-mono button{transition:none!important}}
+
+
+/* ══ 2026-10-19 BLUE-TEXT-GUARD ══════════════════════════════════════════
+   #2E29FF нь БАРААН цэнхэр: хар дээр текст болбол 2.05:1 (уншигдахгүй).
+   Дүүргэлт/хүрээнд #2E29FF, текстэд #2E29FF (6.0:1). JS-ийн нэг тогтмол
+   (NEON) хоёуланд нь хэрэглэгддэг тул inline `color` болсон үед энд засна. */
+body [style*="color: rgb(46, 41, 255)"]:not([style*="background"]):not(#_){color:#2E29FF!important}
+body [style*="color:#2E29FF" i]:not([style*="background"]):not(#_){color:#2E29FF!important}
+html body{background:#0A0A0A!important;background-image:none!important}
+
+
+/* ══ 2026-10-19 BLUE-FILL-TEXT ═══════════════════════════════════════════
+   Улаан үед зарим товч бараан тексттэй байсан (text-[#1E070C] → #0A0A0A).
+   #2E29FF дээр хар текст 2:1 — уншигдахгүй. Цэнхэр дүүргэлт → ЦАГААН текст (9.7:1). */
+body [class~="bg-[#2E29FF]"]:not(#_),body [class~="bg-[#1F1AD9]"]:not(#_),
+body [class~="bg-[#2E29FF]"] [class~="text-[#0A0A0A]"]:not(#_),body [class~="bg-[#2E29FF]"] [class~="text-[#111111]"]:not(#_),
+body [style*="background: rgb(46, 41, 255)"]:not(#_),body [style*="background-color: rgb(46, 41, 255)"]:not(#_),
+body [style*="background:#2E29FF" i]:not(#_){color:#FFFFFF!important}
+body [class~="hover:bg-[#1F1AD9]"]:hover:not(#_),body [class~="hover:bg-[#2E29FF]"]:hover:not(#_){color:#FFFFFF!important}
+body [class~="bg-[#2E29FF]"] svg:not(#_){color:inherit}
+
+
+/* ═══ trader.antaqor.com (2026-11-01) ═══
+   Tesla Trader өөрийн бүрхүүлтэй бие даасан апп: сайтын Navbar / SideNav /
+   BottomBar / Footer / sheet-ууд энд харагдахгүй. data-host-ийг layout-ийн
+   THEME_CLOCK скрипт анхны зурагдалтаас өмнө тавьдаг. */
+.site-chrome { display: contents; }
+html[data-host="trader"] .site-chrome,
+html[data-host="trader"] .intro-splash,
+html[data-host="trader"] [data-shell="sidebar"] > :not(main) { display: none !important; }
+html[data-host="trader"], html[data-host="trader"] body { background: #000 !important; }
+html[data-host="trader"] [data-shell="sidebar"],
+html[data-host="trader"] [data-shell="sidebar"] > main { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+html[data-host="trader"] body::before { display: none !important; }
+html[data-host="trader"] main button[type="submit"] { background: #39FF88 !important; color: #000 !important; box-shadow: 0 0 28px -8px rgba(57,255,136,.7) !important; }
+html[data-host="trader"] main input:focus { border-color: #39FF88 !important; box-shadow: 0 0 0 1px #39FF88 !important; }
+
+/* studio.antaqor.com (2026-11-01) — AI Studio (= /content-agent) өөрийн хажуугийн/доод цэстэй */
+html[data-host="studio"] .site-chrome,
+html[data-host="studio"] .intro-splash,
+html[data-host="studio"] body::before,
+html[data-host="studio"] [data-shell="sidebar"] > :not(main) { display: none !important; }
+html[data-host="studio"] [data-shell="sidebar"],
+html[data-host="studio"] [data-shell="sidebar"] > main { max-width: none !important; padding: 0 !important; margin: 0 !important; }

@@ -1,20 +1,29 @@
-// ─── AI chat credit gate ─────────────────────────────────────────────────
+// ─── AI chat gate ────────────────────────────────────────────────────────
 // Single source of truth for "can this user send another AI message right now?"
 //
-// Free tier: FREE_PER_DAY messages/day per logged-in user. After that, 1 credit
-// per message via spendCredits(). Active /clan subscribers (and admins) bypass
-// the gate entirely. Guests are gated upstream by lifetime cap, not credits.
+// 2026-08-26 — ҮНЭГҮЙ КВОТ УСТСАН. Өмнө нь нэвтэрсэн хүн өдөрт 5 үнэгүй
+// мессеж авдаг байв. Сайт бүхэлдээ төлбөрт шилжсэн тул одоо ганц л асуулт
+// байна: энэ хүн эрхтэй юу? (идэвхтэй захиалга, эсвэл шилжилтийн 7 хоногийн
+// түр эрх — `accessState`-г үз).
+//
+// Тоолуурын түүх (CreditTx) ХЭВЭЭР бичигдэнэ: хэрэглээг харах нь эрхээс
+// тусдаа хэрэгцээ бөгөөд /admin дээрх тайлангууд түүнээс уншдаг.
 
 import dbConnect from "@/lib/mongodb";
 import CreditTx from "@/models/CreditTx";
 import User from "@/models/User";
 import { refundCredits } from "@/lib/credits";
-import { isActiveMember } from "@/lib/membership";
+import { accessState } from "@/lib/membership";
 
-export const AI_FREE_PER_DAY = 5;
-export const AI_COST_PER_MESSAGE = 1;
+// Үнэгүй квот байхгүй. Экспортыг үлдээсэн шалтгаан: хариултын биед
+// `freeCap` талбараар явдаг тул консюмерууд эвдрэхгүй. Утга нь 0 —
+// худал 5 гэж хэлэхээс дээр.
+export const AI_FREE_PER_DAY = 0;
+export const AI_COST_PER_MESSAGE = 100; // 2026-10-26: 1 кр = 1₮
 
-export type AiReason = "AI_BUDJARGAL_MSG" | "AI_COMPANION_MSG";
+// AI_SCOUT_MSG — Korean Food Scout. Тусдаа тоолуур зохиосонгүй: хоёр өөр
+// газар өдрийн хязгаарыг өөрөөр тоолж эхэлбэл аль нэг нь худал болно.
+export type AiReason = "AI_BUDJARGAL_MSG" | "AI_COMPANION_MSG" | "AI_SCOUT_MSG";
 
 export interface AiGateOk {
   ok: true;
@@ -28,19 +37,14 @@ export interface AiGateOk {
 export interface AiGateBlocked {
   ok: false;
   charged: false;
-  reason: "INSUFFICIENT_CREDITS";
+  reason: "NEEDS_MEMBERSHIP";
+  needsMembership: true;
   balance: number;
   required: number;
   freeUsedToday: number;
   freeRemainingToday: 0;
 }
 export type AiGateResult = AiGateOk | AiGateBlocked;
-
-function startOfTodayUtc(): Date {
-  const d = new Date();
-  d.setUTCHours(0, 0, 0, 0);
-  return d;
-}
 
 export async function gateAiMessage(args: {
   userId: string;
@@ -51,63 +55,48 @@ export async function gateAiMessage(args: {
   const { userId, email, reason, ref } = args;
   await dbConnect();
 
-  // 1. Active member → bypass entirely.
-  if (await isActiveMember(userId, email || null)) {
-    const balUser = await User.findById(userId).select("credits").lean();
-    const balance = (balUser as unknown as { credits?: number } | null)?.credits || 0;
+  const access = await accessState(userId, email || null);
+  if (!access.ok) {
     return {
-      ok: true,
+      ok: false,
       charged: false,
-      bypass: true,
+      reason: "NEEDS_MEMBERSHIP",
+      needsMembership: true,
+      balance: 0,
+      required: 0,
       freeUsedToday: 0,
-      freeRemainingToday: AI_FREE_PER_DAY,
-      balanceAfter: balance,
+      freeRemainingToday: 0,
     };
   }
 
-  // 2. Free daily quota — count today's spends + free-uses for this reason.
-  // Free uses are recorded as CreditTx kind="spend" amount=0 reason="<reason>_FREE"
-  // so we don't pollute the balance but still get countable history.
-  const since = startOfTodayUtc();
-  const usedToday = await CreditTx.countDocuments({
-    user: userId,
-    reason: { $in: [reason, `${reason}_FREE`] },
-    createdAt: { $gte: since },
-  });
+  /* Эрхтэй → хязгааргүй. Гэхдээ хэрэглээг ҮРГЭЛЖЛҮҮЛЭН бичнэ: хэн хэр их
+     AI хэрэглэж байгааг мэдэхгүй бол өртөг хэзээ хяналтаас гарахыг ч
+     мэдэхгүй. Дүн 0 тул үлдэгдэлд нөлөөлөхгүй, зөвхөн түүх үлдэнэ. */
+  const balUser = await User.findById(userId).select("credits").lean();
+  const balance = (balUser as unknown as { credits?: number } | null)?.credits || 0;
 
-  if (usedToday < AI_FREE_PER_DAY) {
-    // Burn a free-quota slot. Zero-amount tx purely for accounting.
-    const balUser = await User.findById(userId).select("credits").lean();
-    const balance = (balUser as unknown as { credits?: number } | null)?.credits || 0;
+  try {
     await CreditTx.create({
       user: userId,
       kind: "spend",
       amount: 0,
-      reason: `${reason}_FREE`,
+      reason: `${reason}_MEMBER`,
       xpAwarded: 0,
       ref: ref || "",
       balanceAfter: balance,
-      meta: { free: true, slot: usedToday + 1, dailyCap: AI_FREE_PER_DAY },
+      meta: { member: access.isMember, grace: access.inGrace },
     });
-    return {
-      ok: true,
-      charged: false,
-      bypass: false,
-      freeUsedToday: usedToday + 1,
-      freeRemainingToday: AI_FREE_PER_DAY - (usedToday + 1),
-      balanceAfter: balance,
-    };
+  } catch {
+    // Бүртгэл бичигдэхгүй байх нь хариултыг зогсоох шалтгаан биш.
   }
 
-  // 3. Credits removed — past the free daily cap, AI requires membership (no credit purchase).
   return {
-    ok: false,
+    ok: true,
     charged: false,
-    reason: "INSUFFICIENT_CREDITS",
-    balance: 0,
-    required: 0,
-    freeUsedToday: usedToday,
+    bypass: true,
+    freeUsedToday: 0,
     freeRemainingToday: 0,
+    balanceAfter: balance,
   };
 }
 

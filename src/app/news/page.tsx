@@ -53,13 +53,13 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
       description,
       url: canonical,
       siteName: "ANTAQOR",
-      images: ["/opengraph-image"],
+      images: ["/brand/cover"],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} · ANTAQOR`,
       description,
-      images: ["/opengraph-image"],
+      images: ["/brand/cover"],
     },
     keywords: [
       "AI мэдээ",

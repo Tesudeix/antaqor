@@ -39,16 +39,16 @@ export default function MissionsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse bg-[#1080CA]" />
+        <div className="h-2 w-2 animate-pulse bg-[#2E29FF]" />
       </div>
     );
   }
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-6">
-      <div className="chrome mb-1 text-[10px] text-[#1080CA]">MISSION // ДОЛОО ХОНОГ БҮР</div>
-      <h1 className="headline mb-2 text-[clamp(22px,4vw,32px)]">Build mission-ууд</h1>
-      <p className="mb-8 max-w-lg text-[13px] text-[#B4B4BA]">
+      <div className="chrome mb-1 text-[10px] text-[#2E29FF]">ДААЛГАВАР · ДОЛОО ХОНОГ БҮР</div>
+      <h1 className="headline mb-2 text-[clamp(18px,2.8vw,24px)]">Build mission-ууд</h1>
+      <p className="mb-8 max-w-lg text-[13px] text-[#E2E4E8]">
         Мэдлэг биш — нотолгоо. Mission бүр нэг бодит deliverable-тэй, илгээмэгц feedback авна.
       </p>
 
@@ -57,23 +57,23 @@ export default function MissionsPage() {
           <Link
             key={m._id}
             href={`/missions/${m.slug}`}
-            className="block border border-[#2E2E33] bg-[#1E1E21] p-6 transition hover:border-[#F2F2F4]/40"
+            className="block bg-[#141414] bg-[#0A0A0A] p-6 transition hover:border-[#F2F2F4]/40"
           >
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <span className="chrome text-[9px]" style={{ color: m.requiredPlan === "free" ? "#3B82F6" : PLANS[m.requiredPlan].accent }}>
+              <span className="chrome text-[11px]" style={{ color: m.requiredPlan === "free" ? "#3B82F6" : PLANS[m.requiredPlan].accent }}>
                 {m.requiredPlan === "free" ? "STARTER MISSION · FREE" : `${PLANS[m.requiredPlan].name.toUpperCase()} PLAN`}
               </span>
-              <span className="chrome text-[9px] text-[#84848C]">+{m.xpReward} XP</span>
+              <span className="chrome text-[11px] text-[#E2E4E8]">+{m.xpReward} XP</span>
             </div>
             <div className="mb-1.5 text-[17px] font-bold text-[#F2F2F4]">{m.title}</div>
-            <p className="mb-3 text-[13px] leading-relaxed text-[#B4B4BA]">{m.brief}</p>
+            <p className="mb-3 text-[13px] leading-relaxed text-[#E2E4E8]">{m.brief}</p>
             <div className="flex flex-wrap items-center gap-2">
               {m.skills.map((s) => (
-                <span key={s} className="border border-[#2E2E33] bg-[#161618] px-2.5 py-1 text-[10.5px] text-[#B4B4BA]">
+                <span key={s} className="bg-[#141414] bg-[#0A0A0A] px-2.5 py-1 text-[10.5px] text-[#E2E4E8]">
                   {s}
                 </span>
               ))}
-              <span className="ml-auto chrome text-[9px] text-[#84848C]">
+              <span className="ml-auto chrome text-[11px] text-[#E2E4E8]">
                 {m.mySubmission
                   ? m.mySubmission.status === "reviewed" ? "FEEDBACK ИРСЭН ✓" : "ИЛГЭЭСЭН ✓"
                   : m.unlocked ? "НЭЭЛТТЭЙ →" : "🔒 НЭЭХ →"}
@@ -82,19 +82,19 @@ export default function MissionsPage() {
           </Link>
         ))}
         {missions.length === 0 && (
-          <div className="border border-[#2E2E33] bg-[#1E1E21] p-8 text-center text-[13px] text-[#84848C]">
+          <div className="bg-[#141414] bg-[#0A0A0A] p-8 text-center text-[13px] text-[#E2E4E8]">
             Идэвхтэй mission алга — тун удахгүй.
           </div>
         )}
       </div>
 
       {!session && (
-        <div className="mt-10 border border-[#2E2E33] bg-[#1E1E21] p-6 text-center">
-          <p className="mb-4 text-[13px] text-[#B4B4BA]">Starter mission үнэгүй. Бүртгүүлээд шууд эхэл.</p>
+        <div className="mt-10 bg-[#141414] bg-[#0A0A0A] p-6 text-center">
+          <p className="mb-4 text-[13px] text-[#E2E4E8]">Starter mission үнэгүй. Бүртгүүлээд шууд эхэл.</p>
           <Link
             href="/auth/signup"
             onClick={() => track("free_signup_clicked", { source: "missions" })}
-            className="inline-block bg-[#1080CA] px-8 py-3.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+            className="inline-block bg-[#2E29FF] px-8 py-3.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9]"
           >
             Нэгдэх
           </Link>

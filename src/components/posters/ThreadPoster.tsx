@@ -32,7 +32,7 @@ export interface ThreadPosterProps {
   image?: string;
 }
 
-const ACCENT = "#1080CA";
+const ACCENT = "#2E29FF";
 
 export function ThreadPoster({
   text,
@@ -80,7 +80,7 @@ export function ThreadPoster({
           textTransform: "uppercase",
           color: ACCENT,
           textShadow:
-            "0 0 24px rgba(16,128,202,0.55), 0 0 48px rgba(16,128,202,0.35)",
+            "0 0 24px rgba(46,41,255,0.55), 0 0 48px rgba(46,41,255,0.35)",
           WebkitTextStroke: "1px rgba(15,23,38,0.12)",
           margin: 0,
         }}
@@ -125,13 +125,13 @@ export function ThreadPoster({
       <div className="mt-4">
         <div
           className="font-mono text-[11px] font-bold uppercase tracking-[0.24em]"
-          style={{ color: ACCENT, textShadow: `0 0 8px rgba(16,128,202,0.4)` }}
+          style={{ color: ACCENT, textShadow: `0 0 8px rgba(46,41,255,0.4)` }}
         >
           — {author.toUpperCase()}
         </div>
         {authorMeta && (
           <div
-            className="mt-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.28em]"
+            className="mt-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.28em]"
             style={{ color: "#6b6b73" }}
           >
             {authorMeta}

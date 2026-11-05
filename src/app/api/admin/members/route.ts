@@ -19,16 +19,25 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const filter = searchParams.get("filter") || "all";
-    const source = searchParams.get("source") || "registered"; // registered | social | all
+    /* СОШИАЛ ХЭРЭГЛЭГЧИД ЭНЭ ЖАГСААЛТААС ГАРСАН (2026-09-04).
+       Тэд бол Instagram/Messenger DM-ээс автоматаар үүссэн "сүүдэр"
+       бүртгэлүүд — нэр нь psid, имэйл нь хиймэл, хэзээ ч нэвтэрч
+       байгаагүй. Тэднийг жинхэнэ гишүүдтэй нэг хүснэгтэд тавих нь
+       хоёр талдаа хор хөнөөлтэй байв:
+         · жагсаалт нь хайхад хэрэггүй мөрөөр дүүрдэг;
+         · ДЭЭД ТАЛЫН ТОО ХУДАЛ болдог — 778 "хэрэглэгч" гэдэг нь
+           509 бүртгэлтэй + 269 сүүдэр байсан тул хөрвүүлэлт 9%
+           гэж харагддаг байсан нь бодитоор 14% байв.
+       Тэдгээр яриа `/admin/(social)/inbox` дээрээ бүтнээрээ байна. */
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+    const perPage = Math.min(100, Math.max(10, parseInt(searchParams.get("perPage") || "50", 10) || 50));
+    const sort = searchParams.get("sort") || "new";
 
     const conditions: Record<string, unknown>[] = [];
 
-    // Registered vs social (system) separation — the primary split.
-    if (source === "social") {
-      conditions.push(SOCIAL_MATCH);
-    } else if (source === "registered") {
-      conditions.push(REGISTERED_MATCH);
-    }
+    // ҮРГЭЛЖ зөвхөн бүртгэлтэй хүн. Сонголт байхгүй — сонголт байсан нь
+    // сүүдэр бүртгэлүүдийг санамсаргүй үзэх боломж үлдээж байв.
+    conditions.push(REGISTERED_MATCH);
 
     if (search) {
       conditions.push({
@@ -52,9 +61,24 @@ export async function GET(req: Request) {
 
     const query = conditions.length > 0 ? { $and: conditions } : {};
 
+    /* ХУУДАСЛАЛТ. Өмнө нь энэ нь 509 баримтыг БҮГДИЙГ нь нэг дор татаж,
+       клиент рүү илгээж, DOM-д зурдаг байв — админ хуудас нээх бүрд.
+       Гишүүд нэмэгдэх тусам тэр нь шугаман байдлаар удааширна. */
+    const SORTS: Record<string, Record<string, 1 | -1>> = {
+      new: { createdAt: -1 },
+      old: { createdAt: 1 },
+      credits: { credits: -1 },
+      expiring: { subscriptionExpiresAt: 1 },
+      name: { name: 1 },
+    };
+    const sortSpec = SORTS[sort] || SORTS.new;
+
+    const matchedCount = await User.countDocuments(query);
     const users = await User.find(query)
       .select("name email phone avatar bio age aiExperience interests clan clanJoinedAt subscriptionExpiresAt role createdAt credits metaInstagramId metaMessengerPsid")
-      .sort({ createdAt: -1 })
+      .sort(sortSpec)
+      .skip((page - 1) * perPage)
+      .limit(perPage)
       .lean();
 
     // Tag each row with its source so the UI can badge mixed ("all") views.
@@ -64,10 +88,16 @@ export async function GET(req: Request) {
       return { ...u, source: isSocial ? "social" : "registered", platform };
     });
 
-    const totalUsers = await User.countDocuments();
+    /* БҮХ ТОО ЗӨВХӨН БҮРТГЭЛТЭЙ ХҮНИЙ ДООР. Хольсон тоо нь хөрвүүлэлтийг
+       худал бага харуулж, шийдвэрийг гажуудуулна. */
+    const totalUsers = await User.countDocuments(REGISTERED_MATCH);
     const totalSocial = await User.countDocuments(SOCIAL_MATCH);
-    const totalRegistered = totalUsers - totalSocial;
-    const totalMembers = await User.countDocuments({ clan: { $ne: "" }, subscriptionExpiresAt: { $gt: new Date() } });
+    const totalRegistered = totalUsers;
+    const totalMembers = await User.countDocuments({
+      ...REGISTERED_MATCH,
+      clan: { $ne: "" },
+      subscriptionExpiresAt: { $gt: new Date() },
+    });
 
     const aiLevelCounts = await User.aggregate([
       { $match: { ...REGISTERED_MATCH, aiExperience: { $ne: "" } } },
@@ -84,6 +114,10 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       users: rows,
+      page,
+      perPage,
+      matchedCount,
+      pageCount: Math.max(1, Math.ceil(matchedCount / perPage)),
       totalUsers,
       totalRegistered,
       totalSocial,

@@ -7,7 +7,7 @@ import { findAgent } from "@/lib/empireAgents";
 
 export const dynamic = "force-dynamic";
 
-const COST = 5;
+const COST = 100; // 2026-10-26: 1кр=₮1 (өмнө 1кр=₮100)
 const REASON = "AI_AGENT_CHAT";
 const MAX_TURNS = 12;
 const MAX_USER_CHARS = 2000;
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     amount: COST,
     reason: REASON,
     ref: agent.slug,
-    meta: { slug: agent.slug, model: MODEL },
+    meta: { slug: agent.slug, model: agent.model || MODEL },
   });
   if (!spend.ok) {
     return NextResponse.json(
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: agent.model || MODEL,
         input,
         max_output_tokens: 800,
       }),

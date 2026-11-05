@@ -7,6 +7,7 @@ import User from "@/models/User";
 import Notification from "@/models/Notification";
 import { REACTION_ORDER, REACTIONS, ReactionKey, legacyToCanonical, normalizeReactions } from "@/lib/reactions";
 import { sendPushToUser } from "@/lib/push-server";
+import { maybeAwardLikeMilestone } from "@/lib/likeCredits";
 
 export async function POST(
   req: NextRequest,
@@ -62,6 +63,11 @@ export async function POST(
     }
     post.markModified("reactions");
     await post.save();
+
+    // Лайк → кредит: шинэ (toggle-off биш, өөрийнх биш) react бүр босгыг шалгана.
+    if (!alreadyOnTarget && String(post.author) !== userId) {
+      await maybeAwardLikeMilestone(post);
+    }
 
     // Push to post author when someone NEW reacts (not when toggling off, not when reacting to your own post).
     // Fire-and-forget so the response isn't blocked.

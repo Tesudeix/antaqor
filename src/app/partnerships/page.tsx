@@ -112,11 +112,11 @@ export default function PartnershipsPage() {
     <div className="mx-auto max-w-3xl px-4 pb-20 pt-6">
       {/* Hero */}
       <section className="text-center">
-        <span className="inline-block rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[2px] text-[#1080CA]">
+        <span className="inline-block rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.08)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[2px] text-[#2E29FF]">
           Хамтрах
         </span>
-        <h1 className="mt-5 text-[34px] font-bold leading-[1.1] tracking-tight text-[#0e1726] sm:text-[44px]">
-          Антакортой <span className="text-[#1080CA]">хамтран</span> өсцгөөе
+        <h1 className="mt-5 text-[22px] md:text-[34px] font-bold leading-[1.1] tracking-tight text-[#0e1726] sm:text-[26px] md:text-[44px]">
+          Антакортой <span className="text-[#2E29FF]">хамтран</span> өсцгөөе
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-[#8a8a82]">
           Antaqor бол Монголын AI бүтээгчдийн дижитал үндэстэн. Брендүүд, сургалтын
@@ -124,7 +124,7 @@ export default function PartnershipsPage() {
         </p>
         <a
           href="#form"
-          className="mt-7 inline-block rounded-none bg-[#1080CA] px-7 py-3 text-[13px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.3)]"
+          className="mt-7 inline-block rounded-[4px] bg-[#2E29FF] px-7 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_24px_rgba(46,41,255,0.3)]"
         >
           Хамтрах хүсэлт илгээх
         </a>
@@ -132,16 +132,16 @@ export default function PartnershipsPage() {
 
       {/* Stats */}
       <section className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] p-4 text-center">
+        <div className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] p-4 text-center">
           <div className="text-[24px] font-bold leading-none text-[#FFD300]">
             {pricing ? formatMNT(pricing.paidMembers) : "—"}
           </div>
-          <div className="mt-1.5 text-[11px] text-[#6b7280]">Төлбөртэй гишүүн</div>
+          <div className="mt-1.5 text-[11px] text-[#E2E4E8]">Төлбөртэй гишүүн</div>
         </div>
         {BENEFITS.slice(0, 2).map((b) => (
-          <div key={b.label} className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] p-4 text-center">
+          <div key={b.label} className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] p-4 text-center">
             <div className="text-[18px] font-bold leading-tight text-[#0e1726]">{b.stat}</div>
-            <div className="mt-1.5 text-[11px] leading-snug text-[#6b7280]">{b.label}</div>
+            <div className="mt-1.5 text-[11px] leading-snug text-[#E2E4E8]">{b.label}</div>
           </div>
         ))}
       </section>
@@ -157,12 +157,12 @@ export default function PartnershipsPage() {
                 setForm((f) => ({ ...f, type: t.key }));
                 document.getElementById("form")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group rounded-none border border-[#F2F2F4] bg-[#f7f9fb] p-5 text-left transition hover:border-[rgba(16,128,202,0.4)]"
+              className="group rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] p-5 text-left transition hover:border-[rgba(46,41,255,0.4)]"
             >
               <div className="text-[26px]">{t.emoji}</div>
               <h3 className="mt-3 text-[15px] font-bold text-[#0e1726]">{t.title}</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#6b7280]">{t.desc}</p>
-              <span className="mt-3 inline-block text-[12px] font-semibold text-[#1080CA] opacity-0 transition group-hover:opacity-100">
+              <p className="mt-2 text-[13px] leading-relaxed text-[#E2E4E8]">{t.desc}</p>
+              <span className="mt-3 inline-block text-[12px] font-semibold text-[#2E29FF] opacity-0 transition group-hover:opacity-100">
                 Сонгох →
               </span>
             </button>
@@ -171,7 +171,7 @@ export default function PartnershipsPage() {
       </section>
 
       {/* Why partner */}
-      <section className="mt-14 rounded-none border border-[#F2F2F4] bg-[#f7f9fb] p-6">
+      <section className="mt-14 rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] p-6">
         <h2 className="text-[20px] font-bold tracking-tight text-[#0e1726]">Яагаад Antaqor?</h2>
         <div className="mt-5 space-y-4">
           {[
@@ -180,10 +180,10 @@ export default function PartnershipsPage() {
             { t: "Ил тод тайлан", d: "Хүрсэн хүн, оролцоо, хөрвөлтийн тоог ил тод хэмжиж, хамтын ROI-г харна." },
           ].map((row) => (
             <div key={row.t} className="flex gap-3">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1080CA]" />
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2E29FF]" />
               <div>
                 <div className="text-[14px] font-semibold text-[#0e1726]">{row.t}</div>
-                <div className="mt-0.5 text-[13px] leading-relaxed text-[#6b7280]">{row.d}</div>
+                <div className="mt-0.5 text-[13px] leading-relaxed text-[#E2E4E8]">{row.d}</div>
               </div>
             </div>
           ))}
@@ -193,13 +193,13 @@ export default function PartnershipsPage() {
       {/* Form */}
       <section id="form" className="mt-14 scroll-mt-20">
         <h2 className="text-[20px] font-bold tracking-tight text-[#0e1726]">Хүсэлт илгээх</h2>
-        <p className="mt-1.5 text-[13px] text-[#6b7280]">1–2 ажлын өдөрт хариу өгнө.</p>
+        <p className="mt-1.5 text-[13px] text-[#E2E4E8]">1–2 ажлын өдөрт хариу өгнө.</p>
 
         {done ? (
-          <div className="mt-6 rounded-none border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] p-8 text-center">
-            <div className="text-[32px]">✓</div>
+          <div className="mt-6 rounded-[4px] border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] p-8 text-center">
+            <div className="text-[22px] md:text-[32px]">✓</div>
             <div className="mt-2 text-[16px] font-bold text-[#0e1726]">Хүсэлт хүлээн авлаа</div>
-            <p className="mt-1.5 text-[13px] text-[#6b7280]">Бид удахгүй таны имэйлээр холбогдоно.</p>
+            <p className="mt-1.5 text-[13px] text-[#E2E4E8]">Бид удахгүй таны имэйлээр холбогдоно.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-3">
@@ -208,14 +208,14 @@ export default function PartnershipsPage() {
                 value={form.company}
                 onChange={update("company")}
                 placeholder="Байгууллага (заавал биш)"
-                className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#4a4a55] focus:border-[rgba(16,128,202,0.5)]"
+                className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
               />
               <input
                 required
                 value={form.name}
                 onChange={update("name")}
                 placeholder="Таны нэр *"
-                className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#4a4a55] focus:border-[rgba(16,128,202,0.5)]"
+                className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
               />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -225,19 +225,19 @@ export default function PartnershipsPage() {
                 value={form.email}
                 onChange={update("email")}
                 placeholder="Имэйл *"
-                className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#4a4a55] focus:border-[rgba(16,128,202,0.5)]"
+                className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
               />
               <input
                 value={form.phone}
                 onChange={update("phone")}
                 placeholder="Утас (заавал биш)"
-                className="rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#4a4a55] focus:border-[rgba(16,128,202,0.5)]"
+                className="rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
               />
             </div>
             <select
               value={form.type}
               onChange={update("type")}
-              className="w-full rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition focus:border-[rgba(16,128,202,0.5)]"
+              className="w-full rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] text-[#0e1726] outline-none transition focus:border-[rgba(46,41,255,0.5)]"
             >
               {PARTNER_TYPES.map((t) => (
                 <option key={t.key} value={t.key} className="bg-[#f7f9fb]">{t.title}</option>
@@ -250,13 +250,13 @@ export default function PartnershipsPage() {
               onChange={update("message")}
               placeholder="Хамтрах саналаа товч бичнэ үү *"
               rows={5}
-              className="w-full resize-none rounded-none border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] leading-relaxed text-[#0e1726] outline-none transition placeholder:text-[#4a4a55] focus:border-[rgba(16,128,202,0.5)]"
+              className="w-full resize-none rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb] px-4 py-3 text-[14px] leading-relaxed text-[#0e1726] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
             />
-            {error && <p className="text-[13px] text-[#1080CA]">{error}</p>}
+            {error && <p className="text-[13px] text-[#2E29FF]">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-none bg-[#1080CA] px-6 py-3.5 text-[14px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.3)] disabled:opacity-50"
+              className="w-full rounded-[4px] bg-[#2E29FF] px-6 py-3.5 text-[14px] font-bold text-white transition hover:shadow-[0_0_24px_rgba(46,41,255,0.3)] disabled:opacity-50"
             >
               {submitting ? "Илгээж байна..." : "Хүсэлт илгээх"}
             </button>
@@ -267,7 +267,7 @@ export default function PartnershipsPage() {
       {/* FAQ */}
       <section className="mt-14">
         <h2 className="text-[20px] font-bold tracking-tight text-[#0e1726]">Түгээмэл асуултууд</h2>
-        <div className="mt-4 divide-y divide-[#F2F2F4] rounded-none border border-[#F2F2F4] bg-[#f7f9fb]">
+        <div className="mt-4 divide-y divide-[#F2F2F4] rounded-[4px] border border-[#F2F2F4] bg-[#f7f9fb]">
           {FAQ.map((item, i) => (
             <div key={i}>
               <button
@@ -275,10 +275,10 @@ export default function PartnershipsPage() {
                 className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
               >
                 <span className="text-[14px] font-semibold text-[#0e1726]">{item.q}</span>
-                <span className={`text-[#6b7280] transition ${openFaq === i ? "rotate-45" : ""}`}>+</span>
+                <span className={`text-[#E2E4E8] transition ${openFaq === i ? "rotate-45" : ""}`}>+</span>
               </button>
               {openFaq === i && (
-                <p className="px-5 pb-4 text-[13px] leading-relaxed text-[#6b7280]">{item.a}</p>
+                <p className="px-5 pb-4 text-[13px] leading-relaxed text-[#E2E4E8]">{item.a}</p>
               )}
             </div>
           ))}

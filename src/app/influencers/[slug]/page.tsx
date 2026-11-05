@@ -14,8 +14,8 @@ interface Influencer {
 }
 
 const TIERS: Record<Tier, { label: string; color: string }> = {
-  nano: { label: "НАНО", color: "#B4B4BA" }, micro: { label: "МИКРО", color: "#1080CA" },
-  macro: { label: "МАКРО", color: "#4FA8E8" }, mega: { label: "МЕГА", color: "#FF6E86" },
+  nano: { label: "НАНО", color: "var(--t-body, #30333F)" }, micro: { label: "МИКРО", color: "var(--accent-ink, #2E29FF)" },
+  macro: { label: "МАКРО", color: "var(--accent-ink-2, #1F1AD9)" }, mega: { label: "МЕГА", color: "#FF6E86" },
   celebrity: { label: "ОД", color: "#F5C542" },
 };
 const NETWORKS: Record<Network, { label: string; path: string }> = {
@@ -32,7 +32,7 @@ function fmt(n: number): string {
   if (n >= 1_000) return (n / 1_000).toFixed(n % 1_000 === 0 ? 0 : 1) + "K";
   return String(n);
 }
-const inputCls = "w-full rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] px-3 py-2.5 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(16,128,202,0.5)]";
+const inputCls = "w-full rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(46,41,255,0.5)]";
 
 export default function InfluencerProfile({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -51,43 +51,43 @@ export default function InfluencerProfile({ params }: { params: Promise<{ slug: 
   }, [slug]);
 
   if (state === "loading") {
-    return <div className="mx-auto max-w-3xl"><div className="h-64 animate-pulse rounded-[2px] border border-[var(--color-border)] bg-[#101014]" /></div>;
+    return <div className="mx-auto max-w-3xl"><div className="h-64 animate-pulse rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A]" /></div>;
   }
   if (state === "missing" || !inf) {
     return (
       <div className="mx-auto max-w-3xl py-20 text-center">
         <p className="chrome text-[10px] text-[var(--color-dim)]">404 // NOT FOUND</p>
         <h1 className="headline mt-3 text-[28px]">Креатор олдсонгүй<span className="dot">.</span></h1>
-        <Link href="/influencers" className="mt-5 inline-block rounded-[2px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">← Сүлжээ рүү</Link>
+        <Link href="/influencers" className="mt-5 inline-block rounded-[4px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">← Сүлжээ рүү</Link>
       </div>
     );
   }
 
   const tier = TIERS[inf.tier] || TIERS.micro;
-  const accent = "#1080CA";
+  const accent = "#2E29FF";
   const initials = (inf.name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="light-page mx-auto max-w-3xl">
       <Link href="/influencers" className="chrome inline-flex items-center gap-1 text-[10px] text-[var(--color-dim)] transition hover:text-[var(--color-accent)]">← INFLUENCER NETWORK</Link>
 
-      <div className="mt-3 overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[#101014]">
+      <div className="mt-3 overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A]">
         {/* cover */}
         <div className="relative h-40 sm:h-52">
           {inf.cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={inf.cover} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full" style={{ background: `radial-gradient(100% 120% at 80% 0%, ${accent}55, transparent 55%), linear-gradient(180deg,#141018,#0b0b0e)` }} />
+            <div className="h-full w-full" style={{ background: `radial-gradient(100% 120% at 80% 0%, ${accent}55, transparent 55%), linear-gradient(180deg,#FFFFFF,#F8F9FD)` }} />
           )}
           <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#101014] to-transparent" />
-          {inf.featured && <span className="absolute right-3 top-3 rounded-[2px] bg-[var(--color-accent)] px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-white">FEATURED</span>}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
+          {inf.featured && <span className="absolute right-3 top-3 rounded-[4px] bg-[var(--color-accent)] px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-white">FEATURED</span>}
         </div>
 
         <div className="px-5 pb-6 sm:px-8">
           <div className="-mt-12 flex flex-wrap items-end gap-4">
-            <div className="h-24 w-24 overflow-hidden rounded-[3px] border-2 border-[#101014] bg-[#0a0a0c]" style={{ boxShadow: `0 0 0 1px ${accent}66, 0 0 30px ${accent}33` }}>
+            <div className="h-24 w-24 overflow-hidden rounded-[4px] border-2 border-[#0A0A0A] bg-[#0A0A0A]" style={{ boxShadow: `0 0 0 1px ${accent}66, 0 0 30px ${accent}33` }}>
               {inf.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={inf.avatar} alt={inf.name} className="h-full w-full object-cover" />
@@ -95,9 +95,9 @@ export default function InfluencerProfile({ params }: { params: Promise<{ slug: 
             </div>
             <div className="mb-1 flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="headline text-[26px] sm:text-[32px]">{inf.name}</h1>
+                <h1 className="headline text-[26px] sm:text-[22px] md:text-[32px]">{inf.name}</h1>
                 {inf.verified && <svg className="h-5 w-5 text-[var(--color-accent)]" viewBox="0 0 24 24" fill="currentColor"><path d="M10 15.2 6.5 11.7l1.4-1.4 2.1 2.1 5.1-5.1 1.4 1.4z M12 1 3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5z" opacity=".2"/><path d="M10 15.2 6.5 11.7l1.4-1.4 2.1 2.1 5.1-5.1 1.4 1.4z"/></svg>}
-                <span className="rounded-[2px] px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: tier.color, background: `${tier.color}1a`, border: `1px solid ${tier.color}44` }}>{tier.label}</span>
+                <span className="rounded-[4px] px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: tier.color, background: `${tier.color}1a`, border: `1px solid ${tier.color}44` }}>{tier.label}</span>
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-2 text-[12px] text-[var(--color-dim)]">
                 {inf.handle && <span>@{inf.handle}</span>}
@@ -111,12 +111,12 @@ export default function InfluencerProfile({ params }: { params: Promise<{ slug: 
 
           {inf.tags?.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {inf.tags.map((t) => <span key={t} className="rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] px-2 py-0.5 font-mono text-[10px] text-[var(--color-muted)]">#{t}</span>)}
+              {inf.tags.map((t) => <span key={t} className="rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] px-2 py-0.5 font-mono text-[10px] text-[var(--color-muted)]">#{t}</span>)}
             </div>
           )}
 
           {/* metrics */}
-          <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[var(--color-border)] sm:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[var(--color-border)] sm:grid-cols-4">
             {[
               { k: fmt(inf.totalFollowers), v: "Нийт дагагч" },
               { k: inf.engagementRate ? inf.engagementRate.toFixed(1) + "%" : "—", v: "Engagement" },
@@ -133,11 +133,11 @@ export default function InfluencerProfile({ params }: { params: Promise<{ slug: 
           {/* platforms */}
           {inf.platforms?.length > 0 && (
             <div className="mt-5">
-              <p className="chrome mb-2 text-[9px] text-[var(--color-dim)]">ПЛАТФОРМ</p>
+              <p className="chrome mb-2 text-[11px] text-[var(--color-dim)]">ПЛАТФОРМ</p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {inf.platforms.map((p) => (
                   <a key={p.network} href={p.url || undefined} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-2.5 rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] px-3 py-2.5 transition hover:border-[rgba(16,128,202,0.4)]">
+                    className="flex items-center gap-2.5 rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] px-3 py-2.5 transition hover:border-[rgba(46,41,255,0.4)]">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 text-[var(--color-ink)]" fill="currentColor"><path d={NETWORKS[p.network]?.path} /></svg>
                     <div className="min-w-0">
                       <div className="truncate text-[12px] font-bold text-[var(--color-ink)]">{NETWORKS[p.network]?.label}</div>
@@ -183,7 +183,7 @@ function ProfileCollab({ inf }: { inf: Influencer }) {
   };
 
   return (
-    <div className="mt-4 overflow-hidden rounded-[2px] border border-[rgba(16,128,202,0.25)] bg-gradient-to-br from-[#141018] to-[#0d0d10] p-5 sm:p-7">
+    <div className="mt-4 overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-gradient-to-br from-[#141018] to-[#0d0d10] p-5 sm:p-7">
       <p className="chrome text-[10px] text-[var(--color-accent)]">COLLAB REQUEST</p>
       <h2 className="headline mt-2 text-[22px]">{inf.name}-тэй <span className="accent">хамтрах</span></h2>
       {done ? (
@@ -208,7 +208,7 @@ function ProfileCollab({ inf }: { inf: Influencer }) {
           </div>
           <textarea className={inputCls + " min-h-[90px] resize-y"} value={f.message} onChange={(e) => set("message", e.target.value)} placeholder="Кампанит ажлын зорилго, хугацаа, хүлээлт… *" />
           {err && <p className="text-[11px] text-[var(--color-accent)]">{err}</p>}
-          <button onClick={submit} disabled={busy} className="w-full rounded-[2px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(16,128,202,0.5)] disabled:opacity-50">
+          <button onClick={submit} disabled={busy} className="w-full rounded-[4px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(46,41,255,0.5)] disabled:opacity-50">
             {busy ? "Илгээж байна…" : "Хүсэлт илгээх"}
           </button>
         </div>

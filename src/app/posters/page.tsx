@@ -14,7 +14,7 @@ import Link from "next/link";
 import { ThreadPoster } from "@/components/posters/ThreadPoster";
 import { CourseSlidePoster } from "@/components/posters/CourseSlidePoster";
 
-const ACCENT = "#1080CA";
+const ACCENT = "#2E29FF";
 
 type Variant = "thread" | "course";
 
@@ -79,7 +79,7 @@ export default function PosterStudioPage() {
       const rect = node.getBoundingClientRect();
       const scale = Math.max(1, 1080 / rect.width);
       const canvas = await html2canvas(node, {
-        backgroundColor: "#0a0a0c",
+        backgroundColor: "#0A0A0A",
         scale,
         useCORS: true,
         logging: false,
@@ -112,14 +112,14 @@ export default function PosterStudioPage() {
       {/* ─── Header ─── */}
       <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
         <div>
-          <Link href="/" className="mb-3 inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-[#6b7280] transition hover:text-[#0e1726]">
+          <Link href="/" className="mb-3 inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-[#E2E4E8] transition hover:text-[#0e1726]">
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             HOME
           </Link>
-          <h1 className="text-[28px] font-black leading-tight tracking-tight text-[#0e1726] sm:text-[36px]">
+          <h1 className="text-[28px] font-black leading-tight tracking-tight text-[#0e1726] sm:text-[22px] md:text-[36px]">
             Poster <span style={{ color: ACCENT }}>Studio</span>
           </h1>
-          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#6b7280]">
+          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#E2E4E8]">
             Minimal cyber-empire posters. Upload an image, edit copy,
             download each slide as 1080×1440 PNG ready for Threads & IG.
           </p>
@@ -127,7 +127,7 @@ export default function PosterStudioPage() {
       </header>
 
       {/* Variant tabs */}
-      <div className="mb-6 inline-flex rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-1">
+      <div className="mb-6 inline-flex rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-1">
         {([
           { k: "thread" as Variant, label: "Thread Post" },
           { k: "course" as Variant, label: "Course Slides" },
@@ -138,8 +138,8 @@ export default function PosterStudioPage() {
               key={t.k}
               type="button"
               onClick={() => setVariant(t.k)}
-              className={`rounded-none px-4 py-2 text-[12px] font-bold transition ${
-                active ? "bg-[#1080CA] text-[#0E0E10] shadow-[0_0_18px_rgba(16,128,202,0.3)]" : "text-[#6b7280] hover:text-[#0e1726]"
+              className={`rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
+                active ? "bg-[#2E29FF] text-white shadow-[0_0_18px_rgba(46,41,255,0.3)]" : "text-[#E2E4E8] hover:text-[#0e1726]"
               }`}
             >
               {t.label}
@@ -149,7 +149,7 @@ export default function PosterStudioPage() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-3 py-2 text-[12px] text-[#8FC1EA]">
+        <div className="mb-4 rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-3 py-2 text-[12px] text-[#8FC1EA]">
           {error}
         </div>
       )}
@@ -211,7 +211,7 @@ export default function PosterStudioPage() {
       {variant === "course" && (
         <div className="space-y-4">
           {/* Course-wide settings */}
-          <div className="grid grid-cols-1 gap-3 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4 sm:grid-cols-[1fr_180px]">
+          <div className="grid grid-cols-1 gap-3 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4 sm:grid-cols-[1fr_180px]">
             <Field label="Course title" value={courseTitle} onChange={setCourseTitle} />
             <Field
               label="Total lessons"
@@ -247,7 +247,7 @@ export default function PosterStudioPage() {
           <button
             type="button"
             onClick={addSlide}
-            className="flex w-full items-center justify-center gap-2 rounded-none border border-dashed border-[rgba(15,23,38,0.1)] bg-[#ffffff] py-4 text-[12px] font-bold text-[#6b7280] transition hover:border-[rgba(16,128,202,0.4)] hover:text-[#1080CA]"
+            className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-dashed border-[rgba(15,23,38,0.1)] bg-[#ffffff] py-4 text-[12px] font-bold text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.4)] hover:text-[#2E29FF]"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -279,7 +279,7 @@ function SlideRow({
   readAsDataUrl: (f: File) => Promise<string>;
 }) {
   return (
-    <div className="rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3 sm:p-4">
+    <div className="rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3 sm:p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: ACCENT }}>
@@ -290,7 +290,7 @@ function SlideRow({
           <button
             type="button"
             onClick={onRemove}
-            className="rounded-none px-2 py-1 text-[10px] font-bold text-[#6b7280] transition hover:bg-[#1080CA]/10 hover:text-[#4E94D0]"
+            className="rounded-[4px] px-2 py-1 text-[10px] font-bold text-[#E2E4E8] transition hover:bg-[#2E29FF]/10 hover:text-[#4C47FF]"
             title="Слайд устгах"
           >
             УСТГАХ
@@ -308,7 +308,7 @@ function SlideRow({
             compact
           />
           <div className="space-y-1.5">
-            <span className="block font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280]">
+            <span className="block font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8]">
               Title — 3 lines (last = accent)
             </span>
             <Field label="" value={slide.titleLine1} onChange={(v) => onChange({ titleLine1: v })} placeholder="Line 1" />
@@ -342,17 +342,17 @@ function SlideRow({
 function DownloadRow({ label, busy, onClick }: { label: string; busy: boolean; onClick: () => void }) {
   return (
     <div className="mt-3 flex items-center justify-between gap-3">
-      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#6b7280]">
+      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">
         EXPORT · {label}
       </span>
       <button
         type="button"
         onClick={onClick}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-none px-4 py-2 text-[12px] font-black text-white transition disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-[4px] px-4 py-2 text-[12px] font-black text-white transition disabled:opacity-50"
         style={{
           background: ACCENT,
-          boxShadow: busy ? undefined : "0 6px 20px rgba(16,128,202,0.35)",
+          boxShadow: busy ? undefined : "0 6px 20px rgba(46,41,255,0.35)",
         }}
       >
         {busy ? (
@@ -386,11 +386,11 @@ function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div>
-      <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280]">
+      <span className="mb-1.5 block font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8]">
         {label}
       </span>
       <label
-        className={`relative block w-full cursor-pointer overflow-hidden rounded-none border border-dashed border-[rgba(15,23,38,0.1)] bg-[#ffffff] transition hover:border-[rgba(16,128,202,0.4)] ${
+        className={`relative block w-full cursor-pointer overflow-hidden rounded-[4px] border border-dashed border-[rgba(15,23,38,0.1)] bg-[#ffffff] transition hover:border-[rgba(46,41,255,0.4)] ${
           compact ? "aspect-[3/2]" : "aspect-[16/9]"
         }`}
       >
@@ -412,21 +412,21 @@ function ImageUpload({
             <button
               type="button"
               onClick={(e) => { e.preventDefault(); onChange(null); }}
-              className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold text-white hover:text-[#0E0E10] backdrop-blur-sm hover:bg-[#1080CA]"
+              className="absolute right-2 top-2 rounded-[4px] bg-black/70 px-2 py-1 text-[10px] font-bold text-white hover:text-white backdrop-blur-sm hover:bg-[#2E29FF]"
             >
               УСТГАХ
             </button>
           </>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-center">
-            <svg className="h-5 w-5 text-[#94a3b8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <svg className="h-5 w-5 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
             </svg>
-            <span className="text-[11px] font-semibold text-[#6b7280]">Зураг сонгох</span>
+            <span className="text-[11px] font-semibold text-[#E2E4E8]">Зураг сонгох</span>
           </div>
         )}
       </label>
-      {hint && <p className="mt-1 text-[10px] text-[#94a3b8]">{hint}</p>}
+      {hint && <p className="mt-1 text-[10px] text-[#E2E4E8]">{hint}</p>}
     </div>
   );
 }
@@ -448,7 +448,7 @@ function Field({
   return (
     <label className="block">
       {label && (
-        <span className="mb-1 block font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280]">
+        <span className="mb-1 block font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8]">
           {label}
         </span>
       )}
@@ -459,7 +459,7 @@ function Field({
           placeholder={placeholder}
           rows={rows || 3}
           maxLength={maxLength}
-          className="w-full resize-y rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12.5px] leading-relaxed text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[#1080CA]"
+          className="w-full resize-y rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12.5px] leading-relaxed text-[#0e1726] placeholder-[#62666F] outline-none transition focus:border-[#2E29FF]"
         />
       ) : (
         <input
@@ -467,11 +467,11 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12.5px] text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[#1080CA]"
+          className="w-full rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-2.5 py-2 text-[12.5px] text-[#0e1726] placeholder-[#62666F] outline-none transition focus:border-[#2E29FF]"
         />
       )}
       {hint && (
-        <span className="mt-1 block text-[10px] text-[#94a3b8]">{hint}</span>
+        <span className="mt-1 block text-[10px] text-[#E2E4E8]">{hint}</span>
       )}
     </label>
   );

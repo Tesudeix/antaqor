@@ -19,6 +19,8 @@ export interface IEvent extends Document {
   status: "upcoming" | "live" | "ended";
   color: string;
   recurring: "none" | "daily" | "weekly" | "monthly";
+  /** Давталт хэзээ дуусах вэ. Хоосон = хязгааргүй. */
+  recurringUntil?: Date;
   attendees: mongoose.Types.ObjectId[];
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -93,6 +95,13 @@ const EventSchema = new Schema<IEvent>(
       type: String,
       enum: ["none", "daily", "weekly", "monthly"],
       default: "none",
+    },
+    /* Давтагдах цувралын төгсгөл. Хоосон бол цуврал хязгааргүй үргэлжилнэ —
+       ихэнх хуваарь ийм байдаг ("Мягмар бүр") тул анхдагч нь хоосон. Улирлын
+       хөтөлбөр төгсдөг бол энд огноо тавьж болно; уншихдаа /lib/recurrence.ts
+       үүнээс ЦААШХИ тохиолдлыг үүсгэхээ болино. */
+    recurringUntil: {
+      type: Date,
     },
     attendees: [
       {

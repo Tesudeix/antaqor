@@ -72,7 +72,7 @@ export async function generateMetadata({
     const title = `${user.name} · ${mintStr} CONQUEROR · ANTAQOR`;
     const description =
       user.bio?.trim() ||
-      `${mintStr} of 100 — ${role}, LV.${level} ${t.titleMN}. Edgerunners-н байлдан дагуулагч.`;
+      `${mintStr} of 100 — ${role}, LV.${level} ${t.titleMN}. Antaqor хүрээлэлийн байлдан дагуулагч.`;
     return {
       title,
       description: description.slice(0, 200),
@@ -94,7 +94,7 @@ export async function generateMetadata({
   const title = `${user.name} · ANTAQOR`;
   const description =
     user.bio?.trim() ||
-    `LV.${level} ${t.titleMN} — Edgerunners-д нэгдэхээр бэлдэж байна.`;
+    `LV.${level} ${t.titleMN} — Antaqor хүрээлэлд нэгдэхээр бэлдэж байна.`;
   return {
     title,
     description: description.slice(0, 200),

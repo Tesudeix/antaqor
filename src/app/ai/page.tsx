@@ -9,8 +9,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BRAND = "#1080CA";
-const CYAN = "#22D3EE";
+const BRAND = "var(--accent-ink, #2E29FF)";
+const CYAN = "#2E29FF";
 
 // ── Engines (Seedance 2 via PiAPI) ──
 const ENGINES = [
@@ -169,7 +169,7 @@ export default function AiStudioPage() {
     <div className="relative mx-auto max-w-5xl px-4 py-6">
       {/* backdrop */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
-        style={{ background: "radial-gradient(60% 60% at 50% 0%, rgba(16,128,202,0.14), transparent 65%)" }} />
+        style={{ background: "radial-gradient(60% 60% at 50% 0%, rgba(46,41,255,0.14), transparent 65%)" }} />
 
       {/* ── Hero ── */}
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="relative mb-6 text-center">
@@ -177,10 +177,10 @@ export default function AiStudioPage() {
           <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: BRAND }} />
           ANTAQOR // AI STUDIO
         </div>
-        <h1 className="mt-3 text-[34px] font-black leading-tight sm:text-[44px]" style={{ color: "#E8E8E8", fontFamily: "var(--font-display)" }}>
-          Бодлоо <span style={{ color: BRAND, textShadow: "0 0 30px rgba(16,128,202,0.45)" }}>видео</span> болго
+        <h1 className="mt-3 text-[22px] md:text-[34px] font-black leading-tight sm:text-[26px] md:text-[44px]" style={{ color: "var(--t-ink, #30333F)", fontFamily: "var(--font-display)" }}>
+          Бодлоо <span style={{ color: BRAND, textShadow: "0 0 30px rgba(46,41,255,0.45)" }}>видео</span> болго
         </h1>
-        <p className="mx-auto mt-2 max-w-md text-[13px]" style={{ color: "#B4B4BA" }}>
+        <p className="mx-auto mt-2 max-w-md text-[13px]" style={{ color: "var(--t-body, #30333F)" }}>
           AI сонго → камерын хөдөлгөөн сонго → тайлбарла. 2-5 минутад кино шиг видео.
         </p>
       </motion.div>
@@ -188,7 +188,7 @@ export default function AiStudioPage() {
       {/* ── Composer ── */}
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
         className="relative border bg-[#0d0d10]/90 p-5 backdrop-blur-xl sm:p-6"
-        style={{ borderColor: "rgba(255,255,255,0.1)", boxShadow: "0 0 60px rgba(16,128,202,0.1)" }}>
+        style={{ borderColor: "rgba(255,255,255,0.1)", boxShadow: "0 0 60px rgba(46,41,255,0.1)" }}>
         {["left-0 top-0 border-l border-t", "right-0 top-0 border-r border-t", "bottom-0 left-0 border-b border-l", "bottom-0 right-0 border-b border-r"].map((c, i) => (
           <span key={i} className={`pointer-events-none absolute h-3 w-3 ${c}`} style={{ borderColor: BRAND }} />
         ))}
@@ -202,10 +202,10 @@ export default function AiStudioPage() {
               <button key={e.id} type="button" disabled={!e.live}
                 onClick={() => { if (!e.live) return; setEngine(e.id); if (e.id !== "pro" && resolution === "1080p") setResolution("720p"); }}
                 className="border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ borderColor: on ? BRAND : "rgba(255,255,255,0.1)", background: on ? "rgba(16,128,202,0.08)" : "transparent" }}>
-                <div className="font-mono text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: on ? BRAND : "#56565E" }}>{e.tag}</div>
-                <div className="mt-0.5 text-[13px] font-bold" style={{ color: on ? "#E8E8E8" : "#B4B4BA" }}>{e.name}</div>
-                <div className="text-[10px]" style={{ color: "#8A8A92" }}>{e.desc}</div>
+                style={{ borderColor: on ? BRAND : "rgba(255,255,255,0.1)", background: on ? "rgba(46,41,255,0.08)" : "transparent" }}>
+                <div className="font-mono text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: on ? BRAND : "#30333F" }}>{e.tag}</div>
+                <div className="mt-0.5 text-[13px] font-bold" style={{ color: on ? "#14151C" : "#30333F" }}>{e.name}</div>
+                <div className="text-[10px]" style={{ color: "var(--t-body, #30333F)" }}>{e.desc}</div>
               </button>
             );
           })}
@@ -221,9 +221,9 @@ export default function AiStudioPage() {
                 className="flex shrink-0 items-center gap-1.5 border px-3 py-2 text-[11px] font-bold transition"
                 style={{
                   borderColor: on ? BRAND : "rgba(255,255,255,0.1)",
-                  background: on ? "rgba(16,128,202,0.1)" : "rgba(255,255,255,0.02)",
-                  color: on ? "#E8E8E8" : "#8A8A92",
-                  boxShadow: on ? "0 0 18px rgba(16,128,202,0.25)" : "none",
+                  background: on ? "rgba(46,41,255,0.1)" : "rgba(255,255,255,0.02)",
+                  color: on ? "#14151C" : "#30333F",
+                  boxShadow: on ? "0 0 18px rgba(46,41,255,0.25)" : "none",
                 }}>
                 <span>{p.emoji}</span>{p.label}
               </button>
@@ -235,8 +235,8 @@ export default function AiStudioPage() {
         <StepLabel n="03" t="ТАЙЛБАР + ЗУРАГ (ЗААВАЛ БИШ)" className="mt-5" />
         <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} maxLength={2000}
           placeholder="Жишээ: нар жаргах үед Улаанбаатарын гудамжаар алхаж буй cyberpunk хувцастай залуу, неон гэрэл…"
-          className="w-full border bg-[#0a0a0c] px-3 py-2.5 text-[13px] outline-none transition placeholder:text-[#56565E] focus:border-[rgba(16,128,202,0.5)]"
-          style={{ borderColor: "rgba(255,255,255,0.1)", color: "#E8E8E8" }} />
+          className="w-full border bg-[#0A0A0A] px-3 py-2.5 text-[13px] outline-none transition placeholder:text-[#E2E4E8] focus:border-[rgba(46,41,255,0.5)]"
+          style={{ borderColor: "rgba(255,255,255,0.1)", color: "var(--t-ink, #30333F)" }} />
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <input ref={fileRef} type="file" accept="image/*" hidden
@@ -246,13 +246,13 @@ export default function AiStudioPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imageUrl} alt="" className="h-14 w-14 border object-cover" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
               <button onClick={() => setImageUrl("")}
-                className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-[4px] text-[11px] font-bold text-white"
                 style={{ background: BRAND }}>✕</button>
             </div>
           ) : (
             <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
               className="border border-dashed px-3 py-2 text-[11px] font-bold transition hover:border-[rgba(255,255,255,0.3)]"
-              style={{ borderColor: "rgba(255,255,255,0.15)", color: "#8A8A92" }}>
+              style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--t-body, #30333F)" }}>
               {uploading ? "Хуулж байна…" : "🖼 Эхлэл зураг нэмэх"}
             </button>
           )}
@@ -281,7 +281,7 @@ export default function AiStudioPage() {
           {err && (
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="mt-3 border-l-2 px-3 py-2 text-[11px]"
-              style={{ borderColor: BRAND, background: "rgba(16,128,202,0.07)", color: BRAND }}>
+              style={{ borderColor: BRAND, background: "rgba(46,41,255,0.07)", color: BRAND }}>
               {err}
             </motion.div>
           )}
@@ -290,16 +290,16 @@ export default function AiStudioPage() {
         {/* generate row */}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
-            <span className="border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em]"
-              style={{ borderColor: "rgba(34,211,238,0.4)", color: CYAN, background: "rgba(34,211,238,0.06)" }}>
+            <span className="border px-2 py-0.5 text-[11px] font-black uppercase tracking-[0.15em]"
+              style={{ borderColor: "rgba(46,41,255,0.4)", color: CYAN, background: "rgba(46,41,255,0.06)" }}>
               ҮНЭГҮЙ · BETA
             </span>
-            <span style={{ color: "#56565E" }}>өдөрт 8 видео</span>
+            <span style={{ color: "var(--t-body, #30333F)" }}>өдөрт 8 видео</span>
           </div>
           {session ? (
             <button onClick={generate} disabled={creating || uploading}
               className="group relative ml-auto overflow-hidden px-7 py-3 text-[13px] font-black uppercase tracking-[0.06em] text-white transition disabled:opacity-60"
-              style={{ background: BRAND, boxShadow: "0 0 24px rgba(16,128,202,0.3)" }}>
+              style={{ background: BRAND, boxShadow: "0 0 24px rgba(46,41,255,0.3)" }}>
               <span className="relative z-10">{creating ? "Үүсгэж байна…" : "⚡ Видео үүсгэх"}</span>
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             </button>
@@ -316,7 +316,7 @@ export default function AiStudioPage() {
       {/* ── Feed ── */}
       <div className="relative mt-10">
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: "#8A8A92" }}>
+          <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: "var(--t-body, #30333F)" }}>
             <span className="h-1 w-1 rounded-full" style={{ background: CYAN }} />
             УРСГАЛ
           </div>
@@ -324,7 +324,7 @@ export default function AiStudioPage() {
             {([["all", "Бүгд"], ["mine", "Минийх"]] as const).map(([v, l]) => (
               <button key={v} onClick={() => setScope(v)}
                 className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-[2px] transition"
-                style={{ color: scope === v ? BRAND : "#56565E", background: scope === v ? "rgba(16,128,202,0.08)" : "transparent" }}>
+                style={{ color: scope === v ? BRAND : "#30333F", background: scope === v ? "rgba(46,41,255,0.08)" : "transparent" }}>
                 {l}
               </button>
             ))}
@@ -334,7 +334,7 @@ export default function AiStudioPage() {
         {feedErr ? (
           <div className="border p-8 text-center" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
             <p className="text-[12px]" style={{ color: BRAND }}>{feedErr}</p>
-            <button onClick={() => loadFeed(scope)} className="mt-3 border px-4 py-2 text-[11px] font-bold" style={{ borderColor: "rgba(255,255,255,0.15)", color: "#8A8A92" }}>Дахин ачаалах</button>
+            <button onClick={() => loadFeed(scope)} className="mt-3 border px-4 py-2 text-[11px] font-bold" style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--t-body, #30333F)" }}>Дахин ачаалах</button>
           </div>
         ) : items === null ? (
           <div className="columns-2 gap-3 sm:columns-3 [&>div]:mb-3">
@@ -346,10 +346,10 @@ export default function AiStudioPage() {
         ) : items.length === 0 ? (
           <div className="border p-10 text-center" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
             <div className="text-2xl">🎬</div>
-            <p className="mt-2 text-[13px] font-bold" style={{ color: "#E8E8E8" }}>
+            <p className="mt-2 text-[13px] font-bold" style={{ color: "var(--t-ink, #30333F)" }}>
               {scope === "mine" ? "Та одоогоор видео үүсгээгүй байна" : "Урсгал хоосон байна"}
             </p>
-            <p className="mt-1 text-[11px]" style={{ color: "#8A8A92" }}>Дээрх студиэс эхний видеогоо үүсгэ — эхний бүтээгч бол!</p>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--t-body, #30333F)" }}>Дээрх студиэс эхний видеогоо үүсгэ — эхний бүтээгч бол!</p>
           </div>
         ) : (
           <>
@@ -369,26 +369,26 @@ export default function AiStudioPage() {
                         onClick={(e) => { const v = e.currentTarget; if (v.paused) v.play().catch(() => {}); else v.pause(); }} />
                     ) : c.status === "processing" ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
-                        style={{ background: "linear-gradient(120deg, rgba(16,128,202,0.05), rgba(34,211,238,0.05), rgba(16,128,202,0.05))", backgroundSize: "200% 200%", animation: "aiShimmer 2.4s ease infinite" }}>
-                        <span className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: BRAND, borderTopColor: "transparent" }} />
-                        <span className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: "#8A8A92" }}>Боловсруулж байна</span>
-                        <span className="text-[9px]" style={{ color: "#56565E" }}>~2-5 мин</span>
+                        style={{ background: "linear-gradient(120deg, rgba(46,41,255,0.05), rgba(46,41,255,0.05), rgba(46,41,255,0.05))", backgroundSize: "200% 200%", animation: "aiShimmer 2.4s ease infinite" }}>
+                        <span className="h-6 w-6 animate-spin rounded-[4px] border-2 border-t-transparent" style={{ borderColor: BRAND, borderTopColor: "transparent" }} />
+                        <span className="font-mono text-[11px] uppercase tracking-[0.2em]" style={{ color: "var(--t-body, #30333F)" }}>Боловсруулж байна</span>
+                        <span className="text-[11px]" style={{ color: "var(--t-body, #30333F)" }}>~2-5 мин</span>
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-3 text-center">
                         <span className="text-[11px] font-bold" style={{ color: BRAND }}>Амжилтгүй боллоо</span>
-                        <span className="text-[9px]" style={{ color: "#8A8A92" }}>Дахин оролдоно уу</span>
+                        <span className="text-[11px]" style={{ color: "var(--t-body, #30333F)" }}>Дахин оролдоно уу</span>
                       </div>
                     )}
                     {c.presetLabel && (
                       <span className="absolute left-2 top-2 border px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-[1px] backdrop-blur"
-                        style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.45)", color: "#E8E8E8" }}>
+                        style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.45)", color: "var(--t-ink, #30333F)" }}>
                         {c.presetLabel}
                       </span>
                     )}
                     {c.mine && (
                       <button onClick={() => remove(c)}
-                        className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-full text-[10px] text-white backdrop-blur group-hover:flex"
+                        className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-[4px] text-[10px] text-white backdrop-blur group-hover:flex"
                         style={{ background: "rgba(0,0,0,0.55)" }}>✕</button>
                     )}
                   </div>
@@ -398,18 +398,18 @@ export default function AiStudioPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.userAvatar} alt="" className="h-6 w-6 rounded-full object-cover" />
                     ) : (
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold"
-                        style={{ background: "rgba(16,128,202,0.12)", color: BRAND }}>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[10px] font-bold"
+                        style={{ background: "rgba(46,41,255,0.12)", color: BRAND }}>
                         {(c.userName || "?").charAt(0).toUpperCase()}
                       </span>
                     )}
                     <div className="min-w-0 flex-1 leading-tight">
-                      <div className="truncate text-[11px] font-bold" style={{ color: "#E8E8E8" }}>{c.userName || "Anonymous"}</div>
-                      <div className="text-[9px]" style={{ color: "#56565E" }}>{timeAgo(c.createdAt)} · {(c.engine || "").toUpperCase()}</div>
+                      <div className="truncate text-[11px] font-bold" style={{ color: "var(--t-ink, #30333F)" }}>{c.userName || "Anonymous"}</div>
+                      <div className="text-[11px]" style={{ color: "var(--t-body, #30333F)" }}>{timeAgo(c.createdAt)} · {(c.engine || "").toUpperCase()}</div>
                     </div>
                     <button onClick={() => toggleLike(c)} disabled={!session}
                       className="flex items-center gap-1 text-[11px] font-bold transition disabled:opacity-40"
-                      style={{ color: c.liked ? BRAND : "#56565E" }}>
+                      style={{ color: c.liked ? BRAND : "#30333F" }}>
                       <svg className="h-4 w-4" fill={c.liked ? BRAND : "none"} stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                       </svg>
@@ -423,7 +423,7 @@ export default function AiStudioPage() {
               <div className="mt-5 text-center">
                 <button onClick={loadMore} disabled={loadingMore}
                   className="border px-6 py-2.5 text-[11px] font-bold uppercase tracking-[2px] transition hover:border-[rgba(255,255,255,0.3)] disabled:opacity-50"
-                  style={{ borderColor: "rgba(255,255,255,0.12)", color: "#8A8A92" }}>
+                  style={{ borderColor: "rgba(255,255,255,0.12)", color: "var(--t-body, #30333F)" }}>
                   {loadingMore ? "Ачаалж байна…" : "Цааш үзэх"}
                 </button>
               </div>
@@ -443,7 +443,7 @@ function StepLabel({ n, t, className = "" }: { n: string; t: string; className?:
   return (
     <div className={`mb-2 flex items-center gap-2 ${className}`}>
       <span className="font-mono text-[10px] font-black" style={{ color: BRAND }}>{n}</span>
-      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]" style={{ color: "#56565E" }}>{t}</span>
+      <span className="font-mono text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "var(--t-body, #30333F)" }}>{t}</span>
       <span className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
     </div>
   );
@@ -455,8 +455,8 @@ function MiniChip({ children, on, onClick, dim }: { children: ReactNode; on: boo
       className="border px-2.5 py-1.5 font-mono text-[10px] font-bold transition disabled:cursor-not-allowed disabled:opacity-30"
       style={{
         borderColor: on ? BRAND : "rgba(255,255,255,0.1)",
-        background: on ? "rgba(16,128,202,0.1)" : "transparent",
-        color: on ? "#E8E8E8" : "#56565E",
+        background: on ? "rgba(46,41,255,0.1)" : "transparent",
+        color: on ? "#14151C" : "#30333F",
       }}>
       {children}
     </button>

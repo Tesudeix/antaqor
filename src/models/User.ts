@@ -15,17 +15,32 @@ export interface IUser extends Document {
   phone: string;
   password: string;
   age: number;
+  /** "" = хэлээгүй. Хуучин 613 бүртгэл бүгд ийм байна. */
+  gender: "male" | "female" | "";
   aiExperience: string;
   creativeRole: string;
   interests: string[];
+  program: string;
+  canUploadReels: boolean;
   avatar: string;
   bio: string;
+  /** Профайл (2026-10-11): байршил, вэб хаяг, толгойн зураг, дагаж буй хүмүүс. */
+  location: string;
+  /** Сүүлд идэвхтэй байсан (PresenceBeat, ~60с). "Онлайн" = сүүлийн 5 мин. */
+  lastSeenAt?: Date;
+  website: string;
+  coverImage: string;
+  following: mongoose.Types.ObjectId[];
   instagram: string;
+  facebook: string;
+  threads: string;
   clan: string;
   clanJoinedAt?: Date;
   subscriptionExpiresAt?: Date;
   // Paid plan tier — active only while subscriptionExpiresAt is in the future
   plan: "free" | "starter" | "builder" | "operator";
+  /** Аль мэдэгдлийг хүлээж авах. Талбар байхгүй = зөвшөөрсөн. */
+  notificationPrefs?: { newPosts?: boolean; newCourses?: boolean };
   onboarding?: {
     goal: string; // learn | build | automate
     experience: string; // beginner | intermediate | advanced
@@ -63,6 +78,8 @@ export interface IUser extends Document {
     postId?: mongoose.Types.ObjectId;
   };
   introCompletedAt?: Date;
+  googleId?: string;
+  facebookId?: string;
   metaInstagramId?: string;
   metaMessengerPsid?: string;
   metaLinkCode?: string;
@@ -89,6 +106,14 @@ const UserSchema = new Schema<IUser>(
       minlength: 3,
       maxlength: 30,
       match: [/^[a-zA-Z0-9_]+$/, "Хэрэглэгчийн нэр зөвхөн үсэг, тоо, _ агуулна"],
+    },
+    /* Хоосон утга нь ХҮЧИНТЭЙ төлөв, дутуу бөглөсөн хэрэг биш: энэ талбар
+       нэмэгдэхээс өмнө бүртгүүлсэн хүн бүр ийм байна, мөн API нь хүйсийг
+       заавал шаарддаггүй (гуравдагч клиент, апп эвдрэхээс сэргийлж). */
+    gender: {
+      type: String,
+      enum: ["male", "female", ""],
+      default: "",
     },
     email: {
       type: String,
@@ -127,6 +152,23 @@ const UserSchema = new Schema<IUser>(
       type: [String],
       default: [],
     },
+    /* Бүртгэлд сонгосон ХӨТӨЛБӨР (`Program.slug`, ж: "ai-creator").
+       `creativeRole`-той андуурахгүй: тэр нь XP-ийн үүрэг бөгөөд утга нь
+       давхцаж болох ч энэ нь ХУВААРЬТАЙ элсэлт — хүн аль бүлэгт
+       сууж байгааг заана. Хоосон = сонгоогүй. */
+    program: {
+      type: String,
+      default: "",
+      index: true,
+    },
+    /* /reels рүү видео оруулах эрх. АДМИН БАЙХ ШААРДЛАГАГҮЙ — эзэн
+       өөрийн энгийн бүртгэлээсээ ажиллахыг хүссэн. Админ нь энэ тугаас
+       үл хамааран үргэлж оруулж чадна. */
+    canUploadReels: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
     avatar: {
       type: String,
       default: "",
@@ -136,7 +178,28 @@ const UserSchema = new Schema<IUser>(
       default: "",
       maxlength: 300,
     },
+    location: { type: String, default: "", maxlength: 60, trim: true },
+    lastSeenAt: { type: Date, index: true },
+    website: { type: String, default: "", maxlength: 120, trim: true },
+    coverImage: { type: String, default: "" },
+    following: { type: [{ type: Schema.Types.ObjectId, ref: "User" }], default: [], index: true },
+    /* Гурвуулаа ХЭРЭГЛЭГЧИЙН НЭР хадгална, бүтэн URL биш. Шалтгаан:
+       хүн "instagram.com/x", "@x", "https://www.instagram.com/x/?hl=mn"
+       гэх мэт олон янзаар бичдэг; хадгалахынхаа өмнө нэг хэлбэрт оруулбал
+       харуулах тал нь ганц загвараар холбоос угсарна. */
     instagram: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 60,
+    },
+    facebook: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 60,
+    },
+    threads: {
       type: String,
       default: "",
       trim: true,
@@ -157,6 +220,16 @@ const UserSchema = new Schema<IUser>(
       enum: ["free", "starter", "builder", "operator"],
       default: "free",
       index: true,
+    },
+    /* ─── Аль мэдэгдлийг хүлээж авах вэ ─────────────────────────────────
+       Талбар БАЙХГҮЙ = ЗӨВШӨӨРСӨН. 650 хуучин бүртгэлд энэ талбар
+       байхгүй тул анхдагчийг `true` болгох ёстой — `default: false`
+       тавибал шинэчлэлт нь бүх хүний мэдэгдлийг чимээгүйхэн унтраана.
+       `payment` ба `system` энд ОРООГҮЙ бөгөөд ороход ч болохгүй:
+       төлбөр, эрхийн мэдэгдэл нь сурталчилгаа биш. */
+    notificationPrefs: {
+      newPosts: { type: Boolean, default: true },
+      newCourses: { type: Boolean, default: true },
     },
     onboarding: {
       goal: { type: String, default: "" },
@@ -285,6 +358,23 @@ const UserSchema = new Schema<IUser>(
     },
     metaLinkCodeExpiresAt: {
       type: Date,
+    },
+    /* ─── Гуравдагч этгээдийн нэвтрэлт (Google / Facebook) ──────────────
+       Энэ хоёр нь ХЭРЭГЛЭГЧИЙН ХАНДАХ ХАЯГ биш, ПРОВАЙДЕРЫН ТОГТМОЛ ID.
+       Имэйлээр холбох нь хангалтгүй: Google дээр имэйлээ сольсон хүн
+       буцаад ирэхэд шинэ бүртгэл болж, XP, пост, захиалга нь алга болно.
+       `sparse` — нэвтрэлт холбоогүй хүн бүр энэ талбаргүй тул индекст орохгүй.
+       `unique` санаатай ТАВИАГҮЙ: амьд цуглуулга дээр индекс барих эрсдэлээс
+       зайлсхийж, давхардлыг src/lib/auth.ts дахь хайлтын дараалал хамгаална. */
+    googleId: {
+      type: String,
+      index: true,
+      sparse: true,
+    },
+    facebookId: {
+      type: String,
+      index: true,
+      sparse: true,
     },
   },
   {

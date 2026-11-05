@@ -8,6 +8,7 @@ import ThreadsPostState from "@/models/ThreadsPostState";
 import ThreadsLead from "@/models/ThreadsLead";
 import type { IThreadsToken } from "@/models/ThreadsToken";
 import { getThreadsSettings } from "@/models/ThreadsSettings";
+import { writeReply, MIN_INCOMING_CHARS } from "@/lib/replyWriter";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -166,7 +167,10 @@ async function runAccount(
   client: ThreadsAPI,
   token: IThreadsToken,
   triggers: IThreadsTrigger[],
-  hourlyBudget: number
+  hourlyBudget: number,
+  /* AI хариултын тусдаа төсөв. 0 бол AI унтраалттай эсвэл цагийн
+     хязгаарт хүрсэн — аль нь ч бай энэ ажиллалтанд AI бичихгүй. */
+  aiBudget = 0
 ) {
   const stats = { scanned: 0, sent: 0, seeded: 0, skipped: 0, errors: 0 };
   let budget = Math.min(hourlyBudget, MAX_SENDS_PER_RUN);
@@ -237,6 +241,47 @@ async function runAccount(
           break;
         }
         if (!matched) {
+          // Түлхүүр үгийн дүрэмд таараагүй — AI уншаад хариулах эсэхээ
+          // шийднэ. Дүрэмтэй мөргөлдөхгүй: дүрэм таарсан бол энд хүрэхгүй.
+          if (aiBudget > 0 && budget > 0 && text.trim().length >= MIN_INCOMING_CHARS) {
+            const decision = await writeReply({
+              incoming: text,
+              postText: post.text || "",
+              username: reply.username || "",
+            });
+            if (decision.action === "send") {
+              try {
+                await client.createAndPublish(decision.text, reply.id);
+                await ThreadsAutoReplyLog.create({
+                  replyId: reply.id, eventType: "comment", accountId: token.threadsUserId,
+                  postId: post.id, username: reply.username || "", replyText: text.slice(0, 500),
+                  status: "sent", actionTaken: "ai_reply", sentText: decision.text,
+                  note: decision.reason,
+                }).catch(() => {});
+                stats.sent++; budget--; aiBudget--;
+              } catch (err) {
+                await recordSendFailure(token, err);
+                await ThreadsAutoReplyLog.create({
+                  replyId: reply.id, eventType: "comment", accountId: token.threadsUserId,
+                  postId: post.id, username: reply.username || "", replyText: text.slice(0, 500),
+                  status: "error", actionTaken: "ai_reply",
+                  error: err instanceof Error ? err.message.slice(0, 300) : String(err),
+                }).catch(() => {});
+                stats.errors++;
+              }
+              continue;
+            }
+            // AI "хүн хариулах ёстой" гэв — чимээгүй орхихгүй, шалтгаантай
+            // нь бүртгэнэ, тэгж байж эзэн нь юуг алдаж байгаагаа харна.
+            await ThreadsAutoReplyLog.create({
+              replyId: reply.id, eventType: "comment", accountId: token.threadsUserId,
+              postId: post.id, username: reply.username || "", replyText: text.slice(0, 500),
+              status: "skipped", actionTaken: "ai_skip", note: decision.reason,
+            }).catch(() => {});
+            stats.skipped++;
+            continue;
+          }
+
           await ThreadsAutoReplyLog.create({
             replyId: reply.id, eventType: "comment", accountId: token.threadsUserId,
             postId: post.id, username: reply.username || "", replyText: text.slice(0, 500), status: "skipped",
@@ -331,7 +376,17 @@ async function runAutomation() {
     });
     const budget = (settings.maxPerHour || 30) - sentThisHour;
 
-    const s = await runAccount(client, token, mine, budget);
+    // AI хариулт тусдаа тоологдоно — загвар хариултууд түүнийг идэхгүй.
+    let aiBudget = 0;
+    if (settings.aiReplyEnabled) {
+      const aiThisHour = await ThreadsAutoReplyLog.countDocuments({
+        accountId: token.threadsUserId, actionTaken: "ai_reply", status: "sent",
+        createdAt: { $gt: hourAgo },
+      });
+      aiBudget = Math.max(0, (settings.aiReplyMaxPerHour || 10) - aiThisHour);
+    }
+
+    const s = await runAccount(client, token, mine, budget, aiBudget);
     totals.scanned += s.scanned; totals.sent += s.sent; totals.seeded += s.seeded;
     totals.skipped += s.skipped; totals.errors += s.errors; totals.accounts++;
   }

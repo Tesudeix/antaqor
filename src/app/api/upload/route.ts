@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { mkdir, statfs, stat, writeFile, unlink } from "fs/promises";
+import { mkdir, statfs, stat, writeFile, unlink, rename } from "fs/promises";
 import path from "path";
 import { tmpdir } from "os";
 import { spawn } from "child_process";
@@ -19,8 +19,9 @@ import dbConnect from "@/lib/mongodb";
 // queue waits up to 30s. 20s of 1080p H.264 at preset=fast → 8–15s on this box.
 let videoTranscodeRunning = 0;
 const MAX_CONCURRENT_TRANSCODE = 1;
-const TRANSCODE_QUEUE_TIMEOUT = 30_000;
-const TRANSCODE_TIMEOUT = 60_000;
+// 2026-10-06: reel (≤60с) болсон тул хүлээлт/хугацааг уртасгав.
+const TRANSCODE_QUEUE_TIMEOUT = 120_000;
+const TRANSCODE_TIMEOUT = 180_000;
 
 async function acquireTranscode(): Promise<void> {
   const start = Date.now();
@@ -193,7 +194,7 @@ export async function POST(req: NextRequest) {
 
     // Size cap — videos get a higher ceiling (25MB) since 20s of HD is usually
     // 8–15MB; admin/paid keep their default but apply the larger of the two caps.
-    const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
+    const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // reel ≤60с (2026-10-06; өмнө 25MB/20с)
     const baseSize = admin || paid ? MAX_PAID_SIZE : MAX_FREE_SIZE;
     const MAX_SIZE = isVideo ? Math.max(MAX_VIDEO_SIZE, baseSize) : baseSize;
 
@@ -246,62 +247,83 @@ export async function POST(req: NextRequest) {
     let filename = "";
 
     if (isVideo) {
-      // ─── Video: transcode via ffmpeg under a 1-concurrency lock.
-      //   • H.264 baseline (max compat, including iOS Safari)
-      //   • Scale to ≤1280×720 — tablet/phone-friendly, plenty for short clips
-      //   • CRF 26 + preset fast — strong quality/size ratio in <15s for 20s clips
-      //   • +faststart so the browser can start playing while still downloading
-      //   • Poster JPG generated at 0.5s for a good first frame
+      /* ─── VIDEO — ХАРИУГ ХҮЛЭЭЛГЭХГҮЙ (2026-10-09) ───────────────────────
+         Өмнө нь ffmpeg хөрвүүлэлт ДУУСТАЛ хариу өгдөггүй байсан: iPhone-ий
+         27с HEVC клип ~22с хөрвөнө (хэмжсэн) → утсан дээр "UPLOADING…"
+         хөдөлгөөнгүй 20+ секунд гацсан мэт харагдана.
+         Одоо:
+           1) remux (-c copy, ~0.2с) → тоглох боломжтой файл ШУУД бэлэн,
+              poster ч мөн. Хариу ДАРУЙ буцна.
+           2) Арын хөрвүүлэлт: H.264, урт тал ≤1280, CRF 26 → `.part.mp4`,
+              дараа нь ATOMIC rename — тоглож буй хүн тасрахгүй.
+           3) `<file>.processing` тэмдэг — давхар нийтлэлт (IG/FB) хөрвүүлэлт
+              дуусахыг хүлээнэ (feedCrosspost.waitForVideo).
+         Аль хэдийн жижиг H.264 (урт тал ≤1280, ≤5Mbps) бол хөрвүүлэхгүй. */
       const id = randomUUID();
       const tempIn = path.join(tmpdir(), `up-${id}.in`);
       filename = `vid-${id}.mp4`;
       const filepath = path.join(UPLOAD_DIR, filename);
+      const partPath = path.join(UPLOAD_DIR, `vid-${id}.part.mp4`);
       const posterPath = path.join(UPLOAD_DIR, `vid-${id}-poster.jpg`);
+      const marker = `${filepath}.processing`;
+      const SCALE = "scale='if(gte(iw,ih),min(1280,iw),-2)':'if(gte(iw,ih),-2,min(1280,ih))'";
 
       await writeFile(tempIn, buffer);
+
+      // 1) Шууд тоглох хувилбар.
       try {
-        await acquireTranscode();
-      } catch (e: unknown) {
-        await unlink(tempIn).catch(() => {});
-        const msg = e instanceof Error ? e.message : "Transcode queue full";
-        return NextResponse.json({ error: msg }, { status: 503 });
-      }
-      try {
-        await runFfmpeg([
-          "-y",
-          "-i", tempIn,
-          "-vf", "scale='min(1280,iw)':-2,format=yuv420p",
-          "-c:v", "libx264",
-          "-preset", "fast",
-          "-crf", "26",
-          "-c:a", "aac",
-          "-b:a", "128k",
-          "-movflags", "+faststart",
-          "-max_muxing_queue_size", "1024",
-          filepath,
-        ]);
-        // Poster — best-effort, doesn't fail the upload if it errors.
-        await runFfmpeg([
-          "-y",
-          "-ss", "00:00:00.5",
-          "-i", filepath,
-          "-frames:v", "1",
-          "-q:v", "3",
-          "-vf", "scale='min(1280,iw)':-2",
-          posterPath,
-        ]).catch(() => { /* poster optional */ });
-      } catch (err: unknown) {
-        // Transcode failed — fall back to the raw file so the user still gets
-        // a working video, just bigger.
-        const msg = err instanceof Error ? err.message : "transcode failed";
-        console.warn("[upload] ffmpeg failed, persisting raw:", msg);
+        await runFfmpeg(["-y", "-i", tempIn, "-map", "0:v:0", "-map", "0:a:0?", "-c", "copy", "-movflags", "+faststart", filepath]);
+      } catch {
         await writeFile(filepath, buffer);
-      } finally {
-        releaseTranscode();
+      }
+      await runFfmpeg(["-y", "-ss", "00:00:00.5", "-i", filepath, "-frames:v", "1", "-q:v", "3", "-vf", SCALE, posterPath]).catch(() => {});
+      processedSize = buffer.length;
+
+      // Хөрвүүлэх шаардлагатай юу?
+      let needsTranscode = true;
+      try {
+        const probe = await new Promise<string>((resolve, reject) => {
+          const pr = spawn("ffprobe", ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,width,height,bit_rate,pix_fmt", "-of", "json", filepath]);
+          let out = ""; pr.stdout.on("data", (d) => { out += d; });
+          pr.on("close", (c) => (c === 0 ? resolve(out) : reject(new Error("ffprobe"))));
+          pr.on("error", reject);
+        });
+        const st = JSON.parse(probe).streams?.[0] || {};
+        const longSide = Math.max(Number(st.width) || 0, Number(st.height) || 0);
+        const br = Number(st.bit_rate) || 0;
+        needsTranscode = !(st.codec_name === "h264" && st.pix_fmt === "yuv420p" && longSide > 0 && longSide <= 1280 && br > 0 && br <= 5_000_000);
+      } catch { /* probe унавал хөрвүүлнэ */ }
+
+      if (needsTranscode) {
+        await writeFile(marker, "").catch(() => {});
+        // 2) Арын хөрвүүлэлт — хариуг ХҮЛЭЭЛГЭХГҮЙ.
+        void (async () => {
+          let locked = false;
+          try {
+            await acquireTranscode(); locked = true;
+            await runFfmpeg([
+              "-y", "-i", tempIn,
+              "-vf", `${SCALE},format=yuv420p`,
+              "-c:v", "libx264", "-preset", "veryfast", "-crf", "26",
+              "-c:a", "aac", "-b:a", "128k",
+              "-movflags", "+faststart", "-max_muxing_queue_size", "1024",
+              partPath,
+            ]);
+            await rename(partPath, filepath);
+            await runFfmpeg(["-y", "-ss", "00:00:00.5", "-i", filepath, "-frames:v", "1", "-q:v", "3", "-vf", SCALE, posterPath]).catch(() => {});
+          } catch (err: unknown) {
+            // Шууд хувилбар нь аль хэдийн тоглож байгаа — зүгээр л үлдээнэ.
+            console.warn("[upload] background transcode failed, keeping remux:", err instanceof Error ? err.message : err);
+            await unlink(partPath).catch(() => {});
+          } finally {
+            if (locked) releaseTranscode();
+            await unlink(tempIn).catch(() => {});
+            await unlink(marker).catch(() => {});
+          }
+        })();
+      } else {
         await unlink(tempIn).catch(() => {});
       }
-      const s = await stat(filepath);
-      processedSize = s.size;
     } else {
       // ─── Image: run through sharp under a semaphore (OOM guard) ───
       let release: (() => void) | null = null;

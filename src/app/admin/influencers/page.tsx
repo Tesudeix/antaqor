@@ -29,7 +29,7 @@ interface Collab {
 
 const NETWORKS: Network[] = ["instagram", "tiktok", "youtube", "facebook", "threads", "x"];
 const TIERS: Tier[] = ["nano", "micro", "macro", "mega", "celebrity"];
-const ACCENT = "#1080CA";
+const ACCENT = "#2E29FF";
 
 type EmptyDraft = Omit<Influencer, "_id" | "slug"> & { slug: string };
 const EMPTY: EmptyDraft = {
@@ -44,8 +44,8 @@ function fmt(n: number): string {
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
   return String(n);
 }
-const inp = "w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[rgba(16,128,202,0.4)]";
-const lbl = "font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#8A8A92]";
+const inp = "w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[rgba(46,41,255,0.4)]";
+const lbl = "font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#E2E4E8]";
 
 export default function AdminInfluencersPage() {
   const [tab, setTab] = useState<"roster" | "apps" | "collabs">("roster");
@@ -71,12 +71,12 @@ export default function AdminInfluencersPage() {
     <div className="mx-auto max-w-4xl px-4 pb-16 pt-6">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#1080CA]">ANTAQOR / ADMIN</p>
-          <h1 className="mt-1 text-[24px] font-black text-[#E8E8E8]">Инфлюенсер сүлжээ<span className="text-[#1080CA]">.</span></h1>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#2E29FF]">ANTAQOR / ADMIN</p>
+          <h1 className="mt-1 text-[24px] font-black text-[#E8E8E8]">Инфлюенсер сүлжээ<span className="text-[#2E29FF]">.</span></h1>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/influencers" target="_blank" className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0E0E12] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#8A8A92] transition hover:text-[#E8E8E8]">Нээх ↗</Link>
-          <Link href="/admin" className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0E0E12] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#8A8A92] transition hover:text-[#E8E8E8]">← Админ</Link>
+          <Link href="/influencers" target="_blank" className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#E2E4E8] transition hover:text-[#E8E8E8]">Нээх ↗</Link>
+          <Link href="/admin" className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#E2E4E8] transition hover:text-[#E8E8E8]">← Админ</Link>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export default function AdminInfluencersPage() {
       <div className="mb-5 flex gap-1 border-b border-[rgba(255,255,255,0.08)]">
         {([["roster", "Роастер"], ["apps", `Өргөдөл${newApps ? ` · ${newApps}` : ""}`], ["collabs", `Хамтрал${newCollabs ? ` · ${newCollabs}` : ""}`]] as const).map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)}
-            className={`relative -mb-px border-b-2 px-4 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition ${tab === k ? "border-[#1080CA] text-[#E8E8E8]" : "border-transparent text-[#8A8A92] hover:text-[#E8E8E8]"}`}>
+            className={`relative -mb-px border-b-2 px-4 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition ${tab === k ? "border-[#2E29FF] text-[#E8E8E8]" : "border-transparent text-[#E2E4E8] hover:text-[#E8E8E8]"}`}>
             {l}
           </button>
         ))}
@@ -149,7 +149,7 @@ function RosterTab() {
   return (
     <div>
       {editingId !== "new" && (
-        <button onClick={startNew} className="mb-4 inline-flex items-center gap-1.5 rounded-none bg-[#1080CA] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.4)]">
+        <button onClick={startNew} className="mb-4 inline-flex items-center gap-1.5 rounded-[4px] bg-[#2E29FF] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.4)]">
           <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 4v16m8-8H4" /></svg>
           Шинэ креатор
         </button>
@@ -160,35 +160,35 @@ function RosterTab() {
       )}
 
       {loading ? (
-        <div className="py-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#8A8A92]">Ачааллаж байна…</div>
+        <div className="py-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">Ачааллаж байна…</div>
       ) : list.length === 0 ? (
-        <div className="rounded-none border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#8A8A92]">ХООСОН</p>
-          <p className="mt-2 text-[12px] text-[#8A8A92]">Эхний креатораа нэмнэ үү</p>
+        <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#E2E4E8]">ХООСОН</p>
+          <p className="mt-2 text-[12px] text-[#E2E4E8]">Эхний креатораа нэмнэ үү</p>
         </div>
       ) : (
         <div className="space-y-2">
           {list.map((i) => (
-            <div key={i._id} className={`flex items-center gap-3 rounded-none border bg-[#0E0E12] p-3 transition ${editingId === i._id ? "border-[rgba(16,128,202,0.5)]" : "border-[rgba(255,255,255,0.06)] hover:border-[rgba(16,128,202,0.3)]"}`}>
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-none bg-[#0A0A0A]">
+            <div key={i._id} className={`flex items-center gap-3 rounded-[4px] border bg-[#0A0A0A] p-3 transition ${editingId === i._id ? "border-[rgba(46,41,255,0.5)]" : "border-[rgba(255,255,255,0.06)] hover:border-[rgba(46,41,255,0.3)]"}`}>
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[4px] bg-[#0A0A0A]">
                 {i.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={i.avatar} alt={i.name} className="h-full w-full object-cover" />
-                ) : <span className="font-mono text-[12px] font-black text-[#8A8A92]">{i.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()}</span>}
+                ) : <span className="font-mono text-[12px] font-black text-[#E2E4E8]">{i.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()}</span>}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate text-[13px] font-bold text-[#E8E8E8]">{i.name}</span>
-                  {i.verified && <span className="text-[#1080CA]">✓</span>}
-                  {i.featured && <span className="rounded bg-[rgba(16,128,202,0.12)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#1080CA]">FEAT</span>}
-                  {i.status === "hidden" && <span className="rounded bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#8A8A92]">НУУСАН</span>}
+                  {i.verified && <span className="text-[#2E29FF]">✓</span>}
+                  {i.featured && <span className="rounded bg-[rgba(46,41,255,0.12)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#2E29FF]">FEAT</span>}
+                  {i.status === "hidden" && <span className="rounded bg-[rgba(255,255,255,0.06)] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#E2E4E8]">НУУСАН</span>}
                 </div>
-                <p className="truncate text-[11px] text-[#8A8A92]">
+                <p className="truncate text-[11px] text-[#E2E4E8]">
                   {i.handle && <>@{i.handle} · </>}{i.niche || "—"} · {fmt(i.totalFollowers)} дагагч · {i.tier}
                 </p>
               </div>
-              <button onClick={() => startEdit(i)} className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#8A8A92] transition hover:text-[#1080CA]">Засах</button>
-              <button onClick={() => remove(i)} aria-label="Устгах" className="rounded-none p-1.5 text-[#8A8A92] transition hover:bg-[rgba(16,128,202,0.1)] hover:text-[#1080CA]">
+              <button onClick={() => startEdit(i)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8] transition hover:text-[#2E29FF]">Засах</button>
+              <button onClick={() => remove(i)} aria-label="Устгах" className="rounded-[4px] p-1.5 text-[#E2E4E8] transition hover:bg-[rgba(46,41,255,0.1)] hover:text-[#2E29FF]">
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9M19.228 5.79L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M7.5 5.79h9" /></svg>
               </button>
             </div>
@@ -232,30 +232,30 @@ function InfluencerForm({ draft, setDraft, saving, err, onCancel, onSave, isNew 
   const removePlatform = (idx: number) => set("platforms", draft.platforms.filter((_, i) => i !== idx));
 
   return (
-    <div className="mb-5 rounded-none border border-[rgba(16,128,202,0.3)] bg-[#0E0E10] p-4">
+    <div className="mb-5 rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#0A0A0A] p-4">
       {/* media */}
       <div className="grid grid-cols-[88px_1fr] gap-3">
         <div>
           <span className={lbl}>Аватар</span>
           <button type="button" onClick={() => avatarRef.current?.click()} disabled={!!uploading}
-            className="relative mt-1 flex aspect-square w-full items-center justify-center overflow-hidden rounded-none border-2 border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(16,128,202,0.4)]">
+            className="relative mt-1 flex aspect-square w-full items-center justify-center overflow-hidden rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.4)]">
             {draft.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={draft.avatar} alt="" className="h-full w-full object-cover" />
-            ) : <span className="font-mono text-[9px] text-[#8A8A92]">+ ЗУРАГ</span>}
-            {uploading === "avatar" && <span className="absolute inset-0 flex items-center justify-center bg-black/60"><span className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" /></span>}
+            ) : <span className="font-mono text-[11px] text-[#E2E4E8]">+ ЗУРАГ</span>}
+            {uploading === "avatar" && <span className="absolute inset-0 flex items-center justify-center bg-black/60"><span className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" /></span>}
           </button>
           <input ref={avatarRef} type="file" accept="image/*" onChange={(e) => upload(e, "avatar")} className="hidden" />
         </div>
         <div>
           <span className={lbl}>Ковер</span>
           <button type="button" onClick={() => coverRef.current?.click()} disabled={!!uploading}
-            className="relative mt-1 flex h-[88px] w-full items-center justify-center overflow-hidden rounded-none border-2 border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(16,128,202,0.4)]">
+            className="relative mt-1 flex h-[88px] w-full items-center justify-center overflow-hidden rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.4)]">
             {draft.cover ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={draft.cover} alt="" className="h-full w-full object-cover" />
-            ) : <span className="font-mono text-[9px] text-[#8A8A92]">+ КОВЕР ЗУРАГ</span>}
-            {uploading === "cover" && <span className="absolute inset-0 flex items-center justify-center bg-black/60"><span className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" /></span>}
+            ) : <span className="font-mono text-[11px] text-[#E2E4E8]">+ КОВЕР ЗУРАГ</span>}
+            {uploading === "cover" && <span className="absolute inset-0 flex items-center justify-center bg-black/60"><span className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" /></span>}
           </button>
           <input ref={coverRef} type="file" accept="image/*" onChange={(e) => upload(e, "cover")} className="hidden" />
         </div>
@@ -288,7 +288,7 @@ function InfluencerForm({ draft, setDraft, saving, err, onCancel, onSave, isNew 
       <div className="mt-4">
         <div className="flex items-center justify-between">
           <span className={lbl}>Платформууд</span>
-          <button type="button" onClick={addPlatform} className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#1080CA]">+ нэмэх</button>
+          <button type="button" onClick={addPlatform} className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#2E29FF]">+ нэмэх</button>
         </div>
         <div className="mt-2 space-y-2">
           {draft.platforms.map((p, idx) => (
@@ -298,10 +298,10 @@ function InfluencerForm({ draft, setDraft, saving, err, onCancel, onSave, isNew 
               </select>
               <input className={inp} value={p.url} onChange={(e) => setPlatform(idx, { url: e.target.value })} placeholder="https://…" />
               <input type="number" className={inp} value={p.followers || ""} onChange={(e) => setPlatform(idx, { followers: Number(e.target.value) || 0 })} placeholder="дагагч" />
-              <button type="button" onClick={() => removePlatform(idx)} className="flex h-9 items-center justify-center text-[#8A8A92] transition hover:text-[#1080CA]">✕</button>
+              <button type="button" onClick={() => removePlatform(idx)} className="flex h-9 items-center justify-center text-[#E2E4E8] transition hover:text-[#2E29FF]">✕</button>
             </div>
           ))}
-          {draft.platforms.length === 0 && <p className="text-[11px] text-[#56565E]">Платформ нэмээгүй байна.</p>}
+          {draft.platforms.length === 0 && <p className="text-[11px] text-[#E2E4E8]">Платформ нэмээгүй байна.</p>}
         </div>
       </div>
 
@@ -313,22 +313,22 @@ function InfluencerForm({ draft, setDraft, saving, err, onCancel, onSave, isNew 
       </div>
 
       {/* toggles */}
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-[11px] text-[#8A8A92]">
-        <label className="flex items-center gap-1.5"><input type="checkbox" className="h-3.5 w-3.5 accent-[#1080CA]" checked={draft.verified} onChange={(e) => set("verified", e.target.checked)} />Баталгаажсан</label>
-        <label className="flex items-center gap-1.5"><input type="checkbox" className="h-3.5 w-3.5 accent-[#1080CA]" checked={draft.featured} onChange={(e) => set("featured", e.target.checked)} />Онцлох</label>
-        <label className="flex items-center gap-1.5">Дараалал<input type="number" className="w-16 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-center text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(16,128,202,0.4)]" value={draft.order} onChange={(e) => set("order", Number(e.target.value) || 0)} /></label>
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-[11px] text-[#E2E4E8]">
+        <label className="flex items-center gap-1.5"><input type="checkbox" className="h-3.5 w-3.5 accent-[#2E29FF]" checked={draft.verified} onChange={(e) => set("verified", e.target.checked)} />Баталгаажсан</label>
+        <label className="flex items-center gap-1.5"><input type="checkbox" className="h-3.5 w-3.5 accent-[#2E29FF]" checked={draft.featured} onChange={(e) => set("featured", e.target.checked)} />Онцлох</label>
+        <label className="flex items-center gap-1.5">Дараалал<input type="number" className="w-16 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-center text-[12px] text-[#E8E8E8] outline-none focus:border-[rgba(46,41,255,0.4)]" value={draft.order} onChange={(e) => set("order", Number(e.target.value) || 0)} /></label>
         <label className="flex items-center gap-1.5">Төлөв
-          <select className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[12px] text-[#E8E8E8] outline-none" value={draft.status} onChange={(e) => set("status", e.target.value as "active" | "hidden")}>
+          <select className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2 py-1 text-[12px] text-[#E8E8E8] outline-none" value={draft.status} onChange={(e) => set("status", e.target.value as "active" | "hidden")}>
             <option value="active">Идэвхтэй</option>
             <option value="hidden">Нуусан</option>
           </select>
         </label>
       </div>
 
-      {err && <p className="mt-3 text-[11px] text-[#1080CA]">{err}</p>}
+      {err && <p className="mt-3 text-[11px] text-[#2E29FF]">{err}</p>}
       <div className="mt-4 flex items-center justify-end gap-2">
-        <button onClick={onCancel} className="text-[11px] font-bold text-[#8A8A92] transition hover:text-[#E8E8E8]">Болих</button>
-        <button onClick={onSave} disabled={saving || !draft.name.trim()} className="rounded-none bg-[#1080CA] px-4 py-2 text-[11px] font-black uppercase tracking-wider text-[#0E0E10] disabled:opacity-40">{saving ? "Хадгалж байна..." : "Хадгалах"}</button>
+        <button onClick={onCancel} className="text-[11px] font-bold text-[#E2E4E8] transition hover:text-[#E8E8E8]">Болих</button>
+        <button onClick={onSave} disabled={saving || !draft.name.trim()} className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white disabled:opacity-40">{saving ? "Хадгалж байна..." : "Хадгалах"}</button>
       </div>
     </div>
   );
@@ -336,8 +336,8 @@ function InfluencerForm({ draft, setDraft, saving, err, onCancel, onSave, isNew 
 
 /* ── Applications ─────────────────────────────────────────────────────── */
 const APP_STATUS: Record<Application["status"], { label: string; color: string }> = {
-  new: { label: "Шинэ", color: "#1080CA" }, reviewing: { label: "Хянаж буй", color: "#F5C542" },
-  approved: { label: "Зөвшөөрсөн", color: "#3ECf8E" }, rejected: { label: "Татгалзсан", color: "#8A8A92" },
+  new: { label: "Шинэ", color: "#2E29FF" }, reviewing: { label: "Хянаж буй", color: "#F5C542" },
+  approved: { label: "Зөвшөөрсөн", color: "#3ECf8E" }, rejected: { label: "Татгалзсан", color: "#30333F" },
 };
 function ApplicationsTab({ apps, reload }: { apps: Application[]; reload: () => void }) {
   const [filter, setFilter] = useState<string>("all");
@@ -353,37 +353,37 @@ function ApplicationsTab({ apps, reload }: { apps: Application[]; reload: () => 
     <div>
       <div className="mb-3 flex flex-wrap gap-1.5">
         {["all", "new", "reviewing", "approved", "rejected"].map((s) => (
-          <button key={s} onClick={() => setFilter(s)} className={`rounded-none border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${filter === s ? "border-[#1080CA] bg-[rgba(16,128,202,0.12)] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#8A8A92] hover:text-[#E8E8E8]"}`}>
+          <button key={s} onClick={() => setFilter(s)} className={`rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${filter === s ? "border-[#2E29FF] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#E2E4E8] hover:text-[#E8E8E8]"}`}>
             {s === "all" ? "Бүгд" : APP_STATUS[s as Application["status"]].label}
           </button>
         ))}
       </div>
       {shown.length === 0 ? (
-        <div className="rounded-none border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#8A8A92]">ӨРГӨДӨЛ БАЙХГҮЙ</div>
+        <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">ӨРГӨДӨЛ БАЙХГҮЙ</div>
       ) : (
         <div className="space-y-2">
           {shown.map((a) => (
-            <div key={a._id} className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12] p-3">
+            <div key={a._id} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] font-bold text-[#E8E8E8]">{a.name}</span>
-                    {a.handle && <span className="text-[11px] text-[#8A8A92]">@{a.handle}</span>}
+                    {a.handle && <span className="text-[11px] text-[#E2E4E8]">@{a.handle}</span>}
                     <span className="rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider" style={{ color: APP_STATUS[a.status].color, background: `${APP_STATUS[a.status].color}1a` }}>{APP_STATUS[a.status].label}</span>
                   </div>
-                  <p className="mt-1 text-[11px] text-[#8A8A92]">
+                  <p className="mt-1 text-[11px] text-[#E2E4E8]">
                     {a.niche || "—"} · {a.primaryPlatform || "—"} · {fmt(a.followers)} дагагч
                   </p>
-                  <p className="mt-0.5 text-[11px] text-[#8A8A92]">
-                    <a href={`mailto:${a.email}`} className="text-[#1080CA]">{a.email}</a>{a.phone && ` · ${a.phone}`}{a.portfolioUrl && <> · <a href={a.portfolioUrl} target="_blank" rel="noreferrer" className="underline">portfolio</a></>}
+                  <p className="mt-0.5 text-[11px] text-[#E2E4E8]">
+                    <a href={`mailto:${a.email}`} className="text-[#2E29FF]">{a.email}</a>{a.phone && ` · ${a.phone}`}{a.portfolioUrl && <> · <a href={a.portfolioUrl} target="_blank" rel="noreferrer" className="underline">portfolio</a></>}
                   </p>
-                  {a.message && <p className="mt-2 whitespace-pre-wrap rounded-none bg-[#0A0A0A] p-2 text-[12px] text-[#C8C8C0]">{a.message}</p>}
+                  {a.message && <p className="mt-2 whitespace-pre-wrap rounded-[4px] bg-[#0A0A0A] p-2 text-[12px] text-[#C8C8C0]">{a.message}</p>}
                 </div>
-                <button onClick={() => remove(a._id)} aria-label="Устгах" className="shrink-0 rounded-none p-1.5 text-[#8A8A92] transition hover:text-[#1080CA]">✕</button>
+                <button onClick={() => remove(a._id)} aria-label="Устгах" className="shrink-0 rounded-[4px] p-1.5 text-[#E2E4E8] transition hover:text-[#2E29FF]">✕</button>
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 {(Object.keys(APP_STATUS) as Application["status"][]).map((s) => (
-                  <button key={s} onClick={() => update(a._id, { status: s })} className={`rounded-none border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition ${a.status === s ? "border-[#1080CA] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] text-[#8A8A92] hover:text-[#E8E8E8]"}`}>{APP_STATUS[s].label}</button>
+                  <button key={s} onClick={() => update(a._id, { status: s })} className={`rounded-[4px] border px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] transition ${a.status === s ? "border-[#2E29FF] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] text-[#E2E4E8] hover:text-[#E8E8E8]"}`}>{APP_STATUS[s].label}</button>
                 ))}
               </div>
             </div>
@@ -396,8 +396,8 @@ function ApplicationsTab({ apps, reload }: { apps: Application[]; reload: () => 
 
 /* ── Collabs ──────────────────────────────────────────────────────────── */
 const COLLAB_STATUS: Record<Collab["status"], { label: string; color: string }> = {
-  new: { label: "Шинэ", color: "#1080CA" }, contacted: { label: "Холбогдсон", color: "#F5C542" },
-  won: { label: "Хийсэн", color: "#3ECf8E" }, closed: { label: "Хаасан", color: "#8A8A92" },
+  new: { label: "Шинэ", color: "#2E29FF" }, contacted: { label: "Холбогдсон", color: "#F5C542" },
+  won: { label: "Хийсэн", color: "#3ECf8E" }, closed: { label: "Хаасан", color: "#30333F" },
 };
 function CollabsTab({ collabs, reload }: { collabs: Collab[]; reload: () => void }) {
   const [filter, setFilter] = useState<string>("all");
@@ -413,35 +413,35 @@ function CollabsTab({ collabs, reload }: { collabs: Collab[]; reload: () => void
     <div>
       <div className="mb-3 flex flex-wrap gap-1.5">
         {["all", "new", "contacted", "won", "closed"].map((s) => (
-          <button key={s} onClick={() => setFilter(s)} className={`rounded-none border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${filter === s ? "border-[#1080CA] bg-[rgba(16,128,202,0.12)] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#8A8A92] hover:text-[#E8E8E8]"}`}>
+          <button key={s} onClick={() => setFilter(s)} className={`rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${filter === s ? "border-[#2E29FF] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] text-[#E2E4E8] hover:text-[#E8E8E8]"}`}>
             {s === "all" ? "Бүгд" : COLLAB_STATUS[s as Collab["status"]].label}
           </button>
         ))}
       </div>
       {shown.length === 0 ? (
-        <div className="rounded-none border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#8A8A92]">ХҮСЭЛТ БАЙХГҮЙ</div>
+        <div className="rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.08)] p-10 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">ХҮСЭЛТ БАЙХГҮЙ</div>
       ) : (
         <div className="space-y-2">
           {shown.map((c) => (
-            <div key={c._id} className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12] p-3">
+            <div key={c._id} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[13px] font-bold text-[#E8E8E8]">{c.brand || c.name}</span>
-                    <span className="rounded bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">{c.influencerName || "Нээлттэй бриф"}</span>
+                    <span className="rounded bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 text-[11px] font-bold text-[#2E29FF]">{c.influencerName || "Нээлттэй бриф"}</span>
                     <span className="rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider" style={{ color: COLLAB_STATUS[c.status].color, background: `${COLLAB_STATUS[c.status].color}1a` }}>{COLLAB_STATUS[c.status].label}</span>
                   </div>
-                  <p className="mt-1 text-[11px] text-[#8A8A92]">
-                    {c.name} · <a href={`mailto:${c.email}`} className="text-[#1080CA]">{c.email}</a>{c.phone && ` · ${c.phone}`}
+                  <p className="mt-1 text-[11px] text-[#E2E4E8]">
+                    {c.name} · <a href={`mailto:${c.email}`} className="text-[#2E29FF]">{c.email}</a>{c.phone && ` · ${c.phone}`}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-[#8A8A92]">Зорилго: {c.goal || "—"}{c.budget ? ` · Төсөв ₮${c.budget.toLocaleString()}` : ""}</p>
-                  {c.message && <p className="mt-2 whitespace-pre-wrap rounded-none bg-[#0A0A0A] p-2 text-[12px] text-[#C8C8C0]">{c.message}</p>}
+                  <p className="mt-0.5 text-[11px] text-[#E2E4E8]">Зорилго: {c.goal || "—"}{c.budget ? ` · Төсөв ₮${c.budget.toLocaleString()}` : ""}</p>
+                  {c.message && <p className="mt-2 whitespace-pre-wrap rounded-[4px] bg-[#0A0A0A] p-2 text-[12px] text-[#C8C8C0]">{c.message}</p>}
                 </div>
-                <button onClick={() => remove(c._id)} aria-label="Устгах" className="shrink-0 rounded-none p-1.5 text-[#8A8A92] transition hover:text-[#1080CA]">✕</button>
+                <button onClick={() => remove(c._id)} aria-label="Устгах" className="shrink-0 rounded-[4px] p-1.5 text-[#E2E4E8] transition hover:text-[#2E29FF]">✕</button>
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 {(Object.keys(COLLAB_STATUS) as Collab["status"][]).map((s) => (
-                  <button key={s} onClick={() => update(c._id, { status: s })} className={`rounded-none border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] transition ${c.status === s ? "border-[#1080CA] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] text-[#8A8A92] hover:text-[#E8E8E8]"}`}>{COLLAB_STATUS[s].label}</button>
+                  <button key={s} onClick={() => update(c._id, { status: s })} className={`rounded-[4px] border px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] transition ${c.status === s ? "border-[#2E29FF] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] text-[#E2E4E8] hover:text-[#E8E8E8]"}`}>{COLLAB_STATUS[s].label}</button>
                 ))}
               </div>
             </div>

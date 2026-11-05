@@ -42,12 +42,12 @@ export default function ClientsSection() {
       {/* Eyebrow + admin shortcut */}
       <div className="mb-3 flex items-end justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-4 bg-[#1080CA]" />
+          <div className="h-[2px] w-4 bg-[#2E29FF]" />
           <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#0e1726]">
             ХАМТРАГЧ БРЭНД
           </span>
           {clients.length > 0 && (
-            <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em] text-[#1080CA]">
+            <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em] text-[#2E29FF]">
               {clients.length}
             </span>
           )}
@@ -55,7 +55,7 @@ export default function ClientsSection() {
         {isAdmin && (
           <Link
             href="/admin/clients"
-            className="inline-flex items-center gap-1 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#6b7280] transition hover:text-[#1080CA]"
+            className="inline-flex items-center gap-1 font-mono text-[11px] font-black uppercase tracking-[0.18em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
           >
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -69,18 +69,18 @@ export default function ClientsSection() {
       {clients.length === 0 ? (
         <Link
           href="/admin/clients"
-          className="group flex items-center gap-3 rounded-none border-2 border-dashed border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.04)] p-4 transition hover:border-[#1080CA]"
+          className="group flex items-center gap-3 rounded-[4px] border-2 border-dashed border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.04)] p-4 transition hover:border-[#2E29FF]"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA]">
+          <span className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </span>
           <div className="flex-1">
             <p className="text-[13px] font-bold text-[#0e1726]">Эхний хамтрагч брэндээ нэмэх</p>
-            <p className="text-[11px] text-[#6b7280]">Лого + URL + богино тайлбар</p>
+            <p className="text-[11px] text-[#E2E4E8]">Лого + URL + богино тайлбар</p>
           </div>
-          <svg className="h-4 w-4 text-[#6b7280] transition group-hover:translate-x-0.5 group-hover:text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className="h-4 w-4 text-[#E2E4E8] transition group-hover:translate-x-0.5 group-hover:text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </Link>
@@ -93,15 +93,15 @@ export default function ClientsSection() {
           {isAdmin && (
             <Link
               href="/admin/clients"
-              className="group flex flex-col items-center justify-center gap-2 rounded-none border border-dashed border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.04)] p-4 transition hover:border-[#1080CA]"
+              className="group flex flex-col items-center justify-center gap-2 rounded-[4px] border border-dashed border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.04)] p-4 transition hover:border-[#2E29FF]"
               style={{ minHeight: "152px" }}
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA] transition group-hover:scale-110">
+              <span className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[#2E29FF] transition group-hover:scale-110">
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
               </span>
-              <span className="font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#6b7280] group-hover:text-[#1080CA]">
+              <span className="font-mono text-[11px] font-black uppercase tracking-[0.18em] text-[#E2E4E8] group-hover:text-[#2E29FF]">
                 ШИНЭ БРЭНД
               </span>
             </Link>
@@ -135,11 +135,11 @@ function ClientCard({ client }: { client: Client }) {
     <Wrapper
       {...wrapperProps}
       title={client.description || client.name}
-      className="group relative flex flex-col overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-gradient-to-br from-[#101012] to-[#0A0A0C] p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(16,128,202,0.4)] hover:shadow-[0_8px_32px_rgba(16,128,202,0.18)]"
+      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-gradient-to-br from-[#101012] to-[#0A0A0A] p-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(46,41,255,0.4)] hover:shadow-[0_8px_32px_rgba(46,41,255,0.18)]"
     >
       {/* Top-right external-link arrow if URL present */}
       {client.url && (
-        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-none bg-[rgba(15,23,38,0.04)] text-[#6b7280] opacity-0 transition group-hover:opacity-100">
+        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-[4px] bg-[rgba(15,23,38,0.04)] text-[#E2E4E8] opacity-0 transition group-hover:opacity-100">
           <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
@@ -149,7 +149,7 @@ function ClientCard({ client }: { client: Client }) {
       {/* Logo zone — centered square with subtle inset shadow */}
       <div className="mb-3 flex h-16 items-center justify-center">
         {client.logo ? (
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-none bg-white/95 p-1.5 ring-1 ring-[rgba(15,23,38,0.06)]">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[4px] bg-white/95 p-1.5 ring-1 ring-[rgba(15,23,38,0.06)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={client.logo}
@@ -159,9 +159,9 @@ function ClientCard({ client }: { client: Client }) {
           </div>
         ) : (
           <div
-            className="flex h-14 w-14 items-center justify-center rounded-none font-mono text-[18px] font-black tracking-tight text-[#0e1726] ring-1 ring-[rgba(15,23,38,0.06)]"
+            className="flex h-14 w-14 items-center justify-center rounded-[4px] font-mono text-[18px] font-black tracking-tight text-[#0e1726] ring-1 ring-[rgba(15,23,38,0.06)]"
             style={{
-              background: `linear-gradient(135deg, ${gradientFor(client.name)} 0%, #0F0F11 100%)`,
+              background: `linear-gradient(135deg, ${gradientFor(client.name)} 0%, #F8F9FD 100%)`,
             }}
           >
             {initials || "·"}
@@ -171,16 +171,16 @@ function ClientCard({ client }: { client: Client }) {
 
       {/* Name + description + URL — left-aligned */}
       <div className="min-w-0">
-        <p className="line-clamp-1 text-[13px] font-bold text-[#0e1726] transition group-hover:text-[#1080CA]">
+        <p className="line-clamp-1 text-[13px] font-bold text-[#0e1726] transition group-hover:text-[#2E29FF]">
           {client.name}
         </p>
         {client.description && (
-          <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[#6b7280]">
+          <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[#E2E4E8]">
             {client.description}
           </p>
         )}
         {displayUrl && (
-          <p className="mt-1.5 line-clamp-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#94a3b8] transition group-hover:text-[#1080CA]">
+          <p className="mt-1.5 line-clamp-1 font-mono text-[11px] uppercase tracking-[0.1em] text-[#E2E4E8] transition group-hover:text-[#2E29FF]">
             {displayUrl}
           </p>
         )}
@@ -193,11 +193,11 @@ function ClientCard({ client }: { client: Client }) {
 // a stable, distinct color even without an uploaded logo.
 function gradientFor(seed: string): string {
   const palette = [
-    "rgba(16,128,202,0.35)",   // pink
+    "rgba(46,41,255,0.35)",   // pink
     "rgba(99,102,241,0.35)",  // indigo
     "rgba(34,197,94,0.30)",   // green
     "rgba(245,158,11,0.32)",  // amber
-    "rgba(16,128,202,0.32)",  // purple
+    "rgba(46,41,255,0.32)",  // purple
     "rgba(14,165,233,0.32)",  // sky
   ];
   const h = seed.split("").reduce((a, c) => a + c.charCodeAt(0), 0);

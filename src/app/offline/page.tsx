@@ -3,16 +3,16 @@
 export default function OfflinePage() {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-      <svg className="mb-6 h-16 w-16 text-[#1080CA] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="mb-6 h-16 w-16 text-[#2E29FF] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636a9 9 0 010 12.728M5.636 18.364a9 9 0 010-12.728M12 9v4m0 4h.01" />
       </svg>
       <h1 className="text-[24px] font-bold text-[#0e1726]">Офлайн байна</h1>
-      <p className="mt-2 max-w-xs text-[14px] text-[#5b6573]">
+      <p className="mt-2 max-w-xs text-[14px] text-[#E2E4E8]">
         Интернэт холболтгүй байна. Холболт сэргээгдмэгц автоматаар ачааллана.
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="mt-6 rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10]"
+        className="mt-6 rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-bold text-white"
       >
         Дахин оролдох
       </button>

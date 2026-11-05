@@ -82,7 +82,7 @@ export default function LevelGateAdminPage() {
   if (loading || !data) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function LevelGateAdminPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -100,35 +100,35 @@ export default function LevelGateAdminPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Level Gating</h1>
-          <p className="mt-0.5 text-[12px] text-[#56565E]">Feed visibility band + free cap + paid XP multiplier</p>
+          <p className="mt-0.5 text-[12px] text-[#E2E4E8]">Feed visibility band + free cap + paid XP multiplier</p>
         </div>
-        <Link href="/" target="_blank" className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10]">
+        <Link href="/" target="_blank" className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-bold text-white">
           Feed харах
         </Link>
       </div>
 
       {/* Master toggle */}
-      <div className="flex items-center justify-between rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+      <div className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
         <div>
           <div className="text-[14px] font-bold text-[#E8E8E8]">Level gate ажиллаж байна</div>
-          <div className="mt-0.5 text-[11px] text-[#8A8A92]">
+          <div className="mt-0.5 text-[11px] text-[#E2E4E8]">
             Идэвхгүй үед feed нь level-аас үл хамаарч өмнөх хэвээр ажиллана (kill-switch)
           </div>
         </div>
         <button
           onClick={() => setEnabled(!enabled)}
-          className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${enabled ? "bg-[#1080CA]" : "bg-[#d5dce3]"}`}
+          className={`relative inline-flex h-7 w-12 items-center rounded-[4px] transition-colors ${enabled ? "bg-[#2E29FF]" : "bg-[#d5dce3]"}`}
         >
-          <span className={`inline-block h-5 w-5 transform rounded-full bg-[#0A0A0A] transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
+          <span className={`inline-block h-5 w-5 transform rounded-[4px] bg-[#0A0A0A] transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
         </button>
       </div>
 
       {/* Sliders */}
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Band */}
-        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#1080CA]">Feed band</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#2E29FF]">Feed band</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">±{band}</span>
           </div>
           <input
@@ -138,21 +138,21 @@ export default function LevelGateAdminPage() {
             step={1}
             value={band}
             onChange={(e) => setBand(Number(e.target.value))}
-            className="w-full accent-[#1080CA]"
+            className="w-full accent-[#2E29FF]"
           />
-          <div className="mt-2 flex justify-between text-[9px] text-[#56565E]">
+          <div className="mt-2 flex justify-between text-[11px] text-[#E2E4E8]">
             <span>0 (exact)</span>
             <span>10 (loose)</span>
           </div>
-          <div className="mt-3 text-[11px] text-[#8A8A92]">
+          <div className="mt-3 text-[11px] text-[#E2E4E8]">
             User at L{cap} sees: <span className="font-bold text-[#E8E8E8]">{visibleBand}</span>
           </div>
         </div>
 
         {/* Free cap */}
-        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#1080CA]">Free cap</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#2E29FF]">Free cap</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">L{cap}</span>
           </div>
           <input
@@ -162,21 +162,21 @@ export default function LevelGateAdminPage() {
             step={1}
             value={cap}
             onChange={(e) => setCap(Number(e.target.value))}
-            className="w-full accent-[#1080CA]"
+            className="w-full accent-[#2E29FF]"
           />
-          <div className="mt-2 flex justify-between text-[9px] text-[#56565E]">
+          <div className="mt-2 flex justify-between text-[11px] text-[#E2E4E8]">
             <span>L1</span>
             <span>L20</span>
           </div>
-          <div className="mt-3 text-[11px] text-[#8A8A92]">
+          <div className="mt-3 text-[11px] text-[#E2E4E8]">
             Free users can't progress past <span className="font-bold text-[#E8E8E8]">L{cap}</span> without paying
           </div>
         </div>
 
         {/* Multiplier */}
-        <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+        <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#1080CA]">Paid XP multiplier</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#2E29FF]">Paid XP multiplier</div>
             <span className="text-[18px] font-black text-[#E8E8E8] tabular-nums">{multiplier.toFixed(1)}×</span>
           </div>
           <input
@@ -186,13 +186,13 @@ export default function LevelGateAdminPage() {
             step={0.1}
             value={multiplier}
             onChange={(e) => setMultiplier(Number(e.target.value))}
-            className="w-full accent-[#1080CA]"
+            className="w-full accent-[#2E29FF]"
           />
-          <div className="mt-2 flex justify-between text-[9px] text-[#56565E]">
+          <div className="mt-2 flex justify-between text-[11px] text-[#E2E4E8]">
             <span>1.0× (off)</span>
             <span>3.0× (aggressive)</span>
           </div>
-          <div className="mt-3 text-[11px] text-[#8A8A92]">
+          <div className="mt-3 text-[11px] text-[#E2E4E8]">
             Paid members earn <span className="font-bold text-[#E8E8E8]">{multiplier.toFixed(1)}×</span> XP on every action
           </div>
         </div>
@@ -203,29 +203,29 @@ export default function LevelGateAdminPage() {
         <button
           onClick={save}
           disabled={saving}
-          className="rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40"
+          className="rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-40"
         >
           {saving ? "..." : "Хадгалах"}
         </button>
         <button
           onClick={backfill}
           disabled={backfilling}
-          className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-6 py-2.5 text-[13px] font-bold text-[#8A8A92] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA] disabled:opacity-40"
+          className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-6 py-2.5 text-[13px] font-bold text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.3)] hover:text-[#2E29FF] disabled:opacity-40"
         >
           {backfilling ? "Backfill... (том бол удна)" : "Постууд backfill-ах"}
         </button>
-        <span className="text-[10px] text-[#56565E]">
+        <span className="text-[10px] text-[#E2E4E8]">
           Backfill = бүх постын authorLevel-ийг зохиогчийн одоогийн level-ээс шинэчилнэ. Анх удаагаа заавал ажиллуулна.
         </span>
       </div>
 
       {/* Explainer */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[12px] leading-relaxed text-[#8A8A92]">
-        <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#1080CA]">Яаж ажилладаг вэ?</div>
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5 text-[12px] leading-relaxed text-[#E2E4E8]">
+        <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#2E29FF]">Яаж ажилладаг вэ?</div>
         <ol className="list-inside list-decimal space-y-1.5">
-          <li>User-ийн <span className="font-bold text-[#8A8A92]">effective level</span> = paid бол actual level, free бол min(actual, free cap)</li>
-          <li>Feed-д <span className="font-bold text-[#8A8A92]">visibility=members</span> постуудыг зөвхөн authorLevel нь [effLevel − band, effLevel + band] мужид байгаа бол харуулна</li>
-          <li><span className="font-bold text-[#8A8A92]">visibility=free</span> болон blog/market нь ямагт public — level gate үл хамаарна</li>
+          <li>User-ийн <span className="font-bold text-[#E2E4E8]">effective level</span> = paid бол actual level, free бол min(actual, free cap)</li>
+          <li>Feed-д <span className="font-bold text-[#E2E4E8]">visibility=members</span> постуудыг зөвхөн authorLevel нь [effLevel − band, effLevel + band] мужид байгаа бол харуулна</li>
+          <li><span className="font-bold text-[#E2E4E8]">visibility=free</span> болон blog/market нь ямагт public — level gate үл хамаарна</li>
           <li>Paid member бол бүх XP-д {multiplier.toFixed(1)}× multiplier орно → level хурдан өсөх</li>
           <li>Backfill дарахад бүх хуучин пост зохиогчийн одоогийн level-ээр stamp-гдана</li>
         </ol>

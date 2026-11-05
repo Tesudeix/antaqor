@@ -17,6 +17,23 @@ const LEGACY = [
   { key: "joybilliard", label: "Joy billiard · @joy.billiard" },
 ];
 
+// A page that already has a named legacy key must KEEP it on reconnect. The
+// registry in metaAccounts.ts is consulted before env, so storing key=pageId
+// for e.g. the Antaqor page would re-label it "1095060110364492" and orphan
+// every MetaTrigger/MetaWelcome/MetaConversation scoped to "antaqor".
+function keyForPage(pageId: string, igId: string): string {
+  const legacy: Array<[string, string, string]> = [
+    ["antaqor", process.env.META_PAGE_ID || "", process.env.META_IG_BUSINESS_ID || ""],
+    ["joymassage", process.env.JOYMASSAGE_PAGE_ID || "", process.env.JOYMASSAGE_IG_BUSINESS_ID || ""],
+    ["joybilliard", process.env.JOYBILLIARD_PAGE_ID || "", process.env.JOYBILLIARD_IG_BUSINESS_ID || ""],
+  ];
+  for (const [key, envPageId, envIgId] of legacy) {
+    if (envPageId && envPageId === pageId) return key;
+    if (envIgId && igId && envIgId === igId) return key;
+  }
+  return pageId;
+}
+
 type G = Record<string, unknown>;
 async function gj(url: string, init?: RequestInit): Promise<G> {
   try { const r = await fetch(url, init); return (await r.json()) as G; } catch (e) { return { error: { message: String(e) } }; }
@@ -30,7 +47,9 @@ export async function GET() {
   if (!(await gate())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await dbConnect();
   const pages = await MetaPage.find({}).select("key pageId name igBusinessId pageType enabled").sort({ createdAt: -1 }).lean();
-  const accounts = [...LEGACY, ...pages.map((p) => ({ key: p.key, label: p.name || p.pageId }))];
+  const dyn = pages.map((p) => ({ key: p.key, label: p.name || p.pageId }));
+  const taken = new Set(dyn.map((d) => d.key));
+  const accounts = [...LEGACY.filter((l) => !taken.has(l.key)), ...dyn];
   return NextResponse.json({ pages, accounts });
 }
 
@@ -80,7 +99,7 @@ export async function POST(req: Request) {
   await dbConnect();
   const doc = await MetaPage.findOneAndUpdate(
     { pageId },
-    { key: pageId, pageId, name, igBusinessId, pageType: typeof b.pageType === "string" ? b.pageType : "other", pageAccessToken: pageToken, enabled: true, connectedByEmail: s.user?.email || "" },
+    { key: keyForPage(pageId, igBusinessId), pageId, name, igBusinessId, pageType: typeof b.pageType === "string" ? b.pageType : "other", pageAccessToken: pageToken, enabled: true, connectedByEmail: s.user?.email || "" },
     { new: true, upsert: true }
   );
   return NextResponse.json({ ok: true, page: { key: doc.key, pageId, name, igBusinessId }, subscribed: sub.success === true });

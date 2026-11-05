@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { IMAGE_PROMPT_LIMIT } from "@/lib/imagePrompt";
+import { CreditIcon } from "@/components/CreditIcon";
 import { IMAGE_STYLES, ASPECT_RATIOS, findStyle, findAspect } from "@/lib/imageGen";
 
 const COST = 10;
@@ -80,13 +82,13 @@ export default function GenerateImagePage() {
     <div className="relative mx-auto max-w-[720px] px-1 pb-16 sm:px-0">
       {/* Top bar */}
       <div className="mb-3 flex items-center justify-between">
-        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#6b7280] transition hover:text-[#1080CA]">
+        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#E2E4E8] transition hover:text-[#2E29FF]">
           ← Бүх хэрэгсэл
         </Link>
         {session && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(16,128,202,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#1080CA] backdrop-blur-md">
+          <span className="inline-flex items-center gap-1 rounded-[4px] border border-[rgba(46,41,255,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#2E29FF] backdrop-blur-md">
             <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>
-            {balance ?? "…"}₵
+            <CreditIcon size={12} className="mr-0.5" />{balance ?? "…"}
           </span>
         )}
       </div>
@@ -96,20 +98,20 @@ export default function GenerateImagePage() {
         <h1 className="text-[22px] font-black leading-tight text-[#0e1726] sm:text-[28px]">
           AI зураг үүсгэх
         </h1>
-        <p className="mt-1 text-[12px] text-[#6b7280]">
-          Промпт + стиль + хэлбэр сонгож <strong className="text-[#1080CA]">{COST}₵</strong>-аар зураг авна.
+        <p className="mt-1 text-[12px] text-[#E2E4E8]">
+          Промпт + стиль + хэлбэр сонгож <strong className="text-[#2E29FF]">{COST} кредит</strong>-аар зураг авна.
         </p>
       </div>
 
       {/* ─── PROMPT PANEL — top, hero ─── */}
-      <div className="rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff] shadow-[0_0_24px_rgba(16,128,202,0.12)]">
+      <div className="rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff] shadow-[0_0_24px_rgba(46,41,255,0.12)]">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Жишээ нь: A futuristic cyber city at night, neon pink lights, ultra detailed..."
-          rows={4}
-          maxLength={1000}
-          className="w-full resize-none rounded-t-[4px] bg-transparent p-4 text-[14px] leading-relaxed text-[#0e1726] placeholder-[#94a3b8] outline-none"
+          rows={8}
+          maxLength={IMAGE_PROMPT_LIMIT}
+          className="w-full min-h-[220px] resize-y rounded-t-[4px] bg-transparent p-4 text-[14px] leading-relaxed text-[#0e1726] placeholder-[#62666F] outline-none"
         />
 
         {/* Inline option pills — Style / Aspect / Counter */}
@@ -127,7 +129,7 @@ export default function GenerateImagePage() {
             onClick={() => setOpenPanel(openPanel === "aspect" ? null : "aspect")}
             iconRight={
               <span
-                className="ml-1 inline-block rounded-none border border-current"
+                className="ml-1 inline-block rounded-[4px] border border-current"
                 style={{
                   width: currentAspect.w >= currentAspect.h ? 14 : 14 * (currentAspect.w / currentAspect.h),
                   height: currentAspect.h > currentAspect.w ? 14 : 14 * (currentAspect.h / currentAspect.w),
@@ -135,13 +137,13 @@ export default function GenerateImagePage() {
               />
             }
           />
-          <span className="ml-auto text-[10px] text-[#94a3b8]">{prompt.length}/1000</span>
+          <span className="ml-auto text-[10px] text-[#E2E4E8]">{prompt.length}/16,000</span>
         </div>
 
         {/* Expandable option panel */}
         {openPanel === "style" && (
           <div className="border-t border-[rgba(15,23,38,0.06)] p-3">
-            <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Стиль сонгох</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Стиль сонгох</div>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
               {IMAGE_STYLES.map((s) => {
                 const sel = styleId === s.id;
@@ -150,14 +152,14 @@ export default function GenerateImagePage() {
                     key={s.id}
                     type="button"
                     onClick={() => { setStyleId(s.id); setOpenPanel(null); }}
-                    className={`flex flex-col items-start gap-0.5 rounded-none border px-3 py-2 text-left transition ${
+                    className={`flex flex-col items-start gap-0.5 rounded-[4px] border px-3 py-2 text-left transition ${
                       sel
-                        ? "border-[#1080CA] bg-[rgba(16,128,202,0.1)]"
-                        : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(16,128,202,0.4)]"
+                        ? "border-[#2E29FF] bg-[rgba(46,41,255,0.1)]"
+                        : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(46,41,255,0.4)]"
                     }`}
                   >
-                    <span className={`text-[11px] font-black ${sel ? "text-[#1080CA]" : "text-[#0e1726]"}`}>{s.label}</span>
-                    <span className="text-[9px] text-[#6b7280]">{s.blurb}</span>
+                    <span className={`text-[11px] font-black ${sel ? "text-[#2E29FF]" : "text-[#0e1726]"}`}>{s.label}</span>
+                    <span className="text-[11px] text-[#E2E4E8]">{s.blurb}</span>
                   </button>
                 );
               })}
@@ -167,7 +169,7 @@ export default function GenerateImagePage() {
 
         {openPanel === "aspect" && (
           <div className="border-t border-[rgba(15,23,38,0.06)] p-3">
-            <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Хэлбэр сонгох</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Хэлбэр сонгох</div>
             <div className="flex flex-wrap gap-2">
               {ASPECT_RATIOS.map((a) => {
                 const sel = aspectId === a.id;
@@ -176,21 +178,21 @@ export default function GenerateImagePage() {
                     key={a.id}
                     type="button"
                     onClick={() => { setAspectId(a.id); setOpenPanel(null); }}
-                    className={`flex flex-col items-center gap-1 rounded-none border px-3 py-2 transition ${
+                    className={`flex flex-col items-center gap-1 rounded-[4px] border px-3 py-2 transition ${
                       sel
-                        ? "border-[#1080CA] bg-[rgba(16,128,202,0.1)]"
-                        : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(16,128,202,0.4)]"
+                        ? "border-[#2E29FF] bg-[rgba(46,41,255,0.1)]"
+                        : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(46,41,255,0.4)]"
                     }`}
                     aria-pressed={sel}
                   >
                     <span
-                      className={`shrink-0 rounded-none border ${sel ? "border-[#1080CA] bg-[rgba(16,128,202,0.2)]" : "border-[#94a3b8] bg-[#F2F2F4]"}`}
+                      className={`shrink-0 rounded-[4px] border ${sel ? "border-[#2E29FF] bg-[rgba(46,41,255,0.2)]" : "border-[#62666F] bg-[#F2F2F4]"}`}
                       style={{
                         width: a.w >= a.h ? 30 : 30 * (a.w / a.h),
                         height: a.h > a.w ? 30 : 30 * (a.h / a.w),
                       }}
                     />
-                    <span className={`text-[11px] font-black ${sel ? "text-[#1080CA]" : "text-[#334155]"}`}>{a.label}</span>
+                    <span className={`text-[11px] font-black ${sel ? "text-[#2E29FF]" : "text-[#334155]"}`}>{a.label}</span>
                   </button>
                 );
               })}
@@ -200,8 +202,8 @@ export default function GenerateImagePage() {
       </div>
 
       {/* Quick prompts — collapsible to reduce noise */}
-      <details className="mt-3 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3 open:pb-2">
-        <summary className="cursor-pointer text-[11px] font-bold text-[#6b7280] transition hover:text-[#1080CA]">
+      <details className="mt-3 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3 open:pb-2">
+        <summary className="cursor-pointer text-[11px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF]">
           Түргэн санаа сонгох ▾
         </summary>
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -210,7 +212,7 @@ export default function GenerateImagePage() {
               key={p}
               type="button"
               onClick={() => setPrompt(p)}
-              className="rounded-full border border-[rgba(16,128,202,0.2)] bg-[rgba(16,128,202,0.05)] px-3 py-1 text-[10px] font-medium text-[#334155] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#1080CA]"
+              className="rounded-[4px] border border-[rgba(46,41,255,0.2)] bg-[rgba(46,41,255,0.05)] px-3 py-1 text-[10px] font-medium text-[#334155] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#2E29FF]"
             >
               {p.length > 56 ? p.slice(0, 53) + "…" : p}
             </button>
@@ -220,18 +222,18 @@ export default function GenerateImagePage() {
 
       {/* Low balance / error */}
       {lowBalance && !error && (
-        <div className="mt-3 flex items-center justify-between rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)] px-4 py-3">
+        <div className="mt-3 flex items-center justify-between rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.06)] px-4 py-3">
           <div>
-            <div className="text-[12px] font-bold text-[#1080CA]">Кредит дутуу</div>
-            <div className="text-[11px] text-[#6b7280]">Танд {balance}₵ байна, {COST}₵ шаардлагатай.</div>
+            <div className="text-[12px] font-bold text-[#2E29FF]">Кредит дутуу</div>
+            <div className="text-[11px] text-[#E2E4E8]">Танд {balance} кредит байна, {COST} шаардлагатай.</div>
           </div>
-          <Link href="/credits/buy" className="rounded-none bg-[#1080CA] px-3 py-1.5 text-[11px] font-black text-[#0E0E10]">
+          <Link href="/credits/buy" className="rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[11px] font-black text-white">
             Кредит авах →
           </Link>
         </div>
       )}
       {error && (
-        <div className="mt-3 rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] text-[#1080CA]">
+        <div className="mt-3 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] text-[#2E29FF]">
           {error}
         </div>
       )}
@@ -241,15 +243,15 @@ export default function GenerateImagePage() {
         <button
           onClick={submit}
           disabled={!canGenerate}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] px-6 py-3.5 text-[13px] font-black text-[#0E0E10] shadow-[0_0_20px_rgba(16,128,202,0.4)] transition hover:bg-[#4FA8E8] disabled:opacity-40 disabled:shadow-none"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] px-6 py-3.5 text-[13px] font-black text-white shadow-[0_0_20px_rgba(46,41,255,0.4)] transition hover:bg-[#1F1AD9] disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? (
             <>
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-[4px] border-2 border-white border-t-transparent" />
               Үүсгэж байна...
             </>
           ) : (
-            <>Үүсгэх · {COST}₵</>
+            <>Үүсгэх · <CreditIcon size={11} className="mx-0.5" />{COST}</>
           )}
         </button>
       </div>
@@ -258,11 +260,11 @@ export default function GenerateImagePage() {
       {(busy || resultUrl) && (
         <div id="gen-result" className="mt-6">
           <div className="mb-2 flex items-center justify-between">
-            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Үр дүн</div>
-            <div className="text-[10px] text-[#94a3b8]">{previewAspect.label}</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Үр дүн</div>
+            <div className="text-[10px] text-[#E2E4E8]">{previewAspect.label}</div>
           </div>
-          <div className="relative rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff] p-1">
-            <div className={`relative w-full overflow-hidden rounded-none bg-[#f2f5f8] ${previewAspect.cls}`}>
+          <div className="relative rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff] p-1">
+            <div className={`relative w-full overflow-hidden rounded-[4px] bg-[#f2f5f8] ${previewAspect.cls}`}>
               {busy ? (
                 <NeonSkeleton />
               ) : (
@@ -276,7 +278,7 @@ export default function GenerateImagePage() {
               <a
                 href={resultUrl}
                 download={`antaqor-${Date.now()}.png`}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-none bg-[#1080CA] py-2.5 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-[4px] bg-[#2E29FF] py-2.5 text-[12px] font-black text-white transition hover:bg-[#1F1AD9]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -285,7 +287,7 @@ export default function GenerateImagePage() {
               </a>
               <button
                 onClick={() => { setResultUrl(""); setError(""); }}
-                className="rounded-none border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#6b7280] transition hover:text-[#0e1726]"
+                className="rounded-[4px] border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#E2E4E8] transition hover:text-[#0e1726]"
               >
                 Цэвэрлэх
               </button>
@@ -297,7 +299,7 @@ export default function GenerateImagePage() {
       {/* History — at the very bottom */}
       {history.length > 0 && (
         <div className="mt-8">
-          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Сүүлийн үүсгэлт</div>
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Сүүлийн үүсгэлт</div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {history.map((h, i) => {
               const cls = findAspect(h.aspectRatio).cls;
@@ -307,12 +309,12 @@ export default function GenerateImagePage() {
                   href={h.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group relative overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(16,128,202,0.4)] ${cls}`}
+                  className={`group relative overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(46,41,255,0.4)] ${cls}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={h.url} alt="" className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.04]" />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2">
-                    <p className="line-clamp-2 text-[9px] text-white/70">{h.prompt}</p>
+                    <p className="line-clamp-2 text-[11px] text-white/70">{h.prompt}</p>
                   </div>
                 </a>
               );
@@ -337,10 +339,10 @@ function OptionPill({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-none border px-2.5 py-1.5 text-[11px] font-bold transition ${
+      className={`inline-flex items-center gap-1.5 rounded-[4px] border px-2.5 py-1.5 text-[11px] font-bold transition ${
         active
-          ? "border-[#1080CA] bg-[rgba(16,128,202,0.1)] text-[#1080CA]"
-          : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#334155] hover:border-[rgba(16,128,202,0.4)]"
+          ? "border-[#2E29FF] bg-[rgba(46,41,255,0.1)] text-[#2E29FF]"
+          : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#334155] hover:border-[rgba(46,41,255,0.4)]"
       }`}
     >
       <span className="text-[8px] font-bold uppercase tracking-wider opacity-70">{sublabel}</span>
@@ -359,16 +361,16 @@ function NeonSkeleton() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(16,128,202,0.18) 50%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(46,41,255,0.18) 50%, transparent 100%)",
           animation: "neonShimmer 1.4s ease-in-out infinite",
         }}
       />
       <div className="relative z-10 flex flex-col items-center gap-2.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-none bg-[rgba(16,128,202,0.1)] shadow-[0_0_24px_rgba(16,128,202,0.5)]">
-          <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+        <span className="flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] shadow-[0_0_24px_rgba(46,41,255,0.5)]">
+          <span className="h-6 w-6 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
         </span>
         <p className="text-[12px] font-bold text-[#0e1726]">AI зураг үүсгэж байна</p>
-        <p className="text-[10px] text-[#6b7280]">10–25 секунд хүртэл хүлээгээрэй</p>
+        <p className="text-[10px] text-[#E2E4E8]">10–25 секунд хүртэл хүлээгээрэй</p>
       </div>
       <style jsx>{`
         @keyframes neonShimmer {

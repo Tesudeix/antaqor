@@ -23,12 +23,28 @@ export async function GET() {
     const now = new Date();
     const dayStart = ubDayStart(now);
 
-    const [totalUsers, paidMembers, newMembers, newPaid] = await Promise.all([
-      User.countDocuments({}),
+    /* 7 хоногийн цонх нэмэгдэв. `newMembers` нь ӨНӨӨДРИЙН тоо бөгөөд тэр нь
+       суудлын тоолуурт зөв ч, нүүрэн дээр үзүүлэх "шинэ гишүүд" гэсэн
+       үзүүлэлтэд тохирохгүй: өдрийн эхэнд 0 харагдана. Долоо хоног нь
+       тогтвортой, гэхдээ "сүүлийн үед" гэдгийг хэвээр хэлнэ. */
+    const weekStart = new Date(now.getTime() - 7 * 24 * 3600 * 1000);
+
+    /* ─── СҮҮДЭР БҮРТГЭЛҮҮД ТООНД ОРОХГҮЙ ────────────────────────────
+       Instagram/Messenger DM-ээс автоматаар үүсдэг бүртгэлүүд нь
+       `<platform>_<psid>@antaqor.dm` хаягтай бөгөөд хэзээ ч нэвтэрч
+       байгаагүй. Тэднийг "гишүүн" гэж тоолох нь зочинд ХУДАЛ тоо
+       харуулж байгаа хэрэг — 780 гэж бичээд бодитоор 509 байх нь
+       зөвхөн итгэл алдагдуулна. Мөн хөрвүүлэлтийг гуравны нэгээр
+       бага харуулж, шийдвэрийг гажуудуулдаг. */
+    const REAL = { email: { $not: { $regex: "@antaqor\\.dm$", $options: "i" } } };
+
+    const [totalUsers, paidMembers, newMembers, newPaid, newMembers7d] = await Promise.all([
+      User.countDocuments(REAL),
       // Accurate paid = идэвхтэй subscription-той л (gating-тэй ижил дүрэм).
-      User.countDocuments({ clan: { $ne: "" }, subscriptionExpiresAt: { $gte: now } }),
-      User.countDocuments({ createdAt: { $gte: dayStart } }),
-      User.countDocuments({ clanJoinedAt: { $gte: dayStart } }),
+      User.countDocuments({ ...REAL, clan: { $ne: "" }, subscriptionExpiresAt: { $gte: now } }),
+      User.countDocuments({ ...REAL, createdAt: { $gte: dayStart } }),
+      User.countDocuments({ ...REAL, clanJoinedAt: { $gte: dayStart } }),
+      User.countDocuments({ ...REAL, createdAt: { $gte: weekStart } }),
     ]);
 
     return NextResponse.json(
@@ -41,6 +57,7 @@ export async function GET() {
         // Өнөөдрийн элсэлт — нүүр хуудас зөвхөн эдгээрийг харуулна
         // (хуучин нийт тоог устгаагүй, зүгээр л өнөөдрөөс тоолж байна).
         newMembers,
+        newMembers7d,
         newPaid,
         seatsTotal: DAILY_SEATS,
         seatsLeft: Math.max(0, DAILY_SEATS - newPaid),

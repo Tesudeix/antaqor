@@ -10,13 +10,13 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200 MB cap for course videos
+const MAX_VIDEO_SIZE = 1024 * 1024 * 1024; // 1 GB cap for course videos (nginx must allow it too)
 
 const ALLOWED_EXT = new Set(["mp4", "webm", "mov", "m4v", "ogg"]);
 
 // POST — admin only, video file → /uploads/lesson-<uuid>.<ext> → returns { url }
 // Streams the multipart file straight to disk to avoid buffering large videos
-// (≤200MB) in process memory.
+// (≤1GB) in process memory.
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

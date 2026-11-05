@@ -1,0 +1,956 @@
+/* ҮҮСГЭСЭН ФАЙЛ — ГАРААР ЗАСАХГҮЙ.
+   Эх нь: scripts/theme-light.gen.py
+   Дахин үүсгэх:  cd /var/www/antaqor && python3 scripts/theme-light.gen.py
+                  (out/light-layer.css руу бичээд энэ файл руу хуулна)
+   Яагаад үүсгэдэг вэ: mapping бүрд үндсэн дүрэм + `:not()` хамгаалалт +
+   hover/focus/group-hover хувилбар гэсэн 3 селектор хэрэгтэй. ~150 ийм
+   зүйлийг гараар бичих нь алдаа гаргах хамгийн богино зам. */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §07 — ӨДӨР / ШӨНӨ.  Нэг систем, хоёр горим.        (2026-08-21)
+
+   Энэ сайт ШӨНӨӨР бичигдсэн: globals.css-ийн бүх өнгө болон 100+ файлын
+   arbitrary hex нь харанхуй суурь дээр тооцоологдсон. Тиймээс "гэрэл"
+   горим нэмэх нь хоёр тусдаа ажил байсан:
+
+   1) Дээрх COHESION давхаргыг УНТРААХ. Тэр давхарга нь хуучин гэрэлтэй
+      сэдвийн үлдэгдэл (bg-white, bg-[#f2f5f8], text-[#0e1726] …)-ийг
+      харанхуй руу албаддаг байсан. Гэрэл горимд тэдгээр нь ЗӨВ утга —
+      саадыг нь авахад өөрсдөө буцаж ирнэ. Тиймээс cohesion-ий селектор
+      бүрийг `html:not([data-theme="light"])`-ээр угтвар болгосон.
+
+   2) ХАРАНХУЙД ТӨРСӨН утгуудыг гэрэл рүү буулгах — доорх урвуу давхарга.
+      bg-[#0A0A0A], text-[#E8E8E8], border-[rgba(255,255,255,.08)] нь гэрэл
+      дээр утгагүй (цагаан дээр цагаан). Cohesion-той яг ижил техник:
+      ангийн НЭРЭЭР барьж, утгыг нь дахин тодорхойлно.
+
+   Радиус (§03), сүүдэргүй (§04), товч хүрээгүй (§05) нь ӨНГӨ БИШ, ГЕОМЕТР
+   — хоёр горимд ижил хэвээр үлдэнэ. Гэрэл горим нь өөр сайт биш, ижил
+   сайтын өөр цаг.
+
+   ГУРВАН ДҮРЭМ, ЭНЭ ДАВХАРГЫГ ЗАСАХААС ӨМНӨ УНШ:
+   • Селектор бүр `:root[data-theme="light"] body:not(:has(.yuki-root))`-ээр
+     эхэлнэ. `:root[attr]` нь cohesion-ий `html:not([attr])`-аас өндөр
+     жинтэй тул файлын дараалалаас үл хамааран ялна.
+   • Үндсэн дүрэм бүр `:not([class*=":<тухайн анги>"])` хамгаалалттай.
+     Үүнгүй бол `hover:text-[#00E5C7]` бичсэн 172 элемент амарч байхдаа ч
+     улаан болно. Хажууд нь hover/focus/active/group-hover хувилбарын
+     дүрэм тусад нь явна.
+   • Хар дэвсгэртэй ЗУРАГ дээрх цагаан бичиг цагаан хэвээр (доорх SCRIM
+     хэсэг). Тэнд ink болговол зураг дээр уншигдахгүй болно.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root[data-theme="light"] {
+  /* ── ӨДРИЙН гадаргууны шат. Шөнийн урвуу: карт нь суурьнаасаа ЦАЙВАР
+        байснаа гэрэл дээр суурь нь карт руу ойртож, карт цэвэр цагаан
+        болно. Цэвэр #FFFFFF-ийг СУУРЬ болгож болохгүй — тэгвэл картад
+        өргөгдөх зай үлдэхгүй, бүх зүйл нэг хавтгайд наалдана. */
+  --l-canvas:       #FCFCFC;   /* хуудасны суурь — цагаанаас нэг шат доогуур */
+  --l-surface:      #FFFFFF;   /* карт, самбар — суурьнаас ДЭЭР */
+  --l-surface-2:    #EEEBE7;   /* үүрлэсэн гадаргуу, input, hover бай */
+  --l-surface-3:    #E4E0DB;   /* дарагдсан төлөв, идэвхтэй чип */
+  --l-line:         rgba(23,23,26,0.10);
+  --l-line-strong:  rgba(23,23,26,0.22);
+  --l-line-solid:   #E4E1DD;   /* тунгалаг бус хуваагч */
+  --l-tint:         rgba(23,23,26,0.05);
+
+  /* Текстийн шат — гурвуулаа #FBFAF9 дээр AA давсан:
+     ink 16.4:1 · muted 6.8:1 · dim 4.6:1 */
+  --l-ink:          #17171A;
+  --l-muted:        #55555C;
+  --l-dim:          #6E6E76;
+
+  /* TENGER гэрэл дээр. Дүүргэлт нь #00E5C7 хэвээр (түүн дээрх бичиг нь
+     шөнөтэй адил бараан — цагаан бичиг коралл дээр 3:1 хүрэхгүй). Харин
+     БИЧИГ болж хэрэглэгдэх үед гүнзгийрүүлнэ: #00E5C7 нь цагаан дээр
+     2.9:1 буюу уншигдахгүй, #094436 нь 4.9:1. */
+  --l-accent-ink:   #094436;
+  --l-accent-deep:  #094436;
+
+  color-scheme: light;
+
+  /* Гараар бичсэн CSS-ийн уншдаг токенууд. Tailwind-ийн @theme inline нь
+     утилитэд утгыг ШУУД шигтгэдэг тул эдгээрийг сольсноор `bg-surface`
+     төрлийн утилит өөрчлөгдөхгүй — гэхдээ энэ апп тэдгээрийг ашигладаггүй
+     (бүгд arbitrary hex), харин .card / .su-… / .blog-content зэрэг нь var()
+     уншдаг тул эндээс шууд дагана. */
+  --color-background: #F7F5F2;
+  --color-foreground: #17171A;
+  --color-surface:    #FFFFFF;
+  --color-border:     #E4E1DD;
+  --color-ink:        #17171A;
+  --color-muted:      #55555C;
+  --color-dim:        #6E6E76;
+  --color-black:      #F7F5F2;
+  --surface:          #FFFFFF;
+  --surface-2:        #EEEBE7;
+  --surface-hover:    #E4E0DB;
+  --line:             rgba(23,23,26,0.10);
+  --line-strong:      rgba(23,23,26,0.22);
+
+  --nav-fg:           #55555C;
+  --nav-fg-strong:    #17171A;
+  --nav-hover-bg:     #EEEBE7;
+  --nav-active-bg:    rgba(0,229,199,0.12);
+
+  --glow: 0 0 0 1px #00E5C7, 0 8px 22px -8px rgba(0,229,199,0.55);
+
+  /* Хоёр горимын товчлуур */
+  --tt-track:  #E6E2DD;
+  --tt-edge:   rgba(23,23,26,0.12);
+  --tt-thumb:  #FFFFFF;
+  --tt-ico:    #8A8A92;
+  --tt-ico-on: #094436;
+}
+
+:root[data-theme="dark"] {
+  --tt-track:  #232327;
+  --tt-edge:   rgba(255,255,255,0.10);
+  --tt-thumb:  #3B3B41;
+  --tt-ico:    #7A7A82;
+  --tt-ico-on: #00E5C7;
+}
+
+/* ─── Суурь ─────────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  background: var(--l-canvas);
+}
+:root[data-theme="light"] body {
+  background: var(--l-canvas);
+  color: var(--l-ink);
+}
+/* .light-page нь дээр харанхуй руу нугалагдсан — гэрэл горимд буцаана. */
+:root[data-theme="light"]:has(.light-page),
+:root[data-theme="light"] body:has(.light-page) {
+  background: var(--l-canvas);
+  color: var(--l-ink);
+}
+:root[data-theme="light"] ::selection {
+  background: #00E5C7;
+  color: #17171A;
+}
+:root[data-theme="light"] ::-webkit-scrollbar-thumb,
+:root[data-theme="light"] body:has(.light-page) ::-webkit-scrollbar-thumb {
+  background: #C9C5C0;
+}
+/* Брэндийн хөшиг — өдөр цагаан дэвсгэр дээр гарна. */
+:root[data-theme="light"] .intro-splash { background: var(--l-canvas); }
+
+
+/* Хуудасны суурь → өдрийн суурь. */
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]),
+:root[data-theme="light"] [class*="bg-[#151518]"]:not([class*="hover:bg-[#151518]"]):not([class*="focus:bg-[#151518]"]),
+:root[data-theme="light"] [class*="bg-[#171719]"]:not([class*="hover:bg-[#171719]"]):not([class*="focus:bg-[#171719]"]),
+:root[data-theme="light"] [class*="bg-[#181818]"]:not([class*="hover:bg-[#181818]"]):not([class*="focus:bg-[#181818]"]),
+:root[data-theme="light"] [class*="bg-[#18181b]"]:not([class*="hover:bg-[#18181b]"]):not([class*="focus:bg-[#18181b]"]),
+:root[data-theme="light"] [class*="bg-[#1a1a1e]"]:not([class*="hover:bg-[#1a1a1e]"]):not([class*="focus:bg-[#1a1a1e]"]),
+:root[data-theme="light"] [class*="bg-[#1c1c22]"]:not([class*="hover:bg-[#1c1c22]"]):not([class*="focus:bg-[#1c1c22]"]) {
+  background-color: var(--l-canvas) !important;
+}
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#151518]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#151518]"],
+:root[data-theme="light"] [class*=":bg-[#171719]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#171719]"],
+:root[data-theme="light"] [class*=":bg-[#181818]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#181818]"],
+:root[data-theme="light"] [class*=":bg-[#18181b]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#18181b]"],
+:root[data-theme="light"] [class*=":bg-[#1a1a1e]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1a1a1e]"],
+:root[data-theme="light"] [class*=":bg-[#1c1c22]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1c1c22]"] {
+  background-color: var(--l-canvas) !important;
+}
+
+/* Цэвэр хар. `/` бүхий хувилбарыг ЗӨВХӨН энд хассан — bg-black/70
+   гэдэг нь гадаргуу биш, зураг дээрх хөшиг. Бусад hex дээр
+   `/` нь ердөө тунгалагдуу гадаргуу (жишээ нь bg-[#0E0E12]/95
+   гэсэн хөвөгч чип) тул тэднийг хасах нь харанхуй чип дээр
+   бараан бэх үлдээж, уншигдахгүй болгоно. */
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]):not([class*="bg-[#000000]/"]),
+:root[data-theme="light"] [class*="bg-[#000]"]:not([class*="hover:bg-[#000]"]):not([class*="focus:bg-[#000]"]):not([class*="bg-[#000]/"]) {
+  background-color: var(--l-canvas) !important;
+}
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000]"] {
+  background-color: var(--l-canvas) !important;
+}
+
+/* Tailwind-ийн `bg-black` (--color-black = #020807). bg-black/70 нь хөшиг — үлдэнэ. */
+:root[data-theme="light"] .bg-black,
+:root[data-theme="light"] .hover\:bg-black:hover {
+  background-color: var(--l-canvas) !important;
+}
+
+/* Картын түвшин. Шөнөд суурьнаас ЦАЙВАР байсан нь өдөрт цэвэр цагаан. */
+:root[data-theme="light"] [class*="bg-[#010101]"]:not([class*="hover:bg-[#010101]"]):not([class*="focus:bg-[#010101]"]),
+:root[data-theme="light"] [class*="bg-[#050505]"]:not([class*="hover:bg-[#050505]"]):not([class*="focus:bg-[#050505]"]),
+:root[data-theme="light"] [class*="bg-[#060608]"]:not([class*="hover:bg-[#060608]"]):not([class*="focus:bg-[#060608]"]),
+:root[data-theme="light"] [class*="bg-[#06060A]"]:not([class*="hover:bg-[#06060A]"]):not([class*="focus:bg-[#06060A]"]),
+:root[data-theme="light"] [class*="bg-[#070709]"]:not([class*="hover:bg-[#070709]"]):not([class*="focus:bg-[#070709]"]),
+:root[data-theme="light"] [class*="bg-[#08080A]"]:not([class*="hover:bg-[#08080A]"]):not([class*="focus:bg-[#08080A]"]),
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]),
+:root[data-theme="light"] [class*="bg-[#0A0A0C]"]:not([class*="hover:bg-[#0A0A0C]"]):not([class*="focus:bg-[#0A0A0C]"]),
+:root[data-theme="light"] [class*="bg-[#0A0A0F]"]:not([class*="hover:bg-[#0A0A0F]"]):not([class*="focus:bg-[#0A0A0F]"]),
+:root[data-theme="light"] [class*="bg-[#0B0B0F]"]:not([class*="hover:bg-[#0B0B0F]"]):not([class*="focus:bg-[#0B0B0F]"]),
+:root[data-theme="light"] [class*="bg-[#0c0c0f]"]:not([class*="hover:bg-[#0c0c0f]"]):not([class*="focus:bg-[#0c0c0f]"]),
+:root[data-theme="light"] [class*="bg-[#0d0d10]"]:not([class*="hover:bg-[#0d0d10]"]):not([class*="focus:bg-[#0d0d10]"]),
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]),
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]),
+:root[data-theme="light"] [class*="bg-[#0e0e14]"]:not([class*="hover:bg-[#0e0e14]"]):not([class*="focus:bg-[#0e0e14]"]),
+:root[data-theme="light"] [class*="bg-[#101014]"]:not([class*="hover:bg-[#101014]"]):not([class*="focus:bg-[#101014]"]),
+:root[data-theme="light"] [class*="bg-[#111114]"]:not([class*="hover:bg-[#111114]"]):not([class*="focus:bg-[#111114]"]),
+:root[data-theme="light"] [class*="bg-[#131316]"]:not([class*="hover:bg-[#131316]"]):not([class*="focus:bg-[#131316]"]),
+:root[data-theme="light"] [class*="bg-[#13131A]"]:not([class*="hover:bg-[#13131A]"]):not([class*="focus:bg-[#13131A]"]),
+:root[data-theme="light"] [class*="bg-[#141416]"]:not([class*="hover:bg-[#141416]"]):not([class*="focus:bg-[#141416]"]),
+:root[data-theme="light"] [class*="bg-[#000000]"]:not([class*="hover:bg-[#000000]"]):not([class*="focus:bg-[#000000]"]),
+:root[data-theme="light"] [class*="bg-[#14141a]"]:not([class*="hover:bg-[#14141a]"]):not([class*="focus:bg-[#14141a]"]),
+:root[data-theme="light"] [class*="bg-[#141420]"]:not([class*="hover:bg-[#141420]"]):not([class*="focus:bg-[#141420]"]),
+:root[data-theme="light"] [class*="bg-[#141018]"]:not([class*="hover:bg-[#141018]"]):not([class*="focus:bg-[#141018]"]),
+:root[data-theme="light"] [class*="bg-[#0e1726]"]:not([class*="hover:bg-[#0e1726]"]):not([class*="focus:bg-[#0e1726]"]),
+:root[data-theme="light"] [class*="bg-[#1A1A1D]"]:not([class*="hover:bg-[#1A1A1D]"]):not([class*="focus:bg-[#1A1A1D]"]),
+:root[data-theme="light"] [class*="bg-[#1B1B25]"]:not([class*="hover:bg-[#1B1B25]"]):not([class*="focus:bg-[#1B1B25]"]),
+:root[data-theme="light"] [class*="bg-[#1C1C20]"]:not([class*="hover:bg-[#1C1C20]"]):not([class*="focus:bg-[#1C1C20]"]),
+:root[data-theme="light"] [class*="bg-[#1D1D20]"]:not([class*="hover:bg-[#1D1D20]"]):not([class*="focus:bg-[#1D1D20]"]),
+:root[data-theme="light"] [class*="bg-[#1E1E21]"]:not([class*="hover:bg-[#1E1E21]"]):not([class*="focus:bg-[#1E1E21]"]),
+:root[data-theme="light"] [class*="bg-[#1F1F23]"]:not([class*="hover:bg-[#1F1F23]"]):not([class*="focus:bg-[#1F1F23]"]),
+:root[data-theme="light"] [class*="bg-[#202023]"]:not([class*="hover:bg-[#202023]"]):not([class*="focus:bg-[#202023]"]),
+:root[data-theme="light"] [class*="bg-[#22222c]"]:not([class*="hover:bg-[#22222c]"]):not([class*="focus:bg-[#22222c]"]),
+:root[data-theme="light"] [class*="bg-[#232323]"]:not([class*="hover:bg-[#232323]"]):not([class*="focus:bg-[#232323]"]),
+:root[data-theme="light"] [class*="bg-[#26262A]"]:not([class*="hover:bg-[#26262A]"]):not([class*="focus:bg-[#26262A]"]) {
+  background-color: var(--l-surface) !important;
+}
+:root[data-theme="light"] [class*=":bg-[#010101]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#010101]"],
+:root[data-theme="light"] [class*=":bg-[#050505]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#050505]"],
+:root[data-theme="light"] [class*=":bg-[#060608]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#060608]"],
+:root[data-theme="light"] [class*=":bg-[#06060A]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#06060A]"],
+:root[data-theme="light"] [class*=":bg-[#070709]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#070709]"],
+:root[data-theme="light"] [class*=":bg-[#08080A]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#08080A]"],
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#0A0A0C]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0A0A0C]"],
+:root[data-theme="light"] [class*=":bg-[#0A0A0F]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0A0A0F]"],
+:root[data-theme="light"] [class*=":bg-[#0B0B0F]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0B0B0F]"],
+:root[data-theme="light"] [class*=":bg-[#0c0c0f]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0c0c0f]"],
+:root[data-theme="light"] [class*=":bg-[#0d0d10]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0d0d10]"],
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#0e0e14]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0e0e14]"],
+:root[data-theme="light"] [class*=":bg-[#101014]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#101014]"],
+:root[data-theme="light"] [class*=":bg-[#111114]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#111114]"],
+:root[data-theme="light"] [class*=":bg-[#131316]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#131316]"],
+:root[data-theme="light"] [class*=":bg-[#13131A]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#13131A]"],
+:root[data-theme="light"] [class*=":bg-[#141416]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#141416]"],
+:root[data-theme="light"] [class*=":bg-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#000000]"],
+:root[data-theme="light"] [class*=":bg-[#14141a]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#14141a]"],
+:root[data-theme="light"] [class*=":bg-[#141420]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#141420]"],
+:root[data-theme="light"] [class*=":bg-[#141018]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#141018]"],
+:root[data-theme="light"] [class*=":bg-[#0e1726]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#0e1726]"],
+:root[data-theme="light"] [class*=":bg-[#1A1A1D]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1A1A1D]"],
+:root[data-theme="light"] [class*=":bg-[#1B1B25]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1B1B25]"],
+:root[data-theme="light"] [class*=":bg-[#1C1C20]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1C1C20]"],
+:root[data-theme="light"] [class*=":bg-[#1D1D20]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1D1D20]"],
+:root[data-theme="light"] [class*=":bg-[#1E1E21]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1E1E21]"],
+:root[data-theme="light"] [class*=":bg-[#1F1F23]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#1F1F23]"],
+:root[data-theme="light"] [class*=":bg-[#202023]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#202023]"],
+:root[data-theme="light"] [class*=":bg-[#22222c]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#22222c]"],
+:root[data-theme="light"] [class*=":bg-[#232323]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#232323]"],
+:root[data-theme="light"] [class*=":bg-[#26262A]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#26262A]"] {
+  background-color: var(--l-surface) !important;
+}
+
+/* Чип, идэвхтэй мөр, аватарын нүд — картаас нэг шат гүн. */
+:root[data-theme="light"] [class*="bg-[#232327]"]:not([class*="hover:bg-[#232327]"]):not([class*="focus:bg-[#232327]"]),
+:root[data-theme="light"] [class*="bg-[#2C2C31]"]:not([class*="hover:bg-[#2C2C31]"]):not([class*="focus:bg-[#2C2C31]"]),
+:root[data-theme="light"] [class*="bg-[#2a2a35]"]:not([class*="hover:bg-[#2a2a35]"]):not([class*="focus:bg-[#2a2a35]"]),
+:root[data-theme="light"] [class*="bg-[#2A2A30]"]:not([class*="hover:bg-[#2A2A30]"]):not([class*="focus:bg-[#2A2A30]"]),
+:root[data-theme="light"] [class*="bg-[#3A3A40]"]:not([class*="hover:bg-[#3A3A40]"]):not([class*="focus:bg-[#3A3A40]"]),
+:root[data-theme="light"] [class*="bg-[#2a2a34]"]:not([class*="hover:bg-[#2a2a34]"]):not([class*="focus:bg-[#2a2a34]"]) {
+  background-color: var(--l-surface-2) !important;
+}
+:root[data-theme="light"] [class*=":bg-[#232327]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#232327]"],
+:root[data-theme="light"] [class*=":bg-[#2C2C31]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#2C2C31]"],
+:root[data-theme="light"] [class*=":bg-[#2a2a35]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#2a2a35]"],
+:root[data-theme="light"] [class*=":bg-[#2A2A30]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#2A2A30]"],
+:root[data-theme="light"] [class*=":bg-[#3A3A40]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#3A3A40]"],
+:root[data-theme="light"] [class*=":bg-[#2a2a34]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#2a2a34]"] {
+  background-color: var(--l-surface-2) !important;
+}
+
+/* #333338 нь хүрээний токен; дэвсгэр болж хэрэглэгдэхдээ 1px хуваагч. */
+:root[data-theme="light"] [class*="bg-[#333338]"]:not([class*="hover:bg-[#333338]"]):not([class*="focus:bg-[#333338]"]) {
+  background-color: var(--l-line-solid) !important;
+}
+:root[data-theme="light"] [class*=":bg-[#333338]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[#333338]"] {
+  background-color: var(--l-line-solid) !important;
+}
+
+/* Шөнийн цагаан налархай (hover/идэвхтэй) → өдрийн бараан налархай.
+   bg-white/95 зэрэг ӨНДӨР alpha нь налархай биш, гадаргуу — үлдээв. */
+:root[data-theme="light"] [class*="bg-[rgba(255,255,255,"]:not([class*=":bg-[rgba(255,255,255,"]),
+:root[data-theme="light"] .bg-white\/5,
+:root[data-theme="light"] .bg-white\/10,
+:root[data-theme="light"] .bg-white\/20,
+:root[data-theme="light"] .bg-white\/35 {
+  background-color: var(--l-tint) !important;
+}
+
+:root[data-theme="light"] [class*="hover:bg-[rgba(255,255,255,"]:hover,
+:root[data-theme="light"] .hover\:bg-white\/5:hover,
+:root[data-theme="light"] .hover\:bg-white\/10:hover,
+:root[data-theme="light"] .hover\:bg-white\/20:hover,
+:root[data-theme="light"] .group:hover [class*="group-hover:bg-[rgba(255,255,255,"] {
+  background-color: var(--l-tint) !important;
+}
+
+/* Хэсгийг суурь руу уусгадаг харанхуй градиент → өдрийн суурь руу. */
+:root[data-theme="light"] [class*="from-[#0d0d10]"],
+:root[data-theme="light"] [class*="via-[#0d0d10]"],
+:root[data-theme="light"] [class*="to-[#0d0d10]"],
+:root[data-theme="light"] [class*="from-[#000000]"],
+:root[data-theme="light"] [class*="via-[#000000]"],
+:root[data-theme="light"] [class*="to-[#000000]"],
+:root[data-theme="light"] [class*="from-[#000000]"],
+:root[data-theme="light"] [class*="via-[#000000]"],
+:root[data-theme="light"] [class*="to-[#000000]"],
+:root[data-theme="light"] [class*="from-[#101014]"],
+:root[data-theme="light"] [class*="via-[#101014]"],
+:root[data-theme="light"] [class*="to-[#101014]"],
+:root[data-theme="light"] [class*="from-[#141018]"],
+:root[data-theme="light"] [class*="via-[#141018]"],
+:root[data-theme="light"] [class*="to-[#141018]"],
+:root[data-theme="light"] [class*="from-[#000000]"],
+:root[data-theme="light"] [class*="via-[#000000]"],
+:root[data-theme="light"] [class*="to-[#000000]"],
+:root[data-theme="light"] [class*="from-[#0A0A0C]"],
+:root[data-theme="light"] [class*="via-[#0A0A0C]"],
+:root[data-theme="light"] [class*="to-[#0A0A0C]"],
+:root[data-theme="light"] [class*="from-[#000000]"],
+:root[data-theme="light"] [class*="via-[#000000]"],
+:root[data-theme="light"] [class*="to-[#000000]"] {
+  --tw-gradient-from: var(--l-canvas) !important;
+  --tw-gradient-via: var(--l-canvas) !important;
+  --tw-gradient-to: var(--l-canvas) !important;
+}
+
+/* Шөнийн үндсэн бичиг (цайвар) → өдрийн бэх. */
+:root[data-theme="light"] [class*="text-[#FFFFFF]"]:not([class*="hover:text-[#FFFFFF]"]):not([class*="focus:text-[#FFFFFF]"]),
+:root[data-theme="light"] [class*="text-[#ffffff]"]:not([class*="hover:text-[#ffffff]"]):not([class*="focus:text-[#ffffff]"]),
+:root[data-theme="light"] [class*="text-[#fff]"]:not([class*="hover:text-[#fff]"]):not([class*="focus:text-[#fff]"]),
+:root[data-theme="light"] [class*="text-[#FFF]"]:not([class*="hover:text-[#FFF]"]):not([class*="focus:text-[#FFF]"]),
+:root[data-theme="light"] [class*="text-[#F2F2F4]"]:not([class*="hover:text-[#F2F2F4]"]):not([class*="focus:text-[#F2F2F4]"]),
+:root[data-theme="light"] [class*="text-[#f2f2f4]"]:not([class*="hover:text-[#f2f2f4]"]):not([class*="focus:text-[#f2f2f4]"]),
+:root[data-theme="light"] [class*="text-[#E8E8E8]"]:not([class*="hover:text-[#E8E8E8]"]):not([class*="focus:text-[#E8E8E8]"]),
+:root[data-theme="light"] [class*="text-[#e8e8e8]"]:not([class*="hover:text-[#e8e8e8]"]):not([class*="focus:text-[#e8e8e8]"]),
+:root[data-theme="light"] [class*="text-[#F8F8F6]"]:not([class*="hover:text-[#F8F8F6]"]):not([class*="focus:text-[#F8F8F6]"]),
+:root[data-theme="light"] [class*="text-[#f5f5f7]"]:not([class*="hover:text-[#f5f5f7]"]):not([class*="focus:text-[#f5f5f7]"]),
+:root[data-theme="light"] [class*="text-[#F4EFE6]"]:not([class*="hover:text-[#F4EFE6]"]):not([class*="focus:text-[#F4EFE6]"]),
+:root[data-theme="light"] [class*="text-[#F4F0E8]"]:not([class*="hover:text-[#F4F0E8]"]):not([class*="focus:text-[#F4F0E8]"]),
+:root[data-theme="light"] [class*="text-[#e8e6e1]"]:not([class*="hover:text-[#e8e6e1]"]):not([class*="focus:text-[#e8e6e1]"]),
+:root[data-theme="light"] [class*="text-[#F0F0F2]"]:not([class*="hover:text-[#F0F0F2]"]):not([class*="focus:text-[#F0F0F2]"]),
+:root[data-theme="light"] [class*="text-[#d9d9e1]"]:not([class*="hover:text-[#d9d9e1]"]):not([class*="focus:text-[#d9d9e1]"]),
+:root[data-theme="light"] [class*="text-[#D4D4D8]"]:not([class*="hover:text-[#D4D4D8]"]):not([class*="focus:text-[#D4D4D8]"]),
+:root[data-theme="light"] [class*="text-[#E8E8E6]"]:not([class*="hover:text-[#E8E8E6]"]):not([class*="focus:text-[#E8E8E6]"]),
+:root[data-theme="light"] [class*="text-[#F2F2F0]"]:not([class*="hover:text-[#F2F2F0]"]):not([class*="focus:text-[#F2F2F0]"]) {
+  color: var(--l-ink) !important;
+}
+:root[data-theme="light"] [class*=":text-[#FFFFFF]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#FFFFFF]"],
+:root[data-theme="light"] [class*=":text-[#ffffff]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#ffffff]"],
+:root[data-theme="light"] [class*=":text-[#fff]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#fff]"],
+:root[data-theme="light"] [class*=":text-[#FFF]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#FFF]"],
+:root[data-theme="light"] [class*=":text-[#F2F2F4]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F2F2F4]"],
+:root[data-theme="light"] [class*=":text-[#f2f2f4]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#f2f2f4]"],
+:root[data-theme="light"] [class*=":text-[#E8E8E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E8E8E8]"],
+:root[data-theme="light"] [class*=":text-[#e8e8e8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#e8e8e8]"],
+:root[data-theme="light"] [class*=":text-[#F8F8F6]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F8F8F6]"],
+:root[data-theme="light"] [class*=":text-[#f5f5f7]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#f5f5f7]"],
+:root[data-theme="light"] [class*=":text-[#F4EFE6]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F4EFE6]"],
+:root[data-theme="light"] [class*=":text-[#F4F0E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F4F0E8]"],
+:root[data-theme="light"] [class*=":text-[#e8e6e1]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#e8e6e1]"],
+:root[data-theme="light"] [class*=":text-[#F0F0F2]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F0F0F2]"],
+:root[data-theme="light"] [class*=":text-[#d9d9e1]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#d9d9e1]"],
+:root[data-theme="light"] [class*=":text-[#D4D4D8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#D4D4D8]"],
+:root[data-theme="light"] [class*=":text-[#E8E8E6]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E8E8E6]"],
+:root[data-theme="light"] [class*=":text-[#F2F2F0]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#F2F2F0]"] {
+  color: var(--l-ink) !important;
+}
+
+/* ─── ACCENT ДЭВСГЭР ДЭЭРХ БИЧИГ ЦАГААН ХЭВЭЭР ────────────────────────
+   Доорх дүрэм нь цайвар хуудсан дээр хаягдсан цагаан бичгийг аврах
+   зорилготой. Гэвч accent ДЭВСГЭРТЭЙ элемент дээр эсрэгээрээ ажиллана:
+   товч нь цэнхэр, бичиг нь бараан болж 2.7:1 — уншигдахгүй. Цагаан нь
+   тэр цэнхэр дээр 6.64:1.
+
+   Улбар шар байхад бараан бичиг 6:1 өгдөг байсан тул энэ алдаа
+   харагддаггүй байв; accent цэнхэр болмогц л ил гарсан. Тиймээс
+   `bg-<accent>` агуулсан элементийг энэ дүрмээс гадуурхана. Тунгалаг
+   хувилбар (`/20`) болон `hover:` мэт угтвартайг нь хасахгүй — тэдгээр
+   нь ердийн үед цайвар дэвсгэр дээр сууж байдаг. */
+:root[data-theme="light"] .text-white:not([class*=":text-white"]):not([class*="bg-[#00E5C7]"]):not([class*="bg-[#0B8F7E]"]):not([class*="bg-[#094436]"]) {
+  color: var(--l-ink) !important;
+}
+
+/* Accent товч ДОТОРХ бичиг (өөр элемент дээр байвал). */
+:root[data-theme="light"]
+  :is([class*="bg-[#00E5C7]"]:not([class*="bg-[#00E5C7]/"]):not([class*=":bg-[#00E5C7]"]),
+      [class*="bg-[#0B8F7E]"]:not([class*="bg-[#0B8F7E]/"]):not([class*=":bg-[#0B8F7E]"]),
+      [class*="bg-[#094436]"]:not([class*="bg-[#094436]/"]):not([class*=":bg-[#094436]"]))
+  :is(.text-white, [class*="text-white"]) {
+  color: #FFFFFF !important;
+}
+
+:root[data-theme="light"] .hover\:text-white:hover,
+:root[data-theme="light"] .active\:text-white:active,
+:root[data-theme="light"] .group:hover .group-hover\:text-white {
+  color: var(--l-ink) !important;
+}
+
+/* Хоёрдогч бичиг. #94a3b8 · #d5dce3 · #dde3ea нь хуучин гэрэлт
+   сэдвийн үлдэгдэл боловч цагаан дээр 2.6:1 — хэтэрхий бүдэг
+   тул эдгээрийг ч мөн энэ шатанд татав. */
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#B8B8BD]"]:not([class*="hover:text-[#B8B8BD]"]):not([class*="focus:text-[#B8B8BD]"]):not([class*="placeholder:text-[#B8B8BD]"]):not([class*="disabled:text-[#B8B8BD]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#c9c9d1]"]:not([class*="hover:text-[#c9c9d1]"]):not([class*="focus:text-[#c9c9d1]"]):not([class*="placeholder:text-[#c9c9d1]"]):not([class*="disabled:text-[#c9c9d1]"]),
+:root[data-theme="light"] [class*="text-[#AAAAAA]"]:not([class*="hover:text-[#AAAAAA]"]):not([class*="focus:text-[#AAAAAA]"]):not([class*="placeholder:text-[#AAAAAA]"]):not([class*="disabled:text-[#AAAAAA]"]),
+:root[data-theme="light"] [class*="text-[#9A9A9F]"]:not([class*="hover:text-[#9A9A9F]"]):not([class*="focus:text-[#9A9A9F]"]):not([class*="placeholder:text-[#9A9A9F]"]):not([class*="disabled:text-[#9A9A9F]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#8A8680]"]:not([class*="hover:text-[#8A8680]"]):not([class*="focus:text-[#8A8680]"]):not([class*="placeholder:text-[#8A8680]"]):not([class*="disabled:text-[#8A8680]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#d5dce3]"]:not([class*="hover:text-[#d5dce3]"]):not([class*="focus:text-[#d5dce3]"]):not([class*="placeholder:text-[#d5dce3]"]):not([class*="disabled:text-[#d5dce3]"]),
+:root[data-theme="light"] [class*="text-[#dde3ea]"]:not([class*="hover:text-[#dde3ea]"]):not([class*="focus:text-[#dde3ea]"]):not([class*="placeholder:text-[#dde3ea]"]):not([class*="disabled:text-[#dde3ea]"]),
+:root[data-theme="light"] [class*="text-[#ddd]"]:not([class*="hover:text-[#ddd]"]):not([class*="focus:text-[#ddd]"]):not([class*="placeholder:text-[#ddd]"]):not([class*="disabled:text-[#ddd]"]),
+:root[data-theme="light"] [class*="text-[#D6D6DE]"]:not([class*="hover:text-[#D6D6DE]"]):not([class*="focus:text-[#D6D6DE]"]):not([class*="placeholder:text-[#D6D6DE]"]):not([class*="disabled:text-[#D6D6DE]"]),
+:root[data-theme="light"] [class*="text-[#C2C2CE]"]:not([class*="hover:text-[#C2C2CE]"]):not([class*="focus:text-[#C2C2CE]"]):not([class*="placeholder:text-[#C2C2CE]"]):not([class*="disabled:text-[#C2C2CE]"]) {
+  color: var(--l-muted) !important;
+}
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#B8B8BD]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#B8B8BD]"],
+:root[data-theme="light"] [class*="placeholder:text-[#B8B8BD]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#B8B8BD]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#c9c9d1]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#c9c9d1]"],
+:root[data-theme="light"] [class*="placeholder:text-[#c9c9d1]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#c9c9d1]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#AAAAAA]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#AAAAAA]"],
+:root[data-theme="light"] [class*="placeholder:text-[#AAAAAA]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#AAAAAA]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#9A9A9F]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#9A9A9F]"],
+:root[data-theme="light"] [class*="placeholder:text-[#9A9A9F]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#9A9A9F]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#8A8680]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#8A8680]"],
+:root[data-theme="light"] [class*="placeholder:text-[#8A8680]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#8A8680]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#d5dce3]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#d5dce3]"],
+:root[data-theme="light"] [class*="placeholder:text-[#d5dce3]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#d5dce3]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#dde3ea]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#dde3ea]"],
+:root[data-theme="light"] [class*="placeholder:text-[#dde3ea]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#dde3ea]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#ddd]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#ddd]"],
+:root[data-theme="light"] [class*="placeholder:text-[#ddd]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#ddd]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#D6D6DE]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#D6D6DE]"],
+:root[data-theme="light"] [class*="placeholder:text-[#D6D6DE]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#D6D6DE]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#C2C2CE]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#C2C2CE]"],
+:root[data-theme="light"] [class*="placeholder:text-[#C2C2CE]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#C2C2CE]"]:disabled {
+  color: var(--l-muted) !important;
+}
+
+:root[data-theme="light"] [class*="text-white/"]:not([class*=":text-white/"]),
+:root[data-theme="light"] [class*="text-[rgba(240,236,227,"],
+:root[data-theme="light"] [class*="text-[rgba(244,239,230,"] {
+  color: var(--l-muted) !important;
+}
+
+/* Гуравдагч / placeholder. Шөнөд эдгээр нь БҮДЭГ үүрэгтэй байсан;
+   #56565E-ийг өдөр шууд үлдээвэл 7:1 болж хүчтэй бичиг мэт
+   уншигдана — шатлал эргэнэ. Тиймээс үүргээр нь буулгав. */
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#6B6B72]"]:not([class*="hover:text-[#6B6B72]"]):not([class*="focus:text-[#6B6B72]"]):not([class*="placeholder:text-[#6B6B72]"]):not([class*="disabled:text-[#6B6B72]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#45454C]"]:not([class*="hover:text-[#45454C]"]):not([class*="focus:text-[#45454C]"]):not([class*="placeholder:text-[#45454C]"]):not([class*="disabled:text-[#45454C]"]),
+:root[data-theme="light"] [class*="text-[#6b6b73]"]:not([class*="hover:text-[#6b6b73]"]):not([class*="focus:text-[#6b6b73]"]):not([class*="placeholder:text-[#6b6b73]"]):not([class*="disabled:text-[#6b6b73]"]),
+:root[data-theme="light"] [class*="text-[#5a5550]"]:not([class*="hover:text-[#5a5550]"]):not([class*="focus:text-[#5a5550]"]):not([class*="placeholder:text-[#5a5550]"]):not([class*="disabled:text-[#5a5550]"]),
+:root[data-theme="light"] [class*="text-[#E2E4E8]"]:not([class*="hover:text-[#E2E4E8]"]):not([class*="focus:text-[#E2E4E8]"]):not([class*="placeholder:text-[#E2E4E8]"]):not([class*="disabled:text-[#E2E4E8]"]),
+:root[data-theme="light"] [class*="text-[#5C5C63]"]:not([class*="hover:text-[#5C5C63]"]):not([class*="focus:text-[#5C5C63]"]):not([class*="placeholder:text-[#5C5C63]"]):not([class*="disabled:text-[#5C5C63]"]) {
+  color: var(--l-dim) !important;
+}
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#6B6B72]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#6B6B72]"],
+:root[data-theme="light"] [class*="placeholder:text-[#6B6B72]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#6B6B72]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#45454C]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#45454C]"],
+:root[data-theme="light"] [class*="placeholder:text-[#45454C]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#45454C]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#6b6b73]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#6b6b73]"],
+:root[data-theme="light"] [class*="placeholder:text-[#6b6b73]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#6b6b73]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#5a5550]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#5a5550]"],
+:root[data-theme="light"] [class*="placeholder:text-[#5a5550]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#5a5550]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#E2E4E8]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#E2E4E8]"],
+:root[data-theme="light"] [class*="placeholder:text-[#E2E4E8]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#E2E4E8]"]:disabled,
+:root[data-theme="light"] [class*=":text-[#5C5C63]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#5C5C63]"],
+:root[data-theme="light"] [class*="placeholder:text-[#5C5C63]"]::placeholder,
+:root[data-theme="light"] [class*="disabled:text-[#5C5C63]"]:disabled {
+  color: var(--l-dim) !important;
+}
+
+/* TENGER бичиг болж хэрэглэгдэх үед (768 газар) гүнзгийрнэ:
+   #00E5C7 цагаан дээр 2.9:1, #094436 нь 4.9:1. Дүүргэлт нь
+   #00E5C7 хэвээр — түүн дээрх бичиг хоёр горимд адил бараан. */
+:root[data-theme="light"] [class*="text-[#00E5C7]"]:not([class*="hover:text-[#00E5C7]"]):not([class*="focus:text-[#00E5C7]"]) {
+  color: var(--l-accent-ink) !important;
+}
+:root[data-theme="light"] [class*=":text-[#00E5C7]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#00E5C7]"] {
+  color: var(--l-accent-ink) !important;
+}
+
+/* Шөнөд hover нь ЦАЙВАР, өдөр БАРААН — тиймээс эсрэг тийш. */
+:root[data-theme="light"] [class*="text-[#0B8F7E]"]:not([class*="hover:text-[#0B8F7E]"]):not([class*="focus:text-[#0B8F7E]"]) {
+  color: var(--l-accent-deep) !important;
+}
+:root[data-theme="light"] [class*=":text-[#0B8F7E]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#0B8F7E]"] {
+  color: var(--l-accent-deep) !important;
+}
+
+/* Шөнийн үсэн зураас (харанхуй hex) → өдрийн үсэн зураас. */
+:root[data-theme="light"] [class*="border-[#333338]"]:not([class*="hover:border-[#333338]"]):not([class*="focus:border-[#333338]"]),
+:root[data-theme="light"] [class*="border-[#232327]"]:not([class*="hover:border-[#232327]"]):not([class*="focus:border-[#232327]"]),
+:root[data-theme="light"] [class*="border-[#1C1C20]"]:not([class*="hover:border-[#1C1C20]"]):not([class*="focus:border-[#1C1C20]"]),
+:root[data-theme="light"] [class*="border-[#2a2a35]"]:not([class*="hover:border-[#2a2a35]"]):not([class*="focus:border-[#2a2a35]"]),
+:root[data-theme="light"] [class*="border-[#22222c]"]:not([class*="hover:border-[#22222c]"]):not([class*="focus:border-[#22222c]"]),
+:root[data-theme="light"] [class*="border-[#101014]"]:not([class*="hover:border-[#101014]"]):not([class*="focus:border-[#101014]"]),
+:root[data-theme="light"] [class*="border-[#0a0a0c]"]:not([class*="hover:border-[#0a0a0c]"]):not([class*="focus:border-[#0a0a0c]"]),
+:root[data-theme="light"] [class*="border-[#2a2a34]"]:not([class*="hover:border-[#2a2a34]"]):not([class*="focus:border-[#2a2a34]"]),
+:root[data-theme="light"] [class*="border-[#2a2825]"]:not([class*="hover:border-[#2a2825]"]):not([class*="focus:border-[#2a2825]"]),
+:root[data-theme="light"] [class*="border-[#3a3835]"]:not([class*="hover:border-[#3a3835]"]):not([class*="focus:border-[#3a3835]"]),
+:root[data-theme="light"] [class*="border-[#1a1a1e]"]:not([class*="hover:border-[#1a1a1e]"]):not([class*="focus:border-[#1a1a1e]"]),
+:root[data-theme="light"] [class*="border-[#26262A]"]:not([class*="hover:border-[#26262A]"]):not([class*="focus:border-[#26262A]"]),
+:root[data-theme="light"] [class*="border-[#1E1E21]"]:not([class*="hover:border-[#1E1E21]"]):not([class*="focus:border-[#1E1E21]"]),
+:root[data-theme="light"] [class*="border-[#000000]"]:not([class*="hover:border-[#000000]"]):not([class*="focus:border-[#000000]"]) {
+  border-color: var(--l-line) !important;
+}
+:root[data-theme="light"] [class*=":border-[#333338]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#333338]"],
+:root[data-theme="light"] [class*=":border-[#232327]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#232327]"],
+:root[data-theme="light"] [class*=":border-[#1C1C20]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#1C1C20]"],
+:root[data-theme="light"] [class*=":border-[#2a2a35]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#2a2a35]"],
+:root[data-theme="light"] [class*=":border-[#22222c]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#22222c]"],
+:root[data-theme="light"] [class*=":border-[#101014]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#101014]"],
+:root[data-theme="light"] [class*=":border-[#0a0a0c]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#0a0a0c]"],
+:root[data-theme="light"] [class*=":border-[#2a2a34]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#2a2a34]"],
+:root[data-theme="light"] [class*=":border-[#2a2825]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#2a2825]"],
+:root[data-theme="light"] [class*=":border-[#3a3835]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#3a3835]"],
+:root[data-theme="light"] [class*=":border-[#1a1a1e]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#1a1a1e]"],
+:root[data-theme="light"] [class*=":border-[#26262A]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#26262A]"],
+:root[data-theme="light"] [class*=":border-[#1E1E21]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#1E1E21]"],
+:root[data-theme="light"] [class*=":border-[#000000]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#000000]"] {
+  border-color: var(--l-line) !important;
+}
+
+/* 381 газарт бичигдсэн rgba(255,255,255,…) хүрээ — цагаан дээр
+   цагаан болж алга болно. Alpha бүрийг нэг утга руу цуглуулав:
+   0.04-оос 0.18 хүртэлх ялгаа нь шөнөд ч нүдэнд мэдрэгддэггүй. */
+:root[data-theme="light"] [class*="border-[rgba(255,255,255,"]:not([class*=":border-[rgba(255,255,255,"]),
+:root[data-theme="light"] .border-white:not([class*=":border-white"]),
+:root[data-theme="light"] [class*="border-white/"]:not([class*=":border-white/"]) {
+  border-color: var(--l-line) !important;
+}
+
+:root[data-theme="light"] [class*="hover:border-[rgba(255,255,255,"]:hover,
+:root[data-theme="light"] [class*="focus:border-[rgba(255,255,255,"]:focus,
+:root[data-theme="light"] .hover\:border-white:hover,
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[rgba(255,255,255,"] {
+  border-color: var(--l-line-strong) !important;
+}
+
+/* Шөнөд ЦАЙВАР хүрээ = онцолсон/сонгогдсон төлөв. Өдөр тэр утга нь
+   бүр мөсөн алга болох тул онцлолыг хүчтэй зураас болгож хадгалав. */
+:root[data-theme="light"] [class*="border-[#F2F2F4]"]:not([class*="hover:border-[#F2F2F4]"]):not([class*="focus:border-[#F2F2F4]"]),
+:root[data-theme="light"] [class*="border-[#62666F]"]:not([class*="hover:border-[#62666F]"]):not([class*="focus:border-[#62666F]"]),
+:root[data-theme="light"] [class*="border-[#62666F]"]:not([class*="hover:border-[#62666F]"]):not([class*="focus:border-[#62666F]"]),
+:root[data-theme="light"] [class*="border-[#45454C]"]:not([class*="hover:border-[#45454C]"]):not([class*="focus:border-[#45454C]"]),
+:root[data-theme="light"] [class*="border-[#FFFFFF]"]:not([class*="hover:border-[#FFFFFF]"]):not([class*="focus:border-[#FFFFFF]"]) {
+  border-color: var(--l-line-strong) !important;
+}
+:root[data-theme="light"] [class*=":border-[#F2F2F4]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#F2F2F4]"],
+:root[data-theme="light"] [class*=":border-[#62666F]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#62666F]"],
+:root[data-theme="light"] [class*=":border-[#62666F]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#62666F]"],
+:root[data-theme="light"] [class*=":border-[#45454C]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#45454C]"],
+:root[data-theme="light"] [class*=":border-[#FFFFFF]"]:is(:hover,:focus,:focus-visible,:active),
+:root[data-theme="light"] .group:hover [class*="group-hover:border-[#FFFFFF]"] {
+  border-color: var(--l-line-strong) !important;
+}
+
+/* ХАМГИЙН ЧУХАЛ ОНЦГОЙ ТОХИОЛДОЛ. Зураг/видеон дээр тавьсан хар хөшиг
+   нь өдөр ч хар хэвээр (зураг өөрөө өөрчлөгддөггүй) тул түүн дээрх
+   бичгийг бэх болговол уншигдахаа болино.
+
+   `:has(img, video, …)` НӨХЦӨЛ НЬ ЗААВАЛ. Үүнгүйгээр дүрэм нь
+   МОДАЛ цонх руу ч дамжина: AuthModal-ын бүтэц нь
+   `<div class="bg-black/75"><div class="bg-[#141416]">…` буюу
+   самбар нь хөшигний ҮР ХҮҮХЭД. Самбар өдөр цагаан болох тул
+   толгойн бичиг цагаан үлдвэл цагаан дээр цагаан болно — амьд
+   сайт дээр яг ийм алдаа гарч, эндээс олдсон. Модал дотор зураг
+   байдаггүй тул `:has(img)` нь хоёрыг цэвэрхэн салгана. */
+:root[data-theme="light"] :is([class*="bg-black/"], [class*="from-black/"], [class*="via-black/"], [class*="to-black/"], [class*="bg-[rgba(0,0,0,"], [class*="from-[rgba(0,0,0,"], [class*="bg-[#000000]/"], [class*="bg-[#000]/"]):not(body):has(> :is(img, video, picture), > :is(a, span, div, figure, button) > :is(img, video, picture)) :is(.text-white, [class*="text-white"], [class*="text-[#FFFFFF]"], [class*="text-[#ffffff]"], [class*="text-[#fff]"], [class*="text-[#F2F2F4]"], [class*="text-[#E8E8E8]"], [class*="text-[#E2E4E8]"], [class*="text-[#E2E4E8]"], [class*="text-[#F8F8F6]"], [class*="text-[#D4D4D8]"]),
+:root[data-theme="light"] :has(> :is([class*="bg-black/"], [class*="from-black/"], [class*="via-black/"], [class*="to-black/"], [class*="bg-[rgba(0,0,0,"], [class*="from-[rgba(0,0,0,"], [class*="bg-[#000000]/"], [class*="bg-[#000]/"])):not(body):has(> :is(img, video, picture), > :is(a, span, div, figure, button) > :is(img, video, picture)) :is(.text-white, [class*="text-white"], [class*="text-[#FFFFFF]"], [class*="text-[#ffffff]"], [class*="text-[#fff]"], [class*="text-[#F2F2F4]"], [class*="text-[#E8E8E8]"], [class*="text-[#E2E4E8]"], [class*="text-[#E2E4E8]"], [class*="text-[#F8F8F6]"], [class*="text-[#D4D4D8]"]),
+:root[data-theme="light"] :has(> :is([class*="bg-black/"], [class*="from-black/"], [class*="via-black/"], [class*="to-black/"], [class*="bg-[rgba(0,0,0,"], [class*="from-[rgba(0,0,0,"], [class*="bg-[#000000]/"], [class*="bg-[#000]/"])):not(body):has(> :is(img, video, picture), > :is(a, span, div, figure, button) > :is(img, video, picture)) :is([class*="bg-black/"], [class*="from-black/"], [class*="via-black/"], [class*="to-black/"], [class*="bg-[rgba(0,0,0,"], [class*="from-[rgba(0,0,0,"], [class*="bg-[#000000]/"], [class*="bg-[#000]/"]) {
+  color: #FFFFFF !important;
+}
+
+
+/* ─── Гараар бичсэн классууд. Эдгээр нь var() биш, шууд hex агуулдаг тул
+   токен солиход дагахгүй — өдрийн утгыг нь нэрээр нь дахин зарлав. ─── */
+:root[data-theme="light"] .btn-primary,
+:root[data-theme="light"] .btn-neon,
+:root[data-theme="light"] .btn-blood { color: #17171A; }
+
+:root[data-theme="light"] .input-dark {
+  background: var(--l-surface);
+  border-color: var(--l-line);
+  color: var(--l-ink);
+}
+:root[data-theme="light"] .input-dark::placeholder { color: var(--l-dim); }
+
+:root[data-theme="light"] .card { background: var(--l-surface); border-color: var(--l-line); }
+:root[data-theme="light"] .card:hover { border-color: var(--l-line-strong); }
+
+:root[data-theme="light"] .headline { color: var(--l-ink); }
+:root[data-theme="light"] .headline .accent,
+:root[data-theme="light"] .headline .dot { color: var(--l-accent-ink); text-shadow: none; }
+
+:root[data-theme="light"] .dropdown-item { color: var(--l-ink); }
+:root[data-theme="light"] .dropdown-item:hover { background: rgba(0,229,199,0.10); }
+
+:root[data-theme="light"] .static-ramp { color: #C4C0BA; }
+:root[data-theme="light"] .chip-live,
+:root[data-theme="light"] .chip-sync,
+:root[data-theme="light"] .chip-archive { border-color: var(--l-line); }
+:root[data-theme="light"] .chip-live { color: var(--l-accent-ink); border-color: rgba(0,229,199,.42); }
+:root[data-theme="light"] .chip-sync { color: var(--l-muted); }
+:root[data-theme="light"] .chip-archive { color: var(--l-dim); }
+
+/* .su-* давхарга бүхэлдээ var() уншдаг тул дээрх токеноор аль хэдийн
+   өдөр болсон. Ганц үл хамаарах зүйл нь primary товчны бичиг. */
+:root[data-theme="light"] .su-btn--primary { color: #17171A; }
+:root[data-theme="light"] .su-badge--accent { color: var(--l-accent-ink); }
+
+/* Агуулгын хоёр хэлбэр — засварлагч ба нийтлэл. */
+:root[data-theme="light"] .rich-editor-content h1,
+:root[data-theme="light"] .rich-editor-content h2,
+:root[data-theme="light"] .rich-editor-content h3,
+:root[data-theme="light"] .rich-editor-content strong,
+:root[data-theme="light"] .blog-content h1,
+:root[data-theme="light"] .blog-content h2,
+:root[data-theme="light"] .blog-content h3,
+:root[data-theme="light"] .blog-content strong { color: var(--l-ink); }
+:root[data-theme="light"] .rich-editor-content,
+:root[data-theme="light"] .blog-content p,
+:root[data-theme="light"] .blog-content li,
+:root[data-theme="light"] .blog-content blockquote,
+:root[data-theme="light"] .rich-editor-content blockquote,
+:root[data-theme="light"] .blog-content pre,
+:root[data-theme="light"] .rich-editor-content pre,
+:root[data-theme="light"] .re-prompt-body,
+:root[data-theme="light"] .re-prompt-template-body,
+:root[data-theme="light"] .re-challenge-body,
+:root[data-theme="light"] .re-card-body,
+:root[data-theme="light"] .re-check-item,
+:root[data-theme="light"] .re-table td { color: var(--l-muted); }
+:root[data-theme="light"] .blog-content a,
+:root[data-theme="light"] .rich-editor-content a,
+:root[data-theme="light"] .re-link-url { color: var(--l-accent-ink); }
+:root[data-theme="light"] .blog-content a:hover,
+:root[data-theme="light"] .rich-editor-content a:hover { color: var(--l-accent-deep); }
+:root[data-theme="light"] .blog-content code,
+:root[data-theme="light"] .rich-editor-content code { color: var(--l-accent-deep); background: rgba(0,229,199,0.10); }
+:root[data-theme="light"] .blog-content pre,
+:root[data-theme="light"] .rich-editor-content pre,
+:root[data-theme="light"] .re-card-title,
+:root[data-theme="light"] .re-link-card { background: var(--l-surface-2); border-color: var(--l-line); }
+:root[data-theme="light"] .re-callout-info,
+:root[data-theme="light"] .re-callout-warning,
+:root[data-theme="light"] .re-callout-success,
+:root[data-theme="light"] .re-callout-tip,
+:root[data-theme="light"] .re-callout-note,
+:root[data-theme="light"] .re-card-title,
+:root[data-theme="light"] .re-link-title,
+:root[data-theme="light"] .re-table th,
+:root[data-theme="light"] .re-prompt-template-title { color: var(--l-ink); }
+:root[data-theme="light"] .re-table th,
+:root[data-theme="light"] .re-table td,
+:root[data-theme="light"] .re-prompt-block,
+:root[data-theme="light"] .re-card-box,
+:root[data-theme="light"] .re-step { border-color: var(--l-line); }
+:root[data-theme="light"] .re-table tr:hover td { background: var(--l-tint); }
+:root[data-theme="light"] .blog-content hr,
+:root[data-theme="light"] .rich-editor-content hr,
+:root[data-theme="light"] .rich-editor-content hr.re-hr {
+  background: linear-gradient(to right, transparent, rgba(23,23,26,0.16), transparent);
+}
+:root[data-theme="light"] .blog-content img,
+:root[data-theme="light"] .rich-editor-content img { border-color: var(--l-line); }
+
+/* Атмосферын туслахууд — цагаан дээр цагаан шуугиан утгагүй. */
+:root[data-theme="light"] .grain::after { mix-blend-mode: multiply; opacity: 0.03; }
+:root[data-theme="light"] .scanlines {
+  background-image: repeating-linear-gradient(0deg, rgba(23,23,26,.03) 0 1px, transparent 1px 3px);
+}
+:root[data-theme="light"] .hero-smoke {
+  background: radial-gradient(46% 38% at 50% 62%, rgba(0,229,199,0.10), transparent 70%);
+}
+
+/* Хөвөгч бүлүүр ба нааш толгой — өдөр гүн нь ГАДАРГУУНЫ шатаар биш,
+   зөөлөн сүүдрээр илэрнэ (өдөр гэрлийн эх сурвалж БАЙНА). §04 нь зөвхөн
+   `shadow-` анги бүхий элементэд хамаарах тул эдгээрийг нэрээр нь өгөв. */
+:root[data-theme="light"] {
+  --chrome-bg:   rgba(247,245,242,0.86);
+  --chrome-line: rgba(23,23,26,0.10);
+}
+:root[data-theme="light"] .app-chrome-top {
+  box-shadow: 0 1px 0 rgba(23,23,26,0.07);
+}
+/* Хөвөгч бүлүүр нь `bg-[#1B1B1F]/95` — `/`-тэй тул дээрх гадаргуун дүрэмд
+   ЗОРИУД баригдахгүй (тэр нь `/`-тэйг зураг дээрх хөшиг гэж үзэж алгасдаг).
+   Энэ ганц тохиолдолд `/` нь хөшиг биш, тунгалагдуу гадаргуу — нэрээр нь. */
+:root[data-theme="light"] .app-chrome-dock {
+  background: rgba(255,255,255,0.94) !important;
+  box-shadow: 0 8px 28px -10px rgba(23,23,26,0.28);
+}
+
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ГОРИМ СОЛИГЧ — толгой мөрөнд.
+
+   Харагдах байдал нь React-ийн state-ээс биш, `<html data-theme>`-ээс ШУУД
+   CSS-ээр уншигдана. Учир нь: серверт зурагдах үед localStorage байхгүй тул
+   state-ээс хамаарвал эхний хормыг буруу байрлалд зурж, hydration дээр
+   бүлүүр нь харайна. Атрибутаас уншихад толгой дахь блоклох скрипт аль
+   хэдийн зөв утгыг тавьчихсан байдаг тул эхний фрэйм л зөв.
+   ══════════════════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 62px;
+  height: 32px;
+  padding: 3px;
+  background: var(--tt-track, #232327);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--tt-edge, rgba(255,255,255,0.10));
+  -webkit-tap-highlight-color: transparent;
+  transition: background 240ms var(--ease-out), box-shadow 240ms var(--ease-out);
+}
+.theme-toggle:focus-visible { outline: 2px solid #00E5C7; outline-offset: 2px; }
+
+.theme-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 28px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--tt-thumb, #3B3B41);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.22);
+  transition: transform 340ms var(--ease-out), background 240ms var(--ease-out);
+}
+:root[data-theme="dark"] .theme-toggle__thumb { transform: translateX(28px); }
+
+.theme-toggle__ico {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  color: var(--tt-ico, #7A7A82);
+  transition: color 240ms var(--ease-out);
+}
+.theme-toggle__ico svg { display: block; width: 15px; height: 15px; }
+:root:not([data-theme="dark"]) .theme-toggle__ico--sun,
+:root[data-theme="dark"] .theme-toggle__ico--moon { color: var(--tt-ico-on, #00E5C7); }
+
+/* Утсан дээр толгойн мөр давчуу — жаахан нарийсна, гэхдээ 32px өндөр нь
+   хэвээр (хүрэх талбай нь эргэн тойрны 44px хүрээгээрээ хангагдана). */
+@media (max-width: 400px) {
+  .theme-toggle { width: 56px; }
+  .theme-toggle__thumb { width: 25px; }
+  .theme-toggle__ico { width: 25px; }
+  :root[data-theme="dark"] .theme-toggle__thumb { transform: translateX(25px); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ШИЛЖИЛТ. Зөвхөн СОЛИХ мөчид — байнга биш.
+
+   `.theme-anim` нь товч дархад <html>-д ~420ms тавигдаад авагдана. Байнга
+   тавьчихвал хуудас ачаалах бүрд бүх элемент өнгөө "нааш" гүйлгэж, мөн
+   энгийн hover бүр 320ms болж удаашрана. Солих мөчид л хэрэгтэй.
+
+   `transform`-ыг ЗОРИУД оруулаагүй: navbar/bottombar нь өөрсдийн гулсах
+   шилжилттэй, түүнийг дарвал солих үед цэс сэгсэрнэ.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root.theme-anim,
+:root.theme-anim *,
+:root.theme-anim *::before,
+:root.theme-anim *::after {
+  transition-property: background-color, background-image, border-color, color,
+                       fill, stroke, box-shadow, outline-color;
+  transition-duration: 320ms;
+  transition-timing-function: var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root.theme-anim,
+  :root.theme-anim *,
+  :root.theme-anim *::before,
+  :root.theme-anim *::after { transition-duration: 0.01ms; }
+}
+

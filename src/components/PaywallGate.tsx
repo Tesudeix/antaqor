@@ -4,10 +4,21 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useMembership } from "@/lib/useMembership";
 
-export default function PaywallGate({ children }: { children: React.ReactNode }) {
+/* Хоёр өөр шалгуурыг нэг бүрхүүл барьдаг байсан: "нэвтэрсэн үү" ба
+   "төлсөн үү". Ихэнх газарт хоёулаа хэрэгтэй (курс, хэрэгсэл), гэхдээ
+   ПОСТ БИЧИХЭД зөвхөн эхнийх нь хэрэгтэй — үнэгүй хэрэглэгч бичиж чадахгүй
+   бол үнэгүй урсгалд контент хэзээ ч үүсэхгүй, тэр урсгал үүрд хоосон
+   үлдэнэ. Тиймээс гишүүнчлэлийн шаардлагыг сонголт болгов. */
+export default function PaywallGate({
+  children,
+  requireMembership = true,
+}: {
+  children: React.ReactNode;
+  requireMembership?: boolean;
+}) {
   const { loading, isMember, isAdmin, isLoggedIn } = useMembership();
   const router = useRouter();
-  const allowed = isMember || isAdmin;
+  const allowed = requireMembership ? isMember || isAdmin : true;
 
   useEffect(() => {
     if (loading) return;
@@ -21,7 +32,7 @@ export default function PaywallGate({ children }: { children: React.ReactNode })
   if (loading || !isLoggedIn || !allowed) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#1080CA]" />
+        <div className="h-3 w-3 animate-pulse bg-[#2E29FF]" />
       </div>
     );
   }

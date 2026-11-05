@@ -62,54 +62,54 @@ export default function PagesPage() {
   return (
     <div className="mx-auto max-w-3xl p-6">
       <div className="mb-6">
-        <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1080CA]">Pages</div>
+        <div className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#2E29FF]">Pages</div>
         <h1 className="mt-0.5 text-[22px] font-bold text-[#E8E8E8]">Хуудас холбох (multi-page)</h1>
-        <p className="mt-1 text-[12px] text-[#8A8A92]">Facebook token буулгаад → page сонгоод → Холбох. Permanent token + webhook автоматаар. Кодгүйгээр хязгааргүй page нэмнэ.</p>
+        <p className="mt-1 text-[12px] text-[#E2E4E8]">Facebook token буулгаад → page сонгоод → Холбох. Permanent token + webhook автоматаар. Кодгүйгээр хязгааргүй page нэмнэ.</p>
       </div>
-      {msg && <div className="mb-4 rounded-none border border-[rgba(34,211,238,0.3)] bg-[rgba(34,211,238,0.08)] px-3 py-2 text-[11px] text-[#22D3EE]">{msg}</div>}
+      {msg && <div className="mb-4 rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] text-[#2E29FF]">{msg}</div>}
 
-      <div className="mb-6 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4">
-        <div className="mb-1 text-[11px] font-medium text-[#8A8A92]">Facebook access token (user эсвэл page)</div>
+      <div className="mb-6 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4">
+        <div className="mb-1 text-[11px] font-medium text-[#E2E4E8]">Facebook access token (user эсвэл page)</div>
         <textarea value={token} onChange={(e) => setToken(e.target.value)} rows={2} className="pinp mb-2" placeholder="EAAR..." />
-        <div className="mb-2 text-[11px] font-medium text-[#8A8A92]">Бизнесийн төрөл (холбохдоо)</div>
+        <div className="mb-2 text-[11px] font-medium text-[#E2E4E8]">Бизнесийн төрөл (холбохдоо)</div>
         <select value={pageType} onChange={(e) => setPageType(e.target.value)} className="pinp mb-2">
           {PAGE_TYPES.map((p) => (<option key={p.v} value={p.v}>{p.l}</option>))}
         </select>
-        <button onClick={listPages} disabled={busy} className="rounded-none bg-[#22D3EE] px-4 py-2 text-[11px] font-bold text-[#E8E8E8] hover:bg-[#1bb8d4] disabled:opacity-50">{busy ? "..." : "Page-үүдийг харах"}</button>
+        <button onClick={listPages} disabled={busy} className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[11px] font-bold text-[#E8E8E8] hover:bg-[#1bb8d4] disabled:opacity-50">{busy ? "..." : "Page-үүдийг харах"}</button>
         {manage.length > 0 && (
           <div className="mt-3 space-y-2">
             {manage.map((m) => (
-              <div key={m.id} className="flex items-center justify-between rounded-none bg-[#141419] px-3 py-2">
+              <div key={m.id} className="flex items-center justify-between rounded-[4px] bg-[#0A0A0A] px-3 py-2">
                 <div>
                   <div className="text-[12px] font-semibold text-[#E8E8E8]">{m.name}</div>
-                  <div className="text-[10px] text-[#8A8A92]">{m.id}{m.ig ? ` · IG ${m.ig}` : ""}</div>
+                  <div className="text-[10px] text-[#E2E4E8]">{m.id}{m.ig ? ` · IG ${m.ig}` : ""}</div>
                 </div>
-                <button onClick={() => connect(m.id)} disabled={busy} className="rounded-none bg-[#1080CA] px-3 py-1.5 text-[10px] font-bold text-[#0E0E10] hover:bg-[#4FA8E8] disabled:opacity-50">Холбох</button>
+                <button onClick={() => connect(m.id)} disabled={busy} className="rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[10px] font-bold text-white hover:bg-[#1F1AD9] disabled:opacity-50">Холбох</button>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#8A8A92]">Холбогдсон хуудсууд</div>
+      <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#E2E4E8]">Холбогдсон хуудсууд</div>
       <div className="space-y-2">
-        {pages.length === 0 && <div className="rounded-none border border-dashed border-[rgba(255,255,255,0.1)] p-6 text-center text-[12px] text-[#8A8A92]">Дайнамик page алга. (Antaqor/joymassage/joybilliard нь суурьт суулгасан.)</div>}
+        {pages.length === 0 && <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.1)] p-6 text-center text-[12px] text-[#E2E4E8]">Дайнамик page алга. (Antaqor/joymassage/joybilliard нь суурьт суулгасан.)</div>}
         {pages.map((p) => (
-          <div key={p.key} className="flex items-center justify-between rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
+          <div key={p.key} className="flex items-center justify-between rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
             <div>
-              <div className="text-[13px] font-bold text-[#E8E8E8]">{p.name} <span className="ml-1 text-[10px] font-normal text-[#22D3EE]">{ptLabel(p.pageType)}</span></div>
-              <div className="text-[10px] text-[#8A8A92]">{p.pageId}{p.igBusinessId ? ` · IG ${p.igBusinessId}` : " · IG холбоогүй"}</div>
+              <div className="text-[13px] font-bold text-[#E8E8E8]">{p.name} <span className="ml-1 text-[10px] font-normal text-[#2E29FF]">{ptLabel(p.pageType)}</span></div>
+              <div className="text-[10px] text-[#E2E4E8]">{p.pageId}{p.igBusinessId ? ` · IG ${p.igBusinessId}` : " · IG холбоогүй"}</div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => toggle(p)} className="rounded-none bg-[#141419] px-2 py-1 text-[10px] font-bold text-[#8A8A92] hover:bg-[#F2F2F4]">{p.enabled ? "Идэвхтэй" : "Унтарсан"}</button>
-              <button onClick={() => remove(p.key)} className="rounded-none bg-[rgba(16,128,202,0.15)] px-2 py-1 text-[10px] font-bold text-[#1080CA]">Салгах</button>
+              <button onClick={() => toggle(p)} className="rounded-[4px] bg-[#0A0A0A] px-2 py-1 text-[10px] font-bold text-[#E2E4E8] hover:bg-[#F2F2F4]">{p.enabled ? "Идэвхтэй" : "Унтарсан"}</button>
+              <button onClick={() => remove(p.key)} className="rounded-[4px] bg-[rgba(46,41,255,0.15)] px-2 py-1 text-[10px] font-bold text-[#2E29FF]">Салгах</button>
             </div>
           </div>
         ))}
       </div>
       <style jsx>{`
-        :global(.pinp) { width: 100%; background: #141419; border: 1px solid rgba(255,255,255,0.08); color: #E8E8E8; font-size: 12px; padding: 8px 10px; border-radius: 4px; font-family: monospace; }
-        :global(.pinp:focus) { outline: none; border-color: #22d3ee; }
+        :global(.pinp) { width: 100%; background: #0A0A0A; border: 1px solid rgba(255,255,255,0.08); color: #E8E8E8; font-size: 12px; padding: 8px 10px; border-radius: 4px; font-family: monospace; }
+        :global(.pinp:focus) { outline: none; border-color: #2E29FF; }
       `}</style>
     </div>
   );

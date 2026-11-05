@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Section from "@/models/Section";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
 
 // GET — list sections for a course (?courseId=)
 export async function GET(req: NextRequest) {
@@ -22,10 +24,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { course, title, description, order } = await req.json();
-  if (!course || !title?.trim()) {
+  if (!mongoose.isValidObjectId(course) || typeof title !== "string" || !title.trim() || title.trim().length > 200) {
     return NextResponse.json({ error: "course + title required" }, { status: 400 });
   }
   await dbConnect();
+  if (!await Course.exists({ _id: course })) return NextResponse.json({ error: "Course not found" }, { status: 404 });
   const section = await Section.create({
     course,
     title: title.trim(),

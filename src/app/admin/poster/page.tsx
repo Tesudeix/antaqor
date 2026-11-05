@@ -24,7 +24,7 @@ const TEMPLATE_LIST: { key: TemplateType; label: string; icon: string }[] = [
   { key: "announcement", label: "Зарлал", icon: "M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" },
 ];
 
-const B = "#1080CA";
+const B = "#2E29FF";
 
 // ─── Main Component ───
 export default function PosterPage() {
@@ -75,7 +75,7 @@ export default function PosterPage() {
   // Live
   const [liveTime, setLiveTime] = useState("20:30");
   const [liveLabel, setLiveLabel] = useState("Монголын цагаар");
-  const [platform, setPlatform] = useState("Edgerunners");
+  const [platform, setPlatform] = useState("Antaqor хүрээлэл");
 
   // Social
   const [quote, setQuote] = useState("AI ашиглах чадвар нь цалин биш, чөлөөлөгдөх зэвсэг юм.");
@@ -148,22 +148,22 @@ export default function PosterPage() {
   const scale = Math.min(1, 480 / dim.w);
   const compact = aspect === "1:1" || aspect === "16:9";
 
-  const ic = "w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] text-white outline-none transition focus:border-[rgba(16,128,202,0.4)] placeholder:text-[#8A8A92]";
-  const label = "block mb-1 text-[9px] uppercase tracking-[1px] text-[#8A8A92]";
-  const sectionCls = "text-[9px] uppercase tracking-[2px] text-[#1080CA] mt-5 mb-3 pb-2 border-b border-[rgba(255,255,255,0.06)]";
+  const ic = "w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] text-white outline-none transition focus:border-[rgba(46,41,255,0.4)] placeholder:text-[#E2E4E8]";
+  const label = "block mb-1 text-[11px] uppercase tracking-[1px] text-[#E2E4E8]";
+  const sectionCls = "text-[11px] uppercase tracking-[2px] text-[#2E29FF] mt-5 mb-3 pb-2 border-b border-[rgba(255,255,255,0.06)]";
 
   return (
     <div className="flex gap-0 -mx-8 -my-8 min-h-screen">
       {/* ═══ LEFT PANEL ═══ */}
-      <div className="w-[340px] shrink-0 overflow-y-auto border-r border-[rgba(255,255,255,0.08)] bg-[#0E0E12] p-6" style={{ maxHeight: "100vh" }}>
+      <div className="w-[340px] shrink-0 overflow-y-auto border-r border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-6" style={{ maxHeight: "100vh" }}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-none bg-[rgba(16,128,202,0.1)]">
-            <svg className="h-4 w-4 text-[#1080CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)]">
+            <svg className="h-4 w-4 text-[#2E29FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
             </svg>
           </div>
           <div>
-            <div className="text-[9px] uppercase tracking-[2px] text-[#1080CA]">Antaqor Design</div>
+            <div className="text-[11px] uppercase tracking-[2px] text-[#2E29FF]">Antaqor Design</div>
             <h1 className="text-[16px] font-bold text-white">Poster Studio</h1>
           </div>
         </div>
@@ -175,10 +175,10 @@ export default function PosterPage() {
             <button
               key={key}
               onClick={() => setAspect(key)}
-              className={`rounded-none px-2 py-2.5 text-center transition ${
+              className={`rounded-[4px] px-2 py-2.5 text-center transition ${
                 aspect === key
-                  ? "bg-[#1080CA] text-[#0E0E10]"
-                  : "border border-[rgba(255,255,255,0.08)] text-[#8A8A92] hover:text-white"
+                  ? "bg-[#2E29FF] text-white"
+                  : "border border-[rgba(255,255,255,0.08)] text-[#E2E4E8] hover:text-white"
               }`}
             >
               <div className="text-[11px] font-bold">{key}</div>
@@ -194,10 +194,10 @@ export default function PosterPage() {
             <button
               key={t.key}
               onClick={() => setTemplate(t.key)}
-              className={`flex items-center gap-2 rounded-none px-3 py-2.5 text-left text-[10px] font-medium transition ${
+              className={`flex items-center gap-2 rounded-[4px] px-3 py-2.5 text-left text-[10px] font-medium transition ${
                 template === t.key
-                  ? "border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.08)] text-[#1080CA]"
-                  : "border border-[rgba(255,255,255,0.06)] text-[#8A8A92] hover:text-white hover:border-[rgba(255,255,255,0.15)]"
+                  ? "border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.08)] text-[#2E29FF]"
+                  : "border border-[rgba(255,255,255,0.06)] text-[#E2E4E8] hover:text-white hover:border-[rgba(255,255,255,0.15)]"
               }`}
             >
               <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,10 +216,10 @@ export default function PosterPage() {
         <div className="grid grid-cols-2 gap-2 mb-3">
           <button
             onClick={() => fileRef.current?.click()}
-            className={`rounded-none border border-dashed px-3 py-3 text-[10px] transition ${
+            className={`rounded-[4px] border border-dashed px-3 py-3 text-[10px] transition ${
               uploadedImage
-                ? "border-[#1080CA] bg-[rgba(16,128,202,0.04)] text-[#1080CA]"
-                : "border-[rgba(255,255,255,0.15)] text-[#8A8A92] hover:border-[#1080CA] hover:text-[#1080CA]"
+                ? "border-[#2E29FF] bg-[rgba(46,41,255,0.04)] text-[#2E29FF]"
+                : "border-[rgba(255,255,255,0.15)] text-[#E2E4E8] hover:border-[#2E29FF] hover:text-[#2E29FF]"
             }`}
           >
             <svg className="mx-auto mb-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,10 +229,10 @@ export default function PosterPage() {
           </button>
           <button
             onClick={() => logoRef.current?.click()}
-            className={`rounded-none border border-dashed px-3 py-3 text-[10px] transition ${
+            className={`rounded-[4px] border border-dashed px-3 py-3 text-[10px] transition ${
               customLogo
-                ? "border-[#1080CA] bg-[rgba(16,128,202,0.04)] text-[#1080CA]"
-                : "border-[rgba(255,255,255,0.15)] text-[#8A8A92] hover:border-[#1080CA] hover:text-[#1080CA]"
+                ? "border-[#2E29FF] bg-[rgba(46,41,255,0.04)] text-[#2E29FF]"
+                : "border-[rgba(255,255,255,0.15)] text-[#E2E4E8] hover:border-[#2E29FF] hover:text-[#2E29FF]"
             }`}
           >
             <svg className="mx-auto mb-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,16 +246,16 @@ export default function PosterPage() {
         {(uploadedImage || customLogo) && (
           <div className="flex gap-2 mb-3">
             {uploadedImage && (
-              <div className="relative flex-1 rounded-none overflow-hidden border border-[rgba(255,255,255,0.08)]">
+              <div className="relative flex-1 rounded-[4px] overflow-hidden border border-[rgba(255,255,255,0.08)]">
                 <img src={uploadedImage} alt="" className="h-16 w-full object-cover" />
-                <button onClick={removeImage} className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-[10px] text-[#4E94D0] hover:text-[#8FC1EA]">x</button>
+                <button onClick={removeImage} className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-black/70 text-[10px] text-[#4C47FF] hover:text-[#8FC1EA]">x</button>
                 <div className="absolute bottom-0 inset-x-0 bg-black/70 px-2 py-0.5 text-[8px] text-white">Зураг</div>
               </div>
             )}
             {customLogo && (
-              <div className="relative flex-1 rounded-none overflow-hidden border border-[rgba(255,255,255,0.08)]">
+              <div className="relative flex-1 rounded-[4px] overflow-hidden border border-[rgba(255,255,255,0.08)]">
                 <img src={customLogo} alt="" className="h-16 w-full object-contain bg-[#0A0A0A] p-2" />
-                <button onClick={() => { setCustomLogo(null); if (logoRef.current) logoRef.current.value = ""; }} className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-[10px] text-[#4E94D0] hover:text-[#8FC1EA]">x</button>
+                <button onClick={() => { setCustomLogo(null); if (logoRef.current) logoRef.current.value = ""; }} className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-black/70 text-[10px] text-[#4C47FF] hover:text-[#8FC1EA]">x</button>
                 <div className="absolute bottom-0 inset-x-0 bg-black/70 px-2 py-0.5 text-[8px] text-white">Лого</div>
               </div>
             )}
@@ -267,7 +267,7 @@ export default function PosterPage() {
             <div className="flex items-center justify-between mb-1">
               <span className={label}>Тунгалаг байдал: {imageOpacity}%</span>
             </div>
-            <input type="range" min="5" max="100" value={imageOpacity} onChange={(e) => setImageOpacity(Number(e.target.value))} className="w-full accent-[#1080CA]" />
+            <input type="range" min="5" max="100" value={imageOpacity} onChange={(e) => setImageOpacity(Number(e.target.value))} className="w-full accent-[#2E29FF]" />
           </div>
         )}
 
@@ -289,7 +289,7 @@ export default function PosterPage() {
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`h-2 rounded-full transition-all ${i + 1 === currentPage ? "w-5 bg-[#1080CA]" : "w-2 bg-[rgba(255,255,255,0.2)]"}`}
+                className={`h-2 rounded-[4px] transition-all ${i + 1 === currentPage ? "w-5 bg-[#2E29FF]" : "w-2 bg-[rgba(255,255,255,0.2)]"}`}
               />
             ))}
           </div>
@@ -311,12 +311,12 @@ export default function PosterPage() {
                 <div key={i} className="flex gap-2">
                   <div className="flex-1"><span className={label}>Пойнт {i + 1}</span><input value={p} onChange={(e) => { const n = [...eduPoints]; n[i] = e.target.value; setEduPoints(n); }} className={ic} /></div>
                   {eduPoints.length > 1 && (
-                    <button onClick={() => setEduPoints(eduPoints.filter((_, j) => j !== i))} className="mt-4 text-[10px] text-[#4E94D0] hover:text-[#8FC1EA]">x</button>
+                    <button onClick={() => setEduPoints(eduPoints.filter((_, j) => j !== i))} className="mt-4 text-[10px] text-[#4C47FF] hover:text-[#8FC1EA]">x</button>
                   )}
                 </div>
               ))}
               {eduPoints.length < 6 && (
-                <button onClick={() => setEduPoints([...eduPoints, ""])} className="w-full rounded-none border border-dashed border-[rgba(255,255,255,0.1)] py-1.5 text-[10px] text-[#8A8A92] hover:text-[#1080CA] hover:border-[rgba(16,128,202,0.3)]">+ Пойнт нэмэх</button>
+                <button onClick={() => setEduPoints([...eduPoints, ""])} className="w-full rounded-[4px] border border-dashed border-[rgba(255,255,255,0.1)] py-1.5 text-[10px] text-[#E2E4E8] hover:text-[#2E29FF] hover:border-[rgba(46,41,255,0.3)]">+ Пойнт нэмэх</button>
               )}
               <div><span className={label}>Дүгнэлт / Takeaway</span><textarea value={eduTakeaway} onChange={(e) => setEduTakeaway(e.target.value)} className={`${ic} min-h-[40px] resize-y`} /></div>
             </div>
@@ -413,7 +413,7 @@ export default function PosterPage() {
               <div><span className={label}>Хичээл 3</span><input value={l3} onChange={(e) => setL3(e.target.value)} className={ic} /></div>
               <div><span className={label}>Хичээл 4</span><input value={l4} onChange={(e) => setL4(e.target.value)} className={ic} /></div>
               <div className="grid grid-cols-2 gap-2"><div><span className={label}>Хугацаа</span><input value={duration} onChange={(e) => setDuration(e.target.value)} className={ic} /></div><div><span className={label}>Зорилго</span><input value={goal} onChange={(e) => setGoal(e.target.value)} className={ic} /></div></div>
-              <div><span className={label}>Явц %</span><input type="range" min="0" max="100" value={progress} onChange={(e) => setProgress(e.target.value)} className="w-full accent-[#1080CA]" /></div>
+              <div><span className={label}>Явц %</span><input type="range" min="0" max="100" value={progress} onChange={(e) => setProgress(e.target.value)} className="w-full accent-[#2E29FF]" /></div>
             </div>
           </>
         )}
@@ -454,12 +454,12 @@ export default function PosterPage() {
             { label: "Antaqor лого", val: showLogo, set: setShowLogo },
           ].map((t) => (
             <div key={t.label} className="flex items-center justify-between">
-              <span className="text-[10px] text-[#8A8A92]">{t.label}</span>
+              <span className="text-[10px] text-[#E2E4E8]">{t.label}</span>
               <button
                 onClick={() => t.set(!t.val)}
-                className={`relative h-[20px] w-[36px] rounded-full transition ${t.val ? "bg-[#1080CA]" : "bg-[rgba(255,255,255,0.1)]"}`}
+                className={`relative h-[20px] w-[36px] rounded-[4px] transition ${t.val ? "bg-[#2E29FF]" : "bg-[rgba(255,255,255,0.1)]"}`}
               >
-                <span className={`absolute top-[2px] h-[16px] w-[16px] rounded-full bg-[#0A0A0A] transition-all shadow-sm ${t.val ? "left-[18px]" : "left-[2px]"}`} />
+                <span className={`absolute top-[2px] h-[16px] w-[16px] rounded-[4px] bg-[#0A0A0A] transition-all shadow-sm ${t.val ? "left-[18px]" : "left-[2px]"}`} />
               </button>
             </div>
           ))}
@@ -476,7 +476,7 @@ export default function PosterPage() {
         <button
           onClick={handleDownload}
           disabled={downloading}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] py-3.5 text-[11px] font-bold uppercase tracking-[2px] text-[#0E0E10] transition hover:shadow-[0_0_32px_rgba(16,128,202,0.3)] disabled:opacity-50"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] py-3.5 text-[11px] font-bold uppercase tracking-[2px] text-white transition hover:shadow-[0_0_32px_rgba(46,41,255,0.3)] disabled:opacity-50"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
           {downloading ? "Татаж байна..." : "PNG ТАТАХ (3x)"}
@@ -486,11 +486,11 @@ export default function PosterPage() {
       {/* ═══ RIGHT PREVIEW ═══ */}
       <div className="flex flex-1 flex-col items-center justify-center bg-[#0A0A0A] p-8" style={{ minHeight: "100vh" }}>
         <div className="mb-4 flex items-center gap-4">
-          <span className="text-[9px] uppercase tracking-[2px] text-[#56565E]">
+          <span className="text-[11px] uppercase tracking-[2px] text-[#E2E4E8]">
             {dim.w}x{dim.h} · {dim.label}
           </span>
           {totalPages > 1 && (
-            <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-3 py-1 text-[9px] font-bold text-[#1080CA]">
+            <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-3 py-1 text-[11px] font-bold text-[#2E29FF]">
               {currentPage}/{totalPages}
             </span>
           )}
@@ -507,7 +507,7 @@ export default function PosterPage() {
           >
             {/* Grid */}
             {showGrid && (
-              <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(rgba(16,128,202,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(16,128,202,0.03) 1px, transparent 1px)`, backgroundSize: "30px 30px" }} />
+              <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(rgba(46,41,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(46,41,255,0.03) 1px, transparent 1px)`, backgroundSize: "30px 30px" }} />
             )}
 
             {/* Uploaded image */}
@@ -517,7 +517,7 @@ export default function PosterPage() {
 
             {/* Scan line */}
             {showScan && (
-              <div style={{ position: "absolute", width: "100%", height: 1, background: "rgba(16,128,202,0.12)", animation: "posterScan 4s linear infinite", zIndex: 2 }} />
+              <div style={{ position: "absolute", width: "100%", height: 1, background: "rgba(46,41,255,0.12)", animation: "posterScan 4s linear infinite", zIndex: 2 }} />
             )}
 
             {/* Top accent bar */}
@@ -525,10 +525,10 @@ export default function PosterPage() {
 
             {/* Corner marks */}
             {[
-              { top: 12, left: 12, borderTop: `1px solid rgba(16,128,202,0.4)`, borderLeft: `1px solid rgba(16,128,202,0.4)` },
-              { top: 12, right: 12, borderTop: `1px solid rgba(16,128,202,0.4)`, borderRight: `1px solid rgba(16,128,202,0.4)` },
-              { bottom: 12, left: 12, borderBottom: `1px solid rgba(16,128,202,0.4)`, borderLeft: `1px solid rgba(16,128,202,0.4)` },
-              { bottom: 12, right: 12, borderBottom: `1px solid rgba(16,128,202,0.4)`, borderRight: `1px solid rgba(16,128,202,0.4)` },
+              { top: 12, left: 12, borderTop: `1px solid rgba(46,41,255,0.4)`, borderLeft: `1px solid rgba(46,41,255,0.4)` },
+              { top: 12, right: 12, borderTop: `1px solid rgba(46,41,255,0.4)`, borderRight: `1px solid rgba(46,41,255,0.4)` },
+              { bottom: 12, left: 12, borderBottom: `1px solid rgba(46,41,255,0.4)`, borderLeft: `1px solid rgba(46,41,255,0.4)` },
+              { bottom: 12, right: 12, borderBottom: `1px solid rgba(46,41,255,0.4)`, borderRight: `1px solid rgba(46,41,255,0.4)` },
             ].map((s, i) => (
               <div key={i} style={{ position: "absolute", width: 16, height: 16, zIndex: 10, ...s } as React.CSSProperties} />
             ))}
@@ -601,8 +601,8 @@ export default function PosterPage() {
 // Shared styles
 // ═══════════════════════════════════════════
 const mono = "'IBM Plex Mono', 'SF Mono', monospace";
-const Bdim = "rgba(16,128,202,0.06)";
-const Bborder = "rgba(16,128,202,0.25)";
+const Bdim = "rgba(46,41,255,0.06)";
+const Bborder = "rgba(46,41,255,0.25)";
 
 function PosterTag({ text }: { text: string }) {
   return (
@@ -619,7 +619,7 @@ function PosterHeader({ title1, title2, subtitle, badge, showBadge, compact }: {
       <div style={{ fontSize: compact ? 26 : 32, fontWeight: 700, color: "#fff", lineHeight: 1.05, letterSpacing: "-0.02em", marginBottom: 4 }}>
         {title1}<span style={{ color: B, display: "block" }}>{title2}</span>
       </div>
-      <div style={{ fontFamily: mono, fontSize: 10, color: "#8A8A92", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: compact ? 12 : 18 }}>{subtitle}</div>
+      <div style={{ fontFamily: mono, fontSize: 10, color: "#E2E4E8", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: compact ? 12 : 18 }}>{subtitle}</div>
       <div style={{ height: 1, background: `linear-gradient(90deg, ${B} 0%, transparent 100%)`, marginBottom: compact ? 10 : 14, opacity: 0.4 }} />
       {showBadge && (
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: Bdim, border: `1px solid ${Bborder}`, padding: "4px 10px", marginBottom: compact ? 10 : 14, fontFamily: mono, fontSize: 9, color: B, letterSpacing: "0.15em", textTransform: "uppercase" }}>
@@ -633,11 +633,11 @@ function PosterHeader({ title1, title2, subtitle, badge, showBadge, compact }: {
 
 function InfoBlock({ rows }: { rows: { key: string; val: string; highlight?: boolean }[] }) {
   return (
-    <div style={{ border: "1px solid rgba(16,128,202,0.08)", background: "rgba(16,128,202,0.02)", position: "relative", marginBottom: 12 }}>
+    <div style={{ border: "1px solid rgba(46,41,255,0.08)", background: "rgba(46,41,255,0.02)", position: "relative", marginBottom: 12 }}>
       <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: B }} />
       {rows.map((r, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
-          <span style={{ fontFamily: mono, fontSize: 10, color: "#8A8A92", letterSpacing: "0.08em" }}>{r.key}</span>
+          <span style={{ fontFamily: mono, fontSize: 10, color: "#E2E4E8", letterSpacing: "0.08em" }}>{r.key}</span>
           <span style={{ fontFamily: mono, fontSize: 11, color: r.highlight ? B : "#fff", fontWeight: 500 }}>{r.val}</span>
         </div>
       ))}
@@ -649,7 +649,7 @@ function CtaBar({ text }: { text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
       <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
-      <div style={{ fontFamily: mono, fontSize: 8, color: "#56565E", letterSpacing: "0.2em", textTransform: "uppercase" }}>{text}</div>
+      <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.2em", textTransform: "uppercase" }}>{text}</div>
       <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
     </div>
   );
@@ -681,7 +681,7 @@ function EducationalContent({ category, number, title, points, takeaway, compact
       <div style={{ flex: 1 }}>
         {points.filter(p => p).map((point, i) => (
           <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
-            <div style={{ width: 20, height: 20, background: i === 0 ? B : "rgba(16,128,202,0.08)", border: i === 0 ? "none" : `1px solid ${Bborder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+            <div style={{ width: 20, height: 20, background: i === 0 ? B : "rgba(46,41,255,0.08)", border: i === 0 ? "none" : `1px solid ${Bborder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
               <span style={{ fontFamily: mono, fontSize: 9, fontWeight: 700, color: i === 0 ? "#fff" : B }}>{i + 1}</span>
             </div>
             <span style={{ fontSize: compact ? 11 : 12, color: "#ddd", lineHeight: 1.5 }}>{point}</span>
@@ -693,10 +693,10 @@ function EducationalContent({ category, number, title, points, takeaway, compact
       {takeaway && (
         <div style={{ marginTop: "auto" }}>
           <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 12 }} />
-          <div style={{ background: "rgba(16,128,202,0.04)", border: "1px solid rgba(16,128,202,0.12)", padding: "10px 14px", position: "relative" }}>
+          <div style={{ background: "rgba(46,41,255,0.04)", border: "1px solid rgba(46,41,255,0.12)", padding: "10px 14px", position: "relative" }}>
             <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: B }} />
             <div style={{ fontFamily: mono, fontSize: 8, color: B, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>ГҮНЗГИЙ САНАА</div>
-            <div style={{ fontSize: compact ? 10 : 11, color: "#8A8A92", lineHeight: 1.5 }}>{takeaway}</div>
+            <div style={{ fontSize: compact ? 10 : 11, color: "#E2E4E8", lineHeight: 1.5 }}>{takeaway}</div>
           </div>
         </div>
       )}
@@ -727,19 +727,19 @@ function TipContent({ number, title, body, tipDo, tipDont, compact }: {
       </div>
 
       {/* Body */}
-      <div style={{ fontSize: compact ? 11 : 12, color: "#8A8A92", lineHeight: 1.7, marginBottom: 18, borderLeft: "2px solid rgba(16,128,202,0.15)", paddingLeft: 12 }}>
+      <div style={{ fontSize: compact ? 11 : 12, color: "#E2E4E8", lineHeight: 1.7, marginBottom: 18, borderLeft: "2px solid rgba(46,41,255,0.15)", paddingLeft: 12 }}>
         {body}
       </div>
 
       {/* Do / Don't */}
       <div style={{ marginTop: "auto" }}>
         <div style={{ display: "flex", gap: 8, marginBottom: 0 }}>
-          <div style={{ flex: 1, background: "rgba(16,128,202,0.06)", border: "1px solid rgba(16,128,202,0.15)", padding: "10px 12px" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#1080CA", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>ZӨB</div>
+          <div style={{ flex: 1, background: "rgba(46,41,255,0.06)", border: "1px solid rgba(46,41,255,0.15)", padding: "10px 12px" }}>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#2E29FF", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>ZӨB</div>
             <div style={{ fontSize: compact ? 10 : 11, color: "#ddd", lineHeight: 1.4 }}>{tipDo}</div>
           </div>
-          <div style={{ flex: 1, background: "rgba(16,128,202,0.06)", border: "1px solid rgba(16,128,202,0.15)", padding: "10px 12px" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#1080CA", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>БУРУУ</div>
+          <div style={{ flex: 1, background: "rgba(46,41,255,0.06)", border: "1px solid rgba(46,41,255,0.15)", padding: "10px 12px" }}>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#2E29FF", letterSpacing: "0.15em", marginBottom: 4, fontWeight: 600 }}>БУРУУ</div>
             <div style={{ fontSize: compact ? 10 : 11, color: "#ddd", lineHeight: 1.4 }}>{tipDont}</div>
           </div>
         </div>
@@ -766,11 +766,11 @@ function StatContent({ bigNumber, bigLabel, source, items, compact }: {
       <div style={{ height: 1, background: `linear-gradient(90deg, ${B}, transparent)`, opacity: 0.3, marginBottom: 18 }} />
 
       {/* Sub stats */}
-      <div style={{ display: "flex", gap: 0, border: "1px solid rgba(16,128,202,0.08)", marginBottom: 14 }}>
+      <div style={{ display: "flex", gap: 0, border: "1px solid rgba(46,41,255,0.08)", marginBottom: 14 }}>
         {items.map((item, i) => (
           <div key={i} style={{ flex: 1, padding: compact ? "10px 10px" : "12px 14px", borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
             <div style={{ fontFamily: mono, fontSize: compact ? 18 : 22, fontWeight: 700, color: B, lineHeight: 1, marginBottom: 4 }}>{item.num}</div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.1em", textTransform: "uppercase" }}>{item.label}</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.1em", textTransform: "uppercase" }}>{item.label}</div>
           </div>
         ))}
       </div>
@@ -778,7 +778,7 @@ function StatContent({ bigNumber, bigLabel, source, items, compact }: {
       <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontFamily: mono, fontSize: 10, fontWeight: 500, color: B, letterSpacing: "0.15em" }}>ANTAQOR</div>
-          <div style={{ fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Edgerunners</div>
+          <div style={{ fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>Antaqor хүрээлэл</div>
         </div>
         <div style={{ fontFamily: mono, fontSize: 9, color: "#000", background: B, padding: "6px 14px", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500 }}>
           ДЭЛГЭРЭНГҮЙ
@@ -803,20 +803,20 @@ function PricingContent({ tag, title1, title2, subtitle, badge, showBadge, price
       <PosterHeader title1={title1} title2={title2} subtitle={subtitle} badge={badge} showBadge={showBadge} compact={compact} />
       <InfoBlock rows={[{ key: k1, val: v1, highlight: true }, { key: k2, val: v2 }, { key: k3, val: v3 }]} />
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontFamily: mono, fontSize: 9, color: "#8A8A92", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 4 }}>Одоогийн үнэ</div>
+        <div style={{ fontFamily: mono, fontSize: 9, color: "#E2E4E8", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 4 }}>Одоогийн үнэ</div>
         <div style={{ fontFamily: mono, fontSize: compact ? 36 : 46, fontWeight: 700, color: B, lineHeight: 1, letterSpacing: "-0.03em" }}>{price}</div>
-        <div style={{ fontFamily: mono, fontSize: 11, color: "#8A8A92", letterSpacing: "0.1em" }}>/ {period}</div>
+        <div style={{ fontFamily: mono, fontSize: 11, color: "#E2E4E8", letterSpacing: "0.1em" }}>/ {period}</div>
       </div>
       <div style={{ marginTop: "auto" }}>
         <CtaBar text={cta} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.15em", textTransform: "uppercase" }}>Гишүүд</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.15em", textTransform: "uppercase" }}>Гишүүд</div>
             <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em", lineHeight: 1 }}>{bigNum}</div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#56565E", letterSpacing: "0.08em", marginTop: 2 }}>{bigNumLabel}</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.08em", marginTop: 2 }}>{bigNumLabel}</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.15em", textTransform: "uppercase" }}>Одоо элсэх</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.15em", textTransform: "uppercase" }}>Одоо элсэх</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: B, letterSpacing: "-0.02em" }}>{price}</div>
           </div>
         </div>
@@ -840,16 +840,16 @@ function CourseContent({ tag, title1, title2, subtitle, badge, showBadge, l1, l1
     <>
       <PosterTag text={tag} />
       <PosterHeader title1={title1} title2={title2} subtitle={subtitle} badge={badge} showBadge={showBadge} compact={compact} />
-      <div style={{ border: "1px solid rgba(16,128,202,0.08)", position: "relative", marginBottom: 12 }}>
+      <div style={{ border: "1px solid rgba(46,41,255,0.08)", position: "relative", marginBottom: 12 }}>
         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: B }} />
         {lessons.map((ls, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 14px", borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none", background: ls.active ? "rgba(16,128,202,0.04)" : "transparent" }}>
-            <span style={{ fontFamily: mono, fontSize: 9, color: ls.active ? B : "#56565E", minWidth: 20, letterSpacing: "0.05em" }}>{ls.num}</span>
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 14px", borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none", background: ls.active ? "rgba(46,41,255,0.04)" : "transparent" }}>
+            <span style={{ fontFamily: mono, fontSize: 9, color: ls.active ? B : "#E2E4E8", minWidth: 20, letterSpacing: "0.05em" }}>{ls.num}</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: ls.active ? "#fff" : "#8A8A92", marginBottom: ls.sub ? 2 : 0 }}>{ls.title}</div>
-              {ls.sub && <div style={{ fontFamily: mono, fontSize: 9, color: ls.active ? "#8A8A92" : "#56565E" }}>{ls.sub}</div>}
+              <div style={{ fontSize: 11, fontWeight: 500, color: ls.active ? "#fff" : "#E2E4E8", marginBottom: ls.sub ? 2 : 0 }}>{ls.title}</div>
+              {ls.sub && <div style={{ fontFamily: mono, fontSize: 9, color: ls.active ? "#E2E4E8" : "#E2E4E8" }}>{ls.sub}</div>}
             </div>
-            {ls.active && <span style={{ fontFamily: mono, fontSize: 8, color: B, border: `1px solid rgba(16,128,202,0.3)`, padding: "2px 7px", letterSpacing: "0.1em" }}>TODAY</span>}
+            {ls.active && <span style={{ fontFamily: mono, fontSize: 8, color: B, border: `1px solid rgba(46,41,255,0.3)`, padding: "2px 7px", letterSpacing: "0.1em" }}>TODAY</span>}
           </div>
         ))}
       </div>
@@ -857,17 +857,17 @@ function CourseContent({ tag, title1, title2, subtitle, badge, showBadge, l1, l1
         <CtaBar text={cta} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.15em", textTransform: "uppercase" }}>Хугацаа</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.15em", textTransform: "uppercase" }}>Хугацаа</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{duration}</div>
           </div>
           <div style={{ flex: 1, margin: "0 16px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontFamily: mono, fontSize: 8, color: "#56565E", letterSpacing: "0.1em", marginBottom: 4 }}><span>Эхлэл</span><span>Бүрэн</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.1em", marginBottom: 4 }}><span>Эхлэл</span><span>Бүрэн</span></div>
             <div style={{ height: 2, background: "rgba(255,255,255,0.06)", position: "relative" }}>
               <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(100, progress)}%`, background: B }} />
             </div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.12em", textTransform: "uppercase" }}>Зорилго</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.12em", textTransform: "uppercase" }}>Зорилго</div>
             <div style={{ fontSize: 11, fontWeight: 700, color: B, letterSpacing: "0.05em" }}>{goal}</div>
           </div>
         </div>
@@ -886,18 +886,18 @@ function LiveContent({ tag, title1, title2, subtitle, badge, showBadge, liveTime
       <PosterTag text={tag} />
       <PosterHeader title1={title1} title2={title2} subtitle={subtitle} badge={badge} showBadge={showBadge} compact={compact} />
       <div style={{ fontFamily: mono, fontSize: compact ? 46 : 54, fontWeight: 700, color: B, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: 4 }}>{liveTime}</div>
-      <div style={{ fontFamily: mono, fontSize: 9, color: "#56565E", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 12 }}>{liveLabel}</div>
+      <div style={{ fontFamily: mono, fontSize: 9, color: "#E2E4E8", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 12 }}>{liveLabel}</div>
       <InfoBlock rows={[{ key: k1, val: v1, highlight: true }, { key: k2, val: v2 }]} />
       <div style={{ marginTop: "auto" }}>
         <CtaBar text={cta} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.15em", textTransform: "uppercase" }}>Платформ</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.15em", textTransform: "uppercase" }}>Платформ</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>{platform}</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid rgba(16,128,202,0.3)`, background: "rgba(16,128,202,0.06)", padding: "7px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid rgba(46,41,255,0.3)`, background: "rgba(46,41,255,0.06)", padding: "7px 14px" }}>
             <span style={{ width: 7, height: 7, background: B, borderRadius: "50%", animation: "posterPulse 1s ease-in-out infinite" }} />
-            <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 500, color: B, letterSpacing: "0.2em" }}>LIVE</span>
+            <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 500, color: B, letterSpacing: "0.2em" }}>ШУУД</span>
           </div>
         </div>
       </div>
@@ -915,17 +915,17 @@ function AnnouncementContent({ tag, title1, title2, subtitle, badge, showBadge, 
       <PosterTag text={tag} />
       <PosterHeader title1={title1} title2={title2} subtitle={subtitle} badge={badge} showBadge={showBadge} compact={compact} />
       <div style={{ fontFamily: mono, fontSize: compact ? 38 : 46, fontWeight: 700, color: B, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: 4 }}>{bigNum}</div>
-      <div style={{ fontFamily: mono, fontSize: 9, color: "#56565E", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 12 }}>{bigNumLabel}</div>
+      <div style={{ fontFamily: mono, fontSize: 9, color: "#E2E4E8", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 12 }}>{bigNumLabel}</div>
       <InfoBlock rows={[{ key: k1, val: v1, highlight: true }, { key: k2, val: v2 }]} />
       <div style={{ marginTop: "auto" }}>
         <CtaBar text={cta} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid rgba(16,128,202,0.3)`, background: "rgba(16,128,202,0.06)", padding: "7px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid rgba(46,41,255,0.3)`, background: "rgba(46,41,255,0.06)", padding: "7px 14px" }}>
             <span style={{ width: 7, height: 7, background: B, borderRadius: "50%", animation: "posterPulse 1s ease-in-out infinite" }} />
-            <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 500, color: B, letterSpacing: "0.2em" }}>LIVE</span>
+            <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 500, color: B, letterSpacing: "0.2em" }}>ШУУД</span>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.12em", textTransform: "uppercase" }}>Үйлдэл</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.12em", textTransform: "uppercase" }}>Үйлдэл</div>
             <div style={{ fontSize: 11, fontWeight: 700, color: B, letterSpacing: "0.05em" }}>{goal}</div>
           </div>
         </div>
@@ -938,7 +938,7 @@ function SocialContent({ handle, quote, body, statNums, statLabels, compact }: {
   handle: string; quote: string; body: string;
   statNums: string[]; statLabels: string[]; compact?: boolean;
 }) {
-  const qHTML = quote.replace(/^([^,\.]+)/, '<span style="color:#1080CA">$1</span>');
+  const qHTML = quote.replace(/^([^,\.]+)/, '<span style="color:#2E29FF">$1</span>');
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -951,20 +951,20 @@ function SocialContent({ handle, quote, body, statNums, statLabels, compact }: {
         </div>
       </div>
 
-      <div style={{ fontFamily: mono, fontSize: 36, color: "rgba(16,128,202,0.15)", lineHeight: 0.6, marginBottom: 8, fontWeight: 700 }}>&ldquo;</div>
+      <div style={{ fontFamily: mono, fontSize: 36, color: "rgba(46,41,255,0.15)", lineHeight: 0.6, marginBottom: 8, fontWeight: 700 }}>&ldquo;</div>
       <div style={{ fontSize: compact ? 16 : 18, fontWeight: 700, color: "#fff", lineHeight: 1.35, letterSpacing: "-0.01em", marginBottom: 14 }} dangerouslySetInnerHTML={{ __html: qHTML }} />
 
       {body && (
-        <div style={{ fontSize: 12, color: "#8A8A92", lineHeight: 1.7, marginBottom: 14, borderLeft: "2px solid rgba(16,128,202,0.15)", paddingLeft: 12 }}>{body}</div>
+        <div style={{ fontSize: 12, color: "#E2E4E8", lineHeight: 1.7, marginBottom: 14, borderLeft: "2px solid rgba(46,41,255,0.15)", paddingLeft: 12 }}>{body}</div>
       )}
 
       <div style={{ height: 1, background: `linear-gradient(90deg, ${B}, transparent)`, opacity: 0.2, marginBottom: 12 }} />
 
-      <div style={{ display: "flex", border: "1px solid rgba(16,128,202,0.08)", marginBottom: 12 }}>
+      <div style={{ display: "flex", border: "1px solid rgba(46,41,255,0.08)", marginBottom: 12 }}>
         {[0, 1, 2].map((i) => (
           <div key={i} style={{ flex: 1, padding: "8px 12px", borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
             <div style={{ fontFamily: mono, fontSize: 16, fontWeight: 700, color: B, lineHeight: 1, marginBottom: 2 }}>{statNums[i]}</div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: "#8A8A92", letterSpacing: "0.1em", textTransform: "uppercase" }}>{statLabels[i]}</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.1em", textTransform: "uppercase" }}>{statLabels[i]}</div>
           </div>
         ))}
       </div>
@@ -972,7 +972,7 @@ function SocialContent({ handle, quote, body, statNums, statLabels, compact }: {
       <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontFamily: mono, fontSize: 10, fontWeight: 500, color: B, letterSpacing: "0.15em" }}>ANTAQOR</div>
-          <div style={{ fontFamily: mono, fontSize: 8, color: "#56565E", letterSpacing: "0.1em" }}>antaqor.com</div>
+          <div style={{ fontFamily: mono, fontSize: 8, color: "#E2E4E8", letterSpacing: "0.1em" }}>antaqor.com</div>
         </div>
         <div style={{ fontFamily: mono, fontSize: 9, color: "#000", background: B, padding: "6px 14px", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500 }}>ДАГАХ</div>
       </div>

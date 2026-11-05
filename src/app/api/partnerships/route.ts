@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       html: `
         <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; background: #f2f5f8; color: #ede8df; padding: 40px; border: 1px solid #F2F2F4;">
           <div style="font-size: 22px; font-weight: bold; letter-spacing: 4px; margin-bottom: 24px;">
-            ANTA<span style="color: #1080CA;">QOR</span>
+            ANTA<span style="color: #2E29FF;">QOR</span>
           </div>
           <p style="font-size: 13px; color: #8a8a82; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">
             Шинэ хамтрах хүсэлт

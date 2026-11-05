@@ -1,0 +1,14 @@
+import { beforeEach, expect, it, vi } from "vitest";
+import { creatorProgram } from "@/lib/creatorProgram";
+const mocks=vi.hoisted(()=>({session:vi.fn(),access:vi.fn()}));
+vi.mock("next-auth",()=>({getServerSession:mocks.session}));
+vi.mock("@/lib/auth",()=>({authOptions:{}}));
+vi.mock("@/lib/membership",()=>({accessState:mocks.access}));
+import { classroomContentGate } from "@/lib/classroomContentGate";
+beforeEach(()=>vi.clearAllMocks());
+it("uses Ulaanbaatar midnight for September day 7",()=>{expect(creatorProgram(new Date("2026-09-06T16:00:00Z")).day).toBe(7);expect(creatorProgram(new Date("2026-09-06T15:59:59Z")).day).toBe(6);});
+it("never invents September 31 and finishes at October 1",()=>{expect(creatorProgram(new Date("2026-10-01T00:00:00+08:00"))).toMatchObject({day:30,days:30,ended:true});});
+it("does not claim a cohort has started early",()=>expect(creatorProgram(new Date("2026-08-31T00:00:00+08:00"))).toMatchObject({day:0,started:false}));
+it("blocks guest lesson content with a working enrollment destination",async()=>{mocks.session.mockResolvedValue(null);mocks.access.mockResolvedValue({ok:false});const res=await classroomContentGate();expect(res?.status).toBe(401);expect(await res?.json()).toMatchObject({locked:true,enrollHref:"/pricing?plan=builder"});});
+it("blocks expired or unpaid accounts",async()=>{mocks.session.mockResolvedValue({user:{id:"u"}});mocks.access.mockResolvedValue({ok:false});expect((await classroomContentGate())?.status).toBe(403);});
+it("preserves access for authorized members and admins",async()=>{mocks.session.mockResolvedValue({user:{id:"u"}});mocks.access.mockResolvedValue({ok:true});expect(await classroomContentGate()).toBeNull();});

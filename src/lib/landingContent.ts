@@ -32,6 +32,14 @@ export interface LandingContentFields {
   homeCta2Label: string;
   homeCta2Href: string;
   homeImage: string;
+  /** Админ слайд оруулаагүй үед үндсэн слайдын загвар. */
+  homeHeroLayout: string;
+  /** Элсэлт хаагдах мөч. Хоосон = тоолуур харагдахгүй. */
+  enrollDeadline: string;
+  /** Нүүрийн их биед харуулах хэсгүүд, эрэмбэлсэн түлхүүрүүд. */
+  homeSections: string[];
+  /** Нүүрийн манифест — үүсгэн байгуулагчийн үг. Хоосон бол харагдахгүй. */
+  homeManifesto: string;
 
   programHeading: string;
   programMeta: string;
@@ -72,15 +80,21 @@ export interface LandingContentFields {
 // Кодон дахь эх хувилбар — "Antaqor Home / Course" макетаас шууд.
 // Mongo хоосон эсвэл унтарсан үед хуудсууд яг үүнийг харуулна.
 export const LANDING_DEFAULTS: LandingContentFields = {
-  homeEyebrow: "ANTAQOR · ШИНЭ ЭЛСЭЛТ",
-  homeTitle: "БОДИТ ЗҮЙЛ БҮТЭЭ.",
+  // Нүүрний анхны мессеж нь юу хийхийг биш, ХААНА ирснийг хэлнэ.
+  // "Бодит зүйл бүтээ" бол уриа — сайт юу болохыг тайлбарлаагүй.
+  homeEyebrow: "ANTAQOR · AI ХҮРЭЭЛЭЛ",
+  homeTitle: "Claude сурах AI хүрээлэл.",
   homeSub:
-    "AI-ийг эхнээс нь ойлгож, өдөр тутамдаа ашиглаж сур. 7 хоногийн хөтөлбөр, өдөр бүр нэг mission — сурснаа шууд бүтээл болго.",
-  homeCtaLabel: "Эхлэх",
-  homeCtaHref: "/auth/signup?plan=starter",
-  homeCta2Label: "Хөтөлбөр харах",
+    "Хамтдаа Claude болон AI хэрэгслүүдийг сурч, өдөр тутмынхаа ажилд хэрэглэж эхэлдэг монгол хүмүүсийн хүрээлэл. Асуу, хуваалц, бүтээ.",
+  homeCtaLabel: "Хүрээлэлд нэгдэх",
+  homeCtaHref: "/auth/signup",
+  homeCta2Label: "Юу сурах вэ",
   homeCta2Href: "/classroom",
   homeImage: "",
+  homeHeroLayout: "split",
+  enrollDeadline: "",
+  homeSections: [],
+  homeManifesto: "",
 
   programHeading: "7 хоногийн хөтөлбөр",
   programMeta: "7 ХОНОГ · ӨДӨР БҮР НЭГ MISSION",
@@ -117,7 +131,7 @@ export const LANDING_DEFAULTS: LandingContentFields = {
   payoffCtaLabel: "Бүртгүүл",
   payoffCtaHref: "/auth/signup?plan=starter",
 
-  courseCode: "AQ-CRS-047",
+  courseCode: "TSD-CRS-047",
   courseTitle: "АНХАН ШАТНЫ AI СУРГАЛТ",
   courseSub:
     "7 хоног. Өдөрт нэг хичээл, нэг mission. ChatGPT, Claude, Grok — суурийг нь эхнээс нь тавьж, сүүлийн өдөр өөрийн бодит төслөө ship хийнэ.",

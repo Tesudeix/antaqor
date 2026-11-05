@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 // ─── Pink-on-white palette ──────────────────────────────────────────────
-const PINK = "#EC4899";
+const PINK = "#1BD1C6";
 const PINK_SOFT = "#FBCFE8";
 const PINK_DEEP = "#BE185D";
 const PINK_TINT = "#FDF2F8";
@@ -236,7 +236,7 @@ function YukiBookFlow() {
               </div>
               {error && (
                 <div
-                  className="mt-4 rounded-none border px-3 py-2 text-[12px]"
+                  className="mt-4 rounded-[4px] border px-3 py-2 text-[12px]"
                   style={{ borderColor: "#8FC1EA", background: "#FEF2F2", color: "#9F1239" }}
                 >
                   {error}
@@ -246,7 +246,7 @@ function YukiBookFlow() {
                 <button
                   type="button"
                   onClick={submitBooking}
-                  className="mt-5 w-full rounded-full py-3.5 text-[14px] font-black text-white transition hover:scale-[1.01]"
+                  className="mt-5 w-full rounded-[4px] py-3.5 text-[14px] font-black text-white transition hover:scale-[1.01]"
                   style={{ background: PINK, boxShadow: `0 12px 28px rgba(236,72,153,0.32)` }}
                 >
                   Нэвтэрч баталгаажуулах
@@ -256,7 +256,7 @@ function YukiBookFlow() {
                   type="button"
                   onClick={submitBooking}
                   disabled={submitting || !name.trim() || !phone.trim()}
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-[14px] font-black text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[4px] py-3.5 text-[14px] font-black text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ background: PINK, boxShadow: `0 12px 28px rgba(236,72,153,0.32)` }}
                 >
                   {submitting ? (
@@ -291,7 +291,7 @@ function Stepper({ step }: { step: Step }) {
         return (
           <div
             key={i}
-            className="h-1.5 rounded-full transition-all"
+            className="h-1.5 rounded-[4px] transition-all"
             style={{
               width: active ? 22 : done ? 14 : 10,
               background: done ? PINK_DEEP : active ? PINK : "#F1E3EC",
@@ -323,7 +323,7 @@ function StepShell({
             БУЦАХ
           </button>
         )}
-        <h1 className="text-[26px] font-black tracking-tight sm:text-[32px]" style={{ color: INK }}>
+        <h1 className="text-[26px] font-black tracking-tight sm:text-[22px] md:text-[32px]" style={{ color: INK }}>
           {title}
         </h1>
         <p className="mt-1 text-[13px]" style={{ color: SUB }}>{subtitle}</p>
@@ -336,7 +336,7 @@ function StepShell({
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-none border border-dashed py-10 text-center"
+      className="rounded-[4px] border border-dashed py-10 text-center"
       style={{ borderColor: PINK_SOFT, background: PINK_TINT }}
     >
       <p className="text-[13px]" style={{ color: DIM }}>{children}</p>
@@ -350,11 +350,11 @@ function ServiceRow({ service, selected, onClick }: { service: Service; selected
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-3 rounded-none border bg-white p-3 text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(236,72,153,0.12)]"
+      className="group flex w-full items-center gap-3 rounded-[4px] border bg-white p-3 text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(236,72,153,0.12)]"
       style={{ borderColor: selected ? PINK : BORDER }}
     >
       <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-mono text-[14px] font-black"
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] font-mono text-[14px] font-black"
         style={{ background: PINK_TINT, color: PINK_DEEP }}
       >
         {/* Eyelash glyph stand-in — keeps the rows compact when no image */}
@@ -393,7 +393,7 @@ function LocationRow({ location, selected, onClick }: { location: Location; sele
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-stretch gap-3 overflow-hidden rounded-none border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(236,72,153,0.12)]"
+      className="group flex w-full items-stretch gap-3 overflow-hidden rounded-[4px] border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(236,72,153,0.12)]"
       style={{ borderColor: selected ? PINK : BORDER }}
     >
       <div
@@ -417,7 +417,7 @@ function LocationRow({ location, selected, onClick }: { location: Location; sele
           <h3 className="truncate text-[14px] font-black" style={{ color: INK }}>{location.name}</h3>
           {location.district && (
             <span
-              className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.18em]"
+              className="shrink-0 rounded-[4px] px-2 py-0.5 font-mono text-[11px] font-black uppercase tracking-[0.18em]"
               style={{ background: PINK_TINT, color: PINK_DEEP }}
             >
               {location.district}
@@ -449,7 +449,7 @@ function StylistTile({ stylist, selected, onClick }: { stylist: Stylist; selecte
       className="group flex flex-col items-center gap-1.5 text-center transition"
     >
       <div
-        className="relative aspect-square w-full rounded-none p-[2px]"
+        className="relative aspect-square w-full rounded-[4px] p-[2px]"
         style={{
           background: selected
             ? `linear-gradient(135deg, ${PINK} 0%, ${PINK_DEEP} 100%)`
@@ -457,7 +457,7 @@ function StylistTile({ stylist, selected, onClick }: { stylist: Stylist; selecte
           boxShadow: selected ? `0 8px 22px rgba(236,72,153,0.35)` : `0 4px 12px rgba(236,72,153,0.15)`,
         }}
       >
-        <div className="relative h-full w-full overflow-hidden rounded-none" style={{ background: PINK_TINT }}>
+        <div className="relative h-full w-full overflow-hidden rounded-[4px]" style={{ background: PINK_TINT }}>
           {stylist.avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={stylist.avatar} alt={stylist.name} className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.05]" />
@@ -468,7 +468,7 @@ function StylistTile({ stylist, selected, onClick }: { stylist: Stylist; selecte
           )}
           {selected && (
             <span
-              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full text-white"
+              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-[4px] text-white"
               style={{ background: PINK, boxShadow: `0 0 0 2px white` }}
             >
               <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
@@ -551,7 +551,7 @@ function SlotPicker({
               key={d.iso}
               type="button"
               onClick={() => onDateChange(d.iso)}
-              className="shrink-0 rounded-none border px-3 py-2 text-center transition"
+              className="shrink-0 rounded-[4px] border px-3 py-2 text-center transition"
               style={{
                 borderColor: active ? PINK : BORDER,
                 background: active ? PINK_TINT : "white",
@@ -587,7 +587,7 @@ function SlotPicker({
                 key={iso}
                 type="button"
                 onClick={() => onSlotChange(iso)}
-                className="rounded-none border py-2.5 font-mono text-[14px] font-black tabular-nums transition"
+                className="rounded-[4px] border py-2.5 font-mono text-[14px] font-black tabular-nums transition"
                 style={{
                   borderColor: active ? PINK : BORDER,
                   background: active ? PINK : "white",
@@ -613,13 +613,13 @@ function BookingSummary({
   const dateLabel = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
   const timeLabel = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   return (
-    <div className="rounded-none border bg-white p-4" style={{ borderColor: PINK_SOFT }}>
+    <div className="rounded-[4px] border bg-white p-4" style={{ borderColor: PINK_SOFT }}>
       <div className="flex items-center gap-3 border-b pb-3" style={{ borderColor: BORDER }}>
         <div
-          className="h-12 w-12 shrink-0 overflow-hidden rounded-full p-[2px]"
+          className="h-12 w-12 shrink-0 overflow-hidden rounded-[4px] p-[2px]"
           style={{ background: `linear-gradient(135deg, ${PINK} 0%, ${PINK_DEEP} 100%)` }}
         >
-          <div className="h-full w-full overflow-hidden rounded-full" style={{ background: PINK_TINT }}>
+          <div className="h-full w-full overflow-hidden rounded-[4px]" style={{ background: PINK_TINT }}>
             {stylist.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={stylist.avatar} alt="" className="h-full w-full object-cover" />
@@ -633,7 +633,7 @@ function BookingSummary({
         <div className="min-w-0 flex-1">
           <div className="text-[13px] font-black" style={{ color: INK }}>{stylist.name}</div>
           {stylist.role && (
-            <div className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: PINK }}>
+            <div className="font-mono text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: PINK }}>
               {stylist.role}
             </div>
           )}
@@ -680,7 +680,7 @@ function Field({ label, value, onChange, placeholder, textarea }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
-          className="w-full resize-y rounded-none border bg-white px-3 py-2.5 text-[13px] outline-none transition"
+          className="w-full resize-y rounded-[4px] border bg-white px-3 py-2.5 text-[13px] outline-none transition"
           style={{ borderColor: BORDER, color: INK }}
           onFocus={(e) => (e.currentTarget.style.borderColor = PINK)}
           onBlur={(e) => (e.currentTarget.style.borderColor = BORDER)}
@@ -691,7 +691,7 @@ function Field({ label, value, onChange, placeholder, textarea }: {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-none border bg-white px-3 py-2.5 text-[13px] outline-none transition"
+          className="w-full rounded-[4px] border bg-white px-3 py-2.5 text-[13px] outline-none transition"
           style={{ borderColor: BORDER, color: INK }}
           onFocus={(e) => (e.currentTarget.style.borderColor = PINK)}
           onBlur={(e) => (e.currentTarget.style.borderColor = BORDER)}
@@ -709,7 +709,7 @@ function ConfirmationView({ c }: { c: { id: string; startsAt: string; service: s
   return (
     <div className="text-center">
       <div
-        className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full"
+        className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-[4px]"
         style={{
           background: `linear-gradient(135deg, ${PINK} 0%, ${PINK_DEEP} 100%)`,
           boxShadow: `0 16px 40px rgba(236,72,153,0.35)`,
@@ -719,12 +719,12 @@ function ConfirmationView({ c }: { c: { id: string; startsAt: string; service: s
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h1 className="text-[26px] font-black sm:text-[32px]" style={{ color: INK }}>
+      <h1 className="text-[26px] font-black sm:text-[22px] md:text-[32px]" style={{ color: INK }}>
         Захиалга баталгаажлаа
       </h1>
       <p className="mt-1.5 text-[13px]" style={{ color: DIM }}>Уулзахдаа баяртай байна.</p>
       <div
-        className="mx-auto mt-6 max-w-[420px] rounded-none border bg-white p-5 text-left"
+        className="mx-auto mt-6 max-w-[420px] rounded-[4px] border bg-white p-5 text-left"
         style={{ borderColor: PINK_SOFT }}
       >
         <Row label="Захиалгын ID" value={c.id.slice(-8).toUpperCase()} />
@@ -739,14 +739,14 @@ function ConfirmationView({ c }: { c: { id: string; startsAt: string; service: s
       <div className="mt-6 flex justify-center gap-3">
         <Link
           href="/yuki/me"
-          className="rounded-full px-5 py-2.5 text-[12px] font-bold transition hover:bg-[#FDF2F8]"
+          className="rounded-[4px] px-5 py-2.5 text-[12px] font-bold transition hover:bg-[#FDF2F8]"
           style={{ color: PINK_DEEP, border: `1px solid ${PINK_SOFT}` }}
         >
           Миний захиалга
         </Link>
         <Link
           href="/yuki"
-          className="rounded-full px-5 py-2.5 text-[12px] font-black text-white transition hover:scale-[1.02]"
+          className="rounded-[4px] px-5 py-2.5 text-[12px] font-black text-white transition hover:scale-[1.02]"
           style={{ background: PINK, boxShadow: `0 8px 20px rgba(236,72,153,0.32)` }}
         >
           Эхэндээ буцах

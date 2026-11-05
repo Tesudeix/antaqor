@@ -45,11 +45,12 @@ interface SlideBody {
   ctaHref?: string;
   image?: string;
   active?: boolean;
+  layout?: string;
 }
 
 function pickFields(b: SlideBody) {
   const out: Record<string, unknown> = {};
-  for (const k of ["order", "chrome", "line1", "line2", "sub", "ctaLabel", "ctaHref", "image", "active"] as const) {
+  for (const k of ["order", "chrome", "line1", "line2", "sub", "ctaLabel", "ctaHref", "image", "active", "layout"] as const) {
     if (b[k] !== undefined) out[k] = b[k];
   }
   return out;

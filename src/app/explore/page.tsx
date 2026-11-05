@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: "Танилцах · ANTAQOR",
     description: "AI мэдээ, хичээл, эвент, хэрэгслүүд — бүгд нэг дор.",
     url: "/explore",
-    images: ["/opengraph-image"],
+    images: ["/brand/cover"],
   },
 };
 
@@ -40,7 +40,7 @@ function SectionHeader({ accent, eyebrow, href, action = "Бүгдийг үзэ�
         <div className="h-[2px] w-4" style={{ background: accent }} />
         <span className="text-[11px] font-bold tracking-[0.2em] text-[#0e1726]">{eyebrow}</span>
       </div>
-      <Link href={href} className="text-[11px] font-bold text-[#6b7280] transition hover:text-[#1080CA]">
+      <Link href={href} className="text-[11px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF]">
         {action} →
       </Link>
     </div>
@@ -49,9 +49,9 @@ function SectionHeader({ accent, eyebrow, href, action = "Бүгдийг үзэ�
 
 function JumpChips() {
   const chips: { href: string; label: string; color: string }[] = [
-    { href: "#blog", label: "Блог", color: "#1080CA" },
-    { href: "#events", label: "Хуваарь", color: "#1080CA" },
-    { href: "#courses", label: "Хичээл", color: "#1080CA" },
+    { href: "#blog", label: "Блог", color: "var(--accent-ink, #2E29FF)" },
+    { href: "#events", label: "Хуваарь", color: "var(--accent-ink, #2E29FF)" },
+    { href: "#courses", label: "Хичээл", color: "var(--accent-ink, #2E29FF)" },
     { href: "#tools", label: "Хэрэгсэл", color: "#06B6D4" },
   ];
   return (
@@ -61,7 +61,7 @@ function JumpChips() {
           <a
             key={c.href}
             href={c.href}
-            className="shrink-0 rounded-full border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-3.5 py-1.5 text-[12px] font-semibold text-[#475569] transition hover:text-[#0e1726]"
+            className="shrink-0 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-3.5 py-1.5 text-[12px] font-semibold text-[#475569] transition hover:text-[#0e1726]"
           >
             <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: c.color }} />
             {c.label}
@@ -76,22 +76,22 @@ function ToolTile({ href, accent, icon, eyebrow, title, subtitle }: TileProps) {
   return (
     <Link
       href={href}
-      className="group relative flex flex-col overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-5 transition hover:border-[rgba(16,128,202,0.25)]"
+      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-5 transition hover:border-[rgba(46,41,255,0.25)]"
     >
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-none"
+        className="flex h-10 w-10 items-center justify-center rounded-[4px]"
         style={{ background: `${accent}1F` }}
       >
         <svg className="h-5 w-5" fill="none" stroke={accent} strokeWidth={1.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
         </svg>
       </div>
-      <div className="mt-4 text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: accent }}>
+      <div className="mt-4 text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: accent }}>
         {eyebrow}
       </div>
       <div className="mt-1 text-[15px] font-bold leading-tight text-[#0e1726]">{title}</div>
-      <div className="mt-1 text-[11px] text-[#6b7280]">{subtitle}</div>
-      <svg className="absolute right-4 top-4 h-4 w-4 text-[#d5dce3] transition group-hover:text-[#1080CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+      <div className="mt-1 text-[11px] text-[#E2E4E8]">{subtitle}</div>
+      <svg className="absolute right-4 top-4 h-4 w-4 text-[#d5dce3] transition group-hover:text-[#2E29FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
     </Link>
   );
 }
@@ -126,7 +126,7 @@ export default async function ExplorePage() {
     date: new Date(e.date),
     type: e.type,
     status: e.status,
-    color: e.color || "#1080CA",
+    color: e.color || "#2E29FF",
   }));
 
   type RawCourse = { _id: { toString(): string }; title: string; description?: string; thumbnail?: string; lessonsCount?: number; requiredLevel?: number };
@@ -140,13 +140,13 @@ export default async function ExplorePage() {
   }));
 
   const categoryColor: Record<string, string> = {
-    AI: "#1080CA",
-    LLM: "#4E94D0",
+    AI: "#2E29FF",
+    LLM: "#1F1AD9",
     Agents: "#8B5CF6",
-    Research: "#1080CA",
+    Research: "#2E29FF",
     "Бизнес": "#F59E0B",
     Tool: "#06B6D4",
-    "Монгол": "#EC4899",
+    "Монгол": "#2E29FF",
   };
 
   return (
@@ -154,13 +154,13 @@ export default async function ExplorePage() {
       {/* Hero */}
       <section className="pt-1">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-5 bg-[#1080CA]" />
-          <span className="text-[11px] font-bold tracking-[0.2em] text-[#1080CA]">EXPLORE</span>
+          <div className="h-[2px] w-5 bg-[#2E29FF]" />
+          <span className="text-[11px] font-bold tracking-[0.2em] text-[#2E29FF]">EXPLORE</span>
         </div>
-        <h1 className="mt-2.5 text-[28px] font-black leading-[1.05] tracking-tight text-[#0e1726] md:text-[40px]">
+        <h1 className="mt-2.5 text-[28px] font-black leading-[1.05] tracking-tight text-[#0e1726] md:text-[26px] md:text-[40px]">
           Танилцах
         </h1>
-        <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#6b7280] md:text-[14px]">
+        <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#E2E4E8] md:text-[14px]">
           AI мэдээ, хичээл, эвент, хэрэгслүүд — Antaqor дахь бүх контент нэг дор.
         </p>
         <div className="mt-4">
@@ -170,30 +170,30 @@ export default async function ExplorePage() {
 
       {/* ─── BLOG ─── */}
       <section id="blog" className="scroll-mt-20">
-        <SectionHeader accent="#1080CA" eyebrow="AI МЭДЭЭ · БЛОГ" href="/news" />
+        <SectionHeader accent="#2E29FF" eyebrow="AI МЭДЭЭ · БЛОГ" href="/news" />
         {news.length === 0 ? (
-          <div className="rounded-none border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#94a3b8]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#E2E4E8]">
             Мэдээ удахгүй
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {news.map((n, i) => {
-              const color = categoryColor[n.category] || "#1080CA";
+              const color = categoryColor[n.category] || "#2E29FF";
               return (
                 <Link
                   key={n._id}
                   href={`/news/${n.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(16,128,202,0.25)]"
+                  className="group flex flex-col overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(46,41,255,0.25)]"
                 >
                   <div className="relative aspect-[16/10] bg-[#F2F2F4]">
                     {n.coverImage ? (
                       <img src={n.coverImage} alt={n.title} loading={i < 2 ? "eager" : "lazy"} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#F2F2F4] to-[#f7f9fb]">
-                        <span className="text-[9px] tracking-[0.3em] text-[#dde3ea]">ANTAQOR</span>
+                        <span className="text-[11px] tracking-[0.3em] text-[#dde3ea]">ANTAQOR</span>
                       </div>
                     )}
-                    <div className="absolute top-2 left-2 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider" style={{ background: `${color}F2`, color: "#fff" }}>
+                    <div className="absolute top-2 left-2 rounded-[4px] px-2 py-0.5 text-[11px] font-black uppercase tracking-wider" style={{ background: `${color}F2`, color: "#fff" }}>
                       {n.category}
                     </div>
                   </div>
@@ -201,7 +201,7 @@ export default async function ExplorePage() {
                     <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-[#0e1726] transition-colors group-hover:text-white">
                       {n.title}
                     </h3>
-                    <div className="mt-auto pt-2 text-[10px] text-[#94a3b8]">{n.readingMinutes} мин унших</div>
+                    <div className="mt-auto pt-2 text-[10px] text-[#E2E4E8]">{n.readingMinutes} мин унших</div>
                   </div>
                 </Link>
               );
@@ -212,9 +212,9 @@ export default async function ExplorePage() {
 
       {/* ─── EVENTS ─── */}
       <section id="events" className="scroll-mt-20">
-        <SectionHeader accent="#1080CA" eyebrow="ХУВААРЬ · ЭВЕНТ" href="/calendar" />
+        <SectionHeader accent="#2E29FF" eyebrow="ХУВААРЬ · ЭВЕНТ" href="/calendar" />
         {events.length === 0 ? (
-          <div className="rounded-none border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#94a3b8]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#E2E4E8]">
             Ойрын эвент алга
           </div>
         ) : (
@@ -225,7 +225,7 @@ export default async function ExplorePage() {
                 <Link
                   key={e._id}
                   href="/calendar"
-                  className="group relative flex flex-col overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(16,128,202,0.25)]"
+                  className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(46,41,255,0.25)]"
                 >
                   <div className="relative aspect-[16/10] bg-[#F2F2F4]">
                     {e.image ? (
@@ -237,20 +237,20 @@ export default async function ExplorePage() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                     {isLive && (
-                      <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-[#1080CA] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#0E0E10]">
+                      <div className="absolute top-2 right-2 flex items-center gap-1 rounded-[4px] bg-[#2E29FF] px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-white">
                         <span className="h-1 w-1 animate-pulse rounded-full bg-white" />
                         LIVE
                       </div>
                     )}
-                    <div className="absolute bottom-2 left-2 rounded-none bg-black/60 px-2 py-1 backdrop-blur">
+                    <div className="absolute bottom-2 left-2 rounded-[4px] bg-black/60 px-2 py-1 backdrop-blur">
                       <div className="text-[11px] font-black text-white leading-none">{formatEventDate(e.date)}</div>
-                      <div className="mt-0.5 text-[9px] text-white/70 leading-none">
+                      <div className="mt-0.5 text-[11px] text-white/70 leading-none">
                         {e.date.getHours().toString().padStart(2, "0")}:{e.date.getMinutes().toString().padStart(2, "0")}
                       </div>
                     </div>
                   </div>
                   <div className="p-3">
-                    <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-[#1080CA]">
+                    <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">
                       {e.type}
                     </div>
                     <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-[#0e1726]">{e.title}</h3>
@@ -264,9 +264,9 @@ export default async function ExplorePage() {
 
       {/* ─── COURSES ─── */}
       <section id="courses" className="scroll-mt-20">
-        <SectionHeader accent="#1080CA" eyebrow="ХИЧЭЭЛ · СУРГАЛТ" href="/classroom" />
+        <SectionHeader accent="#2E29FF" eyebrow="ХИЧЭЭЛ · СУРГАЛТ" href="/classroom" />
         {courses.length === 0 ? (
-          <div className="rounded-none border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#94a3b8]">
+          <div className="rounded-[4px] border border-dashed border-[rgba(15,23,38,0.06)] bg-[#f7f9fb] py-10 text-center text-[12px] text-[#E2E4E8]">
             Хичээл удахгүй нэмэгдэнэ
           </div>
         ) : (
@@ -275,19 +275,19 @@ export default async function ExplorePage() {
               <Link
                 key={c._id}
                 href={`/classroom/course/${c._id}`}
-                className="group overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(16,128,202,0.25)]"
+                className="group overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition hover:border-[rgba(46,41,255,0.25)]"
               >
                 <div className="relative aspect-[16/10] bg-[#F2F2F4]">
                   {c.thumbnail ? (
                     <img src={c.thumbnail} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[rgba(16,128,202,0.08)] to-[#f7f9fb]">
-                      <svg className="h-10 w-10 text-[#1080CA]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[rgba(46,41,255,0.08)] to-[#f7f9fb]">
+                      <svg className="h-10 w-10 text-[#2E29FF]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                     </div>
                   )}
                 </div>
                 <div className="p-3">
-                  <div className="mb-1 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-[#1080CA]">
+                  <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">
                     <span>{c.lessonsCount} хичээл</span>
                     {c.requiredLevel > 0 && (
                       <>
@@ -298,7 +298,7 @@ export default async function ExplorePage() {
                   </div>
                   <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-[#0e1726]">{c.title}</h3>
                   {c.description && (
-                    <p className="mt-1 line-clamp-2 text-[11px] text-[#6b7280]">{c.description}</p>
+                    <p className="mt-1 line-clamp-2 text-[11px] text-[#E2E4E8]">{c.description}</p>
                   )}
                 </div>
               </Link>
@@ -329,7 +329,7 @@ export default async function ExplorePage() {
           />
           <ToolTile
             href="/credits"
-            accent="#1080CA"
+            accent="#2E29FF"
             icon="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             eyebrow="REFERRAL"
             title="Кредит ба Урилга"
@@ -339,18 +339,18 @@ export default async function ExplorePage() {
       </section>
 
       {/* ─── Final CTA for guests ─── */}
-      <section className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.18)] bg-gradient-to-br from-[rgba(16,128,202,0.08)] via-[#f7f9fb] to-[#f7f9fb] p-6 md:p-8">
+      <section className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.18)] bg-gradient-to-br from-[rgba(46,41,255,0.08)] via-[#f7f9fb] to-[#f7f9fb] p-6 md:p-8">
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="text-[10px] font-bold tracking-[0.2em] text-[#1080CA]">ANTAQOR</div>
+            <div className="text-[10px] font-bold tracking-[0.2em] text-[#2E29FF]">ANTAQOR</div>
             <h3 className="mt-1.5 text-[20px] font-bold leading-tight text-[#0e1726] md:text-[22px]">
               AI бүтээгчдийн нийгэмлэг
             </h3>
-            <p className="mt-1 text-[12px] text-[#6b7280] md:text-[13px]">
-              Промт, агент, бизнес — Edgerunners-ийн дотоод контентод хандах эрх.
+            <p className="mt-1 text-[12px] text-[#E2E4E8] md:text-[13px]">
+              Промт, агент, бизнес — Antaqor хүрээлэлийн дотоод контентод хандах эрх.
             </p>
           </div>
-          <Link href="/auth/signup" className="rounded-none bg-[#1080CA] px-6 py-3 text-[13px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_32px_rgba(16,128,202,0.3)]">
+          <Link href="/auth/signup" className="rounded-[4px] bg-[#2E29FF] px-6 py-3 text-[13px] font-bold text-white transition hover:shadow-[0_0_32px_rgba(46,41,255,0.3)]">
             Нэгдэх →
           </Link>
         </div>

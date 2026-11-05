@@ -3,19 +3,31 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import PasskeySignIn from "@/components/PasskeySignIn";
-import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { AuthField } from "@/components/AuthField";
+import SocialAuthRow from "@/components/SocialAuthRow";
 
-// Single source of truth for the sign-in UI. Used by /auth/signin AND the
-// chat logged-out state. Edgerunner card — same shell as signup. Login accepts
-// a USERNAME (or email).
+/* Нэвтрэх хуудасны карт — /auth/signin болон чатын гарсан төлөв.
+   Сайтын үндсэн нэвтрэлт нь AuthModal (цонх); энэ нь шууд хаягаар орж
+   ирсэн, эсвэл нууц үг сэргээсний дараах хүнд зориулсан ижил маягт.
+   Хоёулаа ЯГ нэг хэлээр ярих ёстой — хүрээгүй гадаргуу, дүүргэсэн
+   талбар, focus дээр л гарах accent цагираг. */
+
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.055, delayChildren: 0.06 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.34, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
 export default function LoginCard({
   next = "/",
   onSuccess,
   heading = "Нэвтрэх",
-  subtitle = "Хэрэглэгчийн нэр эсвэл имэйлээрээ нэвтэрнэ үү",
+  subtitle = "Хэрэглэгчийн нэр, нууц үгээрээ үргэлжлүүл",
 }: {
   next?: string;
   onSuccess?: () => void;
@@ -41,7 +53,9 @@ export default function LoginCard({
     setError("");
     setLoading(true);
     try {
-      const res = await signIn("credentials", { login: login.trim(), password, redirect: false });
+      // Урд талын "@" нь хүмүүсийн зуршил — сервер рүү явахаас нь өмнө авна.
+      const handle = login.trim().replace(/^@+/, "");
+      const res = await signIn("credentials", { login: handle, password, redirect: false });
       if (res?.error) {
         if (res.status === 429 || res.error === "fetch failed") {
           setError("Хэт олон оролдлого. 1 минутын дараа дахин оролдоно уу.");
@@ -63,102 +77,99 @@ export default function LoginCard({
     }
   };
 
-  const inputCls =
-    "w-full rounded-[4px] border bg-[#0a0a0c] px-3 py-3 text-[14px] outline-none transition focus:border-[#1080CA]";
-  const inputStyle = { borderColor: "rgba(255,255,255,0.12)", color: "#FFFFFF" } as const;
-  const labelCls = "font-mono text-[10px] font-bold uppercase tracking-[0.04em]";
-
   return (
-    <div className="flex min-h-[78vh] items-center justify-center px-0 sm:px-4">
+    <div className="flex min-h-[78vh] items-center justify-center px-4 py-10">
       <motion.div
-        initial={{ opacity: 0, x: 12 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.24, ease: [0, 0, 0.2, 1] }}
-        className="relative w-full sm:max-w-[400px]"
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="w-full max-w-[380px] rounded-[4px] bg-[#141416] p-7 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85)]"
       >
-        <div className="relative border-y border-[rgba(255,255,255,0.12)] bg-[#0d0d10] p-6 max-sm:border-x-0 sm:rounded-[4px] sm:border sm:p-8">
-          {["left-0 top-0 border-l-2 border-t-2", "right-0 top-0 border-r-2 border-t-2", "bottom-0 left-0 border-b-2 border-l-2", "bottom-0 right-0 border-b-2 border-r-2"].map((c, i) => (
-            <span key={i} className={`pointer-events-none absolute h-3 w-3 border-[#1080CA] ${c}`} />
-          ))}
+        <motion.h1 variants={item} className="text-[24px] font-bold leading-tight text-white">
+          {heading}
+        </motion.h1>
+        <motion.p variants={item} className="mt-1.5 text-[13px] text-[#E2E4E8]">
+          {subtitle}
+        </motion.p>
 
-          <span className="tag">ANTAQOR /// ACCESS</span>
-          <h1 className="mt-4 text-[26px] font-bold" style={{ color: "#1080CA", fontFamily: "var(--font-display)" }}>
-            {heading}
-          </h1>
-          <p className="mt-1 mb-6 text-[12px]" style={{ color: "#84848C" }}>{subtitle}</p>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <motion.div variants={item}>
+            <AuthField
+              icon="profile"
+              type="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="username"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              required
+              placeholder="Хэрэглэгчийн нэр"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <AuthField
+              icon="lock"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Нууц үг"
+            />
+          </motion.div>
 
           {error && (
-            <motion.div
+            <motion.p
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-5 rounded-[4px] border px-4 py-3 text-[12px]"
-              style={{ borderColor: "rgba(16,128,202,0.4)", background: "rgba(16,128,202,0.08)", color: "#FFFFFF" }}
+              className="rounded-[4px] bg-[#2E29FF]/10 px-4 py-3 text-[13px] leading-snug text-[#FFB4AE]"
             >
               {error}
               {cooldown > 0 && (
-                <span className="ml-2 text-[11px]" style={{ color: "#84848C" }}>
+                <span className="ml-2 text-[#E2E4E8]">
                   ({Math.floor(cooldown / 60)}:{String(cooldown % 60).padStart(2, "0")})
                 </span>
               )}
-            </motion.div>
+            </motion.p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className={`${labelCls} mb-1.5 block`} style={{ color: "#84848C" }}>
-                Хэрэглэгчийн нэр / имэйл
-              </label>
-              <input
-                type="text"
-                autoCapitalize="none"
-                autoCorrect="off"
-                value={login}
-                onChange={(e) => setLogin(e.target.value)}
-                required
-                className={inputCls}
-                style={inputStyle}
-                placeholder="@username"
-              />
-            </div>
+          <motion.button
+            variants={item}
+            whileTap={{ scale: 0.985 }}
+            type="submit"
+            disabled={loading || cooldown > 0}
+            className="h-12 w-full rounded-[4px] bg-[#2E29FF] text-[15px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-50"
+          >
+            {loading ? "Нэвтэрч байна…" : cooldown > 0 ? `Түр хүлээ (${cooldown}с)` : "Нэвтрэх"}
+          </motion.button>
+        </form>
 
-            <div>
-              <div className="mb-1.5 flex items-center justify-between">
-                <label className={labelCls} style={{ color: "#84848C" }}>Нууц үг</label>
-                <Link href="/auth/forgot-password" className="text-[11px] text-[#1080CA] transition hover:brightness-110">
-                  Мартсан?
-                </Link>
-              </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={inputCls}
-                style={inputStyle}
-                placeholder="••••••••"
-              />
-            </div>
+        {/* AuthModal-тай ЯГ ижил байрлал — нэг хүн хоёр гадаргууг хоёр өөр
+            газраас олох ёсгүй. */}
+        <motion.div variants={item}>
+          <SocialAuthRow next={next} onSuccess={onSuccess} />
+        </motion.div>
 
-            <button
-              type="submit"
-              disabled={loading || cooldown > 0}
-              className="h-12 w-full rounded-[4px] border border-[#1080CA] bg-[#1080CA] text-[14px] font-bold uppercase tracking-[0.01em] text-[#0E0E10] transition hover:bg-[#4FA8E8] active:translate-y-[1px] disabled:opacity-50"
-            >
-              {loading ? "Нэвтэрч байна..." : cooldown > 0 ? `Түр хүлээ (${cooldown}с)` : "Нэвтрэх >"}
-            </button>
-          </form>
+        {/* Нэвтрэхийн яг доор бүртгүүлэх. router.push ашигласан шалтгаан:
+            AuthModal нь /auth/signup руу заасан <a>-г барьж аваад цонх
+            нээдэг — аль хэдийн нэвтрэх маягт дээр байгаа хүнд дахиад цонх
+            давхарлах нь илүүц. */}
+        <motion.button
+          variants={item}
+          whileTap={{ scale: 0.985 }}
+          type="button"
+          onClick={() => router.push(next && next !== "/" ? `/auth/signup?callbackUrl=${encodeURIComponent(next)}` : "/auth/signup")}
+          className="mt-3 h-12 w-full rounded-[4px] bg-[#141414] text-[15px] font-semibold text-white transition hover:bg-[#1E1E1E]"
+        >
+          Бүртгүүлэх
+        </motion.button>
 
-          <PasskeySignIn />
-
-          <GoogleSignInButton next={next} />
-
-          <p className="mt-6 text-center text-[12px]" style={{ color: "#84848C" }}>
-            Бүртгэлгүй юу?{" "}
-            <Link href="/auth/signup" className="font-bold text-[#1080CA] transition hover:brightness-110">
-              Нэгдэх
-            </Link>
-          </p>
-        </div>
+        <motion.div variants={item} className="mt-5 text-center">
+          <Link href="/auth/forgot-password" className="text-[13px] text-[#E2E4E8] transition hover:text-white">
+            Нууц үгээ мартсан уу?
+          </Link>
+        </motion.div>
       </motion.div>
     </div>
   );

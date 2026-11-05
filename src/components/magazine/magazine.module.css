@@ -1,0 +1,22 @@
+/* ─── Magazine — нийтлэлийн бие (2026-10-11) ──────────────────────────────
+   Модернист сэтгүүл: 2px хуваагч, том гарчиг, ХАР-ЦАГААН зураг (бүх
+   зураг grayscale — сэтгүүлийн нэгдмэл хэвлэлийн мэдрэмж). Харанхуй суурь,
+   брэнд #2E29FF, хоёрдогч #FCEE0A. Радиус 4px. */
+.prose { color: #E2E4E8; font-size: 18px; line-height: 1.75; }
+.prose p { margin: 0 0 1.15em; }
+.prose h2 { margin: 1.6em 0 .55em; font-size: clamp(24px, 3vw, 30px); line-height: 1.15; font-weight: 800; letter-spacing: -.02em; color: #FFFFFF; }
+.prose h3 { margin: 1.4em 0 .5em; font-size: 21px; line-height: 1.25; font-weight: 800; color: #FFFFFF; }
+.prose strong { color: #FFFFFF; font-weight: 800; }
+.prose a { color: #2E29FF; text-decoration: underline; text-underline-offset: 3px; }
+.prose blockquote {
+  margin: 1.4em 0; padding: 4px 0 4px 20px; border-left: 4px solid #FCEE0A;
+  font-size: clamp(20px, 2.6vw, 26px); line-height: 1.35; font-weight: 700; color: #FFFFFF;
+}
+.prose figure { margin: 1.6em 0; border-top: 2px solid rgba(255,255,255,0.16); padding-top: 12px; }
+.prose figure img { width: 100%; border-radius: 4px; filter: grayscale(1) contrast(1.06); }
+.prose figcaption { margin-top: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; letter-spacing: .06em; color: #9C9CA6; }
+.prose > p:first-of-type::first-letter {
+  float: left; font-size: 3.4em; line-height: .9; font-weight: 800; color: #2E29FF; margin: .06em .1em 0 0;
+}
+.compact { font-size: 16px; }
+.bw { filter: grayscale(1) contrast(1.06); }

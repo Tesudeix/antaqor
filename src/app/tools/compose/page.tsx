@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { CreditIcon } from "@/components/CreditIcon";
 
 const COST = 10;
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -177,13 +178,13 @@ export default function ComposePage() {
   return (
     <div className="relative mx-auto max-w-[1100px] pb-16">
       <div className="mb-3 flex items-center justify-between">
-        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#6b7280] transition hover:text-[#1080CA]">
+        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#E2E4E8] transition hover:text-[#2E29FF]">
           ← Бүх хэрэгсэл
         </Link>
         {session && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(16,128,202,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#1080CA] backdrop-blur-md shadow-[0_0_12px_rgba(16,128,202,0.3)]">
+          <span className="inline-flex items-center gap-1 rounded-[4px] border border-[rgba(46,41,255,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#2E29FF] backdrop-blur-md shadow-[0_0_12px_rgba(46,41,255,0.3)]">
             <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>
-            {balance ?? "…"}₵
+            <CreditIcon size={12} className="mr-0.5" />{balance ?? "…"}
           </span>
         )}
       </div>
@@ -191,32 +192,32 @@ export default function ComposePage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 text-[9px] font-black tracking-[0.18em] text-[#1080CA]">
+          <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 text-[11px] font-black tracking-[0.18em] text-[#2E29FF]">
             ✦ AI WORKFLOW
           </span>
-          <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 text-[9px] font-black tracking-[0.18em] text-[#1080CA]">
+          <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 text-[11px] font-black tracking-[0.18em] text-[#2E29FF]">
             ШИНЭ
           </span>
         </div>
-        <h1 className="mt-2 bg-gradient-to-r from-white via-[#FFB3C5] to-[#1080CA] bg-clip-text text-[24px] font-black leading-tight text-transparent sm:text-[32px]"
-            style={{ filter: "drop-shadow(0 0 18px rgba(16,128,202,0.25))" }}>
+        <h1 className="mt-2 bg-gradient-to-r from-white via-[#FFB3C5] to-[#2E29FF] bg-clip-text text-[24px] font-black leading-tight text-transparent sm:text-[22px] md:text-[32px]"
+            style={{ filter: "drop-shadow(0 0 18px rgba(46,41,255,0.25))" }}>
           Зураг хослуулах
         </h1>
         <p className="mt-1.5 max-w-[640px] text-[13px] leading-relaxed text-[#9A9AA0]">
-          2–5 зургийг холбоод нэг шинэ зураг бүтээ. Зураг бүрд label өгөөд промпт-д <code className="rounded-none bg-[rgba(16,128,202,0.1)] px-1 text-[#1080CA]">{"{label}"}</code> хэлбэрээр дурд.
+          2–5 зургийг холбоод нэг шинэ зураг бүтээ. Зураг бүрд label өгөөд промпт-д <code className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1 text-[#2E29FF]">{"{label}"}</code> хэлбэрээр дурд.
         </p>
       </div>
 
       {/* Template chips */}
       <div className="mb-4">
-        <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Жишээ workflow</div>
+        <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Жишээ workflow</div>
         <div className="flex flex-wrap gap-1.5">
           {PROMPT_TEMPLATES.map((t) => (
             <button
               key={t.title}
               type="button"
               onClick={() => applyTemplate(t)}
-              className="rounded-full border border-[rgba(16,128,202,0.2)] bg-[rgba(16,128,202,0.05)] px-3 py-1 text-[10px] font-bold text-[#334155] transition hover:border-[rgba(16,128,202,0.5)] hover:bg-[rgba(16,128,202,0.1)] hover:text-[#1080CA]"
+              className="rounded-[4px] border border-[rgba(46,41,255,0.2)] bg-[rgba(46,41,255,0.05)] px-3 py-1 text-[10px] font-bold text-[#334155] transition hover:border-[rgba(46,41,255,0.5)] hover:bg-[rgba(46,41,255,0.1)] hover:text-[#2E29FF]"
             >
               {t.title}
             </button>
@@ -225,14 +226,14 @@ export default function ComposePage() {
       </div>
 
       {/* Workflow strip — image slots in a row with chevrons */}
-      <div className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] p-3 sm:p-4">
+      <div className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] p-3 sm:p-4">
         <div className="mb-2 flex items-center justify-between">
-          <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Workflow ({filledCount}/{slots.length} бөглөгдсөн)</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Workflow ({filledCount}/{slots.length} бөглөгдсөн)</div>
           <button
             type="button"
             onClick={addSlot}
             disabled={slots.length >= MAX_IMAGES}
-            className="inline-flex items-center gap-1 rounded-none border border-dashed border-[rgba(16,128,202,0.4)] px-2.5 py-1 text-[10px] font-black text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.06)] disabled:opacity-30"
+            className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[rgba(46,41,255,0.4)] px-2.5 py-1 text-[10px] font-black text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.06)] disabled:opacity-30"
           >
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
             Зураг нэмэх
@@ -252,7 +253,7 @@ export default function ComposePage() {
                 onRemove={() => removeSlot(slot.id)}
               />
               {i < slots.length - 1 && (
-                <svg className="h-4 w-4 shrink-0 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <svg className="h-4 w-4 shrink-0 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               )}
@@ -261,15 +262,15 @@ export default function ComposePage() {
 
           {/* Trailing chevron + AI step */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <svg className="h-4 w-4 shrink-0 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <svg className="h-4 w-4 shrink-0 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-            <div className="flex h-[140px] w-[140px] flex-col items-center justify-center gap-1.5 rounded-none border border-[rgba(16,128,202,0.4)] bg-gradient-to-br from-[rgba(16,128,202,0.08)] to-[rgba(16,128,202,0.08)] p-2 text-center shadow-[0_0_18px_rgba(16,128,202,0.2)]">
-              <svg className="h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+            <div className="flex h-[140px] w-[140px] flex-col items-center justify-center gap-1.5 rounded-[4px] border border-[rgba(46,41,255,0.4)] bg-gradient-to-br from-[rgba(46,41,255,0.08)] to-[rgba(46,41,255,0.08)] p-2 text-center shadow-[0_0_18px_rgba(46,41,255,0.2)]">
+              <svg className="h-5 w-5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
               </svg>
-              <div className="text-[11px] font-black text-[#1080CA]">AI</div>
-              <div className="text-[9px] text-[#6b7280]">{COST}₵</div>
+              <div className="text-[11px] font-black text-[#2E29FF]">AI</div>
+              <div className="flex items-center gap-0.5 text-[11px] text-[#E2E4E8]"><CreditIcon size={10} />{COST}</div>
             </div>
           </div>
         </div>
@@ -277,22 +278,22 @@ export default function ComposePage() {
 
       {/* Prompt composer */}
       <div className="relative mt-4">
-        <div className="absolute -inset-[1px] rounded-none bg-gradient-to-r from-[#1080CA] via-[#1080CA] to-[#1080CA] opacity-25 blur-md" />
-        <div className="relative rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff]">
+        <div className="absolute -inset-[1px] rounded-[4px] bg-gradient-to-r from-[#2E29FF] via-[#2E29FF] to-[#2E29FF] opacity-25 blur-md" />
+        <div className="relative rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff]">
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder={`Жнь: Place {${slots[0]?.label || "subject"}} into the scene from {${slots[1]?.label || "background"}}. Match the lighting...`}
             rows={4}
             maxLength={1000}
-            className="w-full resize-none rounded-none bg-transparent p-4 text-[14px] leading-relaxed text-[#0e1726] placeholder-[#94a3b8] outline-none"
+            className="w-full resize-none rounded-[4px] bg-transparent p-4 text-[14px] leading-relaxed text-[#0e1726] placeholder-[#62666F] outline-none"
           />
           <div className="flex items-center justify-between border-t border-[rgba(15,23,38,0.06)] px-3 py-2">
-            <div className="text-[10px] text-[#94a3b8]">{prompt.length}/1000</div>
+            <div className="text-[10px] text-[#E2E4E8]">{prompt.length}/1000</div>
             <button
               onClick={() => setPrompt("")}
               disabled={!prompt}
-              className="text-[10px] font-bold text-[#6b7280] transition hover:text-[#1080CA] disabled:opacity-30"
+              className="text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF] disabled:opacity-30"
             >
               Цэвэрлэх
             </button>
@@ -302,13 +303,13 @@ export default function ComposePage() {
 
       {/* Reference chips — insert {label} into prompt */}
       <div className="mt-2 flex flex-wrap gap-1.5">
-        <span className="text-[10px] font-bold text-[#6b7280]">Зургаа дурд:</span>
+        <span className="text-[10px] font-bold text-[#E2E4E8]">Зургаа дурд:</span>
         {slots.map((s) => (
           <button
             key={s.id}
             type="button"
             onClick={() => insertReference(s.label || "image")}
-            className="rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.05)] px-2 py-0.5 text-[10px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.12)]"
+            className="rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.05)] px-2 py-0.5 text-[10px] font-bold text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.12)]"
           >
             {`{${s.label || "image"}}`}
           </button>
@@ -316,18 +317,18 @@ export default function ComposePage() {
       </div>
 
       {lowBalance && !error && (
-        <div className="mt-4 flex items-center justify-between rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)] px-4 py-3">
+        <div className="mt-4 flex items-center justify-between rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.06)] px-4 py-3">
           <div>
-            <div className="text-[12px] font-bold text-[#1080CA]">Кредит дутуу</div>
-            <div className="text-[11px] text-[#6b7280]">Танд {balance}₵ байна, {COST}₵ шаардлагатай.</div>
+            <div className="text-[12px] font-bold text-[#2E29FF]">Кредит дутуу</div>
+            <div className="text-[11px] text-[#E2E4E8]">Танд {balance} кредит байна, {COST} шаардлагатай.</div>
           </div>
-          <Link href="/credits/buy" className="rounded-none bg-[#1080CA] px-3 py-1.5 text-[11px] font-black text-[#0E0E10] shadow-[0_0_18px_rgba(16,128,202,0.5)]">
+          <Link href="/credits/buy" className="rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_18px_rgba(46,41,255,0.5)]">
             Кредит авах →
           </Link>
         </div>
       )}
       {error && (
-        <div className="mt-4 rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] text-[#1080CA]">
+        <div className="mt-4 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] text-[#2E29FF]">
           {error}
         </div>
       )}
@@ -337,11 +338,11 @@ export default function ComposePage() {
         <button
           onClick={submit}
           disabled={!canSubmit}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-gradient-to-r from-[#1080CA] to-[#1080CA] px-6 py-3.5 text-[13px] font-black text-[#0E0E10] shadow-[0_0_24px_rgba(16,128,202,0.45)] transition hover:shadow-[0_0_36px_rgba(16,128,202,0.7)] disabled:opacity-40 disabled:shadow-none"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-gradient-to-r from-[#2E29FF] to-[#2E29FF] px-6 py-3.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(46,41,255,0.45)] transition hover:shadow-[0_0_36px_rgba(46,41,255,0.7)] disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? (
             <>
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-[4px] border-2 border-white border-t-transparent" />
               Хослуулж байна...
             </>
           ) : (
@@ -349,7 +350,7 @@ export default function ComposePage() {
               <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
               </svg>
-              Хослуулах · {COST}₵
+              Хослуулах · <CreditIcon size={11} className="mx-0.5" />{COST}
             </>
           )}
         </button>
@@ -358,9 +359,9 @@ export default function ComposePage() {
       {/* Result */}
       {(busy || resultUrl) && (
         <div className="mt-6">
-          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Үр дүн</div>
-          <div className="relative rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff] p-1 shadow-[0_0_28px_rgba(16,128,202,0.15)]">
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-none bg-[#f2f5f8]">
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Үр дүн</div>
+          <div className="relative rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff] p-1 shadow-[0_0_28px_rgba(46,41,255,0.15)]">
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[4px] bg-[#f2f5f8]">
               {busy ? (
                 <Skeleton />
               ) : (
@@ -374,7 +375,7 @@ export default function ComposePage() {
               <a
                 href={resultUrl}
                 download={`compose-${Date.now()}.png`}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-none bg-[#1080CA] py-2.5 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[4px] bg-[#2E29FF] py-2.5 text-[12px] font-black text-white transition hover:bg-[#1F1AD9]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -383,7 +384,7 @@ export default function ComposePage() {
               </a>
               <button
                 onClick={reset}
-                className="rounded-none border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#6b7280] transition hover:text-[#0e1726]"
+                className="rounded-[4px] border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#E2E4E8] transition hover:text-[#0e1726]"
               >
                 Шинээр
               </button>
@@ -393,15 +394,15 @@ export default function ComposePage() {
       )}
 
       {/* How-to */}
-      <details className="mt-8 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4">
+      <details className="mt-8 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4">
         <summary className="cursor-pointer text-[12px] font-bold text-[#0e1726]">
           Workflow яаж ажилладаг вэ?
         </summary>
-        <div className="mt-3 space-y-2 text-[12px] leading-relaxed text-[#6b7280]">
-          <p><strong className="text-[#1080CA]">1.</strong> 2–5 зураг нэм. Зураг тус бүрд label өг (subject, background, product г.м).</p>
-          <p><strong className="text-[#1080CA]">2.</strong> Промпт-ондоо тэр label-уудыг <code className="rounded-none bg-[rgba(16,128,202,0.1)] px-1 text-[#1080CA]">{"{subject}"}</code> хэлбэрээр дурд.</p>
-          <p><strong className="text-[#1080CA]">3.</strong> AI бүх зургийг нэг шинэ зураг болгож хослуулна.</p>
-          <p className="text-[11px] text-[#6b7280]">Powered by Google Gemini Nano Banana — multi-image AI workflow.</p>
+        <div className="mt-3 space-y-2 text-[12px] leading-relaxed text-[#E2E4E8]">
+          <p><strong className="text-[#2E29FF]">1.</strong> 2–5 зураг нэм. Зураг тус бүрд label өг (subject, background, product г.м).</p>
+          <p><strong className="text-[#2E29FF]">2.</strong> Промпт-ондоо тэр label-уудыг <code className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1 text-[#2E29FF]">{"{subject}"}</code> хэлбэрээр дурд.</p>
+          <p><strong className="text-[#2E29FF]">3.</strong> AI бүх зургийг нэг шинэ зураг болгож хослуулна.</p>
+          <p className="text-[11px] text-[#E2E4E8]">Powered by Google Gemini Nano Banana — multi-image AI workflow.</p>
         </div>
       </details>
     </div>
@@ -424,23 +425,23 @@ function ImageSlot({
     <div className="flex w-[140px] shrink-0 flex-col gap-1.5">
       {/* Image picker */}
       {slot.preview ? (
-        <div className="relative aspect-square w-full overflow-hidden rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff]">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={slot.preview} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <span className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-[9px] font-black text-white backdrop-blur">
+          <span className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-black/70 text-[11px] font-black text-white backdrop-blur">
             {index + 1}
           </span>
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-end gap-1 bg-gradient-to-t from-black/85 to-transparent p-1">
             <button
               onClick={() => inputRef.current?.click()}
-              className="rounded-none bg-black/70 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur transition hover:bg-black/90"
+              className="rounded-[4px] bg-black/70 px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur transition hover:bg-black/90"
             >
               Солих
             </button>
             {canRemove && (
               <button
                 onClick={onRemove}
-                className="rounded-none bg-black/70 p-1 text-white hover:text-[#0E0E10] backdrop-blur transition hover:bg-[#1080CA]"
+                className="rounded-[4px] bg-black/70 p-1 text-white hover:text-white backdrop-blur transition hover:bg-[#2E29FF]"
                 aria-label="Устгах"
               >
                 <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -455,41 +456,41 @@ function ImageSlot({
           onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
           onDragLeave={() => setDrag(false)}
           onDrop={(e) => { e.preventDefault(); setDrag(false); onPick(e.dataTransfer.files?.[0] || null); }}
-          className={`relative flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-none border-2 border-dashed bg-[#ffffff] p-2 text-center transition ${
-            drag ? "border-[#1080CA] bg-[rgba(16,128,202,0.05)]" : "border-[rgba(16,128,202,0.25)] hover:border-[rgba(16,128,202,0.5)]"
+          className={`relative flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-[4px] border-2 border-dashed bg-[#ffffff] p-2 text-center transition ${
+            drag ? "border-[#2E29FF] bg-[rgba(46,41,255,0.05)]" : "border-[rgba(46,41,255,0.25)] hover:border-[rgba(46,41,255,0.5)]"
           }`}
         >
-          <span className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[rgba(16,128,202,0.15)] text-[9px] font-black text-[#1080CA]">
+          <span className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.15)] text-[11px] font-black text-[#2E29FF]">
             {index + 1}
           </span>
           {canRemove && (
             <button
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/40 text-[#6b7280] backdrop-blur transition hover:bg-black/70 hover:text-[#1080CA]"
+              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-[4px] bg-black/40 text-[#E2E4E8] backdrop-blur transition hover:bg-black/70 hover:text-[#2E29FF]"
               aria-label="Устгах"
             >
               <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           )}
-          <svg className="h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+          <svg className="h-5 w-5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" />
           </svg>
-          <span className="text-[10px] font-bold text-[#6b7280]">Сонгох</span>
+          <span className="text-[10px] font-bold text-[#E2E4E8]">Сонгох</span>
         </button>
       )}
       <input ref={inputRef} type="file" accept="image/*" onChange={(e) => onPick(e.target.files?.[0] || null)} className="hidden" />
 
       {/* Label input */}
       <div className="relative">
-        <span className="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6b7280]">{"{"}</span>
+        <span className="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-[#E2E4E8]">{"{"}</span>
         <input
           value={slot.label}
           onChange={(e) => onLabel(e.target.value)}
           placeholder="нэр"
           maxLength={40}
-          className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-3.5 py-1 text-[10px] font-bold text-[#1080CA] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="w-full rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff] px-3.5 py-1 text-[10px] font-bold text-[#2E29FF] outline-none focus:border-[rgba(46,41,255,0.4)]"
         />
-        <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6b7280]">{"}"}</span>
+        <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-[#E2E4E8]">{"}"}</span>
       </div>
     </div>
   );
@@ -501,16 +502,16 @@ function Skeleton() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(16,128,202,0.18) 50%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(46,41,255,0.18) 50%, transparent 100%)",
           animation: "composeShimmer 1.4s ease-in-out infinite",
         }}
       />
       <div className="relative z-10 flex flex-col items-center gap-2.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-none bg-[rgba(16,128,202,0.1)] shadow-[0_0_24px_rgba(16,128,202,0.5)]">
-          <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+        <span className="flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] shadow-[0_0_24px_rgba(46,41,255,0.5)]">
+          <span className="h-6 w-6 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
         </span>
         <p className="text-[12px] font-bold text-[#0e1726]">Workflow ажиллаж байна</p>
-        <p className="text-[10px] text-[#6b7280]">15–30 секунд хүртэл хүлээгээрэй</p>
+        <p className="text-[10px] text-[#E2E4E8]">15–30 секунд хүртэл хүлээгээрэй</p>
       </div>
       <style jsx>{`
         @keyframes composeShimmer {

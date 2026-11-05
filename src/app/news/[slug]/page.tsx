@@ -129,13 +129,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             height: 630,
             type: "image/webp",
           }]
-        : [{ url: "/opengraph-image", width: 1200, height: 630, alt: article.title }],
+        : [{ url: "/brand/cover", width: 1200, height: 630, alt: article.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description,
-      images: article.coverImage ? [article.coverImage] : ["/opengraph-image"],
+      images: article.coverImage ? [article.coverImage] : ["/brand/cover"],
       creator: "@antaqor",
       site: "@antaqor",
     },
@@ -154,7 +154,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
     "@type": "NewsArticle",
     headline: article.title,
     description: article.excerpt,
-    image: article.coverImage ? [article.coverImage] : ["https://antaqor.com/opengraph-image"],
+    image: article.coverImage ? [article.coverImage] : ["https://antaqor.com/brand/cover"],
     datePublished: article.publishedAt,
     dateModified: article.publishedAt,
     author: [

@@ -231,11 +231,17 @@ export async function initializeReferral(
 ): Promise<{ referrer: string | null }> {
   await dbConnect();
 
-  // Welcome bonus for the new user (always fires)
-  await awardCredits({
-    userId: newUserId,
-    reason: "SIGNUP_BONUS",
-  }).catch(() => null);
+  // Welcome bonus — хэмжээ нь /admin/economics (credit_econ.signupBonus), 0 = унтраасан
+  const { getEcon } = await import("@/lib/creditEconomicsServer");
+  const bonus = (await getEcon().catch(() => null))?.signupBonus ?? CREDIT_REWARDS.SIGNUP_BONUS.credits;
+  if (bonus > 0) {
+    await awardCredits({
+      userId: newUserId,
+      reason: "SIGNUP_BONUS",
+      credits: bonus,
+      xp: CREDIT_REWARDS.SIGNUP_BONUS.xp,
+    }).catch(() => null);
+  }
 
   // Pre-allocate a referral code for the new user so they can start sharing immediately
   await ensureReferralCode(newUserId).catch(() => null);

@@ -13,10 +13,10 @@ interface AnnouncementData {
 }
 
 const TAG_STYLES: Record<string, { bg: string; text: string }> = {
-  "мэдэгдэл": { bg: "bg-[rgba(16,128,202,0.15)]", text: "text-[#1080CA]" },
-  "шинэчлэл": { bg: "bg-[rgba(16,128,202,0.1)]", text: "text-green-600" },
+  "мэдэгдэл": { bg: "bg-[rgba(46,41,255,0.15)]", text: "text-[#2E29FF]" },
+  "шинэчлэл": { bg: "bg-[rgba(46,41,255,0.1)]", text: "text-green-600" },
   "AI": { bg: "bg-[rgba(99,102,241,0.1)]", text: "text-indigo-500" },
-  "эвент": { bg: "bg-[rgba(16,128,202,0.1)]", text: "text-[#1080CA]" },
+  "эвент": { bg: "bg-[rgba(46,41,255,0.1)]", text: "text-[#2E29FF]" },
   "бусад": { bg: "bg-[rgba(0,0,0,0.05)]", text: "text-[rgba(0,0,0,0.4)]" },
 };
 
@@ -51,7 +51,7 @@ export default function Announcements() {
     return (
       <div className="space-y-3 px-1">
         {[1, 2].map((i) => (
-          <div key={i} className="animate-pulse rounded-none bg-[rgba(0,0,0,0.04)] p-4">
+          <div key={i} className="animate-pulse rounded-[4px] bg-[rgba(0,0,0,0.04)] p-4">
             <div className="mb-2 h-3 w-24 rounded bg-[rgba(0,0,0,0.06)]" />
             <div className="mb-1 h-4 w-3/4 rounded bg-[rgba(0,0,0,0.06)]" />
             <div className="h-3 w-full rounded bg-[rgba(0,0,0,0.04)]" />
@@ -83,7 +83,7 @@ export default function Announcements() {
           return (
             <div
               key={a._id}
-              className={`rounded-none transition ${
+              className={`rounded-[4px] transition ${
                 a.pinned
                   ? "bg-[#ffffff] text-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
                   : "bg-[rgba(0,0,0,0.04)] text-[#F8F8F6]"
@@ -104,8 +104,8 @@ export default function Announcements() {
                 {/* Tag + Time row */}
                 <div className="mb-2 flex items-center gap-2">
                   {a.pinned && (
-                    <span className={`flex items-center gap-1 rounded-none px-1.5 py-0.5 text-[9px] font-black ${
-                      a.pinned ? "bg-[rgba(16,128,202,0.2)] text-[#1080CA]" : ""
+                    <span className={`flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[11px] font-black ${
+                      a.pinned ? "bg-[rgba(46,41,255,0.2)] text-[#2E29FF]" : ""
                     }`}>
                       <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
@@ -113,7 +113,7 @@ export default function Announcements() {
                       PIN
                     </span>
                   )}
-                  <span className={`rounded-none px-1.5 py-0.5 text-[9px] font-bold ${
+                  <span className={`rounded-[4px] px-1.5 py-0.5 text-[11px] font-bold ${
                     a.pinned
                       ? "bg-[rgba(15,23,38,0.1)] text-[rgba(15,23,38,0.5)]"
                       : `${style.bg} ${style.text}`
@@ -148,7 +148,7 @@ export default function Announcements() {
                     onClick={() => setExpanded(isExpanded ? null : a._id)}
                     className={`mt-1.5 text-[11px] font-bold transition ${
                       a.pinned
-                        ? "text-[#1080CA] hover:text-[#4FA8E8]"
+                        ? "text-[#2E29FF] hover:text-[#4C47FF]"
                         : "text-[#F8F8F6] hover:underline"
                     }`}
                   >

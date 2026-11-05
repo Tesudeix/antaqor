@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import MetaBroadcast from "@/models/MetaBroadcast";
 import { audienceCount, AudienceSpec } from "@/lib/metaBroadcastRun";
+import MetaPage from "@/models/MetaPage";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,33 @@ export async function GET() {
   if (!(await gate())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await dbConnect();
   const broadcasts = await MetaBroadcast.find().sort({ createdAt: -1 }).limit(30).lean();
-  return NextResponse.json({ broadcasts });
+
+  // The page used to hard-code three legacy accounts, so a page connected later
+  // (REVA) could never be broadcast to, and the default was a dead account with
+  // nobody reachable — which made the whole screen look broken. Build the list
+  // from the registry, and hand back the reachable count so the choice is
+  // informed rather than a guess.
+  const pages = await MetaPage.find({ enabled: true })
+    .select("key name pageId")
+    .lean<{ key: string; name?: string; pageId: string }[]>();
+  const legacy = [
+    { key: "antaqor", name: "Antaqor" },
+    { key: "joymassage", name: "Joy Massage" },
+    { key: "joybilliard", name: "Joy Billiard" },
+  ].filter((l) => !pages.some((p) => p.key === l.key));
+  const keys = [
+    { key: "all", name: "Бүх хуудас" },
+    ...pages.map((p) => ({ key: p.key, name: p.name || p.pageId })),
+    ...legacy,
+  ];
+  const accounts = await Promise.all(
+    keys.map(async (k) => ({
+      key: k.key,
+      label: k.name,
+      reach: await audienceCount({ platform: "both", account: k.key, audience: { intentLabels: [] } }),
+    }))
+  );
+  return NextResponse.json({ broadcasts, accounts });
 }
 
 export async function POST(req: NextRequest) {

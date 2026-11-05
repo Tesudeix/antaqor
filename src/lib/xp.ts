@@ -23,7 +23,7 @@ export async function awardXP(
   action: XPAction,
   amount: number,
   ref?: string
-): Promise<{ xp: number; level: number; awarded: number } | null> {
+): Promise<{ xp: number; level: number; awarded: number; leveledUp: boolean } | null> {
   if (amount <= 0) return null;
 
   await dbConnect();
@@ -58,10 +58,15 @@ export async function awardXP(
   if (!user) return null;
 
   const newLevel = calculateLevel(user.xp);
+  /* Түвшин ахисан эсэхийг ЭНД л мэдэж болно — хадгалахаас өмнөх `user.level`
+     нь хуучин утга. Дуудагч тал үүнийг дахин тооцоолох боломжгүй (өмнөх XP-г
+     мэдэхгүй) тул буцаах ёстой: UI-д "+50 XP" ба "Түвшин ахилаа" хоёр огт
+     өөр хоёр мөч. */
+  const leveledUp = newLevel > user.level;
   if (newLevel !== user.level) {
     user.level = newLevel;
     await user.save();
   }
 
-  return { xp: user.xp, level: user.level, awarded };
+  return { xp: user.xp, level: user.level, awarded, leveledUp };
 }

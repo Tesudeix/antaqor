@@ -152,7 +152,9 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: MODEL,
+        // Агент өөрийн загвар зарлаагүй бол л нийтлэг утга. ANURA нь
+        // gpt-5.6-terra шаарддаг — ялгах ажил нь бичих ажлаас хүнд.
+        model: agent.model || MODEL,
         input: [
           { role: "system", content: agent.systemPrompt + "\n\nMODE: COMMUNITY POST. You are writing a public feed post for the Antaqor app — visible to all members. Stay in character. No system meta-commentary." },
           { role: "user", content: userBrief },

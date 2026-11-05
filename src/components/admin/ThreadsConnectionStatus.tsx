@@ -47,7 +47,7 @@ export default function ThreadsConnectionStatus() {
 
   if (state === "connected") {
     return (
-      <div className="flex items-center gap-3 rounded-none border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-4 py-3">
+      <div className="flex items-center gap-3 rounded-[4px] border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.08)] px-4 py-3">
         {profile?.threads_profile_picture_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -56,7 +56,7 @@ export default function ThreadsConnectionStatus() {
             className="h-9 w-9 rounded-full object-cover"
           />
         ) : (
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(34,197,94,0.15)] text-[#4ade80]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[rgba(34,197,94,0.15)] text-[#4ade80]">
             ✓
           </span>
         )}
@@ -64,13 +64,13 @@ export default function ThreadsConnectionStatus() {
           <div className="text-[12px] font-black tracking-wide text-[#4ade80]">
             THREADS ХОЛБОГДСОН{justConnected ? " 🎉" : ""}
           </div>
-          <div className="text-[11px] text-[#B4B4BA]">
+          <div className="text-[11px] text-[#E2E4E8]">
             @{profile?.username} — постууд нүүр хуудасны Threads хэсэгт автоматаар гарна (10 мин кэштэй)
           </div>
         </div>
         <a
           href="/api/admin/threads/auth"
-          className="shrink-0 rounded-none border border-[rgba(255,255,255,0.12)] px-3 py-1.5 text-[11px] font-bold text-[#B4B4BA] transition hover:text-[#F2F2F4]"
+          className="shrink-0 rounded-[4px] border border-[rgba(255,255,255,0.12)] px-3 py-1.5 text-[11px] font-bold text-[#E2E4E8] transition hover:text-[#F2F2F4]"
         >
           Дахин холбох
         </a>
@@ -79,9 +79,9 @@ export default function ThreadsConnectionStatus() {
   }
 
   return (
-    <div className="rounded-none border border-[rgba(245,158,11,0.35)] bg-[rgba(245,158,11,0.07)] px-5 py-4">
+    <div className="rounded-[4px] border border-[rgba(245,158,11,0.35)] bg-[rgba(245,158,11,0.07)] px-5 py-4">
       <div className="flex items-center gap-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(245,158,11,0.15)] text-[14px] text-[#fbbf24]">
+        <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(245,158,11,0.15)] text-[14px] text-[#fbbf24]">
           !
         </span>
         <div className="text-[13px] font-black tracking-wide text-[#fbbf24]">
@@ -90,16 +90,16 @@ export default function ThreadsConnectionStatus() {
       </div>
 
       {oauthError && (
-        <div className="mt-3 rounded-none border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.08)] px-3 py-2 text-[11px] leading-relaxed text-[#fbbf24]">
+        <div className="mt-3 rounded-[4px] border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.08)] px-3 py-2 text-[11px] leading-relaxed text-[#fbbf24]">
           <span className="font-black">Сүүлийн оролдлогын алдаа (Meta):</span> {oauthError}
         </div>
       )}
 
-      <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-[12px] leading-relaxed text-[#B4B4BA]">
+      <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-[12px] leading-relaxed text-[#E2E4E8]">
         <li>
           <span className="font-bold text-[#F2F2F4]">developers.facebook.com</span> → Threads app →{" "}
           <span className="font-bold text-[#F2F2F4]">App roles</span> хэсэгт{" "}
-          <span className="font-bold text-[#4E94D0]">@tesudei</span> Threads акаунтыг{" "}
+          <span className="font-bold text-[#4C47FF]">@tesudei</span> Threads акаунтыг{" "}
           <span className="font-bold text-[#F2F2F4]">Threads Tester</span>-ээр нэм
         </li>
         <li>
@@ -111,7 +111,7 @@ export default function ThreadsConnectionStatus() {
 
       <a
         href="/api/admin/threads/auth"
-        className="mt-4 inline-flex items-center gap-2 rounded-none bg-[#1080CA] px-5 py-2.5 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+        className="mt-4 inline-flex items-center gap-2 rounded-[4px] bg-[#2E29FF] px-5 py-2.5 text-[12px] font-black text-white transition hover:bg-[#1F1AD9]"
       >
         Threads холбох
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">

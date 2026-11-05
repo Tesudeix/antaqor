@@ -22,10 +22,10 @@ export default function PostFAB() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Шинэ пост"
-        className="group fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-none bg-[#1080CA] text-[#0E0E10] shadow-[0_10px_30px_rgba(16,128,202,0.45)] ring-1 ring-[rgba(15,23,38,0.1)] transition-all duration-200 hover:scale-[1.04] hover:shadow-[0_14px_44px_rgba(16,128,202,0.6)] active:scale-95 bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] md:right-8 md:bottom-8 md:h-16 md:w-16"
+        className="group fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-[4px] bg-[#2E29FF] text-white shadow-[0_10px_30px_rgba(46,41,255,0.45)] ring-1 ring-[rgba(15,23,38,0.1)] transition-all duration-200 hover:scale-[1.04] hover:shadow-[0_14px_44px_rgba(46,41,255,0.6)] active:scale-95 bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] md:right-8 md:bottom-8 md:h-16 md:w-16"
       >
         <span
-          className="pointer-events-none absolute inset-0 rounded-none bg-[#1080CA] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-60"
+          className="pointer-events-none absolute inset-0 rounded-[4px] bg-[#2E29FF] opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-60"
           aria-hidden
         />
         <svg

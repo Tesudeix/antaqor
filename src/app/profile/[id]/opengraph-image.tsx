@@ -118,8 +118,8 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
             fontFamily: "Arial Black, sans-serif",
           }}
         >
-          <div style={{ fontSize: 28, color: "#1080CA", letterSpacing: 6, marginBottom: 18 }}>
-            [ ANTAQOR · EDGERUNNERS ]
+          <div style={{ fontSize: 28, color: "#2E29FF", letterSpacing: 6, marginBottom: 18 }}>
+            [ ANTAQOR · ХҮРЭЭЛЭЛ ]
           </div>
           <div style={{ fontSize: 92, fontWeight: 900, color: "#0e1726" }}>PROFILE NOT FOUND</div>
         </div>
@@ -181,22 +181,22 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
           {/* info block */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: 56, justifyContent: "space-between" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: 22, color: "#6b7280", letterSpacing: 6, display: "flex" }}>
+              <div style={{ fontSize: 22, color: "#E2E4E8", letterSpacing: 6, display: "flex" }}>
                 [ NOT YET A CONQUEROR ]
               </div>
               <div style={{ fontSize: 64, color: "#0e1726", marginTop: 18, lineHeight: 1, display: "flex" }}>
                 {u.name}
               </div>
-              <div style={{ fontSize: 24, color: "#6b7280", marginTop: 14, letterSpacing: 4, display: "flex" }}>
+              <div style={{ fontSize: 24, color: "#E2E4E8", marginTop: 14, letterSpacing: 4, display: "flex" }}>
                 LV.{String(level).padStart(2, "0")} · {t.titleEN.toUpperCase()}
               </div>
-              <div style={{ fontSize: 22, color: "#1080CA", marginTop: 36, lineHeight: 1.4, display: "flex" }}>
+              <div style={{ fontSize: 22, color: "#2E29FF", marginTop: 36, lineHeight: 1.4, display: "flex" }}>
                 Empire-д нэгдэхээр бэлдэж байна.
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               {logoBase64 && <img src={logoBase64} width={36} height={36} />}
-              <div style={{ fontSize: 24, color: "#1080CA", letterSpacing: 6 }}>ANTAQOR.COM</div>
+              <div style={{ fontSize: 24, color: "#2E29FF", letterSpacing: 6 }}>ANTAQOR.COM</div>
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
   const u = ctx.user;
   const mintNumber = ctx.mintNumber;
   const founder = isAdminEmail(u.email);
-  const accent = founder ? "#FFD300" : "#1080CA";
+  const accent = founder ? "#FFD300" : "#2E29FF";
   const avatar = safeAvatar(u.avatar);
   const initials = initialsOf(u.name);
   const level = u.level || 1;
@@ -233,7 +233,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
           style={{
             position: "absolute", inset: 0,
             backgroundImage:
-              "linear-gradient(rgba(16,128,202,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16,128,202,0.08) 1px, transparent 1px)",
+              "linear-gradient(rgba(46,41,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(46,41,255,0.08) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
             display: "flex",
           }}
@@ -251,7 +251,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
           style={{
             position: "absolute", bottom: -180, left: -100,
             width: 460, height: 460, borderRadius: 9999,
-            background: founder ? "#1080CA" : "#1080CA", opacity: 0.14, filter: "blur(140px)",
+            background: founder ? "#2E29FF" : "#2E29FF", opacity: 0.14, filter: "blur(140px)",
             display: "flex",
           }}
         />
@@ -318,7 +318,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
             <div style={{ fontSize: 36, fontWeight: 900, color: accent, letterSpacing: 1, display: "flex" }}>
               {mintLabel}
             </div>
-            <div style={{ fontSize: 18, color: "#6b7280", letterSpacing: 4, display: "flex" }}>
+            <div style={{ fontSize: 18, color: "#E2E4E8", letterSpacing: 4, display: "flex" }}>
               / {String(TOTAL_SUPPLY).padStart(3, "0")}
             </div>
           </div>
@@ -373,7 +373,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
               CONQUEROR
             </div>
 
-            <div style={{ fontSize: 22, color: "#6b7280", letterSpacing: 4, marginTop: 8, display: "flex" }}>
+            <div style={{ fontSize: 22, color: "#E2E4E8", letterSpacing: 4, marginTop: 8, display: "flex" }}>
               БАЙЛДАН ДАГУУЛАГЧ
             </div>
 
@@ -416,7 +416,7 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
               >
                 {roleTag}
               </div>
-              <div style={{ fontSize: 18, color: "#6b7280", letterSpacing: 4, display: "flex" }}>
+              <div style={{ fontSize: 18, color: "#E2E4E8", letterSpacing: 4, display: "flex" }}>
                 LV.{String(level).padStart(2, "0")} · {t.titleMN}
               </div>
             </div>
@@ -440,14 +440,14 @@ export default async function ProfileOG({ params }: { params: { id: string } }) 
                 <div style={{ fontSize: 20, fontWeight: 900, color: "#0e1726", letterSpacing: 6, display: "flex" }}>
                   ANTAQOR
                 </div>
-                <div style={{ fontSize: 14, color: "#6b7280", letterSpacing: 4, display: "flex" }}>
-                  EDGERUNNERS
+                <div style={{ fontSize: 14, color: "#E2E4E8", letterSpacing: 4, display: "flex" }}>
+                  ХҮРЭЭЛЭЛ
                 </div>
               </div>
             </div>
             <div
               style={{
-                fontSize: 16, color: "#6b7280", letterSpacing: 4, display: "flex",
+                fontSize: 16, color: "#E2E4E8", letterSpacing: 4, display: "flex",
               }}
             >
               ANTAQOR.COM/MEMBERS

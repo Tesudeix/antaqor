@@ -17,7 +17,7 @@ export default function YukiLayout({ children }: { children: React.ReactNode }) 
         {
           // Yuki brand: pink on white. Variables here are referenced inline
           // by Yuki pages so dark Antaqor tokens never leak in.
-          "--yuki-pink": "#EC4899",
+          "--yuki-pink": "#1BD1C6",
           "--yuki-pink-soft": "#FBCFE8",
           "--yuki-pink-deep": "#BE185D",
           "--yuki-pink-tint": "#FDF2F8",

@@ -17,11 +17,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   await dbConnect();
   const body = await req.json();
+  if (body.title !== undefined && (typeof body.title !== "string" || !body.title.trim() || body.title.trim().length > 200)) return NextResponse.json({ error: "Бүлгийн нэр 1–200 тэмдэгт байна" }, { status: 400 });
   const update: Record<string, unknown> = {};
   if (typeof body.title === "string") update.title = body.title.trim();
   if (typeof body.description === "string") update.description = body.description.trim();
   if (typeof body.order === "number") update.order = body.order;
-  const section = await Section.findByIdAndUpdate(id, update, { new: true });
+  const section = await Section.findByIdAndUpdate(id, update, { new: true, runValidators: true });
   if (!section) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ section });
 }

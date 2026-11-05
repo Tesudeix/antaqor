@@ -1,77 +1,71 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
-import Lesson from "@/models/Lesson";
-import Course from "@/models/Course";
-import { effectivePlan } from "@/lib/planAccess";
-import { hasPlanAccess, PLAN_RANK, isPlanId, type PlanId } from "@/lib/plans";
+import Reel from "@/models/Reel";
+import User from "@/models/User";
+
+/* ─── /api/reels — клиентэд хийсэн AI видеоны тэжээл ───────────────────
+   GET нь НЭВТРЭХ ШААРДЛАГАГҮЙ: эзэн үүнийг нийтийн уран бүтээлийн
+   жагсаалт болгохоор шийдсэн тул холбоос хүлээн авсан клиент шууд
+   ороод үзээд татна.
+
+   DELETE нь өөрийн reel эсвэл админд л зөвшөөрөгдөнө. */
 
 export const dynamic = "force-dynamic";
 
-// youtube.com/shorts/<id> · watch?v=<id> · youtu.be/<id> · embed/<id>
-function youtubeId(url: string): string | null {
-  const m = url.match(
-    /(?:youtube\.com\/(?:shorts\/|watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
-  );
-  return m ? m[1] : null;
-}
-
-/**
- * Reel feed of lessons: every lesson with a video, ordered free → paid tracks.
- * Business logic mirrors the classroom: lessons above the viewer's plan are
- * locked slides (no video URL leaves the server) that upsell the exact plan.
- */
-export async function GET() {
-  const { plan: viewerPlan, userId } = await effectivePlan();
+export async function GET(req: NextRequest) {
   await dbConnect();
+  const sp = req.nextUrl.searchParams;
+  const client = (sp.get("client") || "").trim();
+  const limit = Math.min(60, Math.max(1, Number(sp.get("limit")) || 30));
 
-  const courses = await Course.find({ comingSoon: { $ne: true } })
-    .select("title requiredPlan track createdAt")
+  const q: Record<string, unknown> = { published: true };
+  if (client) q.client = client;
+
+  const rows = await Reel.find(q)
+    .sort({ order: -1, createdAt: -1 })
+    .limit(limit)
     .lean();
-  const courseById = new Map(
-    courses.map((c) => [String(c._id), c as { title?: string; requiredPlan?: string }])
-  );
-
-  const lessons = await Lesson.find({
-    videoUrl: { $nin: ["", null] },
-    course: { $in: courses.map((c) => c._id) },
-  })
-    .sort({ order: 1, createdAt: 1 })
-    .select("title videoUrl videoType thumbnail durationSec completedBy course")
-    .lean();
-
-  const items = lessons.map((l) => {
-    const course = courseById.get(String(l.course));
-    const requiredPlan: PlanId =
-      course?.requiredPlan && isPlanId(course.requiredPlan) ? course.requiredPlan : "free";
-    const locked = !hasPlanAccess(viewerPlan, requiredPlan);
-    const yt = youtubeId(String(l.videoUrl));
-    const completed = Boolean(
-      userId &&
-        (l.completedBy as unknown[] | undefined)?.some((id) => String(id) === String(userId))
-    );
-    return {
-      id: String(l._id),
-      title: l.title as string,
-      courseId: String(l.course),
-      courseTitle: course?.title ?? "",
-      requiredPlan,
-      locked,
-      kind: locked ? "locked" : yt ? "youtube" : "file",
-      youtubeId: locked ? null : yt,
-      videoUrl: locked || yt ? null : (l.videoUrl as string),
-      thumbnail: (l.thumbnail as string) || "",
-      durationSec: (l.durationSec as number) || 0,
-      completed,
-      rank: PLAN_RANK[requiredPlan],
-    };
-  });
-
-  // Free content first, then by plan tier — the natural upgrade ladder.
-  items.sort((a, b) => a.rank - b.rank || a.courseId.localeCompare(b.courseId));
 
   return NextResponse.json({
-    loggedIn: Boolean(userId),
-    viewerPlan,
-    items: items.map(({ rank: _rank, ...rest }) => rest),
+    reels: rows.map((r) => ({
+      id: String(r._id),
+      title: r.title,
+      client: r.client,
+      caption: r.caption,
+      videoUrl: r.videoUrl,
+      thumbnail: r.thumbnail,
+      durationSec: r.durationSec,
+      views: r.views,
+      downloads: r.downloads,
+      uploaderName: r.uploaderName,
+      createdAt: r.createdAt,
+    })),
+    /* Үйлчлүүлэгчийн шүүлтүүрт — давхардалгүй клиентийн нэрс. */
+    clients: client ? [] : await Reel.distinct("client", { published: true, client: { $ne: "" } }),
   });
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ error: "Нэвтрэх шаардлагатай" }, { status: 401 });
+  const id = req.nextUrl.searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "id шаардлагатай" }, { status: 400 });
+
+  await dbConnect();
+  const reel = await Reel.findById(id);
+  if (!reel) return NextResponse.json({ error: "Олдсонгүй" }, { status: 404 });
+
+  const me = await User.findOne({ email: session.user.email }).select("_id").lean();
+  const mine = me && String((me as { _id: unknown })._id) === String(reel.uploader);
+  if (!mine && !isAdmin(session.user.email)) {
+    return NextResponse.json({ error: "Эрх байхгүй" }, { status: 403 });
+  }
+
+  /* Файлыг ҮЛДЭЭНЭ — өөр reel эсвэл илгээсэн холбоос түүн рүү заасан
+     байж болно. Мөрийг л авна. */
+  await Reel.deleteOne({ _id: id });
+  return NextResponse.json({ ok: true });
 }

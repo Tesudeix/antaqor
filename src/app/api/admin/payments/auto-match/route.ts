@@ -6,7 +6,8 @@ import dbConnect from "@/lib/mongodb";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { pushToUser } from "@/lib/push";
-import { maybeAwardReferralPayment } from "@/lib/credits";
+import { activateMembership } from "@/lib/membershipGrant";
+import { usernameCandidates } from "@/lib/payTag";
 
 // ─── Parse bank-statement paste ───
 // Bank apps (Хаан, Голомт, Хас, SocialPay) all format transfers slightly differently.
@@ -18,6 +19,9 @@ interface ParsedTx {
   rawLine: string;
   refCode: string;
   email?: string;
+  /** Тухайн мөрөнд байж болзошгүй username-ууд, магадлалаар нь бус,
+      зүгээр л хэлбэрээр нь шүүсэн. Гуравдагч, ХАМГИЙН СҮҮЛИЙН дохио. */
+  userTokens: string[];
   amount: number;
 }
 
@@ -42,8 +46,9 @@ function parseStatement(text: string): ParsedTx[] {
   for (const line of lines) {
     const refMatch = line.match(REF_CODE_RX);
     const emailMatch = line.match(EMAIL_RX);
-    // Either signal is enough to attempt a lookup
-    if (!refMatch && !emailMatch) continue;
+    const userTokens = usernameCandidates(line);
+    // Any one of the three signals is enough to attempt a lookup.
+    if (!refMatch && !emailMatch && userTokens.length === 0) continue;
 
     const amountTokens = line.match(AMOUNT_RX) || [];
     const amounts = amountTokens
@@ -58,6 +63,7 @@ function parseStatement(text: string): ParsedTx[] {
       rawLine: line,
       refCode: refMatch ? refMatch[1].toUpperCase() : "",
       email: emailMatch ? emailMatch[1].toLowerCase() : undefined,
+      userTokens,
       amount,
     });
   }
@@ -70,6 +76,9 @@ type OutcomeStatus = "match" | "no-match" | "amount-mismatch" | "already-paid" |
 
 interface Outcome {
   rawLine: string;
+  /** Аль дохиогоор олдсоныг админд ил хэлнэ — username-ээр таасан мөрийг
+      ref кодоор яг таарсан мөртэй адил итгэлтэйгээр харах ёсгүй. */
+  matchedBy?: "refCode" | "email" | "username";
   parsedRefCode: string;
   parsedAmount: number;
   status: OutcomeStatus;
@@ -104,7 +113,7 @@ export async function POST(req: NextRequest) {
 
     for (const tx of parsed) {
       // De-dupe by whichever signal we have
-      const dedupeKey = tx.refCode || tx.email || "";
+      const dedupeKey = tx.refCode || tx.email || tx.userTokens.join("+");
       if (dedupeKey && seenCodes.has(dedupeKey)) continue;
       if (dedupeKey) seenCodes.add(dedupeKey);
 
@@ -112,16 +121,33 @@ export async function POST(req: NextRequest) {
       let payment = tx.refCode
         ? await Payment.findOne({ referenceCode: tx.refCode }).populate("user", "name email avatar")
         : null;
+      let matchedBy: Outcome["matchedBy"] = payment ? "refCode" : undefined;
+      let signal = tx.refCode;
       if (!payment && tx.email) {
         const user = await User.findOne({ email: tx.email }).select("_id").lean();
         if (user) {
           payment = await Payment.findOne({ user: user._id, status: "pending" })
             .sort({ createdAt: -1 })
             .populate("user", "name email avatar");
+          if (payment) { matchedBy = "email"; signal = tx.email; }
+        }
+      }
+      // Сүүлийн дохио: гүйлгээний утганд бичсэн username.
+      if (!payment) {
+        for (const token of tx.userTokens) {
+          // Cast-гүй: email салааны яг адил хэлбэр — mongoose өөрөө _id-ийн
+          // төрлийг гаргана, гараар `unknown` гэж бичих нь Payment.findOne-ий
+          // filter-ийг эвдэнэ.
+          const u = await User.findOne({ username: token }).select("_id").lean();
+          if (!u) continue;
+          const p2 = await Payment.findOne({ user: u._id, status: "pending" })
+            .sort({ createdAt: -1 })
+            .populate("user", "name email avatar");
+          if (p2) { payment = p2; matchedBy = "username"; signal = token; break; }
         }
       }
       if (!payment) {
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode || tx.email || "—", parsedAmount: tx.amount, status: "no-match" });
+        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode || tx.email || tx.userTokens[0] || "—", parsedAmount: tx.amount, status: "no-match" });
         continue;
       }
 
@@ -134,19 +160,19 @@ export async function POST(req: NextRequest) {
       };
 
       if (payment.status === "paid") {
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "already-paid", payment: paymentSummary });
+        outcomes.push({ rawLine: tx.rawLine, matchedBy, parsedRefCode: signal, parsedAmount: tx.amount, status: "already-paid", payment: paymentSummary });
         continue;
       }
 
       // Tolerate small difference (user might pay amount + bank fee, or 49,000.00 vs 49000)
       const matches = Math.abs(tx.amount - payment.amount) < 1;
       if (!matches) {
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "amount-mismatch", payment: paymentSummary });
+        outcomes.push({ rawLine: tx.rawLine, matchedBy, parsedRefCode: signal, parsedAmount: tx.amount, status: "amount-mismatch", payment: paymentSummary });
         continue;
       }
 
       if (!execute) {
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "match", payment: paymentSummary });
+        outcomes.push({ rawLine: tx.rawLine, matchedBy, parsedRefCode: signal, parsedAmount: tx.amount, status: "match", payment: paymentSummary });
         continue;
       }
 
@@ -181,43 +207,35 @@ export async function POST(req: NextRequest) {
               });
 
               pushToUser(String(user._id), {
-                title: `+${grant}₵ нэмэгдлээ`,
-                body: `Кредит данс руу шилжлээ. Шинэ үлдэгдэл: ${balanceAfter}₵`,
+                title: `+${grant} кредит нэмэгдлээ`,
+                body: `Данс руу шилжлээ. Шинэ үлдэгдэл: ${balanceAfter} кредит.`,
                 url: "/credits",
                 tag: `credits-purchase-${payment._id}`,
               }).catch(() => {});
             }
+          } else if (payment.kind === "agent") {
+            /* Agent бизнес багц — дээр аль хэдийн paid болгосон тул шууд сунгана
+               (fulfillAgentPurchase нь pending шаарддаг). */
+            const { activateBusiness } = await import("@/lib/agentWs");
+            await activateBusiness(String(user._id), Number(payment.periodDays) || 30, { email: (user.email || "").toLowerCase(), name: user.name || "" });
           } else {
-            // membership (default)
-            const now = new Date();
-            const base =
-              user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now
-                ? new Date(user.subscriptionExpiresAt)
-                : now;
-            const expiresAt = new Date(base);
-            expiresAt.setDate(expiresAt.getDate() + days);
-            user.subscriptionExpiresAt = expiresAt;
-            // Plan tier from the payment; legacy payments without one grant starter.
-            user.plan = payment.plan === "builder" || payment.plan === "operator" ? payment.plan : "starter";
-            if (!user.clan) user.clan = "antaqor";
-            if (!user.clanJoinedAt) user.clanJoinedAt = now;
-            await user.save();
-
-            maybeAwardReferralPayment(String(user._id)).catch(() => {});
-            pushToUser(String(user._id), {
-              title: `${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} plan идэвхжлээ 🚀`,
-              body: `${days} хоногийн гишүүнчлэл амжилттай. Контент нээгдлээ — үргэлжлүүлээрэй!`,
-              url: "/",
-              tag: "membership-activated",
-            }).catch(() => {});
+            // membership (default) — нээх логик нь /lib/membershipGrant дээр
+            await activateMembership({
+              userId: String(user._id),
+              days,
+              plan: payment.plan || undefined,
+              paymentId: String(payment._id),
+              source: "auto-match",
+            });
           }
         }
 
-        outcomes.push({ rawLine: tx.rawLine, parsedRefCode: tx.refCode, parsedAmount: tx.amount, status: "approved", payment: { ...paymentSummary, status: "paid" } });
+        outcomes.push({ rawLine: tx.rawLine, matchedBy, parsedRefCode: signal, parsedAmount: tx.amount, status: "approved", payment: { ...paymentSummary, status: "paid" } });
       } catch (err) {
         outcomes.push({
           rawLine: tx.rawLine,
-          parsedRefCode: tx.refCode,
+          matchedBy,
+          parsedRefCode: signal,
           parsedAmount: tx.amount,
           status: "failed",
           error: err instanceof Error ? err.message : "update failed",

@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "@/lib/utils";
 import { isAdminEmail } from "@/lib/adminClient";
 import { REACTION_ORDER, ReactionKey, normalizeReactions } from "@/lib/reactions";
 import { findAgent } from "@/lib/empireAgents";
+import { useAgentDirectory } from "@/lib/useAgentDirectory";
 import { useMembership } from "@/lib/useMembership";
 import ReactionSheet from "./ReactionSheet";
 import PromptFile from "./PromptFile";
@@ -20,18 +21,18 @@ interface ReactionData {
 // Per-category accent. Unknown categories fall back to neon pink so any
 // admin-added category (e.g. судалгаа, туслаач, пост) still renders cleanly.
 const CATEGORY_COLORS: Record<string, string> = {
-  "мэдээлэл": "#1080CA",
-  "ялалт": "#1080CA",
-  "промт": "#1080CA",
-  "бүтээл": "#1080CA",
-  "танилцуулга": "#1080CA",
+  "мэдээлэл": "#2E29FF",
+  "ялалт": "#2E29FF",
+  "промт": "#2E29FF",
+  "бүтээл": "#2E29FF",
+  "танилцуулга": "#2E29FF",
   "судалгаа": "#06B6D4",
   "туслаач": "#14B8A6",
-  "пост": "#6b7280",
+  "пост": "#E2E4E8",
 };
 function categoryStyle(name: string | undefined): { color: string; bg: string; label: string } | null {
   if (!name) return null;
-  const color = CATEGORY_COLORS[name] || "#1080CA";
+  const color = CATEGORY_COLORS[name] || "#2E29FF";
   return {
     color,
     bg: `${color}26`, // ~15% alpha
@@ -46,6 +47,7 @@ interface PostCardProps {
     image?: string;
     images?: string[];
     visibility?: string;
+    pinned?: boolean;
     category?: string;
     agentSlug?: string;
     aiPrompt?: string;     // present only when viewer is a paid member
@@ -75,24 +77,27 @@ interface PostCardProps {
   };
   locked?: boolean;
   onDelete?: (id: string) => void;
+  /** "stream" — hairline-divided full-width урсгал (default, post/profile хуудас).
+   *  "boxed"  — feed dashboard-ийн хүрээтэй карт. */
+  variant?: "stream" | "boxed";
 }
 
 function levelColor(lvl: number): string {
   if (lvl >= 96) return "#F472B6"; // Legend
   if (lvl >= 81) return "#FF4473"; // Emperor
-  if (lvl >= 61) return "#1080CA"; // Entaqor
-  if (lvl >= 41) return "#1080CA"; // Conqueror
-  if (lvl >= 26) return "#1080CA"; // Entrepreneur
-  if (lvl >= 16) return "#1080CA"; // Engineer
-  if (lvl >= 6)  return "#1080CA"; // Creator
-  return "#5b6573";                 // Punk
+  if (lvl >= 61) return "#2E29FF"; // Entaqor
+  if (lvl >= 41) return "#2E29FF"; // Conqueror
+  if (lvl >= 26) return "#2E29FF"; // Entrepreneur
+  if (lvl >= 16) return "#2E29FF"; // Engineer
+  if (lvl >= 6)  return "#2E29FF"; // Creator
+  return "#E2E4E8";                 // Punk
 }
 
 function LevelChip({ level }: { level: number }) {
   const color = levelColor(level);
   return (
     <span
-      className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[8px] font-black leading-none"
+      className="inline-flex items-center gap-0.5 rounded-[4px] px-1.5 py-0.5 text-[8px] font-black leading-none"
       style={{ background: `${color}1F`, color }}
     >
       L{level}
@@ -118,7 +123,12 @@ function buildReactions(post: PostCardProps["post"], userId: string | null): { r
   return { reactions, userReaction };
 }
 
-export default function PostCard({ post, locked, onDelete }: PostCardProps) {
+export default function PostCard({ post, locked, onDelete, variant = "stream" }: PostCardProps) {
+  const boxed = variant === "boxed";
+  // Картын бүрхүүл — доторх бүтэц хоёр хувилбарт ижил, зөвхөн хүрээ/дэвсгэр солигдоно.
+  const shellClass = boxed
+    ? "bg-[#141414] bg-[#0A0A0A]"
+    : "border-0 border-b border-[#262626] bg-transparent";
   const { data: session } = useSession();
   const userId = session?.user ? (session.user as { id?: string }).id ?? null : null;
   const userIsAdmin = isAdminEmail(session?.user?.email);
@@ -136,6 +146,8 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
+  const [pinned, setPinned] = useState(!!post.pinned);
+  const [pinning, setPinning] = useState(false);
 
   const copyPrompt = async () => {
     if (!aiPrompt) return;
@@ -230,6 +242,24 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   };
 
   const [deleting, setDeleting] = useState(false);
+  /* Дээр тогтоох — зөвхөн админ. Сервер мөн адил админ эсэхийг шалгана;
+     энэ нь UI-ийн тав тух, хамгаалалт биш. */
+  const togglePin = async () => {
+    if (pinning) return;
+    setPinning(true);
+    const next = !pinned;
+    try {
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pinned: next }),
+      });
+      if (res.ok) setPinned(next);
+    } finally {
+      setPinning(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!confirm("Энэ постыг устгах уу?")) return;
     const res = await fetch(`/api/posts/${post._id}`, { method: "DELETE" });
@@ -244,11 +274,21 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
   // When post.agentSlug is set, the post was authored *as* that empire agent.
   // We render the agent's identity (name/avatar/color/link) instead of the
   // underlying admin user — same Post doc, two presentations.
-  const agentInfo = post.agentSlug ? findAgent(post.agentSlug) : undefined;
+  /* Кодын өгөгдмөл + админаас байршуулсан ЗУРАГ. `findAgent` дангаараа
+     хангалтгүй: тэнд эзний оруулсан зураг хэзээ ч байхгүй тул урсгал дээр
+     агент зөвхөн үсгэн хавтангаар харагддаг байв. Лавлах ирээгүй үед
+     кодын хувилбар руу буцна — пост ямар ч тохиолдолд зурагдана. */
+  const directory = useAgentDirectory();
+  const agentBase = post.agentSlug ? findAgent(post.agentSlug) : undefined;
+  const agentOverride = post.agentSlug ? directory[post.agentSlug] : undefined;
+  const agentInfo = agentBase || agentOverride
+    ? { ...(agentBase || {}), ...(agentOverride || {}) } as { slug: string; name: string; handle: string; color: string; avatar?: string }
+    : undefined;
   const displayName = agentInfo ? agentInfo.name : post.author.name;
   const displayHandle = agentInfo ? agentInfo.handle : "";
   const displayHref = agentInfo ? `/agents/${agentInfo.slug}` : `/profile/${post.author._id}`;
-  const agentColor = agentInfo?.color || "#1080CA";
+  const agentColor = agentInfo?.color || "#2E29FF";
+  const agentAvatar = agentInfo?.avatar || "";
 
   const initials = displayName
     .split(" ")
@@ -259,30 +299,42 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
 
   if (locked) {
     return (
-      <article className="rounded-none border-0 border-b border-[#2E2E33] bg-transparent p-5">
+      <article className={`rounded-[4px] p-5 ${shellClass}`}>
         <div className="flex items-center gap-3 mb-4">
           {agentInfo ? (
-            <div
-              className="grid h-9 w-9 place-items-center rounded-full font-mono text-[13px] font-black"
-              style={{
-                background: `linear-gradient(135deg, ${agentColor}33, ${agentColor}11)`,
-                color: agentColor,
-                border: `1px solid ${agentColor}55`,
-              }}
-            >
-              {displayName.slice(0, 1)}
-            </div>
+            agentAvatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={agentAvatar}
+                alt={displayName}
+                loading="lazy"
+                decoding="async"
+                className="h-9 w-9 rounded-[4px] object-cover"
+                style={{ border: `1px solid ${agentColor}55` }}
+              />
+            ) : (
+              <div
+                className="grid h-9 w-9 place-items-center rounded-[4px] font-mono text-[13px] font-black"
+                style={{
+                  background: `linear-gradient(135deg, ${agentColor}33, ${agentColor}11)`,
+                  color: agentColor,
+                  border: `1px solid ${agentColor}55`,
+                }}
+              >
+                {displayName.slice(0, 1)}
+              </div>
+            )
           ) : post.author.avatar ? (
             <img src={post.author.avatar} alt={displayName} loading="lazy" decoding="async" className="h-9 w-9 rounded-full object-cover" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1E1E21] text-[11px] font-bold text-[#6b7280]">{initials}</div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#0A0A0A] text-[11px] font-bold text-[#E2E4E8]">{initials}</div>
           )}
           <div>
             <div className="flex items-center gap-1.5">
               <p className="text-[13px] font-semibold text-[#FFFFFF]">{displayName}</p>
               {agentInfo ? (
                 <span
-                  className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em]"
+                  className="inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em]"
                   style={{ background: `${agentColor}1F`, color: agentColor }}
                 >
                   AGENT
@@ -292,18 +344,18 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                 return lvl > 0 ? <LevelChip level={lvl} /> : null;
               })()}
             </div>
-            <p className="text-[11px] text-[#6b7280]">{formatDistanceToNow(post.createdAt)}</p>
+            <p className="text-[11px] text-[#E2E4E8]">{formatDistanceToNow(post.createdAt)}</p>
           </div>
         </div>
         <div className="relative">
           <div className="select-none blur-[6px]">
-            <p className="text-[14px] text-[#6b7280]">
+            <p className="text-[14px] text-[#E2E4E8]">
               {post.content?.slice(0, 120) || "Энэ нийтлэлийн агуулгыг зөвхөн гишүүд харах боломжтой..."}
             </p>
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[12px] font-medium text-[#6b7280]">Гишүүдэд зориулсан</span>
-            <Link href="/pricing" className="mt-2 text-[12px] font-bold text-[#1080CA]">
+            <span className="text-[12px] font-medium text-[#E2E4E8]">Гишүүдэд зориулсан</span>
+            <Link href="/pricing" className="mt-2 text-[12px] font-bold text-[#2E29FF]">
               Гишүүн болох
             </Link>
           </div>
@@ -321,7 +373,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               scale: [1, 0.985, 0.92],
               x: [0, 6, -6, 4, 0],
               filter: ["blur(0px)", "blur(2px)", "blur(8px)"],
-              borderColor: ["rgba(255,255,255,0.06)", "rgba(16,128,202,0.45)", "rgba(16,128,202,0)"],
+              borderColor: ["rgba(255,255,255,0.06)", "rgba(46,41,255,0.45)", "rgba(46,41,255,0)"],
             }
           : { opacity: 1, scale: 1, x: 0, filter: "blur(0px)" }
       }
@@ -331,36 +383,48 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           : { duration: 0 }
       }
       style={{ pointerEvents: deleting ? "none" : "auto" }}
-      className="border-0 border-b border-[#2E2E33] bg-transparent transition-colors duration-200"
+      className={`transition-colors duration-200 ${shellClass}`}
     >
       {/* Header */}
-      <div className="flex items-start justify-between px-4 pt-4 sm:px-5">
+      <div className="flex items-start justify-between px-4 pt-3.5 sm:px-5">
         <Link href={displayHref} className="flex items-center gap-2.5 min-w-0">
           {agentInfo ? (
-            <div
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-mono text-[13px] font-black"
-              style={{
-                background: `linear-gradient(135deg, ${agentColor}33, ${agentColor}11)`,
-                color: agentColor,
-                border: `1px solid ${agentColor}55`,
-              }}
-            >
-              {displayName.slice(0, 1)}
-            </div>
+            agentAvatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={agentAvatar}
+                alt={displayName}
+                loading="lazy"
+                decoding="async"
+                className="h-9 w-9 shrink-0 rounded-[4px] object-cover"
+                style={{ border: `1px solid ${agentColor}55` }}
+              />
+            ) : (
+              <div
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] font-mono text-[13px] font-black"
+                style={{
+                  background: `linear-gradient(135deg, ${agentColor}33, ${agentColor}11)`,
+                  color: agentColor,
+                  border: `1px solid ${agentColor}55`,
+                }}
+              >
+                {displayName.slice(0, 1)}
+              </div>
+            )
           ) : post.author.avatar ? (
             <img src={post.author.avatar} alt={displayName} loading="lazy" decoding="async" className="h-9 w-9 shrink-0 rounded-full object-cover" />
           ) : (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1E1E21] text-[11px] font-bold text-[#6b7280]">{initials}</div>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[#0A0A0A] text-[11px] font-bold text-[#E2E4E8]">{initials}</div>
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <p className="text-[13px] font-semibold text-[#FFFFFF] truncate">{displayName}</p>
               {agentInfo ? (
                 <span
-                  className="inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em]"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-[4px] px-1.5 py-0.5 font-mono text-[8px] font-black tracking-[0.18em]"
                   style={{ background: `${agentColor}1F`, color: agentColor }}
                 >
-                  <span className="inline-block h-[4px] w-[4px] animate-pulse rounded-full" style={{ background: agentColor }} />
+                  <span className="inline-block h-[4px] w-[4px] animate-pulse rounded-[4px]" style={{ background: agentColor }} />
                   AGENT
                 </span>
               ) : (
@@ -373,28 +437,57 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               )}
               {catStyle && !agentInfo && (
                 <span
-                  className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold"
+                  className="shrink-0 rounded-[4px] px-2 py-0.5 text-[11px] font-bold"
                   style={{ background: catStyle.bg, color: catStyle.color }}
                 >
                   {catStyle.label}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-[#94a3b8]">
+            <p className="text-[11px] text-[#E2E4E8]">
               {agentInfo ? <span className="font-mono">{displayHandle} · </span> : null}
               {formatDistanceToNow(post.createdAt)}
             </p>
           </div>
         </Link>
 
+        <div className="flex shrink-0 items-center gap-0.5">
+        {userIsAdmin && (
+          <button
+            onClick={togglePin}
+            disabled={pinning}
+            className={`shrink-0 rounded-[4px] p-2 transition hover:bg-[rgba(255,255,255,0.04)] disabled:opacity-40 ${
+              pinned ? "text-[#2E29FF]" : "text-[#E2E4E8] hover:text-[#E2E4E8]"
+            }`}
+            aria-label={pinned ? "Тогтоолтыг тайлах" : "Дээр тогтоох"}
+            aria-pressed={pinned}
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 3h6" />
+              <path d="M10 3v5.5L7.5 12v1.5h9V12L14 8.5V3" fill={pinned ? "currentColor" : "none"} />
+              <path d="M12 13.5V21" />
+            </svg>
+          </button>
+        )}
+
         {canDelete && (
-          <button onClick={handleDelete} className="shrink-0 rounded-full p-2 text-[#94a3b8] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#84848C]" aria-label="Устгах">
+          <button onClick={handleDelete} className="shrink-0 rounded-[4px] p-2 text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.04)] hover:text-[#E2E4E8]" aria-label="Устгах">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
+        </div>
       </div>
+
+      {pinned && (
+        <div className="chrome flex items-center gap-1.5 px-4 pt-2 text-[10px] font-bold tracking-[0.14em] text-[#2E29FF] sm:px-5">
+          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <path d="M9 4h6l-1 6 3 3v2H7v-2l3-3-1-6z" />
+          </svg>
+          ОНЦЛОХ
+        </div>
+      )}
 
       {/* Content */}
       {hasText && !isPromptFile && (
@@ -407,7 +500,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           {isLongPost && !expanded && (
             <button
               onClick={() => setExpanded(true)}
-              className="mt-1 text-[13px] font-medium text-[#1080CA] transition-colors duration-200 hover:text-[#1080CA]"
+              className="mt-1 text-[13px] font-medium text-[#2E29FF] transition-colors duration-200 hover:text-[#2E29FF]"
             >
               Цааш унших...
             </button>
@@ -430,7 +523,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       {/* Short-form video — wins over images when both fields are set.
           metadata-only preload + playsInline keeps mobile data use polite. */}
       {hasVideo && (
-        <div className="relative mx-auto mt-3 aspect-[3/4] max-w-[460px] overflow-hidden rounded-none bg-black">
+        <div className="relative mx-auto mt-3 aspect-[9/16] max-w-[360px] overflow-hidden rounded-[4px] bg-black">
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             src={videoSrc}
@@ -441,11 +534,12 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             controlsList="nodownload noplaybackrate"
             disableRemotePlayback
             disablePictureInPicture
-            className="absolute inset-0 h-full w-full object-cover"
+            /* contain: хэвтээ клип 9:16 хүрээнд тайрагдахгүй, хар зурвастай. */
+            className="absolute inset-0 h-full w-full object-contain"
           />
           {post.videoDurationSec && post.videoDurationSec > 0 && (
-            <span className="absolute bottom-2 right-2 rounded-none bg-black/70 px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-white backdrop-blur-sm">
-              0:{String(post.videoDurationSec).padStart(2, "0")}
+            <span className="absolute bottom-2 right-2 rounded-[4px] bg-black/70 px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-white backdrop-blur-sm">
+              {Math.floor(post.videoDurationSec / 60)}:{String(post.videoDurationSec % 60).padStart(2, "0")}
             </span>
           )}
         </div>
@@ -454,10 +548,10 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
       {/* Single image — keep native aspect, max 600px height */}
       {!hasVideo && hasImage && !isMulti && (
         <Link href={`/posts/${post._id}`} className="block mt-3">
-          <div className="relative overflow-hidden bg-[#161618]">
+          <div className="relative overflow-hidden bg-[#0A0A0A]">
             {!imgLoaded && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#1080CA]" />
+                <div className="h-2 w-2 animate-pulse-gold rounded-full bg-[#2E29FF]" />
               </div>
             )}
             <img
@@ -488,7 +582,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           <div
             ref={carouselRef}
             onScroll={onCarouselScroll}
-            className="flex aspect-[4/5] w-full snap-x snap-mandatory overflow-x-auto bg-[#161618] scrollbar-hide"
+            className="flex aspect-[4/5] w-full snap-x snap-mandatory overflow-x-auto bg-[#0A0A0A] scrollbar-hide"
             style={{ scrollSnapType: "x mandatory" }}
           >
             {allImages.map((src, i) => (
@@ -510,7 +604,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
           </div>
 
           {/* Counter — top-right */}
-          <div className="pointer-events-none absolute right-2 top-2 rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-black tabular-nums text-white backdrop-blur-md">
+          <div className="pointer-events-none absolute right-2 top-2 rounded-[4px] bg-black/65 px-2 py-0.5 text-[10px] font-black tabular-nums text-white backdrop-blur-md">
             {carouselIndex + 1} / {allImages.length}
           </div>
 
@@ -519,11 +613,11 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             {allImages.map((_, i) => (
               <span
                 key={i}
-                className="h-1.5 rounded-full transition-all duration-200"
+                className="h-1.5 rounded-[4px] transition-all duration-200"
                 style={{
                   width: i === carouselIndex ? "16px" : "6px",
-                  background: i === carouselIndex ? "#1080CA" : "rgba(255,255,255,0.45)",
-                  boxShadow: i === carouselIndex ? "0 0 8px rgba(16,128,202,0.6)" : "none",
+                  background: i === carouselIndex ? "#2E29FF" : "rgba(255,255,255,0.45)",
+                  boxShadow: i === carouselIndex ? "0 0 8px rgba(46,41,255,0.6)" : "none",
                 }}
               />
             ))}
@@ -536,29 +630,29 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
         <div className="px-3 pt-3 sm:px-4">
           {isMember || aiPrompt ? (
             // ── MEMBER VIEW: real prompt with copy + use buttons ──
-            <div className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.18)] bg-gradient-to-br from-[rgba(16,128,202,0.04)] via-[#f2f5f8] to-[#f2f5f8]">
+            <div className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.18)] bg-gradient-to-br from-[rgba(46,41,255,0.04)] via-[#f2f5f8] to-[#f2f5f8]">
               <button
                 type="button"
                 onClick={() => setPromptOpen((v) => !v)}
-                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition hover:bg-[rgba(16,128,202,0.04)]"
+                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition hover:bg-[rgba(46,41,255,0.04)]"
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <svg className="h-3.5 w-3.5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <svg className="h-3.5 w-3.5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
-                  <span className="font-mono text-[10px] font-black tracking-[0.2em] text-[#1080CA]">AI ПРОМПТ</span>
+                  <span className="font-mono text-[10px] font-black tracking-[0.2em] text-[#2E29FF]">AI ПРОМПТ</span>
                   {!promptOpen && (
-                    <span className="ml-1 truncate text-[11px] text-[#6b7280] sm:text-[12px]" style={{ maxWidth: 220 }}>
+                    <span className="ml-1 truncate text-[11px] text-[#E2E4E8] sm:text-[12px]" style={{ maxWidth: 220 }}>
                       {aiPrompt.slice(0, 80)}{aiPrompt.length > 80 ? "…" : ""}
                     </span>
                   )}
                 </span>
-                <svg className={`h-3 w-3 text-[#6b7280] transition-transform ${promptOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <svg className={`h-3 w-3 text-[#E2E4E8] transition-transform ${promptOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {promptOpen && aiPrompt && (
-                <div className="border-t border-[rgba(16,128,202,0.12)] p-3">
+                <div className="border-t border-[rgba(46,41,255,0.12)] p-3">
                   <p className="mb-3 max-h-[200px] overflow-y-auto whitespace-pre-wrap text-[12px] leading-relaxed text-[#FFFFFF]">
                     {aiPrompt}
                   </p>
@@ -566,7 +660,7 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                     <button
                       type="button"
                       onClick={copyPrompt}
-                      className="inline-flex items-center gap-1 rounded-none border border-[rgba(255,255,255,0.1)] bg-[#161618] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.18em] text-[#FFFFFF] transition hover:border-[#1080CA] hover:text-[#1080CA]"
+                      className="inline-flex items-center gap-1 rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.18em] text-[#FFFFFF] transition hover:border-[#2E29FF] hover:text-[#2E29FF]"
                     >
                       {promptCopied ? (
                         <><svg className="h-3 w-3 text-[#4FE065]" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> COPIED</>
@@ -575,13 +669,13 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                       )}
                     </button>
                     <Link
-                      href={`/tools/nano-banano?prompt=${encodeURIComponent(aiPrompt)}`}
-                      className="inline-flex items-center gap-1 rounded-none bg-[#1080CA] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.18em] text-[#0E0E10] transition hover:bg-[#FF3D69]"
+                      href={`/content-agent?v=image&prompt=${encodeURIComponent(aiPrompt)}`}
+                      className="inline-flex items-center gap-1 rounded-[4px] bg-[#2E29FF] px-2.5 py-1 font-mono text-[10px] font-black tracking-[0.18em] text-white transition hover:bg-[#FF3D69]"
                     >
                       <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                       USE PROMPT
                     </Link>
-                    <span className="ml-auto font-mono text-[9px] tracking-wide text-[#94a3b8]">{aiPrompt.length} chars</span>
+                    <span className="ml-auto font-mono text-[11px] tracking-wide text-[#E2E4E8]">{aiPrompt.length} chars</span>
                   </div>
                 </div>
               )}
@@ -590,27 +684,27 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
             // ── NON-MEMBER VIEW: skeleton lock with CTA ──
             <Link
               href="/auth/signup"
-              className="group block overflow-hidden rounded-none border border-[rgba(16,128,202,0.22)] bg-gradient-to-br from-[rgba(16,128,202,0.06)] via-[#f2f5f8] to-[#f2f5f8] p-3 transition hover:border-[#1080CA]"
+              className="group block overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.22)] bg-gradient-to-br from-[rgba(46,41,255,0.06)] via-[#f2f5f8] to-[#f2f5f8] p-3 transition hover:border-[#2E29FF]"
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5">
-                  <svg className="h-3.5 w-3.5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <svg className="h-3.5 w-3.5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                   </svg>
-                  <span className="font-mono text-[10px] font-black tracking-[0.2em] text-[#1080CA]">AI ПРОМПТ · ТҮГЖЭЭТЭЙ</span>
+                  <span className="font-mono text-[10px] font-black tracking-[0.2em] text-[#2E29FF]">AI ПРОМПТ · ТҮГЖЭЭТЭЙ</span>
                 </span>
-                <span className="font-mono text-[9px] tracking-[0.18em] text-[#6b7280] transition group-hover:text-[#1080CA]">
+                <span className="font-mono text-[11px] tracking-[0.18em] text-[#E2E4E8] transition group-hover:text-[#2E29FF]">
                   ГИШҮҮН БОЛОХ →
                 </span>
               </div>
               {/* Skeleton lines hint at content shape without leaking the prompt */}
               <div className="space-y-1.5">
-                <div className="h-2 w-[88%] animate-pulse rounded-full bg-[rgba(16,128,202,0.12)]" />
-                <div className="h-2 w-[72%] animate-pulse rounded-full bg-[rgba(16,128,202,0.10)]" style={{ animationDelay: "120ms" }} />
-                <div className="h-2 w-[56%] animate-pulse rounded-full bg-[rgba(16,128,202,0.08)]" style={{ animationDelay: "240ms" }} />
+                <div className="h-2 w-[88%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.12)]" />
+                <div className="h-2 w-[72%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.10)]" style={{ animationDelay: "120ms" }} />
+                <div className="h-2 w-[56%] animate-pulse rounded-[4px] bg-[rgba(46,41,255,0.08)]" style={{ animationDelay: "240ms" }} />
               </div>
-              <p className="mt-2 text-[11px] leading-snug text-[#6b7280]">
-                Промпт зөвхөн <span className="font-bold text-[#FFFFFF]">Edgerunners</span> гишүүдэд нээлттэй. Хуулж, өөрчилж, дахин үүсгэх боломжтой.
+              <p className="mt-2 text-[11px] leading-snug text-[#E2E4E8]">
+                Промпт зөвхөн <span className="font-bold text-[#FFFFFF]">Antaqor хүрээлэл</span> гишүүдэд нээлттэй. Хуулж, өөрчилж, дахин үүсгэх боломжтой.
               </p>
             </Link>
           )}
@@ -635,11 +729,11 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
               disabled={!session || reacting || locked}
               aria-label="Хайрлах"
               whileTap={{ scale: 0.85 }}
-              className="inline-flex items-center gap-1.5 rounded-none px-2 py-1 transition disabled:opacity-50"
-              style={liked ? { color: "#1080CA" } : { color: "#6b7280" }}
+              className="inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 transition disabled:opacity-50"
+              style={liked ? { color: "var(--accent-ink, #2E29FF)" } : { color: "var(--t-body, #30333F)" }}
             >
               <motion.svg
-                className="h-[22px] w-[22px]"
+                className="h-[19px] w-[19px]"
                 fill={liked ? "currentColor" : "none"}
                 stroke="currentColor"
                 strokeWidth={liked ? 0 : 1.6}
@@ -652,12 +746,12 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.6, 1] }}
                 style={
                   liked
-                    ? { filter: "drop-shadow(0 0 6px rgba(16,128,202,0.55)) drop-shadow(0 0 14px rgba(16,128,202,0.3))" }
+                    ? { filter: "drop-shadow(0 0 6px rgba(46,41,255,0.55)) drop-shadow(0 0 14px rgba(46,41,255,0.3))" }
                     : undefined
                 }
               >
                 {/* Geometric "love" — angular hexagonal heart, Tesla-clean */}
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4 L18 8 L18 13 L12 21 L6 13 L6 8 Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.3 C6.6 16.1 3.2 13.2 3.2 9.4 C3.2 6.7 5.4 4.6 8.1 4.6 C9.7 4.6 11.2 5.4 12 6.6 C12.8 5.4 14.3 4.6 15.9 4.6 C18.6 4.6 20.8 6.7 20.8 9.4 C20.8 13.2 17.4 16.1 12 20.3 Z" />
               </motion.svg>
               {total > 0 && (
                 <motion.span
@@ -675,14 +769,14 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
         })()}
         <Link
           href={`/posts/${post._id}`}
-          className="flex items-center gap-1.5 rounded-none px-2 py-1 text-[#6b7280] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#F2F2F4]"
+          className="flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[#E2E4E8] transition-all duration-200 hover:bg-[rgba(255,255,255,0.04)] hover:text-[#F2F2F4]"
         >
-          <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+          <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
             {/* Geometric square chat bubble with chevron tail */}
             <path strokeLinecap="round" strokeLinejoin="miter" d="M4 5 H20 V15 H11 L7 19 V15 H4 Z" />
           </svg>
           {typeof post.viewsCount === "number" && post.viewsCount > 0 && (
-            <span className="mr-2 flex items-center gap-1 text-[11px] tabular-nums text-[#84848C]" title="Үзсэн">
+            <span className="mr-2 flex items-center gap-1 text-[11px] tabular-nums text-[#E2E4E8]" title="Үзсэн">
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" />
                 <circle cx="12" cy="12" r="2.5" />
@@ -696,37 +790,12 @@ export default function PostCard({ post, locked, onDelete }: PostCardProps) {
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
-        {/* ChatGPT vision — analyze the image, return structured prompt.
-            Only shown when there is an image to analyze. */}
-        {((post.images && post.images.length > 0) || post.image) && (
-          <button
-            type="button"
-            onClick={() => setAnalyzeOpen((v) => !v)}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-none border transition-all duration-200 ${
-              analyzeOpen
-                ? "border-[rgba(16,128,202,0.5)] bg-[rgba(16,128,202,0.08)] text-[#1080CA]"
-                : "border-[rgba(255,255,255,0.06)] bg-transparent text-[#6b7280] hover:border-[rgba(16,128,202,0.4)] hover:text-[#1080CA]"
-            }`}
-            aria-label="Зураг шинжлэх (ChatGPT)"
-            title="Зураг шинжлэх (ChatGPT)"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" clipRule="evenodd" d="M22.408 9.80741C22.9487 8.17778 22.7685 6.37037 21.8974 4.88889C20.5758 2.60741 17.9024 1.45185 15.2891 1.98519C14.1477 0.711111 12.4656 0 10.7234 0C8.0501 0 5.70717 1.68889 4.86612 4.17778C3.15398 4.53333 1.68214 5.57037 0.811051 7.08148C-0.510601 9.36296 -0.210226 12.2074 1.56199 14.163C1.02131 15.8222 1.23158 17.6 2.10267 19.0815C3.42432 21.363 6.09766 22.5481 8.71093 21.9852C9.88239 23.2593 11.5345 24 13.2766 24C15.95 24 18.2929 22.3111 19.134 19.8222C20.8461 19.4667 22.3179 18.4296 23.189 16.9185C24.5107 14.637 24.2103 11.763 22.408 9.80741ZM13.2766 22.4296C12.1953 22.4296 11.174 22.0741 10.363 21.3926C10.393 21.363 10.4831 21.3333 10.5132 21.3037L15.3492 18.5481C15.5895 18.4 15.7397 18.163 15.7397 17.8667V11.1407L17.7823 12.2963C17.8123 12.2963 17.8123 12.3259 17.8123 12.3556V17.9259C17.8423 20.4148 15.7998 22.4296 13.2766 22.4296ZM3.48439 18.3111C2.94372 17.3926 2.76349 16.3259 2.94372 15.2889C2.97375 15.3185 3.03383 15.3481 3.0939 15.3778L7.92995 18.1333C8.17025 18.2815 8.47063 18.2815 8.71093 18.1333L14.6283 14.7556V17.0963C14.6283 17.1259 14.6283 17.1556 14.5983 17.1556L9.70216 19.9407C7.53946 21.1852 4.74597 20.4444 3.48439 18.3111ZM2.22282 7.88148C2.76349 6.96296 3.60454 6.28148 4.59578 5.8963V11.5852C4.59578 11.8519 4.74597 12.1185 4.98627 12.2667L10.9037 15.6444L8.86111 16.8C8.83108 16.8 8.80104 16.8296 8.80104 16.8L3.90492 14.0148C1.68214 12.7704 0.961239 10.0148 2.22282 7.88148ZM19.0438 11.7333L13.1264 8.35556L15.169 7.2C15.199 7.2 15.2291 7.17037 15.2291 7.2L20.1252 9.98519C22.3179 11.2296 23.0388 13.9852 21.7773 16.1185C21.2366 17.037 20.3955 17.7185 19.4043 18.0741V12.4148C19.4343 12.1481 19.2841 11.8815 19.0438 11.7333ZM21.0564 8.71111C21.0263 8.68148 20.9662 8.65185 20.9062 8.62222L16.0701 5.86667C15.8298 5.71852 15.5294 5.71852 15.2891 5.86667L9.37175 9.24444V6.9037C9.37175 6.87407 9.37175 6.84444 9.40179 6.84444L14.2979 4.05926C16.4906 2.81481 19.2541 3.55556 20.5157 5.71852C21.0564 6.60741 21.2366 7.67407 21.0564 8.71111ZM8.26036 12.8593L6.21781 11.7037C6.18777 11.7037 6.18777 11.6741 6.18777 11.6444V6.07407C6.18777 3.58519 8.23032 1.57037 10.7535 1.57037C11.8348 1.57037 12.8561 1.92593 13.6671 2.60741C13.6371 2.63704 13.577 2.66667 13.5169 2.6963L8.68089 5.45185C8.44059 5.6 8.2904 5.83704 8.2904 6.13333V12.8593H8.26036ZM9.37175 10.4889L12.0151 8.97778L14.6584 10.4889V13.4815L12.0151 14.9926L9.37175 13.4815V10.4889Z" />
-            </svg>
-          </button>
-        )}
-
+        {/* ChatGPT "Зураг шинжлэх" товч 2026-10-06-нд хасагдав (эзний хүсэлт;
+            OpenAI түлхүүр ч идэвхгүй). AnalyzeImagePanel-ийн код доор хэвээр. */}
         {/* Grok / Ask-AI button removed per request — AskAiPanel stays mounted (closed). */}
         </div>
       </div>
 
-      {/* ─── ChatGPT vision analysis panel ───────────────────────────── */}
-      <AnalyzeImagePanel
-        postId={post._id}
-        open={analyzeOpen}
-        onClose={() => setAnalyzeOpen(false)}
-        thumbnail={(post.images && post.images[0]) || post.image || null}
-      />
 
       {/* ─── Ask-AI inline panel ─────────────────────────────────────── */}
       <AskAiPanel postId={post._id} open={askOpen} onClose={() => setAskOpen(false)} />
@@ -828,35 +897,35 @@ function AnalyzeImagePanel({
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-      className="overflow-hidden border-t border-[rgba(16,128,202,0.18)] bg-[rgba(16,128,202,0.025)]"
+      className="overflow-hidden border-t border-[rgba(46,41,255,0.18)] bg-[rgba(46,41,255,0.025)]"
     >
       <div className="px-3 py-3 sm:px-4">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#1080CA]">
-            <span className="h-1 w-1 rotate-45 bg-[#1080CA] shadow-[0_0_6px_#1080CA]" />
+          <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.26em] text-[#2E29FF]">
+            <span className="h-1 w-1 rotate-45 bg-[#2E29FF] shadow-[0_0_6px_#2E29FF]" />
             CHATGPT VISION · ЗУРГИЙН АНАЛИЗ
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
           >
             ✕ ХААХ
           </button>
         </div>
 
         {busy ? (
-          <div className="flex items-center gap-2 rounded-none border border-[rgba(16,128,202,0.2)] bg-[#0a0a0c] p-3">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#1080CA]" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#6b7280]">CHATGPT ЗУРГИЙГ ШИНЖЛЭЖ БАЙНА...</span>
+          <div className="flex items-center gap-2 rounded-[4px] border border-[rgba(46,41,255,0.2)] bg-[#0A0A0A] p-3">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2E29FF]" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">CHATGPT ЗУРГИЙГ ШИНЖЛЭЖ БАЙНА...</span>
           </div>
         ) : err ? (
-          <div className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{err}</div>
+          <div className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{err}</div>
         ) : data ? (
           <div className="grid gap-3 sm:grid-cols-[100px_1fr]">
             {thumbnail && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={thumbnail} alt="" className="h-[100px] w-[100px] rounded-none border border-[rgba(255,255,255,0.06)] object-cover sm:h-[120px] sm:w-[100px]" loading="lazy" />
+              <img src={thumbnail} alt="" className="h-[100px] w-[100px] rounded-[4px] border border-[rgba(255,255,255,0.06)] object-cover sm:h-[120px] sm:w-[100px]" loading="lazy" />
             )}
             <div className="space-y-2 text-[12px]">
               {data.description && (
@@ -872,15 +941,15 @@ function AnalyzeImagePanel({
                 {data.composition && <AnalysisRow label="COMPOSITION" value={data.composition} compact span2 />}
               </div>
               {data.prompt && (
-                <div className="mt-2 rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.04)] p-2.5">
+                <div className="mt-2 rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.04)] p-2.5">
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1080CA]">
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#2E29FF]">
                       ▶ GENERATED PROMPT
                     </span>
                     <button
                       type="button"
                       onClick={copy}
-                      className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+                      className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
                     >
                       {copied ? "✓ ХУУЛАГДЛАА" : "📋 ХУУЛАХ"}
                     </button>
@@ -897,8 +966,8 @@ function AnalyzeImagePanel({
 }
 function AnalysisRow({ label, value, compact = false, span2 = false }: { label: string; value: string; compact?: boolean; span2?: boolean }) {
   return (
-    <div className={`rounded-none border border-[rgba(255,255,255,0.05)] bg-[#1E1E21] p-2 ${span2 ? "col-span-2" : ""}`}>
-      <p className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">{label}</p>
+    <div className={`rounded-[4px] border border-[rgba(255,255,255,0.05)] bg-[#0A0A0A] p-2 ${span2 ? "col-span-2" : ""}`}>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">{label}</p>
       <p className={`mt-0.5 ${compact ? "text-[12px]" : "text-[12.5px]"} leading-snug text-[#F2F2F4]`}>{value}</p>
     </div>
   );
@@ -998,7 +1067,7 @@ function CommentsThread({
           onClick={expand}
           className="flex w-full items-start gap-2 px-3 py-2.5 text-left transition hover:bg-[rgba(255,255,255,0.025)] sm:px-4"
         >
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1E1E21] text-[10px] font-bold text-[#84848C]">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[4px] bg-[#0A0A0A] text-[10px] font-bold text-[#E2E4E8]">
             {preview.author?.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={preview.author.avatar} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -1009,7 +1078,7 @@ function CommentsThread({
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-1.5">
               <span className="truncate text-[12px] font-bold text-[#FFFFFF]">{preview.author?.name || "Хэн нэгэн"}</span>
-              <span className="font-mono text-[10px] tabular-nums text-[#94a3b8]">{relativeTime(preview.createdAt)}</span>
+              <span className="font-mono text-[10px] tabular-nums text-[#E2E4E8]">{relativeTime(preview.createdAt)}</span>
             </div>
             <p className="line-clamp-2 text-[12px] leading-snug text-[#9aa]">{preview.content}</p>
           </div>
@@ -1021,7 +1090,7 @@ function CommentsThread({
         <button
           type="button"
           onClick={expand}
-          className="flex w-full items-center gap-1.5 border-t border-[rgba(255,255,255,0.03)] px-3 py-2 text-left font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:bg-[rgba(255,255,255,0.025)] hover:text-[#1080CA] sm:px-4"
+          className="flex w-full items-center gap-1.5 border-t border-[rgba(255,255,255,0.03)] px-3 py-2 text-left font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.025)] hover:text-[#2E29FF] sm:px-4"
         >
           <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -1035,7 +1104,7 @@ function CommentsThread({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="flex w-full items-center gap-1.5 px-3 py-2.5 text-left font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:bg-[rgba(255,255,255,0.025)] hover:text-[#1080CA] sm:px-4"
+          className="flex w-full items-center gap-1.5 px-3 py-2.5 text-left font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.025)] hover:text-[#2E29FF] sm:px-4"
         >
           + СЭТГЭГДЭЛ БИЧИХ
         </button>
@@ -1054,13 +1123,13 @@ function CommentsThread({
             <div className="space-y-3 px-3 py-3 sm:px-4">
               {/* Header w/ collapse */}
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1080CA]">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#2E29FF]">
                   ▶ СЭТГЭГДЭЛ · {count}
                 </span>
                 <button
                   type="button"
                   onClick={() => setExpanded(false)}
-                  className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+                  className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
                 >
                   ✕ ХУРААХ
                 </button>
@@ -1070,16 +1139,16 @@ function CommentsThread({
                 <div className="space-y-2">
                   {[0, 1].map((i) => (
                     <div key={i} className="flex gap-2">
-                      <div className="h-7 w-7 shrink-0 animate-pulse rounded-full bg-[#1E1E21]" />
+                      <div className="h-7 w-7 shrink-0 animate-pulse rounded-[4px] bg-[#0A0A0A]" />
                       <div className="flex-1 space-y-1.5">
-                        <div className="h-2.5 w-1/3 animate-pulse rounded bg-[#1E1E21]" />
-                        <div className="h-3 w-3/4 animate-pulse rounded bg-[#1E1E21]" />
+                        <div className="h-2.5 w-1/3 animate-pulse rounded bg-[#0A0A0A]" />
+                        <div className="h-3 w-3/4 animate-pulse rounded bg-[#0A0A0A]" />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : comments.length === 0 ? (
-                <p className="py-2 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#94a3b8]">
+                <p className="py-2 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">
                   СЭТГЭГДЭЛ ХООСОН
                 </p>
               ) : (
@@ -1092,7 +1161,7 @@ function CommentsThread({
                       transition={{ duration: 0.18 }}
                       className="flex items-start gap-2"
                     >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1E1E21] text-[10px] font-bold text-[#84848C]">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[4px] bg-[#0A0A0A] text-[10px] font-bold text-[#E2E4E8]">
                         {c.author?.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={c.author.avatar} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -1100,10 +1169,10 @@ function CommentsThread({
                           (c.author?.name?.[0] || "?").toUpperCase()
                         )}
                       </span>
-                      <div className="min-w-0 flex-1 rounded-none bg-[rgba(255,255,255,0.025)] px-2.5 py-1.5">
+                      <div className="min-w-0 flex-1 rounded-[4px] bg-[rgba(255,255,255,0.025)] px-2.5 py-1.5">
                         <div className="flex items-baseline gap-1.5">
                           <span className="truncate text-[12px] font-bold text-[#FFFFFF]">{c.author?.name || "Хэн нэгэн"}</span>
-                          <span className="font-mono text-[10px] tabular-nums text-[#94a3b8]">{relativeTime(c.createdAt)}</span>
+                          <span className="font-mono text-[10px] tabular-nums text-[#E2E4E8]">{relativeTime(c.createdAt)}</span>
                         </div>
                         <p className="mt-0.5 whitespace-pre-wrap text-[12.5px] leading-relaxed text-[#F2F2F4]">{c.content}</p>
                       </div>
@@ -1122,25 +1191,25 @@ function CommentsThread({
                     onKeyDown={(e) => { if (e.key === "Enter" && !posting) submit(); }}
                     placeholder="Сэтгэгдэл бичих..."
                     disabled={posting}
-                    className="flex-1 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#1E1E21] px-3 py-2 text-[14px] text-[#FFFFFF] placeholder:text-[#94a3b8] focus:border-[#1080CA] focus:outline-none disabled:opacity-60"
+                    className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[14px] text-[#FFFFFF] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none disabled:opacity-60"
                   />
                   <button
                     type="button"
                     onClick={submit}
                     disabled={posting || text.trim().length === 0}
-                    className="shrink-0 rounded-none bg-[#1080CA] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#0E0E10] transition hover:shadow-[0_0_14px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#1E1E21] disabled:text-[#94a3b8] disabled:shadow-none"
+                    className="shrink-0 rounded-[4px] bg-[#2E29FF] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-white transition hover:shadow-[0_0_14px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#0A0A0A] disabled:text-[#E2E4E8] disabled:shadow-none"
                   >
                     {posting ? "..." : "ИЛГЭЭХ"}
                   </button>
                 </div>
               ) : (
-                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#94a3b8]">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">
                   Сэтгэгдэл бичихийн тулд нэвтрэнэ үү
                 </p>
               )}
 
               {err && (
-                <p className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{err}</p>
+                <p className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{err}</p>
               )}
             </div>
           </motion.div>
@@ -1192,18 +1261,18 @@ function AskAiPanel({ postId, open, onClose }: { postId: string; open: boolean; 
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-      className="overflow-hidden border-t border-[rgba(16,128,202,0.18)] bg-[rgba(16,128,202,0.025)]"
+      className="overflow-hidden border-t border-[rgba(46,41,255,0.18)] bg-[rgba(46,41,255,0.025)]"
     >
       <div className="px-3 py-3 sm:px-4">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.26em] text-[#1080CA]">
-            <span className="h-1 w-1 rotate-45 bg-[#1080CA] shadow-[0_0_6px_#1080CA]" />
+          <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.26em] text-[#2E29FF]">
+            <span className="h-1 w-1 rotate-45 bg-[#2E29FF] shadow-[0_0_6px_#2E29FF]" />
             ASK AI · GROK
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
           >
             ✕ ХААХ
           </button>
@@ -1217,28 +1286,28 @@ function AskAiPanel({ postId, open, onClose }: { postId: string; open: boolean; 
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
             placeholder="Энэ постын талаар асуу..."
             disabled={busy}
-            className="flex-1 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#1E1E21] px-3 py-2 text-[14px] text-[#FFFFFF] placeholder:text-[#94a3b8] focus:border-[#1080CA] focus:outline-none disabled:opacity-60"
+            className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[14px] text-[#FFFFFF] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none disabled:opacity-60"
           />
           <button
             type="button"
             onClick={submit}
             disabled={busy || question.trim().length < 2}
-            className="shrink-0 rounded-none bg-[#1080CA] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#0E0E10] transition hover:shadow-[0_0_14px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#1E1E21] disabled:text-[#94a3b8] disabled:shadow-none"
+            className="shrink-0 rounded-[4px] bg-[#2E29FF] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-white transition hover:shadow-[0_0_14px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#0A0A0A] disabled:text-[#E2E4E8] disabled:shadow-none"
           >
             {busy ? "..." : "АСУУХ →"}
           </button>
         </div>
 
         {error && (
-          <p className="mt-2 rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{error}</p>
+          <p className="mt-2 rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{error}</p>
         )}
 
         {(busy || answer) && (
-          <div className="mt-3 rounded-none border border-[rgba(16,128,202,0.18)] bg-[#0a0a0c] p-3">
+          <div className="mt-3 rounded-[4px] border border-[rgba(46,41,255,0.18)] bg-[#0A0A0A] p-3">
             {busy ? (
               <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#1080CA]" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#6b7280]">GROK БОДОЖ БАЙНА...</span>
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2E29FF]" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#E2E4E8]">GROK БОДОЖ БАЙНА...</span>
               </div>
             ) : (
               <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#F2F2F4]">{answer}</p>

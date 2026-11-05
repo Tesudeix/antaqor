@@ -58,7 +58,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     Section.find({ course: id }).sort({ order: 1 }).lean(),
     Subsection.find({ course: id }).select("_id section").lean(),
     Lesson.find({ course: id }).sort({ order: 1 }).select(
-      "_id title description section subsection videoUrl thumbnail order requiredLevel attachments"
+      "_id title description content section subsection videoUrl thumbnail order requiredLevel isPremium attachments durationSec releaseAt completedBy"
     ).lean(),
     LessonTask.find({ course: id }).lean(),
   ]);
@@ -97,11 +97,38 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     }
   }
 
-  // Attach task to each lesson
-  const lessonsWithTask = lessons.map((l) => ({
-    ...l,
-    task: taskByLesson.get(String(l._id)) || null,
-  }));
+  // Attach task + viewer state to each lesson.
+  //  · scheduled: releaseAt ирээдүйд (админ бус) → агуулга, видео, хавсралт хоосон
+  //  · done: энэ үзэгч дуусгасан эсэх (completedBy массивыг өөрийг нь өгөхгүй)
+  const now = Date.now();
+  const viewerId = session?.user ? String((session.user as { id?: string }).id || "") : "";
+  const viewerIsAdmin = !!session?.user && isAdmin(session.user.email);
+  const lessonsWithTask = lessons.map((l) => {
+    const raw = { ...(l as unknown as Record<string, unknown>) };
+    const rel = raw.releaseAt as Date | null | undefined;
+    const cb = ((raw.completedBy as unknown[]) || []).map(String);
+    delete raw.completedBy;
+    const scheduled = !viewerIsAdmin && !!rel && new Date(rel).getTime() > now;
+    /* ─── ТӨЛБӨРТЭЙ ХИЧЭЭЛ ──────────────────────────────────────────
+       `scheduled`-тай ЯГ ижил зарчим: агуулгыг СЕРВЕР дээр хасна,
+       клиент дээр нуухгүй. Нуусан агуулга нь нуугдаагүй агуулга —
+       DevTools нээсэн хэн ч авна. Хаалт нь энд байж гэмээнэ хаалт. */
+    const premiumLocked =
+      !viewerIsAdmin && !!(raw as { isPremium?: boolean }).isPremium && viewerPlan === "free";
+    return {
+      ...raw,
+      _id: l._id,
+      // section/subsection-ийг ИЛ бичнэ: доор `resolveSectionId` эдгээрийг
+      // шаарддаг бөгөөд Record<string, unknown> spread нь типээс нь алддаг.
+      section: (l as { section?: unknown }).section,
+      subsection: (l as { subsection?: unknown }).subsection,
+      ...(scheduled || premiumLocked ? { content: "", videoUrl: "", attachments: [] } : {}),
+      task: scheduled || premiumLocked ? null : taskByLesson.get(String(l._id)) || null,
+      scheduled,
+      premiumLocked,
+      done: !!viewerId && cb.includes(viewerId),
+    };
+  });
 
   // Group lessons by section
   const lessonsBySection = new Map<string, typeof lessonsWithTask>();

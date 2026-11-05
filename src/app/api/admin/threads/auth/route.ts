@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession, unauthorized } from "@/lib/adminAuth";
 import { ThreadsAPI } from "@/lib/threads";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) return unauthorized();
 
@@ -16,6 +16,8 @@ export async function GET() {
     "threads_manage_replies",
     "threads_read_replies",
     "threads_manage_insights",
+    /* ?extended=1 — өрсөлдөгчийн профайл/пост унших (Өрсөлдөгч таб) */
+    ...(req.nextUrl.searchParams.get("extended") === "1" ? ["threads_profile_discovery", "threads_keyword_search"] : []),
   ];
 
   const url = ThreadsAPI.getAuthorizationUrl(appId, redirectUri, scopes);

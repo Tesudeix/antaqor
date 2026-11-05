@@ -56,14 +56,14 @@ export default function ThreadsFeed() {
     return (
       <div className="py-4">
         <div className="mb-3 flex items-center gap-2">
-          <div className="h-4 w-4 animate-pulse rounded-full bg-[rgba(255,255,255,0.08)]" />
+          <div className="h-4 w-4 animate-pulse rounded-[4px] bg-[rgba(255,255,255,0.08)]" />
           <div className="h-3 w-16 animate-pulse rounded bg-[rgba(255,255,255,0.06)]" />
         </div>
         <div className="flex gap-2.5 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-[150px] w-[240px] shrink-0 animate-pulse rounded-none bg-[rgba(255,255,255,0.05)]"
+              className="h-[150px] w-[240px] shrink-0 animate-pulse rounded-[4px] bg-[rgba(255,255,255,0.05)]"
             />
           ))}
         </div>
@@ -78,12 +78,12 @@ export default function ThreadsFeed() {
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-[rgba(16,128,202,0.14)] text-[#4E94D0]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.14)] text-[#4C47FF]">
             {THREADS_GLYPH}
           </span>
           <div>
             <div className="text-[13px] font-black tracking-wide text-[#F2F2F4]">Threads</div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#84848C]">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#E2E4E8]">
               Шууд яриа · бодол · update
             </div>
           </div>
@@ -95,7 +95,7 @@ export default function ThreadsFeed() {
                 type="button"
                 aria-label="Өмнөх"
                 onClick={() => scrollRail(-1)}
-                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.10)] text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#F2F2F4]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
               </button>
@@ -103,7 +103,7 @@ export default function ThreadsFeed() {
                 type="button"
                 aria-label="Дараах"
                 onClick={() => scrollRail(1)}
-                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.10)] text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#F2F2F4]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
               </button>
@@ -113,7 +113,7 @@ export default function ThreadsFeed() {
             href="https://www.threads.net/@tesudei"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-none border border-[rgba(16,128,202,0.35)] bg-[rgba(16,128,202,0.10)] px-3 py-1.5 text-[11px] font-bold text-[#4E94D0] transition hover:bg-[rgba(16,128,202,0.2)] hover:text-[#F2F2F4]"
+            className="rounded-[4px] border border-[rgba(46,41,255,0.35)] bg-[rgba(46,41,255,0.10)] px-3 py-1.5 text-[11px] font-bold text-[#4C47FF] transition hover:bg-[rgba(46,41,255,0.2)] hover:text-[#F2F2F4]"
           >
             antaqor.com
           </a>
@@ -132,29 +132,29 @@ export default function ThreadsFeed() {
             href={post.permalink}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex w-[240px] shrink-0 snap-start flex-col rounded-none border border-[rgba(255,255,255,0.08)] bg-[#1E1E21] p-3.5 transition hover:-translate-y-0.5 hover:border-[rgba(16,128,202,0.45)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.45)] active:scale-[0.98] sm:w-[260px]"
+            className="group flex w-[240px] shrink-0 snap-start flex-col rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3.5 transition hover:-translate-y-0.5 hover:border-[rgba(46,41,255,0.45)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.45)] active:scale-[0.98] sm:w-[260px]"
           >
             {/* Card head */}
             <div className="mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#F2F2F4]">
-                <span className="text-[#B4B4BA]">{THREADS_GLYPH}</span>
+                <span className="text-[#E2E4E8]">{THREADS_GLYPH}</span>
                 antaqor.com
               </span>
-              <span className="text-[10px] font-semibold text-[#84848C]">
+              <span className="text-[10px] font-semibold text-[#E2E4E8]">
                 {timeAgo(post.timestamp)}
               </span>
             </div>
 
             {/* Text */}
             {post.text && (
-              <p className={`whitespace-pre-line text-[12px] leading-relaxed text-[#B4B4BA] ${post.mediaUrl ? "line-clamp-3" : "line-clamp-6"}`}>
+              <p className={`whitespace-pre-line text-[12px] leading-relaxed text-[#E2E4E8] ${post.mediaUrl ? "line-clamp-3" : "line-clamp-6"}`}>
                 {post.text}
               </p>
             )}
 
             {/* Media */}
             {(post.thumbnailUrl || (post.mediaUrl && post.mediaType !== "TEXT")) && (
-              <div className="mt-2.5 overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)]">
+              <div className="mt-2.5 overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)]">
                 <img
                   src={post.thumbnailUrl || post.mediaUrl}
                   alt=""
@@ -165,7 +165,7 @@ export default function ThreadsFeed() {
             )}
 
             {/* Foot */}
-            <div className="mt-auto flex items-center gap-1 pt-2.5 text-[10px] font-bold text-[#4E94D0] opacity-0 transition group-hover:opacity-100">
+            <div className="mt-auto flex items-center gap-1 pt-2.5 text-[10px] font-bold text-[#4C47FF] opacity-0 transition group-hover:opacity-100">
               Үзэх
               <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8" /></svg>
             </div>

@@ -68,14 +68,14 @@ export default function InstagramReels() {
     return (
       <div className="py-4">
         <div className="mb-3 flex items-center gap-2">
-          <div className="h-4 w-4 animate-pulse rounded-full bg-[rgba(255,255,255,0.08)]" />
+          <div className="h-4 w-4 animate-pulse rounded-[4px] bg-[rgba(255,255,255,0.08)]" />
           <div className="h-3 w-16 animate-pulse rounded bg-[rgba(255,255,255,0.06)]" />
         </div>
         <div className="flex gap-2.5 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="aspect-[9/16] w-[150px] shrink-0 animate-pulse rounded-none bg-[rgba(255,255,255,0.05)]"
+              className="aspect-[9/16] w-[150px] shrink-0 animate-pulse rounded-[4px] bg-[rgba(255,255,255,0.05)]"
             />
           ))}
         </div>
@@ -97,13 +97,13 @@ export default function InstagramReels() {
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-[rgba(16,128,202,0.14)] text-[#4E94D0]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.14)] text-[#4C47FF]">
             {IG_GLYPH}
           </span>
           <div>
             <div className="text-[13px] font-black tracking-wide text-[#F2F2F4]">Сошиал</div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#84848C]">
-              Edgerunners амьдралаас
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#E2E4E8]">
+              Antaqor хүрээлэл амьдралаас
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function InstagramReels() {
                 type="button"
                 aria-label="Өмнөх"
                 onClick={() => scrollRail(-1)}
-                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.10)] text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#F2F2F4]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
               </button>
@@ -123,7 +123,7 @@ export default function InstagramReels() {
                 type="button"
                 aria-label="Дараах"
                 onClick={() => scrollRail(1)}
-                className="flex h-8 w-8 items-center justify-center rounded-none border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4]"
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.10)] text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#F2F2F4]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
               </button>
@@ -133,7 +133,7 @@ export default function InstagramReels() {
             href="https://www.instagram.com/tesudei"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-none border border-[rgba(16,128,202,0.35)] bg-[rgba(16,128,202,0.10)] px-3 py-1.5 text-[11px] font-bold text-[#4E94D0] transition hover:bg-[rgba(16,128,202,0.2)] hover:text-[#F2F2F4]"
+            className="rounded-[4px] border border-[rgba(46,41,255,0.35)] bg-[rgba(46,41,255,0.10)] px-3 py-1.5 text-[11px] font-bold text-[#4C47FF] transition hover:bg-[rgba(46,41,255,0.2)] hover:text-[#F2F2F4]"
           >
             @tesudei
           </a>
@@ -153,7 +153,7 @@ export default function InstagramReels() {
               href={reel.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative aspect-[9/16] w-[150px] shrink-0 snap-start overflow-hidden rounded-none border border-[rgba(255,255,255,0.08)] bg-[#1E1E21] transition hover:-translate-y-0.5 hover:border-[rgba(16,128,202,0.45)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.45)] active:scale-[0.97] sm:w-[170px]"
+              className="group relative aspect-[9/16] w-[150px] shrink-0 snap-start overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] transition hover:-translate-y-0.5 hover:border-[rgba(46,41,255,0.45)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.45)] active:scale-[0.97] sm:w-[170px]"
               onMouseEnter={() => setActiveVideo(reel._id)}
               onMouseLeave={() => setActiveVideo(null)}
             >
@@ -177,14 +177,14 @@ export default function InstagramReels() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
               {/* Play affordance */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition group-hover:opacity-100">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(16,128,202,0.92)] shadow-[0_0_18px_rgba(16,128,202,0.5)]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.92)] shadow-[0_0_18px_rgba(46,41,255,0.5)]">
                   <svg className="ml-0.5 h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
               </div>
               {/* Reel badge */}
-              <div className="absolute right-2 top-2 rounded-none bg-black/45 p-1 backdrop-blur-sm">
+              <div className="absolute right-2 top-2 rounded-[4px] bg-black/45 p-1 backdrop-blur-sm">
                 <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <rect x="2" y="4" width="20" height="16" rx="3" />
                   <path d="M2 9h20M9.5 4l3 5M15.5 4l3 5M10.5 13.5l4 2.5-4 2.5v-5z" />
@@ -199,7 +199,7 @@ export default function InstagramReels() {
                 )}
                 <div className="flex items-center gap-2">
                   {fmtCount(reel.views) && (
-                    <span className="flex items-center gap-1 text-[9px] font-black text-[#F2F2F4]">
+                    <span className="flex items-center gap-1 text-[11px] font-black text-[#F2F2F4]">
                       <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
@@ -207,14 +207,14 @@ export default function InstagramReels() {
                     </span>
                   )}
                   {fmtCount(reel.likes) && (
-                    <span className="flex items-center gap-1 text-[9px] font-bold text-[#B4B4BA]">
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-[#E2E4E8]">
                       <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
                       {fmtCount(reel.likes)}
                     </span>
                   )}
-                  <span className="ml-auto text-[9px] font-bold text-[#B4B4BA]">
+                  <span className="ml-auto text-[11px] font-bold text-[#E2E4E8]">
                     {timeAgo(reel.timestamp)}
                   </span>
                 </div>
@@ -233,7 +233,7 @@ export default function InstagramReels() {
               href={post.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative aspect-square overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#1E1E21] transition hover:border-[rgba(16,128,202,0.4)] active:scale-[0.97]"
+              className="group relative aspect-square overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.4)] active:scale-[0.97]"
             >
               <img
                 src={post.mediaUrl}

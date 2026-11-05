@@ -27,7 +27,7 @@ export default function ProductsOverview() {
     <div className="mx-auto max-w-6xl">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primary }}>Бараа</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primaryInk }}>Бараа</div>
           <h1 className="mt-1 text-[26px] font-semibold tracking-tight" style={{ color: T.text }}>Products</h1>
           <p className="mt-0.5 text-[12px]" style={{ color: T.faint }}>Бүтээгдэхүүн · үнэ ₮-ээр</p>
         </div>
@@ -49,7 +49,7 @@ export default function ProductsOverview() {
           const active = filter === f;
           const count = f === "all" ? items.length : f === "live" ? live : items.length - live;
           return (
-            <button key={f} onClick={() => setFilter(f)} className="rounded-none px-3 py-1.5 text-[12px] font-semibold transition"
+            <button key={f} onClick={() => setFilter(f)} className="rounded-[4px] px-3 py-1.5 text-[12px] font-semibold transition"
               style={active ? { background: T.primary, color: "#fff" } : { color: T.muted, background: "rgba(255,255,255,0.03)" }}>
               {f === "all" ? "Бүгд" : f === "live" ? "Нийтэлсэн" : "Ноорог"} <span style={{ fontFamily: MONO, opacity: 0.7 }}>{count}</span>
             </button>

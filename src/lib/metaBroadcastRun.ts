@@ -44,7 +44,6 @@ export interface AudienceSpec {
 // matching one of the requested intent labels.
 export function audienceFilter(b: AudienceSpec, now: number): Record<string, unknown> {
   const filter: Record<string, unknown> = {
-    account: b.account,
     status: "open",
     lastInboundAt: { $gte: new Date(now - WINDOW_MS) },
     broadcastOptOut: { $ne: true },
@@ -56,6 +55,13 @@ export function audienceFilter(b: AudienceSpec, now: number): Record<string, unk
       { lastBroadcastAt: { $lt: new Date(now - FREQ_CAP_MS) } },
     ],
   };
+  // "all" means Бүх хуудас. No conversation is ever stored with account
+  // "all", so matching it literally targeted ZERO people and every all-pages
+  // broadcast silently sent nothing. "antaqor" also has to pick up legacy rows
+  // written before `account` was recorded on the conversation.
+  if (b.account && b.account !== "all") {
+    filter.account = b.account === "antaqor" ? { $in: ["antaqor", null] } : b.account;
+  }
   if (b.platform !== "both") filter.platform = b.platform;
   const labels = (b.audience?.intentLabels || []).filter(Boolean);
   if (labels.length) filter.intentLabel = { $in: labels };
@@ -99,15 +105,24 @@ export async function runBroadcast(broadcastId: string): Promise<void> {
   const recipients = await MetaConversation.find(audienceFilter(spec, now))
     .sort({ lastInboundAt: -1 })
     .limit(MAX_AUDIENCE)
-    .lean<Array<{ _id: Types.ObjectId; platform: MetaPlatform; partnerId: string; lastInboundAt?: Date }>>();
+    .lean<Array<{ _id: Types.ObjectId; platform: MetaPlatform; partnerId: string; lastInboundAt?: Date; account?: string }>>();
 
+  // Heartbeat. A detached `void runBroadcast()` does not reliably outlive the
+  // HTTP response, which is why broadcasts appeared to "send" and then nothing
+  // happened. The resume cron uses this timestamp to tell a live worker from a
+  // dead one, so a killed run is picked up instead of sitting in "sending".
+  await MetaBroadcast.findByIdAndUpdate(b._id, { runningAt: new Date() });
   const already = new Set(b.sentTo);
   let accepted = 0, failed = 0, skipped = 0, consecutiveFailures = 0;
   await MetaBroadcast.findByIdAndUpdate(b._id, { "stats.targeted": recipients.length });
 
   for (let i = 0; i < recipients.length; i++) {
     // Honour a pause flag toggled by the admin mid-run.
-    const fresh = await MetaBroadcast.findById(b._id).select("status").lean<{ status?: string }>();
+    const fresh = await MetaBroadcast.findByIdAndUpdate(
+      b._id,
+      { runningAt: new Date() },
+      { new: true, projection: { status: 1 } }
+    ).lean<{ status?: string } | null>();
     if (!fresh || fresh.status !== "sending") break;
 
     const conv = recipients[i];
@@ -118,7 +133,7 @@ export async function runBroadcast(broadcastId: string): Promise<void> {
     // and opt-out / escalation may have changed. Re-read the authoritative doc.
     const live = await MetaConversation.findById(conv._id)
       .select("lastInboundAt broadcastOptOut escalatedToHuman aiDisabled lastBroadcastAt account")
-      .lean<{ lastInboundAt?: Date; broadcastOptOut?: boolean; escalatedToHuman?: boolean; aiDisabled?: boolean; lastBroadcastAt?: Date }>();
+      .lean<{ lastInboundAt?: Date; broadcastOptOut?: boolean; escalatedToHuman?: boolean; aiDisabled?: boolean; lastBroadcastAt?: Date; account?: string }>();
     const inboundMs = live?.lastInboundAt ? new Date(live.lastInboundAt).getTime() : 0;
     const lastBcMs = live?.lastBroadcastAt ? new Date(live.lastBroadcastAt).getTime() : 0;
     const stillEligible =
@@ -130,17 +145,23 @@ export async function runBroadcast(broadcastId: string): Promise<void> {
       (lastBcMs === 0 || Date.now() - lastBcMs >= FREQ_CAP_MS);
     if (!stillEligible) { skipped++; continue; }
 
+    // An all-pages broadcast spans several pages, so the token has to come from
+    // the RECIPIENT's page. Using b.account there resolved "all" to the default
+    // (Antaqor) token and every send failed.
+    const sendAccount =
+      live?.account || conv.account || (b.account !== "all" ? b.account : "antaqor");
+
     try {
       let ok = false;
       if (b.contentType === "flow" && flowMatch) {
-        await startFlow(conv.platform, b.account, conv.partnerId, String(conv._id), flowMatch);
+        await startFlow(conv.platform, sendAccount, conv.partnerId, String(conv._id), flowMatch);
         ok = true; // startFlow swallows per-send errors; treat dispatch as accepted
       } else {
         const text = applyReklamLabel(b.text);
         if (b.imageUrl) {
-          await sendImageAttachment(conv.platform, conv.partnerId, b.imageUrl, { account: b.account }).catch(() => {});
+          await sendImageAttachment(conv.platform, conv.partnerId, b.imageUrl, { account: sendAccount }).catch(() => {});
         }
-        const res = await sendDm(conv.platform, conv.partnerId, text, { account: b.account });
+        const res = await sendDm(conv.platform, conv.partnerId, text, { account: sendAccount });
         ok = res.ok;
         if (!ok) await MetaBroadcast.findByIdAndUpdate(b._id, { lastError: `${res.status}: ${res.body.slice(0, 200)}` });
         if (ok) {

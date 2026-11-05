@@ -64,6 +64,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     for (const f of fields) if (f in body) update[f] = body[f];
     if (body.category && VALID_CATEGORIES.includes(body.category)) update.category = body.category;
     if (body.publishedAt) update.publishedAt = new Date(body.publishedAt);
+    // 2026-10-11 (Magazine): засварт унших хугацааг дахин тооцно; ноорог
+    // анх нийтлэгдэхэд огноо нь ОДОО болно (эс бөгөөс жагсаалтын ёроолд гарна).
+    if (typeof body.content === "string" || typeof body.excerpt === "string") {
+      const words = `${body.excerpt || ""} ${body.content || ""}`.split(/\s+/).filter(Boolean).length;
+      update.readingMinutes = Math.max(1, Math.round(words / 200));
+    }
+    if (body.published === true && !body.publishedAt) {
+      const cur = await News.findOne({ slug: slug.toLowerCase() }).select("published").lean() as { published?: boolean } | null;
+      if (cur && cur.published === false) update.publishedAt = new Date();
+    }
 
     const news = await News.findOneAndUpdate({ slug: slug.toLowerCase() }, update, { new: true });
     if (!news) return NextResponse.json({ error: "Not found" }, { status: 404 });

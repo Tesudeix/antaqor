@@ -61,7 +61,7 @@ function timeAgo(iso: string): string {
 
 const PlatformBadge = ({ platform }: { platform: Platform }) => (
   <span
-    className="inline-flex items-center rounded-none px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+    className="inline-flex items-center rounded-[4px] px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
     style={{
       background: platform === "instagram" ? "rgba(225, 48, 108, 0.15)" : "rgba(0, 132, 255, 0.15)",
       color: platform === "instagram" ? "#E1306C" : "#0084FF",
@@ -74,15 +74,15 @@ const PlatformBadge = ({ platform }: { platform: Platform }) => (
 function IntentBadge({ label, score }: { label: string; score: number }) {
   if (label === "unknown" || score === 0) return null;
   const colors: Record<string, string> = {
-    hot: "bg-[rgba(16,128,202,0.2)] text-[#1080CA]",
+    hot: "bg-[rgba(46,41,255,0.2)] text-[#2E29FF]",
     warm: "bg-[rgba(255,165,0,0.15)] text-[#FFA500]",
-    cold: "bg-[rgba(100,100,100,0.2)] text-[#8A8A92]",
+    cold: "bg-[rgba(100,100,100,0.2)] text-[#E2E4E8]",
     support: "bg-[rgba(0,132,255,0.15)] text-[#0084FF]",
     fan: "bg-[rgba(167,139,250,0.15)] text-[#a78bfa]",
   };
   return (
     <span
-      className={`inline-flex items-center gap-0.5 rounded-none px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider ${colors[label] || ""}`}
+      className={`inline-flex items-center gap-0.5 rounded-[4px] px-1 py-0.5 text-[11px] font-bold uppercase tracking-wider ${colors[label] || ""}`}
       title={`Intent: ${label} (${score}/10)`}
     >
       {label} {score}
@@ -93,7 +93,7 @@ function IntentBadge({ label, score }: { label: string; score: number }) {
 function UserBadge({ user, full = false }: { user: LinkedUser | LinkedUserDetail; full?: boolean }) {
   if (user.ghost) {
     return (
-      <span className="text-[10px] text-[#8A8A92]">👻 Ghost · {user.credits}₵</span>
+      <span className="text-[10px] text-[#E2E4E8]">👻 Ghost · {user.credits}₵</span>
     );
   }
   return (
@@ -220,7 +220,7 @@ export default function InboxPage() {
     <div className="flex h-[calc(100vh-64px)] flex-col bg-[#0A0A0A] text-[#E8E8E8]">
       <header className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] px-6 py-4">
         <div>
-          <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1080CA]">Inbox</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#2E29FF]">Inbox</div>
           <div className="mt-0.5 text-[18px] font-bold">Instagram &amp; Messenger</div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -228,10 +228,10 @@ export default function InboxPage() {
             <button
               key={s || "all"}
               onClick={() => setIntentFilter(s)}
-              className={`rounded-none px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+              className={`rounded-[4px] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
                 intentFilter === s
-                  ? "bg-[#1080CA] text-[#0E0E10]"
-                  : "bg-[#141419] text-[#8A8A92] hover:bg-[#F2F2F4]"
+                  ? "bg-[#2E29FF] text-white"
+                  : "bg-[#0A0A0A] text-[#E2E4E8] hover:bg-[#F2F2F4]"
               }`}
             >
               {s || "Бүгд"}
@@ -242,10 +242,10 @@ export default function InboxPage() {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`rounded-none px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition ${
+              className={`rounded-[4px] px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition ${
                 filter === s
-                  ? "bg-[#1080CA] text-[#0E0E10]"
-                  : "bg-[#141419] text-[#8A8A92] hover:bg-[#F2F2F4]"
+                  ? "bg-[#2E29FF] text-white"
+                  : "bg-[#0A0A0A] text-[#E2E4E8] hover:bg-[#F2F2F4]"
               }`}
             >
               {s === "open" ? "Идэвхтэй" : "Архив"}
@@ -255,23 +255,23 @@ export default function InboxPage() {
       </header>
 
       {error && (
-        <div className="border-b border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.1)] px-6 py-2 text-[12px] text-[#1080CA]">
+        <div className="border-b border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.1)] px-6 py-2 text-[12px] text-[#2E29FF]">
           {error}
         </div>
       )}
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-[340px] flex-shrink-0 overflow-y-auto border-r border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
-          {loading && <div className="p-6 text-[12px] text-[#56565E]">Уншиж байна…</div>}
+          {loading && <div className="p-6 text-[12px] text-[#E2E4E8]">Уншиж байна…</div>}
           {!loading && conversations.length === 0 && (
-            <div className="p-6 text-[12px] text-[#56565E]">Ярианы түүх алга байна.</div>
+            <div className="p-6 text-[12px] text-[#E2E4E8]">Ярианы түүх алга байна.</div>
           )}
           {conversations.map((c) => (
             <button
               key={c._id}
               onClick={() => setSelectedId(c._id)}
               className={`w-full border-b border-[rgba(255,255,255,0.04)] px-4 py-3 text-left transition ${
-                selectedId === c._id ? "bg-[#F2F2F4]" : "hover:bg-[#141419]"
+                selectedId === c._id ? "bg-[#F2F2F4]" : "hover:bg-[#0A0A0A]"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
@@ -281,7 +281,7 @@ export default function InboxPage() {
                     {c.partnerName || c.partnerId}
                   </span>
                 </div>
-                <span className="flex-shrink-0 text-[10px] text-[#56565E]">
+                <span className="flex-shrink-0 text-[10px] text-[#E2E4E8]">
                   {timeAgo(c.lastMessageAt)}
                 </span>
               </div>
@@ -291,24 +291,24 @@ export default function InboxPage() {
                 </div>
               )}
               <div className="mt-1 flex items-center justify-between gap-2">
-                <span className="truncate text-[11px] text-[#8A8A92]">
+                <span className="truncate text-[11px] text-[#E2E4E8]">
                   {c.lastMessageDirection === "out" ? "→ " : ""}
                   {c.lastMessagePreview || "(хоосон)"}
                 </span>
                 <div className="flex flex-shrink-0 items-center gap-1">
                   {c.safetyFlag === "distress" && (
-                    <span className="rounded-none bg-[rgba(16,128,202,0.25)] px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#1080CA]" title="Distress signal — needs human">
+                    <span className="rounded-[4px] bg-[rgba(46,41,255,0.25)] px-1 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]" title="Distress signal — needs human">
                       ⚠ SOS
                     </span>
                   )}
                   {c.escalatedToHuman && !c.safetyFlag && (
-                    <span className="rounded-none bg-[rgba(0,132,255,0.15)] px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#0084FF]" title="Escalated to human">
+                    <span className="rounded-[4px] bg-[rgba(0,132,255,0.15)] px-1 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#0084FF]" title="Escalated to human">
                       👤
                     </span>
                   )}
                   <IntentBadge label={c.intentLabel} score={c.intentScore} />
                   {c.unreadCount > 0 && (
-                    <span className="rounded-full bg-[#1080CA] px-1.5 py-0.5 text-[9px] font-bold text-[#0E0E10]">
+                    <span className="rounded-[4px] bg-[#2E29FF] px-1.5 py-0.5 text-[11px] font-bold text-white">
                       {c.unreadCount}
                     </span>
                   )}
@@ -320,7 +320,7 @@ export default function InboxPage() {
 
         <main className="flex flex-1 flex-col bg-[#070707]">
           {!conversation && (
-            <div className="flex flex-1 items-center justify-center text-[12px] text-[#56565E]">
+            <div className="flex flex-1 items-center justify-center text-[12px] text-[#E2E4E8]">
               Ярилцлага сонгоно уу
             </div>
           )}
@@ -333,7 +333,7 @@ export default function InboxPage() {
                     <div className="truncate text-[14px] font-bold">
                       {conversation.partnerName || conversation.partnerId}
                     </div>
-                    <div className="text-[10px] text-[#56565E]">{conversation.partnerId}</div>
+                    <div className="text-[10px] text-[#E2E4E8]">{conversation.partnerId}</div>
                     {linkedUser && (
                       <div className="mt-1">
                         <UserBadge user={linkedUser} full />
@@ -348,17 +348,17 @@ export default function InboxPage() {
                   />
                   <button
                     onClick={toggleAI}
-                    className={`rounded-none px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                    className={`rounded-[4px] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ${
                       conversation.aiDisabled
-                        ? "bg-[#F2F2F4] text-[#8A8A92]"
-                        : "bg-[rgba(16,128,202,0.15)] text-[#1080CA]"
+                        ? "bg-[#F2F2F4] text-[#E2E4E8]"
+                        : "bg-[rgba(46,41,255,0.15)] text-[#2E29FF]"
                     }`}
                   >
                     {conversation.aiDisabled ? "AI унтарсан" : "AI идэвхтэй"}
                   </button>
                   <button
                     onClick={toggleArchive}
-                    className="rounded-none bg-[#141419] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#8A8A92] transition hover:bg-[#F2F2F4]"
+                    className="rounded-[4px] bg-[#0A0A0A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#E2E4E8] transition hover:bg-[#F2F2F4]"
                   >
                     {conversation.status === "open" ? "Архивлах" : "Сэргээх"}
                   </button>
@@ -372,24 +372,24 @@ export default function InboxPage() {
                     <div key={m._id} className={`flex ${isOut ? "justify-end" : "justify-start"}`}>
                       <div className="max-w-[70%]">
                         <div
-                          className={`rounded-none px-3 py-2 text-[13px] whitespace-pre-wrap ${
+                          className={`rounded-[4px] px-3 py-2 text-[13px] whitespace-pre-wrap ${
                             isOut
                               ? m.errorBody
-                                ? "bg-[rgba(16,128,202,0.15)] text-[#FFB3C6]"
-                                : "bg-[#1080CA] text-[#0E0E10]"
+                                ? "bg-[rgba(46,41,255,0.15)] text-[#FFB3C6]"
+                                : "bg-[#2E29FF] text-white"
                               : "bg-[#F2F2F4] text-[#E8E8E8]"
                           }`}
                         >
                           {m.text}
                         </div>
-                        <div className="mt-1 flex items-center gap-2 text-[9px] text-[#56565E]">
+                        <div className="mt-1 flex items-center gap-2 text-[11px] text-[#E2E4E8]">
                           <span>{timeAgo(m.createdAt)}</span>
                           {isOut && (
                             <span className="uppercase tracking-wider">
                               {m.source === "ai" ? "AI" : m.source === "trigger" ? "TRIG" : m.manualSenderEmail || "MANUAL"}
                             </span>
                           )}
-                          {m.errorBody && <span className="text-[#1080CA]">FAIL</span>}
+                          {m.errorBody && <span className="text-[#2E29FF]">FAIL</span>}
                         </div>
                       </div>
                     </div>
@@ -409,12 +409,12 @@ export default function InboxPage() {
                       }
                     }}
                     placeholder="Хариу бичих…"
-                    className="flex-1 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder:text-[#56565E] focus:border-[#1080CA] focus:outline-none"
+                    className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none"
                   />
                   <button
                     onClick={send}
                     disabled={!reply.trim() || sending}
-                    className="rounded-none bg-[#1080CA] px-5 py-2 text-[12px] font-bold uppercase tracking-wider text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:bg-[#d5dce3] disabled:text-[#8A8A92]"
+                    className="rounded-[4px] bg-[#2E29FF] px-5 py-2 text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#1F1AD9] disabled:bg-[#d5dce3] disabled:text-[#E2E4E8]"
                   >
                     {sending ? "Илгээж…" : "Илгээх"}
                   </button>

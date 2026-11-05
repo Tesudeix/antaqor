@@ -105,7 +105,7 @@ export default function AdminPartnershipsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <div className="text-[9px] uppercase tracking-[1px] text-[#FFD300]">Удирдлага</div>
+          <div className="text-[11px] uppercase tracking-[1px] text-[#FFD300]">Удирдлага</div>
           <h1 className="mt-1 text-2xl tracking-[1px]">ХАМТРАХ ХҮСЭЛТҮҮД</h1>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function AdminPartnershipsPage() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[1px] ${st.color}`}>
+                      <span className={`px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-[1px] ${st.color}`}>
                         {st.label}
                       </span>
                       <span className="text-[13px] font-semibold text-[#ede8df]">
@@ -190,7 +190,7 @@ export default function AdminPartnershipsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="mt-3 whitespace-pre-wrap border border-[#F2F2F4] bg-[#0E0E12] p-3 text-[13px] leading-relaxed text-[#c8c8c0]">
+                    <div className="mt-3 whitespace-pre-wrap border border-[#F2F2F4] bg-[#0A0A0A] p-3 text-[13px] leading-relaxed text-[#c8c8c0]">
                       {inq.message}
                     </div>
 
@@ -212,7 +212,7 @@ export default function AdminPartnershipsPage() {
                       ))}
                       <a
                         href={`mailto:${inq.email}?subject=${encodeURIComponent("Antaqor хамтрах санал")}`}
-                        className="ml-auto bg-[#FFD300] px-3 py-1.5 text-[11px] font-bold text-[#0A0A0A] transition hover:bg-[#ffe14d]"
+                        className="ml-auto bg-[#FFD300] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#ffe14d]"
                       >
                         Хариу бичих
                       </a>

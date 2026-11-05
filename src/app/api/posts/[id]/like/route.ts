@@ -4,7 +4,10 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
 import { awardXP } from "@/lib/xp";
+import { maybeAwardLikeMilestone } from "@/lib/likeCredits";
 
+// Legacy `likes` array toggle. The feed's heart uses /react; both routes
+// feed the same like→credit milestone helper (src/lib/likeCredits.ts).
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -28,19 +31,19 @@ export async function POST(
       (likeId) => likeId.toString() === userId
     );
 
+    let fresh = false;
     if (likeIndex > -1) {
       post.likes.splice(likeIndex, 1);
     } else {
       post.likes.push(userId as unknown as import("mongoose").Types.ObjectId);
-
-      // Award XP to post author (skip self-likes)
-      const authorId = post.author.toString();
-      if (authorId !== userId) {
-        awardXP(authorId, "RECEIVE_LIKE", 5, post._id.toString()).catch(() => {});
+      fresh = post.author.toString() !== userId;
+      if (fresh) {
+        awardXP(post.author.toString(), "RECEIVE_LIKE", 5, post._id.toString()).catch(() => {});
       }
     }
 
     await post.save();
+    if (fresh) await maybeAwardLikeMilestone(post);
 
     return NextResponse.json({
       likes: post.likes.length,

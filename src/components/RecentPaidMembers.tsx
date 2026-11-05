@@ -40,10 +40,10 @@ export default function RecentPaidMembers({ limit = 5, light = false }: { limit?
   if (!loaded || members.length === 0) return null;
 
   return (
-    <div className={`rounded-none border p-3 ${light ? "border-[rgba(16,128,202,0.25)] bg-gradient-to-br from-[rgba(16,128,202,0.06)] via-[#F4F6F8] to-[#FFFFFF]" : "border-[rgba(16,128,202,0.18)] bg-gradient-to-br from-[rgba(16,128,202,0.05)] via-[#f2f5f8] to-[#ffffff]"}`}>
+    <div className={`rounded-[4px] border p-3 ${light ? "border-[rgba(46,41,255,0.25)] bg-gradient-to-br from-[rgba(46,41,255,0.06)] via-[#F4F6F8] to-[#FFFFFF]" : "border-[rgba(46,41,255,0.18)] bg-gradient-to-br from-[rgba(46,41,255,0.05)] via-[#f2f5f8] to-[#ffffff]"}`}>
       <div className="mb-2 flex items-center gap-2">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E]" />
-        <span className={`text-[10px] font-black uppercase tracking-[0.18em] ${light ? "text-[#1080CA]" : "text-[#1080CA]"}`}>
+        <span className={`text-[10px] font-black uppercase tracking-[0.18em] ${light ? "text-[#2E29FF]" : "text-[#2E29FF]"}`}>
           СҮҮЛД НЭГДСЭН
         </span>
       </div>
@@ -55,7 +55,7 @@ export default function RecentPaidMembers({ limit = 5, light = false }: { limit?
             <Link
               key={m._id}
               href={`/profile/${m._id}`}
-              className={`relative h-8 w-8 overflow-hidden rounded-full border-2 transition hover:z-10 hover:scale-110 ${light ? "border-[#FFFFFF]" : "border-[#f2f5f8]"}`}
+              className={`relative h-8 w-8 overflow-hidden rounded-[4px] border-2 transition hover:z-10 hover:scale-110 ${light ? "border-[#FFFFFF]" : "border-[#f2f5f8]"}`}
               style={{ zIndex: members.length - i }}
               title={m.name}
             >
@@ -63,7 +63,7 @@ export default function RecentPaidMembers({ limit = 5, light = false }: { limit?
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={m.avatar} alt={m.name} className="h-full w-full object-cover" />
               ) : (
-                <span className={`flex h-full w-full items-center justify-center text-[12px] font-black ${light ? "bg-[rgba(16,128,202,0.15)] text-[#1080CA]" : "bg-[rgba(16,128,202,0.18)] text-[#1080CA]"}`}>
+                <span className={`flex h-full w-full items-center justify-center text-[12px] font-black ${light ? "bg-[rgba(46,41,255,0.15)] text-[#2E29FF]" : "bg-[rgba(46,41,255,0.18)] text-[#2E29FF]"}`}>
                   {m.name.charAt(0)}
                 </span>
               )}
@@ -75,10 +75,10 @@ export default function RecentPaidMembers({ limit = 5, light = false }: { limit?
           <div className={`truncate text-[12px] font-bold ${light ? "text-[#0E1726]" : "text-[#0e1726]"}`}>
             {members[0].name.split(" ")[0]}
             {members.length > 1 && (
-              <span className={`font-normal ${light ? "text-[#6B7280]" : "text-[#6b7280]"}`}> + {members.length - 1} бусад</span>
+              <span className={`font-normal ${light ? "text-[#E2E4E8]" : "text-[#E2E4E8]"}`}> + {members.length - 1} бусад</span>
             )}
           </div>
-          <div className={`text-[10px] ${light ? "text-[#5B6573]" : "text-[#6b7280]"}`}>
+          <div className={`text-[10px] ${light ? "text-[#E2E4E8]" : "text-[#E2E4E8]"}`}>
             Сүүлийн нь {timeAgo(members[0].clanJoinedAt)} өмнө нэгдсэн
           </div>
         </div>

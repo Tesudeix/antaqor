@@ -1,0 +1,116 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ӨДРИЙН НЭГ ГОРИМ (2026-10-23, эзний шийдвэр)
+   Бүх сайт + админ цайвар: суурь #F8F9FD, карт #FFFFFF. Хар горим БАЙХГҮЙ
+   (зөвхөн /rent, /yuki-ийн өөрийн палитр). Брэнд #2E29FF (цагаан дээр 7.3:1,
+   дээрээ цагаан бичиг 7.3:1 — дүүргэлт ба бичиг хоёуланд нэг утга).
+   Ачааллын дараалал: theme-light → theme-light-extra → theme-day (үүсгэсэн)
+   → ЭНЭ. Тиймээс энд бичсэн нь давамгайлна.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+  --l-canvas: #F8F9FD;
+  --l-surface: #FFFFFF;
+  --l-surface-2: #F1F2F7;
+  --l-ink: #14151C;
+  --l-muted: #4A4D5A;
+  --l-dim: #6B6E7A;
+  --l-accent-ink: #2E29FF;
+  --l-accent-deep: #1F1AD9;
+  --l-tint: rgba(46, 41, 255, 0.08);
+  --l-line: rgba(20, 21, 40, 0.10);
+  --l-line-strong: rgba(20, 21, 40, 0.18);
+  --l-line-solid: #E3E6EE;
+  --line: rgba(20, 21, 40, 0.10);
+  --line-strong: rgba(20, 21, 40, 0.18);
+  --color-border: #E3E6EE;
+  --color-background: #F8F9FD;
+  --chrome-bg: rgba(248, 249, 253, 0.86);
+  --chrome-line: rgba(20, 21, 40, 0.10);
+  --aq-brand: #2E29FF;
+  /* Урсгал градиент — бүх зогсоол дээр цагаан бичиг ≥4.9:1 (#2E29FF 7.3 · #5B3BFF 5.8 · #2563FF 5.0) */
+  --aq-flow: linear-gradient(100deg, #2E29FF 0%, #5B3BFF 28%, #2563FF 52%, #5B3BFF 76%, #2E29FF 100%);
+  background: #F8F9FD;
+  color-scheme: light;
+}
+:root[data-theme="light"] body { background: #F8F9FD !important; background-color: #F8F9FD !important; color: #14151C; }
+
+@keyframes aq-flow { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
+
+/* Дээд ирмэгийн шар-хар судал → брэндийн урсгал */
+:root[data-theme="light"] body::before {
+  background: var(--aq-flow) !important;
+  background-size: 200% 100% !important;
+  animation: aq-flow 6s linear infinite;
+}
+:root[data-theme="light"] .hazard-stripe,
+:root[data-theme="light"] .chip-signal {
+  background: var(--aq-flow) !important;
+  background-size: 200% 100% !important;
+  animation: aq-flow 6s linear infinite;
+  color: #FFFFFF !important;
+}
+:root[data-theme="light"] .frame-signal { border-color: #2E29FF !important; }
+
+/* Брэнд дүүргэлт — бичиг ҮРГЭЛЖ цагаан (generator бараан бичгийг бүдгэрүүлэхээс хамгаална).
+   `class~=` = яг токен: `hover:bg-[#2E29FF]` эсвэл `/10` tint тааруулахгүй.
+   :not(#_d) нь ID-ийн жин нэмнэ — бичгийн бүх mapping-ийг дийлнэ. */
+:root[data-theme="light"] body [class~="bg-[#2E29FF]" i]:not(#_d),
+:root[data-theme="light"] body [class~="bg-[#1F1AD9]" i]:not(#_d),
+:root[data-theme="light"] body [class~="bg-[#2E29FF]" i] *:not(#_d):not([class*="bg-white" i]):not([class*="bg-[#F" i]),
+:root[data-theme="light"] body [class~="bg-[#1F1AD9]" i] *:not(#_d):not([class*="bg-white" i]):not([class*="bg-[#F" i]) {
+  color: #FFFFFF !important;
+}
+:root[data-theme="light"] body [style*="background: rgb(46, 41, 255)"]:not(#_d),
+:root[data-theme="light"] body [style*="background-color: rgb(46, 41, 255)"]:not(#_d) { color: #FFFFFF !important; }
+
+/* Урсгал градиент — үндсэн CTA (холбоос, товч). Hover дээр урсгал хурдасна. */
+:root[data-theme="light"] body a[class~="bg-[#2E29FF]" i],
+:root[data-theme="light"] body button[class~="bg-[#2E29FF]" i] {
+  background-image: var(--aq-flow) !important;
+  background-size: 220% 100% !important;
+  animation: aq-flow 9s linear infinite;
+  box-shadow: 0 8px 22px -12px rgba(46, 41, 255, 0.65);
+}
+:root[data-theme="light"] body a[class~="bg-[#2E29FF]" i]:hover,
+:root[data-theme="light"] body button[class~="bg-[#2E29FF]" i]:hover:not(:disabled) { animation-duration: 2.4s; }
+:root[data-theme="light"] .aq-flow-text {
+  background: var(--aq-flow); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent !important;
+  animation: aq-flow 7s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="light"] body::before, :root[data-theme="light"] .hazard-stripe, :root[data-theme="light"] .chip-signal,
+  :root[data-theme="light"] body a[class~="bg-[#2E29FF]" i], :root[data-theme="light"] body button[class~="bg-[#2E29FF]" i], :root[data-theme="light"] .aq-flow-text { animation: none !important; }
+}
+
+/* Брэнд бичиг цагаан дээр — шилжилтээс хоцорсон inline өнгө */
+:root[data-theme="light"] body [style*="color: rgb(103, 139, 229)"] { color: #2E29FF !important; }
+
+/* Шар signal (Red Signal үеийн) → брэнд. Шар дүүргэлт + бараан бичиг цагаан дээр
+   ажилладаг ч #2E29FF-тай зөрчилдөнө — нэг брэнд өнгө. */
+:root[data-theme="light"] body [class~="bg-[#FCEE0A]" i]:not(#_d) { background-color: #2E29FF !important; color: #FFFFFF !important; }
+:root[data-theme="light"] body [class~="bg-[#FCEE0A]" i] *:not(#_d) { color: #FFFFFF !important; }
+:root[data-theme="light"] body [style*="background: rgb(252, 238, 10)"]:not(#_d) { background: #2E29FF !important; color: #FFFFFF !important; }
+
+/* Дээд/доод наалдамхай хүрээ — цайвар шил */
+:root[data-theme="light"] .app-chrome-top,
+:root[data-theme="light"] .app-chrome-bottom { background: rgba(248, 249, 253, 0.86) !important; border-color: rgba(20, 21, 40, 0.08) !important; }
+
+/* Нүүрний слайдерын доод мөр: зарим слайд текст (цайвар) тул доод талд цайвар шил +
+   бараан бичиг. Зурагтай слайд дээр ч уншигдана. Брэнд товч цагаан хэвээр (2 ID). */
+:root[data-theme="light"] body .hero-panel > .absolute.inset-x-0.bottom-0:not(#_d) {
+  background: linear-gradient(to top, rgba(248, 249, 253, 0.97) 0%, rgba(248, 249, 253, 0.82) 62%, rgba(248, 249, 253, 0) 100%);
+  padding-top: 44px;
+}
+:root[data-theme="light"] body .hero-panel > .absolute.inset-x-0.bottom-0 *:not(#_d):not([class*="bg-[#2E29FF]" i]) { color: #14151C !important; }
+:root[data-theme="light"] body .hero-panel [class~="bg-[#2E29FF]" i]:not(#_d):not(#_e),
+:root[data-theme="light"] body .hero-panel [class~="bg-[#2E29FF]" i] *:not(#_d):not(#_e) { color: #FFFFFF !important; }
+
+/* Харанхуй суурьт зориулсан брэнд «туяа» (bg-[#2E29FF] + blur) цайвар дээр нил ягаан үүл
+   болдог — бүдэг, урсдаг градиент туяа болгоно. */
+:root[data-theme="light"] body [class*="blur-["][class~="bg-[#2E29FF]" i] {
+  opacity: 0.2 !important;
+  background-image: var(--aq-flow) !important;
+  background-size: 200% 100% !important;
+  animation: aq-flow 8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { :root[data-theme="light"] body [class*="blur-["][class~="bg-[#2E29FF]" i] { animation: none !important; } }

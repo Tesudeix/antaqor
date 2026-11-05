@@ -10,13 +10,13 @@ export default function SubscriptionBanner() {
   if (loading || !isLoggedIn || isMember || isAdmin) return null;
 
   return (
-    <div className="sticky top-0 z-[60] flex h-[50px] items-center justify-center gap-3 bg-[#1080CA] px-4">
+    <div className="sticky top-0 z-[60] flex h-[50px] items-center justify-center gap-3 bg-[#2E29FF] px-4">
       <span className="text-[13px] font-semibold text-white">
         Сургалт, challenge, нийгэмлэгт нэгдэх
       </span>
       <Link
         href="/clan"
-        className="rounded-none bg-[#eef2f6] px-4 py-1.5 text-[12px] font-bold text-[#1080CA] transition hover:bg-[#eef2f6]/90"
+        className="rounded-[4px] bg-[#eef2f6] px-4 py-1.5 text-[12px] font-bold text-[#2E29FF] transition hover:bg-[#eef2f6]/90"
       >
         Нэгдэх
       </Link>

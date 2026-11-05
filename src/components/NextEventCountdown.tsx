@@ -16,13 +16,13 @@ interface EventItem {
 }
 
 const TYPE_CFG: Record<EventItem["type"], { label: string; color: string }> = {
-  live:      { label: "LIVE",       color: "#1080CA" },
-  class:     { label: "ХИЧЭЭЛ",     color: "#1080CA" },
-  workshop:  { label: "ВОРКШОП",    color: "#1080CA" },
+  live:      { label: "LIVE",       color: "var(--accent-ink, #2E29FF)" },
+  class:     { label: "ХИЧЭЭЛ",     color: "var(--accent-ink, #2E29FF)" },
+  workshop:  { label: "ВОРКШОП",    color: "var(--accent-ink, #2E29FF)" },
   challenge: { label: "CHALLENGE",  color: "#06B6D4" },
   mentor:    { label: "MENTOR",     color: "#14B8A6" },
-  event:     { label: "ЭВЕНТ",      color: "#1080CA" },
-  deadline:  { label: "ДЕДЛАЙН",    color: "#1080CA" },
+  event:     { label: "ЭВЕНТ",      color: "var(--accent-ink, #2E29FF)" },
+  deadline:  { label: "ДЕДЛАЙН",    color: "var(--accent-ink, #2E29FF)" },
 };
 
 const MN_DAYS = ["Ня", "Да", "Мя", "Лх", "Пү", "Ба", "Бя"];
@@ -129,25 +129,25 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
   return (
     <Link
       href="/calendar"
-      className={`group relative flex items-center gap-3 overflow-hidden rounded-none border p-2 pr-3 transition ${
+      className={`group relative flex items-center gap-3 overflow-hidden rounded-[4px] border p-2 pr-3 transition ${
         urgent
-          ? (light ? "antaqor-urgency-pulse border-[#1080CA] bg-[rgba(16,128,202,0.1)]" : "antaqor-urgency-pulse border-[#1080CA] bg-[rgba(16,128,202,0.1)]")
+          ? (light ? "antaqor-urgency-pulse border-[#2E29FF] bg-[rgba(46,41,255,0.1)]" : "antaqor-urgency-pulse border-[#2E29FF] bg-[rgba(46,41,255,0.1)]")
           : warm
-            ? (light ? "border-[rgba(16,128,202,0.45)] bg-[rgba(16,128,202,0.06)] hover:border-[rgba(16,128,202,0.7)]" : "border-[rgba(16,128,202,0.45)] bg-[rgba(16,128,202,0.05)] hover:border-[rgba(16,128,202,0.7)]")
-            : (light ? "border-[rgba(15,23,38,0.10)] bg-[#F4F6F8] hover:border-[rgba(16,128,202,0.3)]" : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(16,128,202,0.3)]")
+            ? (light ? "border-[rgba(46,41,255,0.45)] bg-[rgba(46,41,255,0.06)] hover:border-[rgba(46,41,255,0.7)]" : "border-[rgba(46,41,255,0.45)] bg-[rgba(46,41,255,0.05)] hover:border-[rgba(46,41,255,0.7)]")
+            : (light ? "border-[rgba(15,23,38,0.10)] bg-[#F4F6F8] hover:border-[rgba(46,41,255,0.3)]" : "border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] hover:border-[rgba(46,41,255,0.3)]")
       }`}
     >
       {/* Sweeping shimmer when urgent — subtle, pink */}
       {urgent && (
         <span
           aria-hidden
-          className={`pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent antaqor-urgency-shimmer ${light ? "via-[rgba(16,128,202,0.12)]" : "via-[rgba(16,128,202,0.12)]"}`}
+          className={`pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent antaqor-urgency-shimmer ${light ? "via-[rgba(46,41,255,0.12)]" : "via-[rgba(46,41,255,0.12)]"}`}
         />
       )}
 
       {/* Cover thumb */}
       <div
-        className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-none sm:h-14 sm:w-14 ${urgent ? "antaqor-stamp-pulse" : ""}`}
+        className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] sm:h-14 sm:w-14 ${urgent ? "antaqor-stamp-pulse" : ""}`}
         style={!event.image ? { background: deterministicGradient(event._id, cfg.color) } : undefined}
       >
         {event.image && (
@@ -164,10 +164,10 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           {(info.isLive || urgent) && (
-            <span className={`inline-flex h-1.5 w-1.5 animate-pulse rounded-full ${light ? "bg-[#1080CA]" : "bg-[#1080CA]"}`} />
+            <span className={`inline-flex h-1.5 w-1.5 animate-pulse rounded-full ${light ? "bg-[#2E29FF]" : "bg-[#2E29FF]"}`} />
           )}
           <span
-            className="rounded-full px-1.5 py-0.5 text-[8px] font-black tracking-wider text-white"
+            className="rounded-[4px] px-1.5 py-0.5 text-[8px] font-black tracking-wider text-white"
             style={{ background: cfg.color }}
           >
             {cfg.label}
@@ -175,10 +175,10 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
           <span
             className={`truncate text-[10px] font-bold uppercase tracking-[0.06em] ${
               urgent
-                ? (light ? "antaqor-urgency-text text-[#1080CA]" : "antaqor-urgency-text text-[#1080CA]")
+                ? (light ? "antaqor-urgency-text text-[#2E29FF]" : "antaqor-urgency-text text-[#2E29FF]")
                 : info.isLive || warm
-                  ? (light ? "text-[#1080CA]" : "text-[#1080CA]")
-                  : (light ? "text-[#6B7280]" : "text-[#6b7280]")
+                  ? (light ? "text-[#2E29FF]" : "text-[#2E29FF]")
+                  : (light ? "text-[#E2E4E8]" : "text-[#E2E4E8]")
             }`}
           >
             {info.phrase}
@@ -190,7 +190,7 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
       </div>
 
       <svg
-        className={`h-4 w-4 shrink-0 transition group-hover:translate-x-0.5 ${light ? "text-[#9AA3AF] group-hover:text-[#1080CA]" : "text-[#6b7280] group-hover:text-[#1080CA]"}`}
+        className={`h-4 w-4 shrink-0 transition group-hover:translate-x-0.5 ${light ? "text-[#9AA3AF] group-hover:text-[#2E29FF]" : "text-[#E2E4E8] group-hover:text-[#2E29FF]"}`}
         fill="none"
         stroke="currentColor"
         strokeWidth={2}
@@ -202,8 +202,8 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
       {/* Scoped urgency keyframes — co-located so the component is self-contained */}
       <style jsx>{`
         @keyframes urgencyPulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(16,128,202,0); }
-          50%      { box-shadow: 0 0 0 4px rgba(16,128,202,0.18), 0 0 24px rgba(16,128,202,0.25); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(46,41,255,0); }
+          50%      { box-shadow: 0 0 0 4px rgba(46,41,255,0.18), 0 0 24px rgba(46,41,255,0.25); }
         }
         :global(.antaqor-urgency-pulse) {
           animation: urgencyPulse 1.6s ease-in-out infinite;
@@ -216,15 +216,15 @@ export default function NextEventCountdown({ light = false }: { light?: boolean 
           animation: urgencyShimmer 2.4s linear infinite;
         }
         @keyframes urgencyText {
-          0%, 100% { text-shadow: 0 0 0 rgba(16,128,202,0); opacity: 0.85; }
-          50%      { text-shadow: 0 0 12px rgba(16,128,202,0.7); opacity: 1; }
+          0%, 100% { text-shadow: 0 0 0 rgba(46,41,255,0); opacity: 0.85; }
+          50%      { text-shadow: 0 0 12px rgba(46,41,255,0.7); opacity: 1; }
         }
         :global(.antaqor-urgency-text) {
           animation: urgencyText 1.2s ease-in-out infinite;
         }
         @keyframes stampPulse {
-          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,128,202,0); }
-          50%      { transform: scale(1.04); box-shadow: 0 0 0 3px rgba(16,128,202,0.35); }
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46,41,255,0); }
+          50%      { transform: scale(1.04); box-shadow: 0 0 0 3px rgba(46,41,255,0.35); }
         }
         :global(.antaqor-stamp-pulse) {
           animation: stampPulse 1.6s ease-in-out infinite;

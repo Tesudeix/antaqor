@@ -77,35 +77,35 @@ export default function MissionDetailPage({ params }: { params: Promise<{ slug: 
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse bg-[#1080CA]" />
+        <div className="h-2 w-2 animate-pulse bg-[#2E29FF]" />
       </div>
     );
   }
   if (!mission) {
-    return <div className="py-20 text-center text-[14px] text-[#84848C]">Mission олдсонгүй</div>;
+    return <div className="py-20 text-center text-[14px] text-[#E2E4E8]">Mission олдсонгүй</div>;
   }
 
   const planDef = PLANS[mission.requiredPlan];
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-6">
-      <Link href="/missions" className="chrome mb-6 inline-block text-[10px] text-[#84848C] hover:text-[#F2F2F4]">
+      <Link href="/missions" className="chrome mb-6 inline-block text-[10px] text-[#E2E4E8] hover:text-[#F2F2F4]">
         ← БҮХ MISSION
       </Link>
 
       <div className="chrome mb-2 text-[10px]" style={{ color: mission.requiredPlan === "free" ? "#3B82F6" : planDef.accent }}>
         {mission.requiredPlan === "free" ? "STARTER MISSION · FREE" : `${planDef.name.toUpperCase()} PLAN`} · +{mission.xpReward} XP
       </div>
-      <h1 className="headline mb-3 text-[clamp(24px,4.5vw,34px)]">{mission.title}</h1>
-      <p className="mb-6 text-[14px] leading-relaxed text-[#B4B4BA]">{mission.brief}</p>
+      <h1 className="headline mb-3 text-[clamp(22px,3.6vw,30px)]">{mission.title}</h1>
+      <p className="mb-6 text-[14px] leading-relaxed text-[#E2E4E8]">{mission.brief}</p>
 
-      <div className="mb-6 grid gap-px bg-[#2E2E33] sm:grid-cols-2">
-        <div className="bg-[#161618] p-4">
-          <div className="chrome mb-1 text-[9px] text-[#84848C]">DELIVERABLE</div>
+      <div className="mb-6 grid gap-px bg-[#262626] sm:grid-cols-2">
+        <div className="bg-[#0A0A0A] p-4">
+          <div className="chrome mb-1 text-[11px] text-[#E2E4E8]">DELIVERABLE</div>
           <div className="text-[13px] font-semibold text-[#F2F2F4]">{mission.deliverable}</div>
         </div>
-        <div className="bg-[#161618] p-4">
-          <div className="chrome mb-1 text-[9px] text-[#84848C]">УР ЧАДВАР</div>
+        <div className="bg-[#0A0A0A] p-4">
+          <div className="chrome mb-1 text-[11px] text-[#E2E4E8]">УР ЧАДВАР</div>
           <div className="text-[13px] text-[#F2F2F4]">{mission.skills.join(" · ")}</div>
         </div>
       </div>
@@ -113,8 +113,8 @@ export default function MissionDetailPage({ params }: { params: Promise<{ slug: 
       {mission.unlocked ? (
         <>
           {/* Full instructions */}
-          <div className="mb-8 border border-[#2E2E33] bg-[#1E1E21] p-6">
-            <div className="chrome mb-3 text-[9px] text-[#84848C]">ЗААВАР</div>
+          <div className="mb-8 bg-[#141414] bg-[#0A0A0A] p-6">
+            <div className="chrome mb-3 text-[11px] text-[#E2E4E8]">ЗААВАР</div>
             <div className="whitespace-pre-line text-[13.5px] leading-relaxed text-[#F2F2F4]">
               {mission.instructions}
             </div>
@@ -125,51 +125,51 @@ export default function MissionDetailPage({ params }: { params: Promise<{ slug: 
             <div className="border border-green-500/30 bg-[#161c16] p-6 text-center">
               <div className="chrome mb-2 text-[10px] text-green-400">ИЛГЭЭСЭН ✓</div>
               <p className="mb-1 text-[14px] font-semibold text-[#F2F2F4]">Deliverable чинь хүлээн авагдлаа.</p>
-              <p className="text-[12px] text-[#B4B4BA]">
+              <p className="text-[12px] text-[#E2E4E8]">
                 Feedback ирмэгц мэдэгдэл очно. Түр зуур дараагийн хичээлээ үргэлжлүүл.
               </p>
               {mission.mySubmission?.feedback && (
-                <div className="mt-4 border-t border-[#2E2E33] pt-4 text-left">
-                  <div className="chrome mb-1 text-[9px] text-[#F59E0B]">FEEDBACK</div>
+                <div className="mt-4 border-t border-[#262626] pt-4 text-left">
+                  <div className="chrome mb-1 text-[11px] text-[#F59E0B]">FEEDBACK</div>
                   <p className="text-[13px] text-[#F2F2F4]">{mission.mySubmission.feedback}</p>
                 </div>
               )}
-              <Link href="/" className="chrome mt-5 inline-block text-[10px] text-[#84848C] hover:text-[#F2F2F4]">
+              <Link href="/" className="chrome mt-5 inline-block text-[10px] text-[#E2E4E8] hover:text-[#F2F2F4]">
                 DASHBOARD РУУ →
               </Link>
             </div>
           ) : session ? (
-            <form onSubmit={submit} className="border border-[#2E2E33] bg-[#1E1E21] p-6">
-              <div className="chrome mb-4 text-[9px] text-[#84848C]">ҮР ДҮНГЭЭ ИЛГЭЭХ</div>
-              <label className="chrome mb-1.5 block text-[9px] text-[#84848C]">ЛИНК (LIVE URL)</label>
+            <form onSubmit={submit} className="bg-[#141414] bg-[#0A0A0A] p-6">
+              <div className="chrome mb-4 text-[11px] text-[#E2E4E8]">ҮР ДҮНГЭЭ ИЛГЭЭХ</div>
+              <label className="chrome mb-1.5 block text-[11px] text-[#E2E4E8]">ЛИНК (LIVE URL)</label>
               <input
                 type="url"
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
                 placeholder="https://…"
-                className="mb-4 w-full border border-[#2E2E33] bg-[#161618] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none placeholder:text-[#4a4a4f] focus:border-[#1080CA]"
+                className="mb-4 w-full bg-[#141414] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none placeholder:text-[#E2E4E8] focus:border-[#2E29FF]"
               />
-              <label className="chrome mb-1.5 block text-[9px] text-[#84848C]">ЮУ БҮТЭЭСЭН, ЯАЖ ХИЙСЭН</label>
+              <label className="chrome mb-1.5 block text-[11px] text-[#E2E4E8]">ЮУ БҮТЭЭСЭН, ЯАЖ ХИЙСЭН</label>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={4}
                 placeholder="Товч тайлбар…"
-                className="mb-4 w-full border border-[#2E2E33] bg-[#161618] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none placeholder:text-[#4a4a4f] focus:border-[#1080CA]"
+                className="mb-4 w-full bg-[#141414] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none placeholder:text-[#E2E4E8] focus:border-[#2E29FF]"
               />
-              {error && <div className="mb-4 text-[13px] text-[#1080CA]">{error}</div>}
+              {error && <div className="mb-4 text-[13px] text-[#2E29FF]">{error}</div>}
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-[#1080CA] py-3.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-60"
+                className="w-full bg-[#2E29FF] py-3.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-60"
               >
                 {submitting ? "Илгээж байна…" : `Илгээх — +${mission.xpReward} XP`}
               </button>
             </form>
           ) : (
-            <div className="border border-[#2E2E33] bg-[#1E1E21] p-6 text-center">
-              <p className="mb-4 text-[13px] text-[#B4B4BA]">Илгээхийн тулд эхлээд нэгд.</p>
-              <Link href="/auth/signup" className="inline-block bg-[#1080CA] px-8 py-3.5 text-[13px] font-bold text-[#0E0E10]">
+            <div className="bg-[#141414] bg-[#0A0A0A] p-6 text-center">
+              <p className="mb-4 text-[13px] text-[#E2E4E8]">Илгээхийн тулд эхлээд нэгд.</p>
+              <Link href="/auth/signup" className="inline-block bg-[#2E29FF] px-8 py-3.5 text-[13px] font-bold text-white">
                 Нэгдэх
               </Link>
             </div>
@@ -177,7 +177,7 @@ export default function MissionDetailPage({ params }: { params: Promise<{ slug: 
         </>
       ) : (
         /* Locked — sell the unlock with exactly what they get */
-        <div className="border border-[#2E2E33] bg-[#1E1E21] p-6">
+        <div className="bg-[#141414] bg-[#0A0A0A] p-6">
           <div className="chrome mb-3 text-[10px]" style={{ color: planDef.accent }}>
             🔒 ЭНЭ MISSION-ИЙГ {planDef.name.toUpperCase()} PLAN-ААР НЭЭНЭ
           </div>
@@ -194,7 +194,7 @@ export default function MissionDetailPage({ params }: { params: Promise<{ slug: 
               if (session) setShowUpgrade(true);
               else router.push(`/auth/signup?plan=${mission.requiredPlan}`);
             }}
-            className="w-full bg-[#1080CA] py-3.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+            className="w-full bg-[#2E29FF] py-3.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9]"
           >
             {planDef.name} plan нээх — {planDef.price.toLocaleString()}₮
           </button>

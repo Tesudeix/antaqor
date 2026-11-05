@@ -65,7 +65,7 @@ export default function StreakChip() {
       <Link
         href={`/profile/${(session.user as { id?: string })?.id || ""}`}
         title={`Streak: ${streak.streakDays} өдөр дараалан · дээд амжилт ${streak.streakBestDays}`}
-        className="group inline-flex items-center gap-1 rounded-none border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.06)] px-2 py-1 text-[12px] font-bold text-[#F97316] transition hover:bg-[rgba(249,115,22,0.12)]"
+        className="group inline-flex items-center gap-1 rounded-[4px] border border-[rgba(249,115,22,0.25)] bg-[rgba(249,115,22,0.06)] px-2 py-1 text-[12px] font-bold text-[#F97316] transition hover:bg-[rgba(249,115,22,0.12)]"
       >
         <span className="text-[14px] leading-none">{flame}</span>
         <span className="tabular-nums">{streak.streakDays}</span>
@@ -79,23 +79,23 @@ export default function StreakChip() {
             exit={{ opacity: 0, y: -10 }}
             className="fixed inset-x-3 top-3 z-[80] mx-auto max-w-md"
           >
-            <div className="relative overflow-hidden rounded-none border border-[rgba(249,115,22,0.4)] bg-gradient-to-br from-[rgba(249,115,22,0.15)] via-[#eef2f6] to-[#f7f9fb] p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
-              <div className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-30"
+            <div className="relative overflow-hidden rounded-[4px] border border-[rgba(249,115,22,0.4)] bg-gradient-to-br from-[rgba(249,115,22,0.15)] via-[#eef2f6] to-[#f7f9fb] p-4 shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+              <div className="pointer-events-none absolute -right-4 -top-4 h-24 w-24 rounded-[4px] opacity-30"
                 style={{ background: "radial-gradient(circle, #F97316AA, transparent 70%)" }}
               />
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F97316] text-[24px] shadow-[0_0_32px_rgba(249,115,22,0.5)]">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[#F97316] text-[24px] shadow-[0_0_32px_rgba(249,115,22,0.5)]">
                   🔥
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#F97316]">STREAK · {toast.days} ӨДӨР</div>
+                  <div className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#F97316]">STREAK · {toast.days} ӨДӨР</div>
                   <div className="text-[14px] font-black text-[#0e1726]">{toast.label}</div>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px] font-bold">
-                    <span className="text-[#1080CA]">+{toast.credits} credit</span>
-                    {toast.xp > 0 && <span className="text-[#1080CA]">+{toast.xp} XP</span>}
+                    <span className="text-[#2E29FF]">+{toast.credits} credit</span>
+                    {toast.xp > 0 && <span className="text-[#2E29FF]">+{toast.xp} XP</span>}
                   </div>
                 </div>
-                <button onClick={() => setToast(null)} className="h-6 w-6 shrink-0 rounded-full text-[#6b7280] hover:text-[#475569]">×</button>
+                <button onClick={() => setToast(null)} className="h-6 w-6 shrink-0 rounded-[4px] text-[#E2E4E8] hover:text-[#475569]">×</button>
               </div>
             </div>
           </motion.div>

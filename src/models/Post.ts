@@ -13,14 +13,25 @@ export interface IPost extends Document {
   // pattern only fits one without forcing a player-juggle UX.
   video?: string;
   videoDurationSec?: number;
+  /** Хавсаргасан PDF (2026-10-27). */
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  /** Медиагийн харьцаа: "" (эх) | "1:1" | "4:5" | "16:9" | "9:16". */
+  aspect?: string;
+  /** Зөвхөн текст постын хэлбэр: "" (энгийн) | "card" (брэнд карт). */
+  textStyle?: string;
   visibility: "free" | "members";
+  /** Админ дээр нь тогтоосон пост — урсгалын хамгийн эхэнд гарна. */
+  pinned: boolean;
   category: string;
+  circle: string;
   // When set, the feed renders this post as the named empire agent
   // (avatar/name/badge sourced from src/lib/empireAgents.ts) instead of
   // the underlying admin user. Stays empty for normal user posts.
   agentSlug?: string;
   // Original AI prompt used to generate the attached image.
-  // Visible only to paid Edgerunners members — the API strips this field
+  // Visible only to paid Antaqor хүрээлэл members — the API strips this field
   // from responses for non-members. Lets us monetise prompt access while
   // keeping the visual public.
   aiPrompt?: string;
@@ -29,6 +40,8 @@ export interface IPost extends Document {
   reactions: Map<string, mongoose.Types.ObjectId[]>;
   commentsCount: number;
   viewsCount: number;
+  /** Highest like-milestone (likes / likesPerCredit) already paid out in credits. Only moves forward. */
+  likeMilestonesAwarded?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,12 +86,30 @@ const PostSchema = new Schema<IPost>(
       type: Number,
       default: 0,
       min: 0,
-      max: 30, // hard cap above the UX 20s limit (gives buffer for tiny encode drift)
+      max: 62, // 60с reel + encode drift (2026-10-11: 30 байсан тул 31–60с reel хадгалагддаггүй байв)
+    },
+    fileUrl: { type: String, default: "", trim: true },
+    fileName: { type: String, default: "", trim: true, maxlength: 120 },
+    fileSize: { type: Number, default: 0, min: 0 },
+    aspect: { type: String, default: "", enum: ["", "1:1", "4:5", "16:9", "9:16"] },
+    textStyle: { type: String, default: "", enum: ["", "card"] },
+    /* Зөвхөн админ тогтооно. Индекс нь `pinned: -1, createdAt: -1` дараалалд
+       хэрэгтэй — үүнгүйгээр урсгал бүр бүтэн коллекцийг эрэмбэлнэ. */
+    pinned: {
+      type: Boolean,
+      default: false,
     },
     visibility: {
       type: String,
       enum: ["free", "members"],
       default: "members",
+    },
+    /* Хүрээллийн slug. Хоосон = нийтийн урсгал. `category`-тай ижил
+       зарчим: заавал биш, индекстэй, шүүлтүүрээр л уншина. */
+    circle: {
+      type: String,
+      default: "",
+      index: true,
     },
     category: {
       type: String,
@@ -121,6 +152,7 @@ const PostSchema = new Schema<IPost>(
       default: 0,
     },
     viewsCount: { type: Number, default: 0 },
+    likeMilestonesAwarded: { type: Number, default: 0 },
   },
   {
     timestamps: true,
@@ -130,6 +162,7 @@ const PostSchema = new Schema<IPost>(
 PostSchema.index({ createdAt: -1 });
 PostSchema.index({ author: 1 });
 PostSchema.index({ visibility: 1, createdAt: -1 });
+PostSchema.index({ pinned: -1, createdAt: -1 });
 PostSchema.index({ category: 1, createdAt: -1 });
 PostSchema.index({ visibility: 1, authorLevel: 1, createdAt: -1 });
 

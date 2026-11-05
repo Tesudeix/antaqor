@@ -53,9 +53,14 @@ export async function POST(req: NextRequest) {
 
   await dbConnect();
 
-  // Check recipient exists and is a clan member
-  const recipient = await User.findById(recipientId).select("clan").lean();
-  if (!recipient || !recipient.clan) {
+  /* Хүлээн авагч БАЙГАА эсэхийг л шалгана. Өмнө нь `clan` талбар хоосон
+     биш байхыг шаарддаг байсан бөгөөд хоосон үед "Хэрэглэгч олдсонгүй"
+     гэж 404 буцаадаг байв — 592 хэрэглэгчийн 519 нь clan-гүй тул тэдэн рүү
+     мессеж бичих боломжгүй, шалтгаан нь худал. Гишүүнчлэлийн хаалт
+     хэрэгтэй бол тэр нь өөрийн гэсэн 403, өөрийн гэсэн мессежтэй байх
+     ёстой; байхгүй хүн болгож харуулах нь хаалт биш, алдаа. */
+  const recipient = await User.findById(recipientId).select("_id").lean();
+  if (!recipient) {
     return NextResponse.json({ error: "Хэрэглэгч олдсонгүй" }, { status: 404 });
   }
 

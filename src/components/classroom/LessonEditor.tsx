@@ -9,7 +9,7 @@
 import { useRef, useState } from "react";
 import { LessonArticle } from "./LessonArticle";
 
-const ACCENT = "#1080CA";
+const ACCENT = "var(--accent-ink, #2E29FF)";
 
 interface Props {
   value: string;
@@ -126,7 +126,7 @@ export function LessonEditor({ value, onChange }: Props) {
   };
 
   return (
-    <div className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8]">
+    <div className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8]">
       {/* ─── Toolbar ─── */}
       <div className="flex flex-wrap items-center gap-1 border-b border-[rgba(15,23,38,0.06)] px-2 py-1.5">
         <ToolBtn label="H1" title="Гарчиг" onClick={() => prefixLine("# ")} />
@@ -142,7 +142,7 @@ export function LessonEditor({ value, onChange }: Props) {
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
           title="Зураг нэмэх"
-          className="inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 text-[11px] font-bold transition hover:bg-[rgba(16,128,202,0.08)] disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-[4px] px-2.5 py-1 text-[11px] font-bold transition hover:bg-[rgba(46,41,255,0.08)] disabled:opacity-50"
           style={{ color: ACCENT }}
         >
           {uploading ? (
@@ -157,7 +157,7 @@ export function LessonEditor({ value, onChange }: Props) {
         <input ref={fileRef} type="file" accept="image/*" onChange={onPick} className="hidden" />
 
         {/* Mobile tabs */}
-        <div className="ml-auto inline-flex rounded-none border border-[rgba(15,23,38,0.08)] p-0.5 md:hidden">
+        <div className="ml-auto inline-flex rounded-[4px] border border-[rgba(15,23,38,0.08)] p-0.5 md:hidden">
           {(["edit", "preview"] as const).map((m) => {
             const active = mode === m;
             return (
@@ -165,10 +165,10 @@ export function LessonEditor({ value, onChange }: Props) {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className="rounded-none px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] transition"
+                className="rounded-[4px] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] transition"
                 style={{
                   background: active ? ACCENT : "transparent",
-                  color: active ? "#fff" : "#6b7280",
+                  color: active ? "#fff" : "#30333F",
                 }}
               >
                 {m === "edit" ? "Бичих" : "Харах"}
@@ -179,7 +179,7 @@ export function LessonEditor({ value, onChange }: Props) {
       </div>
 
       {error && (
-        <div className="border-b border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.06)] px-3 py-1.5 text-[11px] text-[#1080CA]">
+        <div className="border-b border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.06)] px-3 py-1.5 text-[11px] text-[#2E29FF]">
           {error}
         </div>
       )}
@@ -208,21 +208,21 @@ export function LessonEditor({ value, onChange }: Props) {
             rows={18}
             placeholder={"# Гарчиг\n\nЭхний параграф — анхдагч санаа.\n\n## Дэд гарчиг\n\nЗурагтай хэсэг:\n\n![Тайлбар](зургийн URL)\n\n> Иш татлага бичих..."}
             spellCheck={false}
-            className="w-full resize-y border-0 bg-transparent px-5 py-4 font-mono text-[14px] leading-[1.7] text-[#0e1726] placeholder-[#94a3b8] outline-none md:border-r md:border-[rgba(15,23,38,0.06)]"
+            className="w-full resize-y border-0 bg-transparent px-5 py-4 font-mono text-[14px] leading-[1.7] text-[#0e1726] placeholder-[#62666F] outline-none md:border-r md:border-[rgba(15,23,38,0.06)]"
             style={{ minHeight: "480px" }}
           />
         </div>
 
         {/* Preview */}
         <div
-          className={`overflow-y-auto bg-[#0a0a0c] ${mode === "preview" || "md:block"} ${mode === "edit" ? "hidden md:block" : ""}`}
+          className={`overflow-y-auto bg-[#0A0A0A] ${mode === "preview" || "md:block"} ${mode === "edit" ? "hidden md:block" : ""}`}
           style={{ minHeight: "480px" }}
         >
           {value.trim() ? (
             <LessonArticle content={value} />
           ) : (
             <div className="flex h-full min-h-[480px] items-center justify-center px-5 text-center">
-              <div className="text-[12px] font-mono uppercase tracking-[0.22em] text-[#94a3b8]">
+              <div className="text-[12px] font-mono uppercase tracking-[0.22em] text-[#E2E4E8]">
                 preview · бичих хэсэг хоосон
               </div>
             </div>
@@ -232,10 +232,10 @@ export function LessonEditor({ value, onChange }: Props) {
 
       {/* ─── Markdown cheat sheet (collapsible footer) ─── */}
       <details className="border-t border-[rgba(15,23,38,0.06)] px-3 py-2">
-        <summary className="cursor-pointer font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#0e1726]">
+        <summary className="cursor-pointer font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#0e1726]">
           markdown зөвлөмж
         </summary>
-        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-[#6b7280] sm:grid-cols-3">
+        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-[#E2E4E8] sm:grid-cols-3">
           <span><code className="text-[#475569]"># Гарчиг</code> → H1</span>
           <span><code className="text-[#475569]">## Гарчиг</code> → H2</span>
           <span><code className="text-[#475569]">**тод**</code> → <strong>тод</strong></span>
@@ -259,7 +259,7 @@ function ToolBtn({
       type="button"
       onClick={onClick}
       title={title}
-      className="rounded-none px-2.5 py-1 font-mono text-[11px] transition hover:bg-[rgba(15,23,38,0.06)]"
+      className="rounded-[4px] px-2.5 py-1 font-mono text-[11px] transition hover:bg-[rgba(15,23,38,0.06)]"
       style={{
         color: "#475569",
         fontWeight: bold ? 900 : 500,

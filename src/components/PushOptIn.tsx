@@ -15,7 +15,7 @@ const KEY_DECLINED = "push_declined";
 // Don't ask again for 14 days after a soft decline. After hard browser deny
 // we never ask (browser holds the permission state).
 const RETRY_DAYS = 14;
-const NEON = "#1080CA";
+const NEON = "var(--accent-ink, #2E29FF)";
 
 type Step = "idle" | "ask" | "subscribing" | "done" | "denied";
 
@@ -112,13 +112,13 @@ export default function PushOptIn() {
       }}
     >
       <div
-        className="overflow-hidden rounded-none border bg-[#f2f5f8] p-4 shadow-[0_12px_36px_rgba(0,0,0,0.5)]"
-        style={{ borderColor: "rgba(16,128,202,0.35)" }}
+        className="overflow-hidden rounded-[4px] border bg-[#f2f5f8] p-4 shadow-[0_12px_36px_rgba(0,0,0,0.5)]"
+        style={{ borderColor: "rgba(46,41,255,0.35)" }}
       >
         <div className="flex items-start gap-3">
           <span
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none"
-            style={{ background: NEON, boxShadow: "0 0 14px rgba(16,128,202,0.5)" }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px]"
+            style={{ background: NEON, boxShadow: "0 0 14px rgba(46,41,255,0.5)" }}
           >
             <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -128,22 +128,22 @@ export default function PushOptIn() {
             {step === "ask" && (
               <>
                 <div className="text-[13px] font-black text-white">Мэдэгдэл идэвхжүүлэх</div>
-                <div className="mt-0.5 text-[11px] leading-relaxed text-[#5b6573]">
+                <div className="mt-0.5 text-[11px] leading-relaxed text-[#E2E4E8]">
                   Reaction, agent reply, live event эхлэхэд шууд мэдэгдэл авна
                 </div>
                 <div className="mt-3 flex gap-2">
                   <button
                     type="button"
                     onClick={enable}
-                    className="rounded-none px-3 py-1.5 text-[11px] font-black text-white transition active:scale-95"
-                    style={{ background: NEON, boxShadow: "0 0 12px rgba(16,128,202,0.4)" }}
+                    className="rounded-[4px] px-3 py-1.5 text-[11px] font-black text-white transition active:scale-95"
+                    style={{ background: NEON, boxShadow: "0 0 12px rgba(46,41,255,0.4)" }}
                   >
                     Идэвхжүүлэх
                   </button>
                   <button
                     type="button"
                     onClick={decline}
-                    className="rounded-none border border-[rgba(15,23,38,0.08)] px-3 py-1.5 text-[11px] font-bold text-[#5b6573] transition hover:text-white"
+                    className="rounded-[4px] border border-[rgba(15,23,38,0.08)] px-3 py-1.5 text-[11px] font-bold text-[#E2E4E8] transition hover:text-white"
                   >
                     Дараа
                   </button>
@@ -159,7 +159,7 @@ export default function PushOptIn() {
               </div>
             )}
             {step === "denied" && (
-              <div className="text-[12px] text-[#5b6573]">Дараа явах товчоор хэдийд ч идэвхжүүлж болно</div>
+              <div className="text-[12px] text-[#E2E4E8]">Дараа явах товчоор хэдийд ч идэвхжүүлж болно</div>
             )}
           </div>
         </div>

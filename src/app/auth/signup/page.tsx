@@ -7,21 +7,56 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { track, trackOnce } from "@/lib/analytics";
 import { isPaidPlanId } from "@/lib/plans";
-import GoogleSignInButton from "@/components/GoogleSignInButton";
+import { AuthField, GenderPicker, type Gender } from "@/components/AuthField";
+import { ProgramPicker, usePrograms } from "@/components/Programs";
 
-// ─── Бүртгэл — Edgerunner card, LoginCard-тай ижил хэл. ───
-// Google эхэндээ (нэг товшилт) → эсвэл 3 талбар. ?plan=X → шууд төлбөр.
+/* ─── Бүртгэл ───
+   ЗАСВАР (2026-08-21): доорх тайлбар "Google товч байхгүй" гэж хэлдэг байсан
+   нь ҮНЭН БАЙХАА больсон — Google нэвтрэлт нь маягтын дээр зогсоно. Мөн
+   утас, имэйл, хүйс гурав нэмэгдсэн. Хуучин тайлбарыг үлдээвэл дараагийн
+   хүн кодыг биш тайлбарыг уншаад буруу дүгнэнэ.
+
+   Имэйлийг
+   сервер тал нь username-ээс дотооддоо үүсгэдэг тул User schema дээрх
+   email: required + unique-ийг хөндөх шаардлагагүй.
+   ?plan=X → бүртгэлийн дараа шууд төлбөр рүү.
+
+   Хэлбэр нь AuthModal-тай ижил: хүрээгүй гадаргуу, дүүргэсэн талбар,
+   focus дээр л гарах accent цагираг. */
+
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,30}$/;
+
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.055, delayChildren: 0.06 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.34, ease: [0.16, 1, 0.3, 1] as const } },
+};
 
 function SignupInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState<Gender>("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [referralCode, setReferralCode] = useState("");
+  const [program, setProgram] = useState("");
+  const programs = usePrograms();
+  /* Нүүр хуудсан дээр сонгосон хөтөлбөрийг өвлөнө — хүн нэг удаа
+     сонгосноо энд дахин хийх шаардлагагүй. */
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("antaqor:program");
+      if (saved) setProgram(saved);
+    } catch { /* хаалттай хөтөч */ }
+  }, []);
 
   useEffect(() => {
     trackOnce("signup_view");
@@ -33,6 +68,25 @@ function SignupInner() {
     e.preventDefault();
     if (loading) return;
     setError("");
+
+    const handle = username.trim().replace(/^@+/, "");
+    if (!USERNAME_RE.test(handle)) {
+      setError("Хэрэглэгчийн нэр 3-30 тэмдэгт, зөвхөн үсэг, тоо, _ агуулна");
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError("Имэйл хаягаа зөв оруулна уу");
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 6) {
+      setError("Утасны дугаараа оруулна уу");
+      return;
+    }
+    if (!gender) {
+      setError("Хүйсээ сонгоно уу");
+      return;
+    }
+
     setLoading(true);
     track("signup_click");
     try {
@@ -40,9 +94,12 @@ function SignupInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim(),
+          username: handle,
           email: email.trim(),
+          phone: phone.trim(),
           password,
+          gender,
+          ...(program ? { program } : {}),
           ...(referralCode ? { referralCode } : {}),
         }),
       });
@@ -53,14 +110,16 @@ function SignupInner() {
         return;
       }
       trackOnce("signup_completed");
-      const signInRes = await signIn("credentials", { login: email.trim(), password, redirect: false });
+      const signInRes = await signIn("credentials", { login: handle, password, redirect: false });
       if (signInRes?.error) {
         setError(signInRes.error);
         setLoading(false);
         return;
       }
       const plan = searchParams.get("plan");
-      router.push(plan && isPaidPlanId(plan) ? `/pricing?plan=${plan}` : "/onboarding");
+      /* ?callbackUrl=/content-agent — Antaqor Agent-ийн туршилтаас ирсэн хүн шууд буцна (зөвхөн дотоод зам) */
+      const cb = searchParams.get("callbackUrl") || "";
+      router.push(/^\/(?!\/)/.test(cb) ? cb : plan && isPaidPlanId(plan) ? `/pricing?plan=${plan}` : "/onboarding");
       router.refresh();
     } catch {
       setError("Сүлжээний алдаа. Дахин оролдоно уу.");
@@ -68,117 +127,117 @@ function SignupInner() {
     }
   };
 
-  const inputCls =
-    "w-full rounded-[4px] border bg-[#0a0a0c] px-3 py-3 text-[14px] outline-none transition focus:border-[#1080CA]";
-  const inputStyle = { borderColor: "rgba(255,255,255,0.12)", color: "#FFFFFF" } as const;
-  const labelCls = "mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.04em]";
-
   return (
-    <div className="flex min-h-[78vh] items-center justify-center px-0 sm:px-4">
+    <div className="flex min-h-[78vh] items-center justify-center px-4 py-10">
       <motion.div
-        initial={{ opacity: 0, x: 12 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.24, ease: [0, 0, 0.2, 1] }}
-        className="relative w-full sm:max-w-[400px]"
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="w-full max-w-[380px] rounded-[4px] bg-[#141416] p-7 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85)]"
       >
-        <div className="relative border-y border-[rgba(255,255,255,0.12)] bg-[#0d0d10] p-6 max-sm:border-x-0 sm:rounded-[4px] sm:border sm:p-8">
-          {["left-0 top-0 border-l-2 border-t-2", "right-0 top-0 border-r-2 border-t-2", "bottom-0 left-0 border-b-2 border-l-2", "bottom-0 right-0 border-b-2 border-r-2"].map((c, i) => (
-            <span key={i} className={`pointer-events-none absolute h-3 w-3 border-[#1080CA] ${c}`} />
-          ))}
+        <motion.h1 variants={item} className="text-[24px] font-bold leading-tight text-white">
+          Бүртгүүлэх
+        </motion.h1>
+        <motion.p variants={item} className="mt-1.5 text-[13px] text-[#E2E4E8]">
+          Имэйл нь нууц үг сэргээхэд хэрэгтэй
+        </motion.p>
 
-          <span className="tag">ANTAQOR /// БҮРТГЭЛ</span>
-          <h1 className="mt-4 text-[26px] font-bold" style={{ color: "#1080CA", fontFamily: "var(--font-display)" }}>
-            Нэгдэх
-          </h1>
-          <p className="mt-1 mb-6 text-[12px]" style={{ color: "#84848C" }}>
-            30 секунд · карт шаардлагагүй
-          </p>
+        {/* Google нэвтрэлт 2026-09-04-нд ХАСАГДСАН (эзний шийдвэр).
+            `GoogleSignInButton` болон `google-idtoken` provider нь
+            УСТААГҮЙ — зөвхөн энэ гадаргуугаас салгасан тул буцааж
+            залгах нь нэг мөр. */}
 
-          {/* Хамгийн хурдан зам — Google нэг товшилт. ?plan байвал шууд төлбөр рүү. */}
-          <GoogleSignInButton
-            next={(() => {
-              const p = searchParams.get("plan");
-              return p && isPaidPlanId(p) ? `/pricing?plan=${p}` : "/onboarding";
-            })()}
-          />
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <motion.div variants={item}>
+            <AuthField
+              icon="profile"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              minLength={3}
+              maxLength={30}
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="username"
+              placeholder="Хэрэглэгчийн нэр"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <AuthField
+              icon="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              inputMode="numeric"
+              autoComplete="tel"
+              placeholder="Утасны дугаар"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <AuthField
+              icon="mail"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="email"
+              placeholder="Имэйл"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <AuthField
+              icon="lock"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              autoComplete="new-password"
+              placeholder="Нууц үг — дор хаяж 6 тэмдэгт"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <GenderPicker value={gender} onChange={setGender} />
+          </motion.div>
 
-          <div className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-[rgba(255,255,255,0.12)]" />
-            <span className="chrome text-[9px] font-bold text-[#84848C]">ЭСВЭЛ</span>
-            <span className="h-px flex-1 bg-[rgba(255,255,255,0.12)]" />
-          </div>
+          {/* Хөтөлбөрийн сонголт. ЗААВАЛ биш — бүртгэлийн замд нэмэлт
+              хаалт тавихгүй; сонгоогүй хүн дараа нь профайлаасаа
+              сонгоно. */}
+          <motion.div variants={item}>
+            <ProgramPicker value={program} onChange={setProgram} programs={programs} />
+          </motion.div>
 
           {error && (
-            <motion.div
+            <motion.p
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-5 rounded-[4px] border px-4 py-3 text-[12px]"
-              style={{ borderColor: "rgba(16,128,202,0.4)", background: "rgba(16,128,202,0.08)", color: "#FFFFFF" }}
+              className="rounded-[4px] bg-[#2E29FF]/10 px-4 py-3 text-[13px] leading-snug text-[#FFB4AE]"
             >
               {error}
-            </motion.div>
+            </motion.p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className={labelCls} style={{ color: "#84848C" }}>Нэр</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                minLength={2}
-                maxLength={50}
-                autoComplete="name"
-                placeholder="Таны нэр"
-                className={inputCls}
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label className={labelCls} style={{ color: "#84848C" }}>Имэйл</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                placeholder="name@mail.com"
-                className={inputCls}
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label className={labelCls} style={{ color: "#84848C" }}>Нууц үг</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                autoComplete="new-password"
-                placeholder="Дор хаяж 6 тэмдэгт"
-                className={inputCls}
-                style={inputStyle}
-              />
-            </div>
+          <motion.button
+            variants={item}
+            whileTap={{ scale: 0.985 }}
+            type="submit"
+            disabled={loading}
+            className="h-12 w-full rounded-[4px] bg-[#2E29FF] text-[15px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-50"
+          >
+            {loading ? "Бүртгэж байна…" : "Бүртгүүлэх"}
+          </motion.button>
+        </form>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="h-12 w-full rounded-[4px] border border-[#1080CA] bg-[#1080CA] text-[14px] font-bold uppercase tracking-[0.01em] text-[#0E0E10] transition hover:bg-[#4FA8E8] active:translate-y-[1px] disabled:opacity-50"
-            >
-              {loading ? "Бүртгэж байна..." : "Нэгдэх >"}
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-[12px]" style={{ color: "#84848C" }}>
-            Бүртгэлтэй юу?{" "}
-            <Link href="/auth/signin" className="font-bold text-[#1080CA] transition hover:brightness-110">
-              Нэвтрэх
-            </Link>
-          </p>
-        </div>
+        <motion.p variants={item} className="mt-5 text-center text-[13px] text-[#E2E4E8]">
+          Бүртгэлтэй юу?{" "}
+          <Link href="/auth/signin" className="font-semibold text-[#2E29FF] transition hover:brightness-110">
+            Нэвтрэх
+          </Link>
+        </motion.p>
       </motion.div>
     </div>
   );

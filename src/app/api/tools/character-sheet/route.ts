@@ -15,7 +15,7 @@ import { randomUUID } from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 const REASON = "AI_IMAGE_GEN"; // reuse existing credit category
-const COST = 25; // higher than nanoPro (15) — this is a premium output
+const COST = 1000; // 2026-10-26: 1кр=₮1 — premium гаралт
 
 // Sentinel string used in the template wherever the caller didn't supply
 // the field. Reads naturally in the prompt: "Name : drawn from reference image"

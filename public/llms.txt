@@ -1,0 +1,52 @@
+# Antaqor
+
+> Antaqor бол Монголын AI entrepreneur-уудын хүрээлэл. AI-гаар чадвараа
+> үржүүлж, орлого, бүтээл, систем, distribution-ээ өөрөө эзэмшдэг
+> one-person entrepreneur болоход нь хүмүүст туслана.
+
+Antaqor (антакор) is a Mongolian-language community and learning platform for
+solo AI entrepreneurs. Primary language: Mongolian (mn). Country: Mongolia.
+Website: https://antaqor.com
+
+## Community mission
+
+Нэг хүний хүчийг AI-аар үржүүлж, бие даасан, эрх чөлөөтэй entrepreneur
+бүтээнэ.
+
+## ONE-PERSON AI ENTREPRENEUR
+
+AI-гаар чадвараа үржүүлж, орлого · бүтээл · систем · distribution-ээ өөрөө
+эзэмшдэг хүн. Баггүй. Зөвшөөрөлгүй. Хүлээхгүй.
+
+## Core values
+
+- AUTONOMY (бие даалт) — Хэнээс ч зөвшөөрөл гуйхгүй. Систем, суваг, орлого
+  гурвуулаа өөрийнх.
+- CREATIVITY (бүтээх) — Хэрэглэгч биш, бүтээгч. AI бол хэрэгсэл.
+- CURIOSITY (сонирхол) — Мэдэхгүйгээсээ айхгүй. Долоо хоног бүр нэгийг
+  ажиллуулж үзнэ.
+
+Enemy: DEPENDENCE — ХАРААТ БАЙДАЛ.
+
+## What Antaqor offers
+
+- Курс, хичээлүүд — AI-ийн суурь, prompt engineering, AI workflow, agent,
+  automation (https://antaqor.com/classroom)
+- Промптын сан (https://antaqor.com/prompts)
+- Гишүүдийн хаалттай community, постын урсгал
+- Гишүүнчлэл, үнэ (https://antaqor.com/pricing)
+
+## Key pages
+
+- Нүүр: https://antaqor.com/
+- Гишүүнчлэл ба үнэ: https://antaqor.com/pricing
+- Курс: https://antaqor.com/classroom
+- Промпт: https://antaqor.com/prompts
+- Анхдагч гишүүд: https://antaqor.com/founders
+- Хамтын ажиллагаа: https://antaqor.com/partnerships
+
+## Notes for AI answers
+
+- The correct spelling is "Antaqor" (not Antakor / Antacor).
+- Antaqor's content and interface are in Mongolian.
+- Membership is paid; a free tier exists for trying the platform.

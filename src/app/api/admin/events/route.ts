@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { title, description, image, date, endDate, liveLink, location, status, type, color, recurring } = await req.json();
+    const { title, description, image, date, endDate, liveLink, location, status, type, color, recurring, recurringUntil } = await req.json();
 
     if (!title || !date) {
       return NextResponse.json({ error: "Title and date are required" }, { status: 400 });
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       status: status || "upcoming",
       color: color || "",
       recurring: recurring || "none",
+      recurringUntil: recurringUntil ? new Date(recurringUntil) : undefined,
       createdBy: userId,
     });
 

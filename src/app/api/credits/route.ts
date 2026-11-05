@@ -21,8 +21,8 @@ export async function GET() {
 
     const code = await ensureReferralCode(userId);
 
-    const user = await User.findById(userId).select("credits creditsLifetime referralCount").lean();
-    const u = user as unknown as { credits: number; creditsLifetime: number; referralCount: number };
+    const user = await User.findById(userId).select("credits creditsLifetime referralCount subscriptionExpiresAt").lean();
+    const u = user as unknown as { credits: number; creditsLifetime: number; referralCount: number; subscriptionExpiresAt?: Date };
 
     const [history, referrals] = await Promise.all([
       CreditTx.find({ user: userId })
@@ -57,6 +57,12 @@ export async function GET() {
 
     return NextResponse.json({
       balance: u?.credits || 0,
+      /* Дээд мөрний чип гишүүнчлэлийн ҮЛДСЭН ХОНОГИЙГ кредитийн хажууд
+         харуулна — тусдаа хүсэлт нэмэхгүйн тулд энд хамт ирнэ. */
+      memberUntil:
+        u?.subscriptionExpiresAt && new Date(u.subscriptionExpiresAt) > new Date()
+          ? new Date(u.subscriptionExpiresAt).toISOString()
+          : null,
       lifetime: u?.creditsLifetime || 0,
       referralCount: u?.referralCount || 0,
       referralCode: code,

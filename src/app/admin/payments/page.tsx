@@ -43,6 +43,8 @@ interface Payment {
   amount: number;
   status: Status;
   referenceCode: string;
+  kind?: "membership" | "credits" | "product";
+  creditAmount?: number;
   wireIntentId?: string;
   receiptImage: string;
   receiptUploadedAt?: string;
@@ -121,7 +123,8 @@ export default function AdminPaymentsPage() {
   }, [status, load]);
 
   const approve = async (p: Payment) => {
-    if (!confirm(`${p.user?.name} · ₮${p.amount.toLocaleString()} · 30 хоног идэвхжүүлэх үү?`)) return;
+    const what = p.kind === "credits" ? `+${p.creditAmount || 0}₵ кредит нэмэх үү?` : "30 хоног идэвхжүүлэх үү?";
+    if (!confirm(`${p.user?.name} · ₮${p.amount.toLocaleString()} · ${what}`)) return;
     setProcessingId(p._id);
     try {
       const res = await fetch(`/api/admin/payments/${p._id}/approve`, {
@@ -208,7 +211,7 @@ export default function AdminPaymentsPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">
           {flash}
         </div>
       )}
@@ -216,7 +219,7 @@ export default function AdminPaymentsPage() {
       {lightbox && (
         <div onClick={() => setLightbox(null)} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
           <img src={lightbox} alt="Receipt full size" className="max-h-full max-w-full object-contain" onClick={(e) => e.stopPropagation()} />
-          <button onClick={() => setLightbox(null)} className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" aria-label="close">
+          <button onClick={() => setLightbox(null)} className="absolute right-6 top-6 rounded-[4px] bg-white/10 p-2 text-white hover:bg-white/20" aria-label="close">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
@@ -224,20 +227,20 @@ export default function AdminPaymentsPage() {
 
       {rejectingId && (
         <div onClick={() => setRejectingId(null)} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 p-4">
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] p-5">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-5">
             <h3 className="text-[16px] font-bold text-[#E8E8E8]">Татгалзах шалтгаан</h3>
-            <p className="mt-1 text-[12px] text-[#8A8A92]">Хэрэглэгчид энэ мессеж push-аар очино.</p>
+            <p className="mt-1 text-[12px] text-[#E2E4E8]">Хэрэглэгчид энэ мессеж push-аар очино.</p>
             <textarea
               value={rejectNote}
               onChange={(e) => setRejectNote(e.target.value)}
               placeholder='Жишээ: "Дүн таарсангүй", "Reference код тохирсонгүй"'
               rows={3}
               maxLength={500}
-              className="mt-3 w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]"
+              className="mt-3 w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]"
             />
             <div className="mt-3 flex gap-2">
-              <button onClick={() => setRejectingId(null)} className="flex-1 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] py-2.5 text-[13px] font-bold text-[#8A8A92]">Болих</button>
-              <button onClick={reject} disabled={processingId === rejectingId} className="flex-1 rounded-none bg-[#1080CA] py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#DC3737] disabled:opacity-50">
+              <button onClick={() => setRejectingId(null)} className="flex-1 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] py-2.5 text-[13px] font-bold text-[#E2E4E8]">Болих</button>
+              <button onClick={reject} disabled={processingId === rejectingId} className="flex-1 rounded-[4px] bg-[#2E29FF] py-2.5 text-[13px] font-bold text-white transition hover:bg-[#DC3737] disabled:opacity-50">
                 {processingId === rejectingId ? "..." : "Татгалзах"}
               </button>
             </div>
@@ -248,61 +251,61 @@ export default function AdminPaymentsPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Payments</h1>
-          <p className="mt-0.5 text-[12px] text-[#56565E]">
+          <p className="mt-0.5 text-[12px] text-[#E2E4E8]">
             {counts.pending} хүлээгдэж буй · {counts.pendingWithReceipt} баримттай · 20 сек тутам шинэчлэгдэнэ
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => load(status)} className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-3 py-2 text-[12px] text-[#8A8A92] hover:text-[#1080CA]">
+          <button onClick={() => load(status)} className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[12px] text-[#E2E4E8] hover:text-[#2E29FF]">
             Шинэчлэх
           </button>
         </div>
       </div>
 
       {/* Auto-match bank statement */}
-      <div className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.2)] bg-gradient-to-br from-[rgba(16,128,202,0.05)] via-[#141419] to-[#141419]">
+      <div className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.2)] bg-gradient-to-br from-[rgba(46,41,255,0.05)] via-[#0A0A0A] to-[#0A0A0A]">
         <button
           onClick={() => setAutoMatchOpen(!autoMatchOpen)}
-          className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[rgba(16,128,202,0.04)]"
+          className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[rgba(46,41,255,0.04)]"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(16,128,202,0.15)]">
-              <svg className="h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+            <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.15)]">
+              <svg className="h-5 w-5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
               </svg>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-bold text-[#E8E8E8]">Банкны хуулга copy → auto-match</span>
-                <span className="rounded-full bg-[#1080CA] px-1.5 py-0.5 text-[9px] font-black uppercase text-[#0E0E10]">BETA</span>
+                <span className="rounded-[4px] bg-[#2E29FF] px-1.5 py-0.5 text-[11px] font-black uppercase text-white">BETA</span>
               </div>
-              <div className="mt-0.5 text-[11px] text-[#8A8A92]">
+              <div className="mt-0.5 text-[11px] text-[#E2E4E8]">
                 {BANK_NAME} · {BANK_ACCOUNT} · refCode + дүн таарвал autoapprove
               </div>
             </div>
           </div>
-          <svg className={`h-4 w-4 text-[#8A8A92] transition-transform ${autoMatchOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className={`h-4 w-4 text-[#E2E4E8] transition-transform ${autoMatchOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
 
         {autoMatchOpen && (
-          <div className="space-y-3 border-t border-[rgba(255,255,255,0.06)] bg-[#0E0E12] p-4">
+          <div className="space-y-3 border-t border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-4">
             <textarea
               value={statementText}
               onChange={(e) => setStatementText(e.target.value)}
               placeholder={"Банкны апп-аас copy → энд paste.\nСистем автоматаар refCode + дүнгээр таарна.\n\nЖишээ мөр:\n+49,000₮ · AB7K9X · Bayanbileg B\n[2026.04.25 14:30] ₮49,000 · XY9K2M · Bold"}
               rows={7}
-              className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]"
+              className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[12px] leading-relaxed text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]"
             />
-            <p className="-mt-1 text-[10px] text-[#56565E]">
+            <p className="-mt-1 text-[10px] text-[#E2E4E8]">
               Paste хийхэд автоматаар таарал шалгана. Баталгаажуулахын тулд зөвхөн дээрх ногоон товчийг дар.
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
               {autoMatching && (
-                <div className="flex items-center gap-1.5 rounded-none bg-[#0A0A0A] px-3 py-2 text-[11px] text-[#8A8A92]">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" />
+                <div className="flex items-center gap-1.5 rounded-[4px] bg-[#0A0A0A] px-3 py-2 text-[11px] text-[#E2E4E8]">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" />
                   Хуулга шалгаж байна...
                 </div>
               )}
@@ -310,7 +313,7 @@ export default function AdminPaymentsPage() {
                 <button
                   onClick={() => runAutoMatch(statementText, true)}
                   disabled={autoApproving}
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-black text-[#0E0E10] shadow-[0_0_24px_rgba(16,128,202,0.25)] transition hover:shadow-[0_0_40px_rgba(16,128,202,0.45)] disabled:opacity-40"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(46,41,255,0.25)] transition hover:shadow-[0_0_40px_rgba(46,41,255,0.45)] disabled:opacity-40"
                 >
                   <span className="relative z-10">
                     {autoApproving ? "Идэвхжүүлж..." : `✓ ${autoMatchResult.summary.matches} тохирлыг идэвхжүүлэх`}
@@ -322,18 +325,18 @@ export default function AdminPaymentsPage() {
                 </button>
               )}
               {autoMatchResult?.executed && (
-                <div className="flex items-center gap-2 rounded-none bg-[rgba(16,128,202,0.1)] px-3 py-2 text-[12px] font-bold text-[#1080CA]">
+                <div className="flex items-center gap-2 rounded-[4px] bg-[rgba(46,41,255,0.1)] px-3 py-2 text-[12px] font-bold text-[#2E29FF]">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   {autoMatchResult.summary.approved} төлбөр идэвхжсэн
                 </div>
               )}
               {autoMatchErr && (
-                <div className="text-[11px] text-[#1080CA]">Алдаа: {autoMatchErr}</div>
+                <div className="text-[11px] text-[#2E29FF]">Алдаа: {autoMatchErr}</div>
               )}
               {(autoMatchResult || statementText) && (
                 <button
                   onClick={() => { setAutoMatchResult(null); setStatementText(""); setAutoMatchErr(""); }}
-                  className="ml-auto text-[11px] text-[#8A8A92] hover:text-[#8A8A92]"
+                  className="ml-auto text-[11px] text-[#E2E4E8] hover:text-[#E2E4E8]"
                 >
                   Цэвэрлэх
                 </button>
@@ -345,17 +348,17 @@ export default function AdminPaymentsPage() {
                 {/* Summary */}
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                   {[
-                    { k: "parsedLines", label: "Олсон", color: "#8A8A92" },
-                    { k: "matches", label: "Тохирсон", color: "#1080CA" },
-                    { k: "approved", label: "Идэвхжсэн", color: "#1080CA" },
+                    { k: "parsedLines", label: "Олсон", color: "#30333F" },
+                    { k: "matches", label: "Тохирсон", color: "#2E29FF" },
+                    { k: "approved", label: "Идэвхжсэн", color: "#2E29FF" },
                     { k: "amountMismatches", label: "Дүн таарсангүй", color: "#FFC107" },
-                    { k: "noMatches", label: "Тохироогүй", color: "#8A8A92" },
-                    { k: "alreadyPaid", label: "Өмнө нь", color: "#1080CA" },
+                    { k: "noMatches", label: "Тохироогүй", color: "#30333F" },
+                    { k: "alreadyPaid", label: "Өмнө нь", color: "#2E29FF" },
                   ].map((x) => {
                     const value = (autoMatchResult.summary as unknown as Record<string, number>)[x.k];
                     return (
-                      <div key={x.k} className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-2 text-center">
-                        <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: x.color }}>{x.label}</div>
+                      <div key={x.k} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-2 text-center">
+                        <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: x.color }}>{x.label}</div>
                         <div className="mt-0.5 text-[16px] font-black text-[#E8E8E8]">{value}</div>
                       </div>
                     );
@@ -363,11 +366,11 @@ export default function AdminPaymentsPage() {
                 </div>
 
                 {/* Per-line outcomes */}
-                <div className="divide-y divide-[rgba(255,255,255,0.04)] rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419]">
+                <div className="divide-y divide-[rgba(255,255,255,0.04)] rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
                   {autoMatchResult.outcomes.map((o, i) => {
                     const colorMap: Record<OutcomeStatus, string> = {
-                      match: "#1080CA", approved: "#1080CA", "amount-mismatch": "#FFC107",
-                      "no-match": "#8A8A92", "already-paid": "#1080CA", failed: "#1080CA",
+                      match: "#2E29FF", approved: "#2E29FF", "amount-mismatch": "#FFC107",
+                      "no-match": "#E2E4E8", "already-paid": "#2E29FF", failed: "#2E29FF",
                     };
                     const labelMap: Record<OutcomeStatus, string> = {
                       match: "✓ Бэлэн", approved: "✓ Идэвхжсэн", "amount-mismatch": "⚠ Дүн",
@@ -375,21 +378,21 @@ export default function AdminPaymentsPage() {
                     };
                     return (
                       <div key={i} className="flex items-center gap-3 p-2.5">
-                        <div className="w-20 shrink-0 text-[9px] font-black uppercase tracking-tight" style={{ color: colorMap[o.status] }}>
+                        <div className="w-20 shrink-0 text-[11px] font-black uppercase tracking-tight" style={{ color: colorMap[o.status] }}>
                           {labelMap[o.status]}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-[11px] font-black text-[#1080CA]">{o.parsedRefCode}</span>
-                            <span className="text-[11px] text-[#8A8A92]">₮{o.parsedAmount.toLocaleString()}</span>
+                            <span className="font-mono text-[11px] font-black text-[#2E29FF]">{o.parsedRefCode}</span>
+                            <span className="text-[11px] text-[#E2E4E8]">₮{o.parsedAmount.toLocaleString()}</span>
                             {o.payment?.user && (
-                              <span className="text-[11px] text-[#8A8A92]">→ {o.payment.user.name}</span>
+                              <span className="text-[11px] text-[#E2E4E8]">→ {o.payment.user.name}</span>
                             )}
                             {o.status === "amount-mismatch" && o.payment && (
                               <span className="text-[10px] text-[#FFC107]">expected ₮{o.payment.expectedAmount.toLocaleString()}</span>
                             )}
                           </div>
-                          <div className="truncate text-[10px] text-[#56565E]">{o.rawLine}</div>
+                          <div className="truncate text-[10px] text-[#E2E4E8]">{o.rawLine}</div>
                         </div>
                       </div>
                     );
@@ -402,18 +405,18 @@ export default function AdminPaymentsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-1">
+      <div className="flex gap-1 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-1">
         {(["pending", "paid", "failed"] as Status[]).map((s) => (
           <button
             key={s}
             onClick={() => setStatus(s)}
-            className={`flex-1 rounded-none px-4 py-2 text-[12px] font-bold transition ${
-              status === s ? "bg-[#1080CA] text-[#0E0E10]" : "text-[#8A8A92] hover:text-[#E8E8E8]"
+            className={`flex-1 rounded-[4px] px-4 py-2 text-[12px] font-bold transition ${
+              status === s ? "bg-[#2E29FF] text-white" : "text-[#E2E4E8] hover:text-[#E8E8E8]"
             }`}
           >
             {s === "pending" ? "Хүлээгдэж" : s === "paid" ? "Баталсан" : "Татгалзсан"}
             {s === "pending" && counts.pending > 0 && (
-              <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-black ${status === s ? "bg-white/25" : "bg-[rgba(16,128,202,0.2)] text-[#1080CA]"}`}>
+              <span className={`ml-1.5 rounded-[4px] px-1.5 py-0.5 text-[11px] font-black ${status === s ? "bg-white/25" : "bg-[rgba(46,41,255,0.2)] text-[#2E29FF]"}`}>
                 {counts.pending}
               </span>
             )}
@@ -423,10 +426,10 @@ export default function AdminPaymentsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-none border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0E0E12] py-16 text-center text-[13px] text-[#56565E]">
+        <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] py-16 text-center text-[13px] text-[#E2E4E8]">
           {status === "pending" ? "Хүлээгдэж буй төлбөр алга" : "Байхгүй"}
         </div>
       ) : (
@@ -435,7 +438,7 @@ export default function AdminPaymentsPage() {
             const hasReceipt = !!p.receiptImage;
             const claimed = !!p.claimedAt;
             return (
-              <div key={p._id} className="overflow-hidden rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419]">
+              <div key={p._id} className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A]">
                 <div className="flex">
                   {/* Receipt thumb — image-first scannability */}
                   <div className="w-[140px] shrink-0 bg-[#0A0A0A] sm:w-[180px]">
@@ -454,10 +457,10 @@ export default function AdminPaymentsPage() {
                       </button>
                     ) : (
                       <div className="flex h-full min-h-[140px] w-full flex-col items-center justify-center gap-1 p-3 text-center">
-                        <svg className="h-6 w-6 text-[#56565E]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                        <svg className="h-6 w-6 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
-                        <span className="text-[10px] text-[#56565E]">Баримтгүй</span>
+                        <span className="text-[10px] text-[#E2E4E8]">Баримтгүй</span>
                       </div>
                     )}
                   </div>
@@ -470,45 +473,48 @@ export default function AdminPaymentsPage() {
                         {p.user?.avatar ? (
                           <img src={p.user.avatar} alt="" className="h-6 w-6 rounded-full object-cover" />
                         ) : (
-                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(16,128,202,0.1)] text-[10px] font-black text-[#1080CA]">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] text-[10px] font-black text-[#2E29FF]">
                             {p.user?.name?.charAt(0) || "?"}
                           </div>
                         )}
                         <span className="truncate text-[12px] font-bold text-[#E8E8E8]">{p.user?.name || "—"}</span>
                         {p.user?.level && (
-                          <span className="rounded-full bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[9px] font-bold text-[#8A8A92]">L{p.user.level}</span>
+                          <span className="rounded-[4px] bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 text-[11px] font-bold text-[#E2E4E8]">L{p.user.level}</span>
                         )}
                       </div>
-                      <div className="mt-0.5 truncate text-[10px] text-[#8A8A92]">{p.user?.email}</div>
+                      <div className="mt-0.5 truncate text-[10px] text-[#E2E4E8]">{p.user?.email}</div>
                       {p.user?.instagram && (
-                        <a href={`https://instagram.com/${p.user.instagram}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-block text-[10px] text-[#1080CA] hover:underline">
+                        <a href={`https://instagram.com/${p.user.instagram}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-block text-[10px] text-[#2E29FF] hover:underline">
                           @{p.user.instagram}
                         </a>
                       )}
                       {p.user?.phone && (
-                        <a href={`tel:${p.user.phone}`} className="ml-2 text-[10px] text-[#8A8A92]">{p.user.phone}</a>
+                        <a href={`tel:${p.user.phone}`} className="ml-2 text-[10px] text-[#E2E4E8]">{p.user.phone}</a>
                       )}
                     </div>
 
                     {/* Amount + Code */}
-                    <div className="my-2 flex items-center justify-between gap-2 rounded-none border border-[rgba(16,128,202,0.15)] bg-[rgba(16,128,202,0.05)] px-2.5 py-1.5">
+                    <div className="my-2 flex items-center justify-between gap-2 rounded-[4px] border border-[rgba(46,41,255,0.15)] bg-[rgba(46,41,255,0.05)] px-2.5 py-1.5">
                       <div>
-                        <div className="text-[8px] uppercase tracking-wider text-[#8A8A92]">Код</div>
+                        <div className="text-[8px] uppercase tracking-wider text-[#E2E4E8]">Код</div>
                         <div className="flex items-center gap-1.5">
-                          <div className="text-[13px] font-black tracking-[0.1em] text-[#1080CA]">{p.referenceCode || "—"}</div>
+                          <div className="text-[13px] font-black tracking-[0.1em] text-[#2E29FF]">{p.referenceCode || "—"}</div>
                           {p.wireIntentId && (
-                            <span className="bg-[#1080CA] px-1.5 py-0.5 text-[8px] font-black text-black">⚡ WIRE</span>
+                            <span className="bg-[#2E29FF] px-1.5 py-0.5 text-[8px] font-black text-white">⚡ WIRE</span>
+                          )}
+                          {p.kind === "credits" && (
+                            <span className="rounded-[4px] border border-[rgba(46,41,255,0.5)] px-1.5 py-0.5 text-[8px] font-black text-[#2E29FF]">₵ КРЕДИТ +{p.creditAmount || 0}</span>
                           )}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[8px] uppercase tracking-wider text-[#8A8A92]">Дүн</div>
+                        <div className="text-[8px] uppercase tracking-wider text-[#E2E4E8]">Дүн</div>
                         <div className="text-[12px] font-bold text-[#E8E8E8]">₮{p.amount.toLocaleString()}</div>
                       </div>
                     </div>
 
                     {/* Timestamps */}
-                    <div className="mb-2 space-y-0.5 text-[10px] text-[#8A8A92]">
+                    <div className="mb-2 space-y-0.5 text-[10px] text-[#E2E4E8]">
                       <div className="flex items-center justify-between">
                         <span>Үүсгэсэн</span>
                         <span>{relative(p.createdAt)}</span>
@@ -516,17 +522,17 @@ export default function AdminPaymentsPage() {
                       {claimed && (
                         <div className="flex items-center justify-between">
                           <span>Шилжүүлсэн гэсэн</span>
-                          <span className="font-bold text-[#1080CA]">{relative(p.claimedAt)}</span>
+                          <span className="font-bold text-[#2E29FF]">{relative(p.claimedAt)}</span>
                         </div>
                       )}
                       {p.receiptUploadedAt && (
                         <div className="flex items-center justify-between">
                           <span>Баримт оруулсан</span>
-                          <span className="font-bold text-[#1080CA]">{relative(p.receiptUploadedAt)}</span>
+                          <span className="font-bold text-[#2E29FF]">{relative(p.receiptUploadedAt)}</span>
                         </div>
                       )}
                       {p.adminNote && (
-                        <div className="mt-1 rounded-none bg-[rgba(16,128,202,0.08)] px-2 py-1 text-[#1080CA]">{p.adminNote}</div>
+                        <div className="mt-1 rounded-[4px] bg-[rgba(46,41,255,0.08)] px-2 py-1 text-[#2E29FF]">{p.adminNote}</div>
                       )}
                     </div>
 
@@ -536,26 +542,26 @@ export default function AdminPaymentsPage() {
                         <button
                           onClick={() => approve(p)}
                           disabled={processingId === p._id}
-                          className="flex-1 rounded-none bg-[#1080CA] px-3 py-2 text-[11px] font-black text-[#0E0E10] transition hover:bg-[#1CA04A] disabled:opacity-50"
+                          className="flex-1 rounded-[4px] bg-[#2E29FF] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#1CA04A] disabled:opacity-50"
                         >
                           {processingId === p._id ? "..." : "✓ Батлах · 30 хоног"}
                         </button>
                         <button
                           onClick={() => { setRejectingId(p._id); setRejectNote(""); }}
                           disabled={processingId === p._id}
-                          className="rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] font-black text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.15)] disabled:opacity-50"
+                          className="rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] font-black text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.15)] disabled:opacity-50"
                         >
                           ✕
                         </button>
                       </div>
                     ) : p.status === "paid" ? (
-                      <div className="flex items-center justify-between rounded-none bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px]">
-                        <span className="font-black text-[#1080CA]">✓ Баталсан</span>
-                        <span className="text-[10px] text-[#8A8A92]">{relative(p.paidAt)}</span>
+                      <div className="flex items-center justify-between rounded-[4px] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px]">
+                        <span className="font-black text-[#2E29FF]">✓ Баталсан</span>
+                        <span className="text-[10px] text-[#E2E4E8]">{relative(p.paidAt)}</span>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between rounded-none bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px]">
-                        <span className="font-black text-[#1080CA]">✕ Татгалзсан</span>
+                      <div className="flex items-center justify-between rounded-[4px] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px]">
+                        <span className="font-black text-[#2E29FF]">✕ Татгалзсан</span>
                       </div>
                     )}
                   </div>

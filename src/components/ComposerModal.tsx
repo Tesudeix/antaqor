@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { emitXPFromResponse } from "@/lib/xpToast";
+import { CreditIcon } from "@/components/CreditIcon";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
@@ -39,7 +41,7 @@ function Icon({ path, cls = "h-4 w-4", stroke = 1.7 }: { path: string; cls?: str
   );
 }
 
-const NEON = "#1080CA";
+const NEON = "var(--accent-ink, #2E29FF)";
 const MAX_IMAGES = 4;
 
 type Mode = "text" | "aiImage" | "aiVideo";
@@ -85,7 +87,7 @@ export default function ComposerModal() {
   const [videoPreview, setVideoPreview] = useState("");
   const [videoDurationSec, setVideoDurationSec] = useState(0);
   const [aiPrompt, setAiPrompt] = useState("");
-  const [category, setCategory] = useState("ялалт");
+  const [category, setCategory] = useState("ерөнхий");
 
   // Category pills come from the admin-ordered /api/categories (same source as
   // the home feed tabs), so upload + feed categories stay consistent.
@@ -157,7 +159,7 @@ export default function ComposerModal() {
     setVideoPreview("");
     setVideoDurationSec(0);
     setAiPrompt("");
-    setCategory("ялалт");
+    setCategory("ерөнхий");
     setMode("aiImage");
     setAiImgPrompt("");
     setAiImgRes("standard");
@@ -437,6 +439,7 @@ export default function ComposerModal() {
       try {
         window.dispatchEvent(new CustomEvent("feed:refresh", { detail: data.post }));
       } catch { /* old browsers — fall back to navigation */ }
+      emitXPFromResponse(data, "BUILD");
       requestClose();
       reset();
       router.push("/");
@@ -458,7 +461,7 @@ export default function ComposerModal() {
           style={{
             y: sheetY,
             backgroundImage:
-              "radial-gradient(ellipse 60% 40% at top left, rgba(16,128,202,0.10) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at top right, rgba(16,128,202,0.06) 0%, transparent 60%)",
+              "radial-gradient(ellipse 60% 40% at top left, rgba(46,41,255,0.10) 0%, transparent 60%), radial-gradient(ellipse 50% 30% at top right, rgba(46,41,255,0.06) 0%, transparent 60%)",
           }}
           drag="y"
           dragConstraints={{ top: 0 }}
@@ -472,38 +475,38 @@ export default function ComposerModal() {
             }
           }}
           onClick={(e) => e.stopPropagation()}
-          className="relative max-h-[92vh] w-full max-w-[680px] overflow-hidden rounded-t-[10px] border border-b-0 border-[rgba(16,128,202,0.22)] bg-[#0a0a0c] shadow-[0_-24px_80px_rgba(0,0,0,0.8)] pb-[env(safe-area-inset-bottom)]"
+          className="relative max-h-[92vh] w-full max-w-[680px] overflow-hidden rounded-t-[4px] border border-b-0 border-[rgba(46,41,255,0.22)] bg-[#0A0A0A] shadow-[0_-24px_80px_rgba(0,0,0,0.8)] pb-[env(safe-area-inset-bottom)]"
         >
-            {/* Bracket-corner ticks at top edge — Edgerunners HUD vibe */}
-            <span className="pointer-events-none absolute left-3 top-3 h-2 w-2 border-l border-t border-[#1080CA]" />
-            <span className="pointer-events-none absolute right-3 top-3 h-2 w-2 border-r border-t border-[#1080CA]" />
+            {/* Bracket-corner ticks at top edge — Antaqor хүрээлэл HUD vibe */}
+            <span className="pointer-events-none absolute left-3 top-3 h-2 w-2 border-l border-t border-[#2E29FF]" />
+            <span className="pointer-events-none absolute right-3 top-3 h-2 w-2 border-r border-t border-[#2E29FF]" />
             {/* Bright accent edge segment top-left per SKILL.md */}
-            <span className="pointer-events-none absolute left-3 top-0 h-px w-12 bg-gradient-to-r from-[#1080CA] via-[#1080CA] to-transparent shadow-[0_0_8px_rgba(16,128,202,0.6)]" />
+            <span className="pointer-events-none absolute left-3 top-0 h-px w-12 bg-gradient-to-r from-[#2E29FF] via-[#2E29FF] to-transparent shadow-[0_0_8px_rgba(46,41,255,0.6)]" />
 
             {/* ─── Drag handle ────────────────────────────────────────── */}
             <div className="flex cursor-grab items-center justify-center pb-1 pt-2 active:cursor-grabbing">
-              <span className="h-1 w-10 rounded-full bg-[rgba(15,23,38,0.18)]" />
+              <span className="h-1 w-10 rounded-[4px] bg-[rgba(15,23,38,0.18)]" />
             </div>
 
             {/* ─── Header strip: eyebrow + PATCH / LIVE pill ──────────── */}
             <div className="flex items-center justify-between px-5 pb-2 pt-1">
               <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_10px_rgba(16,128,202,0.8)]" />
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#1080CA]">
+                <span className="h-1.5 w-1.5 rotate-45 bg-[#2E29FF] shadow-[0_0_10px_rgba(46,41,255,0.8)]" />
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#2E29FF]">
                   ANTAQOR / CREATE
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#5a5a5a]">
+                <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#5a5a5a]">
                   PATCH 001
                 </span>
-                <span className="flex items-center gap-1 rounded-none border border-[rgba(16,128,202,0.45)] bg-[rgba(16,128,202,0.06)] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1080CA] backdrop-blur">
-                  <span className="h-1 w-1 animate-pulse rounded-full bg-[#1080CA] shadow-[0_0_6px_rgba(16,128,202,0.9)]" />
+                <span className="flex items-center gap-1 rounded-[4px] border border-[rgba(46,41,255,0.45)] bg-[rgba(46,41,255,0.06)] px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#2E29FF] backdrop-blur">
+                  <span className="h-1 w-1 animate-pulse rounded-full bg-[#2E29FF] shadow-[0_0_6px_rgba(46,41,255,0.9)]" />
                   LIVE
                 </span>
                 <button
                   onClick={requestClose}
-                  className="flex h-7 w-7 items-center justify-center rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#6b7280] transition hover:border-[#1080CA] hover:text-[#1080CA]"
+                  className="flex h-7 w-7 items-center justify-center rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#E2E4E8] transition hover:border-[#2E29FF] hover:text-[#2E29FF]"
                   aria-label="Хаах"
                 >
                   <Icon path="M6 18L18 6M6 6l12 12" cls="h-3 w-3" stroke={2.4} />
@@ -520,35 +523,35 @@ export default function ComposerModal() {
                   letterSpacing: "0.02em",
                   lineHeight: 0.92,
                 }}
-                className="text-[26px] uppercase text-[#f5f5f7] sm:text-[32px]"
+                className="text-[26px] uppercase text-[#f5f5f7] sm:text-[22px] md:text-[32px]"
               >
                 ШИНЭ<span
                   style={{
-                    color: "#1080CA",
+                    color: "var(--accent-ink, #2E29FF)",
                     fontWeight: 900,
                     letterSpacing: "0.04em",
-                    textShadow: "0 0 24px rgba(16,128,202,0.55), 0 0 48px rgba(16,128,202,0.35)",
+                    textShadow: "0 0 24px rgba(46,41,255,0.55), 0 0 48px rgba(46,41,255,0.35)",
                     WebkitTextStroke: "1px rgba(15,23,38,0.12)",
                   }}
-                > ПОСТ</span><span style={{ color: "#1080CA", textShadow: "0 0 20px #1080CA" }}>.</span>
+                > ПОСТ</span><span style={{ color: "var(--accent-ink, #2E29FF)", textShadow: "0 0 20px #2E29FF" }}>.</span>
               </h2>
             </div>
 
             {/* Layered double-line divider — HUD-tactical per SKILL.md */}
             <div className="relative px-5 pb-3 pt-0.5">
-              <div className="h-[2px] w-full bg-[#1080CA] shadow-[0_0_8px_rgba(16,128,202,0.5)]" />
+              <div className="h-[2px] w-full bg-[#2E29FF] shadow-[0_0_8px_rgba(46,41,255,0.5)]" />
               <div
                 className="mt-1 h-px w-full"
                 style={{
                   backgroundImage:
-                    "repeating-linear-gradient(90deg, rgba(16,128,202,0.5) 0 3px, transparent 3px 6px)",
+                    "repeating-linear-gradient(90deg, rgba(46,41,255,0.5) 0 3px, transparent 3px 6px)",
                 }}
               />
             </div>
 
             {/* ─── Mode tabs (no emoji, mono labels) ──────────────────── */}
             <div className="px-3 pb-2">
-              <div className="flex gap-1 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
+              <div className="flex gap-1 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
                 {([
                   { k: "aiImage" as Mode, label: "AI ЗУРАГ", iconPath: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
                   { k: "aiVideo" as Mode, label: "AI ВИДЕО", iconPath: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" },
@@ -560,10 +563,10 @@ export default function ComposerModal() {
                       key={m.k}
                       type="button"
                       onClick={() => setMode(m.k)}
-                      className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-none py-2 font-mono text-[10px] font-bold tracking-[0.22em] transition ${
+                      className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-[4px] py-2 font-mono text-[10px] font-bold tracking-[0.22em] transition ${
                         active
-                          ? "bg-[#1080CA] text-[#0E0E10] shadow-[0_0_14px_rgba(16,128,202,0.45)]"
-                          : "text-[#6b7280] hover:text-[#0e1726]"
+                          ? "bg-[#2E29FF] text-white shadow-[0_0_14px_rgba(46,41,255,0.45)]"
+                          : "text-[#E2E4E8] hover:text-[#0e1726]"
                       }`}
                     >
                       <Icon path={m.iconPath} cls="h-3.5 w-3.5" stroke={1.8} />
@@ -589,7 +592,7 @@ export default function ComposerModal() {
                     onChange={(e) => setAiImgPrompt(e.target.value.slice(0, 1000))}
                     placeholder="Юу үүсгэх вэ?  Жишээ: Cinematic portrait of a Mongolian creator in neon Ulaanbaatar"
                     rows={3}
-                    className="w-full resize-none rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] leading-relaxed text-[#0e1726] placeholder:text-[#94a3b8] focus:border-[#1080CA] focus:outline-none"
+                    className="w-full resize-none rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] leading-relaxed text-[#0e1726] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none"
                   />
 
                   {/* ─── Compact summary row — one click to expand options ─ */}
@@ -600,24 +603,24 @@ export default function ComposerModal() {
                       <button
                         type="button"
                         onClick={() => setShowAiImgOptions((v) => !v)}
-                        className="flex w-full items-center gap-2 rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-2 text-left transition hover:border-[rgba(16,128,202,0.4)]"
+                        className="flex w-full items-center gap-2 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-2 text-left transition hover:border-[rgba(46,41,255,0.4)]"
                       >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA]">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]">
                           <M className="h-4 w-4" />
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[12px] font-bold text-[#0e1726]">{m.label}</p>
-                          <p className="truncate font-mono text-[9px] uppercase tracking-[0.18em] text-[#6b7280]">
+                          <p className="truncate font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">
                             {aiImgAspect} · {aiImgRes === "hd" ? "2K" : "1K"}
                             {refImages.length > 0 ? ` · ${refImages.length} REF` : ""}
                           </p>
                         </div>
-                        <span className="shrink-0 rounded-none bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-[#1080CA]">
-                          {finalCost}₵
+                        <span className="shrink-0 rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-[#2E29FF]">
+                          <CreditIcon size={10} className="mr-0.5" />{finalCost}
                         </span>
                         <Icon
                           path="M19 9l-7 7-7-7"
-                          cls={`h-3.5 w-3.5 shrink-0 text-[#6b7280] transition-transform duration-200 ${showAiImgOptions ? "rotate-180 text-[#1080CA]" : ""}`}
+                          cls={`h-3.5 w-3.5 shrink-0 text-[#E2E4E8] transition-transform duration-200 ${showAiImgOptions ? "rotate-180 text-[#2E29FF]" : ""}`}
                           stroke={2.2}
                         />
                       </button>
@@ -646,18 +649,18 @@ export default function ComposerModal() {
                                   key={m.id}
                                   type="button"
                                   onClick={() => setAiImgModel(m.id)}
-                                  className={`flex items-center gap-2 rounded-none border p-2 text-left transition ${
+                                  className={`flex items-center gap-2 rounded-[4px] border p-2 text-left transition ${
                                     active
-                                      ? "border-[#1080CA] bg-[rgba(16,128,202,0.06)] shadow-[0_0_12px_rgba(16,128,202,0.18)]"
+                                      ? "border-[#2E29FF] bg-[rgba(46,41,255,0.06)] shadow-[0_0_12px_rgba(46,41,255,0.18)]"
                                       : "border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] hover:border-[rgba(15,23,38,0.18)]"
                                   }`}
                                 >
-                                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-none ${active ? "bg-[rgba(16,128,202,0.12)] text-[#1080CA]" : "bg-[#ffffff] text-[#6b7280]"}`}>
+                                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] ${active ? "bg-[rgba(46,41,255,0.12)] text-[#2E29FF]" : "bg-[#ffffff] text-[#E2E4E8]"}`}>
                                     <M className="h-3.5 w-3.5" />
                                   </span>
                                   <div className="min-w-0 flex-1">
                                     <p className={`truncate text-[11px] font-bold ${active ? "text-[#0e1726]" : "text-[#334155]"}`}>{m.label}</p>
-                                    <p className="truncate font-mono text-[9px] tabular-nums text-[#6b7280]">{m.cost}₵</p>
+                                    <p className="flex items-center gap-0.5 truncate font-mono text-[11px] tabular-nums text-[#E2E4E8]"><CreditIcon size={9} />{m.cost}</p>
                                   </div>
                                 </button>
                               );
@@ -674,22 +677,22 @@ export default function ComposerModal() {
                                     key={a.id}
                                     type="button"
                                     onClick={() => setAiImgAspect(a.id)}
-                                    className={`flex items-center gap-1.5 rounded-none border px-2 py-1 transition ${
-                                      active ? "border-[#1080CA] bg-[rgba(16,128,202,0.06)]" : "border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] hover:border-[rgba(15,23,38,0.16)]"
+                                    className={`flex items-center gap-1.5 rounded-[4px] border px-2 py-1 transition ${
+                                      active ? "border-[#2E29FF] bg-[rgba(46,41,255,0.06)]" : "border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] hover:border-[rgba(15,23,38,0.16)]"
                                     }`}
                                   >
                                     <span
-                                      className={`block rounded-none ${active ? "bg-[#1080CA]" : "bg-[#d5dce3]"}`}
+                                      className={`block rounded-[4px] ${active ? "bg-[#2E29FF]" : "bg-[#d5dce3]"}`}
                                       style={{ width: a.w / 2, height: a.h / 2 }}
                                     />
-                                    <span className={`font-mono text-[10px] tabular-nums font-bold ${active ? "text-[#0e1726]" : "text-[#6b7280]"}`}>
+                                    <span className={`font-mono text-[10px] tabular-nums font-bold ${active ? "text-[#0e1726]" : "text-[#E2E4E8]"}`}>
                                       {a.id}
                                     </span>
                                   </button>
                                 );
                               })}
                             </div>
-                            <div className="flex gap-1 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
+                            <div className="flex gap-1 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
                               {([
                                 { id: "standard" as Resolution, label: "1K · ХУРДАН" },
                                 { id: "hd" as Resolution,       label: "2K · +50%" },
@@ -700,7 +703,7 @@ export default function ComposerModal() {
                                     key={r.id}
                                     type="button"
                                     onClick={() => setAiImgRes(r.id)}
-                                    className={`flex-1 rounded-none py-1.5 font-mono text-[10px] font-bold tracking-[0.2em] transition ${active ? "bg-[#1080CA] text-[#0E0E10]" : "text-[#6b7280]"}`}
+                                    className={`flex-1 rounded-[4px] py-1.5 font-mono text-[10px] font-bold tracking-[0.2em] transition ${active ? "bg-[#2E29FF] text-white" : "text-[#E2E4E8]"}`}
                                   >{r.label}</button>
                                 );
                               })}
@@ -710,11 +713,11 @@ export default function ComposerModal() {
                           {/* Synthesis */}
                           <div>
                             <div className="mb-1.5 flex items-center justify-between">
-                              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">SYNTHESIS · {refImages.length}/4</span>
+                              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">SYNTHESIS · {refImages.length}/4</span>
                               <button
                                 type="button"
                                 onClick={() => refInputRef.current?.click()}
-                                className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1080CA] hover:text-[#f2547a]"
+                                className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#2E29FF] hover:text-[#f2547a]"
                               >
                                 + ЗУРАГ
                               </button>
@@ -730,7 +733,7 @@ export default function ComposerModal() {
                             {refImages.length > 0 && (
                               <div className="flex gap-1.5 overflow-x-auto">
                                 {refImages.map((src, i) => (
-                                  <div key={i} className="relative h-12 w-12 shrink-0 overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)]">
+                                  <div key={i} className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)]">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={src} alt="ref" className="h-full w-full object-cover" />
                                     <button
@@ -752,14 +755,14 @@ export default function ComposerModal() {
                   </AnimatePresence>
 
                   {aiImgError && (
-                    <p className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{aiImgError}</p>
+                    <p className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{aiImgError}</p>
                   )}
 
                   <button
                     type="button"
                     onClick={handleAiImageGenerate}
                     disabled={aiImgBusy || aiImgPrompt.trim().length < 3}
-                    className="flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#94a3b8] disabled:shadow-none"
+                    className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#E2E4E8] disabled:shadow-none"
                   >
                     {aiImgBusy ? (
                       <>
@@ -769,7 +772,7 @@ export default function ComposerModal() {
                     ) : (
                       <>
                         <Icon path="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" cls="h-3.5 w-3.5" stroke={1.8} />
-                        ҮҮСГЭХ · {finalCost}₵
+                        ҮҮСГЭХ · <CreditIcon size={11} />{finalCost}
                       </>
                     )}
                   </button>
@@ -777,20 +780,20 @@ export default function ComposerModal() {
                   {/* Quick-launch: Brand Shot (Nano Banana → pink 3D product) */}
                   <a
                     href="/tools/brand-shot"
-                    className="mt-2 flex items-center justify-between gap-2 rounded-none border border-[rgba(16,128,202,0.3)] bg-gradient-to-r from-[rgba(16,128,202,0.06)] to-[#f2f5f8] p-2.5 transition hover:border-[rgba(16,128,202,0.55)]"
+                    className="mt-2 flex items-center justify-between gap-2 rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-gradient-to-r from-[rgba(46,41,255,0.06)] to-[#f2f5f8] p-2.5 transition hover:border-[rgba(46,41,255,0.55)]"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA]">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]">
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                         </svg>
                       </span>
                       <div>
                         <p className="text-[12px] font-bold text-[#0e1726]">Бренд шот</p>
-                        <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#6b7280]">ПИНК · 3D · АВТО</p>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">ПИНК · 3D · АВТО</p>
                       </div>
                     </div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1080CA]">ОРОХ →</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#2E29FF]">ОРОХ →</span>
                   </a>
                 </motion.div>
               )}
@@ -818,20 +821,20 @@ export default function ComposerModal() {
                     <button
                       type="button"
                       onClick={() => aiVidRefInputRef.current?.click()}
-                      className="flex w-full flex-col items-center justify-center gap-2 rounded-none border-2 border-dashed border-[rgba(15,23,38,0.1)] bg-[#f2f5f8] py-7 transition hover:border-[#1080CA]"
+                      className="flex w-full flex-col items-center justify-center gap-2 rounded-[4px] border-2 border-dashed border-[rgba(15,23,38,0.1)] bg-[#f2f5f8] py-7 transition hover:border-[#2E29FF]"
                     >
-                      <Icon path="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" cls="h-6 w-6 text-[#6b7280]" stroke={1.5} />
-                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">ЛАВЛАГАА ЗУРАГ</p>
-                      <p className="text-[10px] text-[#94a3b8]">Эхлэх зургаа сонго</p>
+                      <Icon path="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" cls="h-6 w-6 text-[#E2E4E8]" stroke={1.5} />
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">ЛАВЛАГАА ЗУРАГ</p>
+                      <p className="text-[10px] text-[#E2E4E8]">Эхлэх зургаа сонго</p>
                     </button>
                   ) : (
-                    <div className="relative overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)]">
+                    <div className="relative overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={aiVidRefPreview} alt="ref" className="max-h-[180px] w-full bg-[#ffffff] object-contain" />
                       <button
                         type="button"
                         onClick={() => { setAiVidRefUrl(""); setAiVidRefPreview(""); }}
-                        className="absolute right-2 top-2 rounded-none bg-black/70 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white hover:bg-black"
+                        className="absolute right-2 top-2 rounded-[4px] bg-black/70 px-2 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white hover:bg-black"
                       >
                         СОЛИХ
                       </button>
@@ -843,27 +846,27 @@ export default function ComposerModal() {
                     onChange={(e) => setAiVidPrompt(e.target.value.slice(0, 2500))}
                     placeholder="Хэрхэн хөдөлгөх вэ? Жишээ: Камер удаанаар ойртож дүр инээмсэглэнэ"
                     rows={2}
-                    className="w-full resize-none rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] text-[#0e1726] placeholder:text-[#94a3b8] focus:border-[#1080CA] focus:outline-none"
+                    className="w-full resize-none rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] text-[#0e1726] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none"
                   />
 
                   {/* Compact summary — one click to expand video options */}
                   <button
                     type="button"
                     onClick={() => setShowAiVidOptions((v) => !v)}
-                    className="flex w-full items-center gap-2 rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-2 text-left transition hover:border-[rgba(16,128,202,0.4)]"
+                    className="flex w-full items-center gap-2 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] p-2 text-left transition hover:border-[rgba(46,41,255,0.4)]"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-[rgba(16,128,202,0.12)] text-[#1080CA]">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[#2E29FF]">
                       <Icon path="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" cls="h-4 w-4" stroke={1.8} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[12px] font-bold text-[#0e1726]">Kling Video</p>
-                      <p className="truncate font-mono text-[9px] uppercase tracking-[0.18em] text-[#6b7280]">
+                      <p className="truncate font-mono text-[11px] uppercase tracking-[0.18em] text-[#E2E4E8]">
                         {aiVidDuration}С · {aiVidQuality === "pro" ? "PRO" : "ЭНГИЙН"} · {aiVidAspect}
                       </p>
                     </div>
                     <Icon
                       path="M19 9l-7 7-7-7"
-                      cls={`h-3.5 w-3.5 shrink-0 text-[#6b7280] transition-transform duration-200 ${showAiVidOptions ? "rotate-180 text-[#1080CA]" : ""}`}
+                      cls={`h-3.5 w-3.5 shrink-0 text-[#E2E4E8] transition-transform duration-200 ${showAiVidOptions ? "rotate-180 text-[#2E29FF]" : ""}`}
                       stroke={2.2}
                     />
                   </button>
@@ -880,41 +883,41 @@ export default function ComposerModal() {
                       >
                         <div className="grid grid-cols-3 gap-2 pt-1">
                           <div>
-                            <span className="mb-1 block font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">УРТ</span>
-                            <div className="flex gap-1 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
+                            <span className="mb-1 block font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">УРТ</span>
+                            <div className="flex gap-1 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
                               {(["5", "10"] as const).map((d) => (
                                 <button
                                   key={d}
                                   type="button"
                                   onClick={() => setAiVidDuration(d)}
-                                  className={`flex-1 rounded-none py-1 text-[11px] font-bold transition ${
-                                    aiVidDuration === d ? "bg-[#1080CA] text-[#0E0E10]" : "text-[#6b7280]"
+                                  className={`flex-1 rounded-[4px] py-1 text-[11px] font-bold transition ${
+                                    aiVidDuration === d ? "bg-[#2E29FF] text-white" : "text-[#E2E4E8]"
                                   }`}
                                 >{d}с</button>
                               ))}
                             </div>
                           </div>
                           <div>
-                            <span className="mb-1 block font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">ЧАНАР</span>
-                            <div className="flex gap-1 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
+                            <span className="mb-1 block font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">ЧАНАР</span>
+                            <div className="flex gap-1 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-1">
                               {(["std", "pro"] as const).map((q) => (
                                 <button
                                   key={q}
                                   type="button"
                                   onClick={() => setAiVidQuality(q)}
-                                  className={`flex-1 rounded-none py-1 text-[11px] font-bold transition ${
-                                    aiVidQuality === q ? "bg-[#1080CA] text-[#0E0E10]" : "text-[#6b7280]"
+                                  className={`flex-1 rounded-[4px] py-1 text-[11px] font-bold transition ${
+                                    aiVidQuality === q ? "bg-[#2E29FF] text-white" : "text-[#E2E4E8]"
                                   }`}
                                 >{q === "std" ? "ЭНГ" : "PRO"}</button>
                               ))}
                             </div>
                           </div>
                           <div>
-                            <span className="mb-1 block font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">ХЭЛБЭР</span>
+                            <span className="mb-1 block font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">ХЭЛБЭР</span>
                             <select
                               value={aiVidAspect}
                               onChange={(e) => setAiVidAspect(e.target.value as "16:9" | "9:16" | "1:1")}
-                              className="w-full rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] px-2 py-1.5 text-[11px] font-bold text-[#0e1726]"
+                              className="w-full rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] px-2 py-1.5 text-[11px] font-bold text-[#0e1726]"
                             >
                               <option value="16:9">16:9</option>
                               <option value="9:16">9:16</option>
@@ -927,22 +930,22 @@ export default function ComposerModal() {
                   </AnimatePresence>
 
                   {aiVidError && (
-                    <p className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{aiVidError}</p>
+                    <p className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{aiVidError}</p>
                   )}
 
                   {aiVidPhase !== "idle" ? (
-                    <div className="rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
+                    <div className="rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
                       <div className="flex items-center justify-between">
                         <p className="text-[12px] font-bold text-[#0e1726]">{aiVidStatus || "Илгээж байна…"}</p>
-                        <p className="font-mono text-[11px] tabular-nums text-[#6b7280]">
+                        <p className="font-mono text-[11px] tabular-nums text-[#E2E4E8]">
                           {Math.floor(aiVidElapsed / 60)}:{String(aiVidElapsed % 60).padStart(2, "0")}
                         </p>
                       </div>
-                      <div className="mt-2 h-1 overflow-hidden rounded-none bg-[#F2F2F4]">
+                      <div className="mt-2 h-1 overflow-hidden rounded-[4px] bg-[#F2F2F4]">
                         <motion.div
                           animate={{ width: `${Math.min(95, Math.floor((aiVidElapsed / (aiVidQuality === "pro" ? 240 : 120)) * 100))}%` }}
                           transition={{ duration: 1, ease: "linear" }}
-                          className="h-full bg-gradient-to-r from-[#1080CA] to-[#f2547a]"
+                          className="h-full bg-gradient-to-r from-[#2E29FF] to-[#f2547a]"
                         />
                       </div>
                     </div>
@@ -951,7 +954,7 @@ export default function ComposerModal() {
                       type="button"
                       onClick={handleAiVideoGenerate}
                       disabled={!aiVidRefUrl || aiVidPrompt.trim().length < 3 || !!videoUrl}
-                      className="flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#94a3b8] disabled:shadow-none"
+                      className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#E2E4E8] disabled:shadow-none"
                     >
                       <Icon path="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" cls="h-3.5 w-3.5" stroke={1.8} />
                       {videoUrl ? "✓ ВИДЕО ПОСТОНД" : "ҮҮСГЭХ · ~" + (aiVidQuality === "pro" ? "3-5" : "1-3") + " МИН"}
@@ -973,7 +976,7 @@ export default function ComposerModal() {
                     onChange={(e) => setContent(e.target.value.slice(0, 2000))}
                     placeholder={images.length > 0 || videoUrl ? "Гарчиг бичих… (заавал биш)" : "Юу нийтлэх вэ?"}
                     rows={5}
-                    className="w-full resize-none rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] leading-relaxed text-[#0e1726] placeholder:text-[#94a3b8] focus:border-[#1080CA] focus:outline-none"
+                    className="w-full resize-none rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] leading-relaxed text-[#0e1726] placeholder:text-[#E2E4E8] focus:border-[#2E29FF] focus:outline-none"
                   />
 
                   <div className="flex items-center justify-between">
@@ -989,12 +992,12 @@ export default function ComposerModal() {
                       type="button"
                       onClick={() => fileRef.current?.click()}
                       disabled={images.length >= MAX_IMAGES}
-                      className="flex items-center gap-1.5 rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#6b7280] transition hover:border-[#1080CA] hover:text-[#0e1726] disabled:opacity-30"
+                      className="flex items-center gap-1.5 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#E2E4E8] transition hover:border-[#2E29FF] hover:text-[#0e1726] disabled:opacity-30"
                     >
                       <Icon path="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" cls="h-3 w-3" stroke={1.8} />
                       ЗУРАГ ОРУУЛАХ
                     </button>
-                    <span className="font-mono text-[9px] tabular-nums text-[#94a3b8]">{content.length}/2000</span>
+                    <span className="font-mono text-[11px] tabular-nums text-[#E2E4E8]">{content.length}/2000</span>
                   </div>
                 </motion.div>
               )}
@@ -1002,21 +1005,21 @@ export default function ComposerModal() {
               {/* MEDIA STRIP — always visible across all modes */}
               {(images.length > 0 || videoPreview) && (
                 <div className="mt-4 space-y-2">
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">МЕДИА</span>
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">МЕДИА</span>
                   <div className="flex gap-1.5 overflow-x-auto">
                     {images.map((c, i) => (
-                      <div key={i} className="relative h-16 w-16 shrink-0 overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)]">
+                      <div key={i} className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={c.preview} alt={`img ${i + 1}`} className="h-full w-full object-cover" />
                         {!c.url && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#1080CA]" />
+                            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2E29FF]" />
                           </div>
                         )}
                         <button
                           type="button"
                           onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
-                          className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-none bg-black/75 text-white"
+                          className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-[4px] bg-black/75 text-white"
                           aria-label="Устгах"
                         >
                           <Icon path="M6 18L18 6M6 6l12 12" cls="h-2.5 w-2.5" stroke={2.4} />
@@ -1024,13 +1027,13 @@ export default function ComposerModal() {
                       </div>
                     ))}
                     {videoPreview && (
-                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)]">
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)]">
                         <video src={videoPreview} className="h-full w-full object-cover" muted />
-                        <span className="absolute left-0.5 top-0.5 rounded-none bg-[#1080CA] px-1 py-0.5 font-mono text-[8px] font-bold tracking-[0.18em] text-[#0E0E10]">VID</span>
+                        <span className="absolute left-0.5 top-0.5 rounded-[4px] bg-[#2E29FF] px-1 py-0.5 font-mono text-[8px] font-bold tracking-[0.18em] text-white">VID</span>
                         <button
                           type="button"
                           onClick={() => { setVideoUrl(""); setVideoPreview(""); setVideoDurationSec(0); }}
-                          className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-none bg-black/75 text-white"
+                          className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-[4px] bg-black/75 text-white"
                           aria-label="Устгах"
                         >
                           <Icon path="M6 18L18 6M6 6l12 12" cls="h-2.5 w-2.5" stroke={2.4} />
@@ -1043,7 +1046,7 @@ export default function ComposerModal() {
 
               {/* CATEGORIES */}
               <div className="mt-4">
-                <span className="mb-1.5 block font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">КАТЕГОРИ</span>
+                <span className="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">КАТЕГОРИ</span>
                 <div className="flex flex-wrap gap-1">
                   {pills.map((c) => {
                     const active = category === c.slug;
@@ -1052,10 +1055,10 @@ export default function ComposerModal() {
                         key={c.slug}
                         type="button"
                         onClick={() => setCategory(c.slug)}
-                        className={`rounded-none border px-2.5 py-1 text-[11px] font-bold transition ${
+                        className={`rounded-[4px] border px-2.5 py-1 text-[11px] font-bold transition ${
                           active
-                            ? "border-[#1080CA] bg-[rgba(16,128,202,0.06)] text-[#1080CA]"
-                            : "border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] text-[#6b7280] hover:text-[#0e1726]"
+                            ? "border-[#2E29FF] bg-[rgba(46,41,255,0.06)] text-[#2E29FF]"
+                            : "border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] text-[#E2E4E8] hover:text-[#0e1726]"
                         }`}
                       >
                         {c.label}
@@ -1066,16 +1069,16 @@ export default function ComposerModal() {
               </div>
 
               {error && (
-                <p className="mt-3 rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{error}</p>
+                <p className="mt-3 rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-2.5 py-1.5 text-[11px] text-[#8FC1EA]">{error}</p>
               )}
             </div>
 
             {/* ─── Footer — bright accent edge segment + animated arrow ── */}
-            <div className="relative flex items-center justify-between gap-3 border-t border-[rgba(15,23,38,0.06)] bg-[#0a0a0c] px-5 py-3">
-              <span className="pointer-events-none absolute left-3 top-0 h-px w-12 bg-gradient-to-r from-[#1080CA] via-[#1080CA] to-transparent shadow-[0_0_8px_rgba(16,128,202,0.6)]" />
+            <div className="relative flex items-center justify-between gap-3 border-t border-[rgba(15,23,38,0.06)] bg-[#0A0A0A] px-5 py-3">
+              <span className="pointer-events-none absolute left-3 top-0 h-px w-12 bg-gradient-to-r from-[#2E29FF] via-[#2E29FF] to-transparent shadow-[0_0_8px_rgba(46,41,255,0.6)]" />
               <div className="flex items-center gap-2">
-                <span className="h-1 w-1 rotate-45 bg-[#1080CA]" />
-                <p className="font-mono text-[9px] uppercase tracking-[0.26em] text-[#6b7280]">
+                <span className="h-1 w-1 rotate-45 bg-[#2E29FF]" />
+                <p className="font-mono text-[11px] uppercase tracking-[0.26em] text-[#E2E4E8]">
                   {validImages.length > 0 || videoUrl
                     ? `${validImages.length} ЗУРАГ${videoUrl ? " · 1 ВИДЕО" : ""}`
                     : canPost
@@ -1087,7 +1090,7 @@ export default function ComposerModal() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={!canPost}
-                className="group flex items-center gap-2 rounded-none bg-[#1080CA] px-5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.26em] text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.5)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#94a3b8] disabled:shadow-none"
+                className="group flex items-center gap-2 rounded-[4px] bg-[#2E29FF] px-5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.26em] text-white transition hover:shadow-[0_0_24px_rgba(46,41,255,0.5)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#E2E4E8] disabled:shadow-none"
               >
                 {submitting ? (
                   <>

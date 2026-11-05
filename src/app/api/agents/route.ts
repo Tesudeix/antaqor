@@ -1,34 +1,29 @@
+/* Нийтийн ростер. Зочны нүүр, агентын лавлах хоёулаа үүнийг уншина —
+   тиймээс нэвтрэлт шаардахгүй. Системийн prompt ЭНД БУЦААХГҮЙ: тэр нь
+   агентын дотоод заавар бөгөөд браузарт гарах ямар ч шалтгаангүй. */
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import Agent from "@/models/Agent";
+import { resolveRoster } from "@/lib/agentRoster";
 
-const DEFAULT_AGENTS = [
-  {
-    slug: "antaqor",
-    name: "Antaqor",
-    description: "Антрепренёр",
-    avatar: "/antaqor.png",
-    cover: "",
-    href: "/companion",
-    order: 0,
-  },
-];
-
-async function ensureDefaults() {
-  for (const a of DEFAULT_AGENTS) {
-    await Agent.updateOne(
-      { slug: a.slug },
-      { $setOnInsert: a },
-      { upsert: true }
-    );
-  }
-}
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    await dbConnect();
-    await ensureDefaults();
-    const agents = await Agent.find({ slug: { $ne: "budjargal" } }).sort({ order: 1 }).lean();
+    const roster = await resolveRoster();
+    const agents = roster.map((a) => ({
+      slug: a.slug,
+      name: a.name,
+      handle: a.handle,
+      role: a.role,
+      desc: a.desc,
+      color: a.color,
+      avatar: a.avatar,
+      age: a.age,
+      personality: a.personality,
+      mission: a.mission,
+      catchphrase: a.catchphrase,
+      postEnabled: a.postEnabled,
+      postHour: a.postHour,
+    }));
     return NextResponse.json({ agents });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Failed to load agents";

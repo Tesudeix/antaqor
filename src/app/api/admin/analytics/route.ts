@@ -80,13 +80,13 @@ export async function GET() {
       ]),
       // All-time revenue from approved payments
       Payment.aggregate<{ total: number }>([
-        { $match: { status: "approved" } },
+        { $match: { status: "paid" } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
         { $project: { _id: 0, total: 1 } },
       ]),
       // 30-day revenue
       Payment.aggregate<{ total: number }>([
-        { $match: { status: "approved", createdAt: { $gte: thirty } } },
+        { $match: { status: "paid", updatedAt: { $gte: thirty } } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
         { $project: { _id: 0, total: 1 } },
       ]),

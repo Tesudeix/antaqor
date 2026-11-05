@@ -2,7 +2,11 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface INotification extends Document {
   recipient: mongoose.Types.ObjectId;
-  type: "new_post" | "new_course" | "new_lesson" | "system";
+  /* "payment" — төлбөрийн урсгал (сануулга, баталгаажуулалт). Тусдаа
+     төрөл байх шалтгаан: контентын мэдэгдлээс ӨӨР жинтэй бөгөөд хүн
+     тэднийг тусад нь шүүх/унтраах ёстой. Мөн өнөөдрийг хүртэл
+     төлбөрийн ганц ч мэдэгдэл илгээгдээгүйг тоогоор нь харуулна. */
+  type: "new_post" | "new_course" | "new_lesson" | "system" | "payment";
   title: string;
   message: string;
   link: string;
@@ -21,7 +25,7 @@ const NotificationSchema = new Schema<INotification>(
     },
     type: {
       type: String,
-      enum: ["new_post", "new_course", "new_lesson", "system"],
+      enum: ["new_post", "new_course", "new_lesson", "system", "payment"],
       required: true,
     },
     title: { type: String, required: true },

@@ -1,0 +1,686 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   §07b — ЦЭВЭР ЦАГААН.  theme-light.css-ийн ДАРАА ачаалагдана.  (2026-09-22)
+
+   `theme-light.css` нь ҮҮСГЭСЭН файл ("ГАРААР ЗАСАХГҮЙ") тул түүнийг
+   хөндөхгүй — ялгаа нь бүгд ЭНД. Хоёр ажил хийнэ:
+
+   1) Суурийг ЦЭВЭР #FFFFFF болгох. Үүсгэгч нь зориуд #FCFCFC тавьсан
+      бөгөөд шалтгаан нь бичигдсэн байсан: цэвэр цагаан суурь дээр карт
+      өргөгдөх зай үлдэхгүй. Тэр эсэргүүцэл ҮНЭН — гэхдээ эзэн нь цэвэр
+      цагаан хүссэн тул суурийг цагаан болгоод, шатлалыг ДҮҮРГЭЛТЭЭС
+      ХҮРЭЭ рүү шилжүүлэв: `--l-line` тод болсон, карт одоо зураасаараа
+      уншигдана.
+
+   2) Үүсгэгч ажилласнаас ХОЙШ нэмэгдсэн өнгөнүүдийг нөхөх. Тэр файл
+      2026-08-20-нд үүссэн; түүнээс хойш суурь #161618 болж, ContentStudio
+      ба course-player модулиуд харанхуй болсон. Тэдгээр нь 544 сонгогчийн
+      аль нэгэнд ч таарахгүй байв.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. Цэвэр цагаан суурь ─────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --l-canvas: #FFFFFF;
+  --color-background: #FFFFFF;
+  --color-black: #FFFFFF;
+
+  /* Суурь ба карт хоёр ижил цагаан болсон тул ялгааг ХҮРЭЭ барина.
+     0.10 → 0.14: цагаан дээр цагаан картын цорын ганц ирмэг энэ. */
+  --l-line: rgba(23, 23, 26, 0.14);
+  --l-line-strong: rgba(23, 23, 26, 0.26);
+  --l-line-solid: #E6E6E9;
+  --line: rgba(23, 23, 26, 0.14);
+  --line-strong: rgba(23, 23, 26, 0.26);
+  --color-border: #E6E6E9;
+
+  /* Наалдамхай толгой/доод мөр — цагаан, бага зэрэг тунгалаг. */
+  --chrome-bg: rgba(255, 255, 255, 0.88);
+  --chrome-line: rgba(23, 23, 26, 0.12);
+}
+:root[data-theme="light"] { background: #FFFFFF; }
+:root[data-theme="light"] body { background: #FFFFFF; }
+
+/* Төрөлх хяналтууд (select, date picker, scrollbar) цагаан болно. */
+:root[data-theme="light"] .\[color-scheme\:dark\] { color-scheme: light; }
+
+/* ─── 2. Өргөлтийн дүүргэлт дээрх бичиг ─────────────────────────────────
+   Энэ нь ГОРИМЫН биш, ӨНГӨНИЙ шинж: #00E5C7 дүүргэлт дээр цагаан бичиг
+   1.61:1 (уншигдахгүй), бараан бичиг 12.53:1. Өдөр шөнө хоёуланд ижил.
+   globals.css дахь ижил дүрэм нь `html:not([data-theme="light"])`-ээр
+   угтварлагдсан тул ӨДӨР УНТАРНА — энэ бол түүний өдрийн ихэр. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0B8F7E\],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\].text-white,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\] .text-white,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\][class*="text-white" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\] [class*="text-white" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\][class*="text-[#FFFFFF]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#00E5C7\] [class*="text-[#FFFFFF]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0B8F7E\].text-white,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0B8F7E\] .text-white,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0B8F7E\][class*="text-white" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0B8F7E\] [class*="text-white" i] {
+  color: #020807 !important;
+}
+
+/* #094436 (Conqueror) нь ХАРАНХУЙ дүүргэлт — цагаан бичиг 11.10:1 буюу
+   ЗӨВ. Дээрх жагсаалтад ЗОРИУД оруулаагүй. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#094436\],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#094436\] .text-white {
+  color: #FFFFFF !important;
+}
+
+/* ─── 3. Үүсгэгчийн дараа нэмэгдсэн харанхуй өнгөнүүд ──────────────────── */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#161618]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#171717]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#26262B]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1E2220]" i] {
+  background-color: #FFFFFF !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#260A12]" i] {
+  /* Аюулын бүдэг дэвсгэр — улаан утгыг нь хадгалж гэрэл рүү буулгав. */
+  background-color: #FDECEF !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[#2E2E34]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[#0C3050]" i] {
+  border-color: rgba(23, 23, 26, 0.14) !important;
+}
+
+/* #171717 · #334155 · #2A1B2A нь ЗӨВХӨН text- хэлбэрээр хэрэглэгдсэн —
+   бараан бичиг цагаан дээр аль хэдийн зөв тул ГАР ХҮРЭХГҮЙ. */
+
+
+/* ─── 4. Утга санаат өнгө — шөнийн хувилбар цагаан дээр уншигдахгүй ────
+   Эдгээр нь харанхуй суурь дээр тооцоологдсон: #4ADE80 цагаан дээр
+   1.74:1, #FBBF24 нь 1.67:1 — хоёулаа УНШИГДАХГҮЙ. Өнгөний УТГЫГ
+   (ногоон=амжилт, шар=анхааруулга) хадгалж, гэрэлтэлтийг нь л
+   гүнзгийрүүлэв. Доорх бүх утга #FFFFFF дээр ≥4.5:1 (AA).
+
+   Сонгогчийн хэлбэр нь үүсгэсэн давхаргынхтай ижил: `[class*=…]` нь
+   `hover:`/`focus:` хувилбаруудыг ч барьдаг тул ЗӨВХӨН хувилбартай
+   элемент амарч байхдаа өнгөтэй болохоос сэргийлж `:not([class*=":…"])`
+   хамгаалалт тавина. Hover-ийн дүрэм тусдаа явна. */
+
+/* #4ADE80 → #15803D · ногоон · амжилт · 5.02:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#4ADE80]" i]:not([class*=":text-[#4ADE80]" i]) {
+  color: #15803D !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#4ADE80]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#4ADE80]" i]:hover {
+  color: #15803D !important;
+}
+
+/* #FBBF24 → #A16207 · шар · анхааруулга · 4.92:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FBBF24]" i]:not([class*=":text-[#FBBF24]" i]) {
+  color: #A16207 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#FBBF24]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#FBBF24]" i]:hover {
+  color: #A16207 !important;
+}
+
+/* #F59E0B → #A16207 · шар · анхааруулга · 4.92:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#F59E0B]" i]:not([class*=":text-[#F59E0B]" i]) {
+  color: #A16207 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#F59E0B]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#F59E0B]" i]:hover {
+  color: #A16207 !important;
+}
+
+/* #C8943A → #8A6320 · алт · 5.40:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#C8943A]" i]:not([class*=":text-[#C8943A]" i]) {
+  color: #8A6320 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#C8943A]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#C8943A]" i]:hover {
+  color: #8A6320 !important;
+}
+
+/* #FFD300 → #8A6D00 · шар · 4.92:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FFD300]" i]:not([class*=":text-[#FFD300]" i]) {
+  color: #8A6D00 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#FFD300]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#FFD300]" i]:hover {
+  color: #8A6D00 !important;
+}
+
+/* #3DA8FF → #0B63B0 · цэнхэр · 6.13:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#3DA8FF]" i]:not([class*=":text-[#3DA8FF]" i]) {
+  color: #0B63B0 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#3DA8FF]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#3DA8FF]" i]:hover {
+  color: #0B63B0 !important;
+}
+
+/* #8FC1EA → #0B63B0 · цайвар цэнхэр · 6.13:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#8FC1EA]" i]:not([class*=":text-[#8FC1EA]" i]) {
+  color: #0B63B0 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#8FC1EA]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#8FC1EA]" i]:hover {
+  color: #0B63B0 !important;
+}
+
+/* #FFB4AE → #C2352B · шүрэн · аюул · 5.47:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FFB4AE]" i]:not([class*=":text-[#FFB4AE]" i]) {
+  color: #C2352B !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#FFB4AE]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#FFB4AE]" i]:hover {
+  color: #C2352B !important;
+}
+
+/* #9C9CA6 → #6E6E76 · саарал · гуравдагч · 5.05:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#9C9CA6]" i]:not([class*=":text-[#9C9CA6]" i]) {
+  color: #6E6E76 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#9C9CA6]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#9C9CA6]" i]:hover {
+  color: #6E6E76 !important;
+}
+
+/* #C8C8C0 → #6E6E76 · саарал · гуравдагч · 5.05:1 */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#C8C8C0]" i]:not([class*=":text-[#C8C8C0]" i]) {
+  color: #6E6E76 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:text-[#C8C8C0]" i]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="group-hover:text-[#C8C8C0]" i]:hover {
+  color: #6E6E76 !important;
+}
+
+
+/* ─── 5. МЕДИА ГАДАРГУУ — бичиг ЦАЙВАР хэвээр ───────────────────────────
+   `.hero-panel` нь зураг агуулдаг ХАРАНХУЙ хавтас. Үүсгэсэн давхаргад
+   ижил зорилготой SCRIM хэсэг байдаг ч энэ хавтас түүнээс ХОЙШ
+   нэмэгдсэн тул хамрагдаагүй: доторх бичиг ink болж хувирч, #0E0E10
+   дээр 1.08:1 болов — бүрэн үл үзэгдэх.
+
+   БҮХ бичгийг цагаан болгож БОЛОХГҮЙ. Эхний оролдлого `.hero-panel *`
+   гэж бичээд доторх teal товчийг эвдсэн: түүний бичиг `text-[#020807]`
+   буюу АЛЬ ХЭДИЙН зөв (дүүргэлт дээрээ 12.53:1) байтал цагаан болж
+   1.61:1 болсон. Тиймээс гэрлийн давхарга ХӨРВҮҮЛСЭН утгуудыг л нэрээр
+   нь буцаана — өөрийн гэсэн өнгөтэй элементэд ГАР ХҮРЭХГҮЙ. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) .hero-panel [class*="text-[#F2F2F4]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .hero-panel [class*="text-white" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .hero-panel .text-white {
+  color: #FFFFFF !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) .hero-panel [class*="text-[#9C9CA6]" i],
+:root[data-theme="light"] body:not(:has(.yuki-root)) .hero-panel [class*="text-[#E2E4E8]" i] {
+  color: #C8C8CE !important;
+}
+
+
+/* ─── 6. ЦАГААН-АЛЬФА ХҮРЭЭ БА ДЭВСГЭР ──────────────────────────────────
+   ХАМГИЙН ТОМ НҮХ БАЙВ. Апп дотор `rgba(255,255,255,α)` хэлбэрээр 465
+   хүрээ/дэвсгэр бичигдсэн бөгөөд үүсгэсэн давхарга тэднээс НЭГИЙГ Ч
+   хөрвүүлдэггүй. Шөнө дээр 8% цагаан зураас нь картын ирмэг; цагаан
+   дээр тэр нь цагаан дээрх цагаан — БҮРЭН АЛГА. Тиймээс карт, input,
+   товч бүр ирмэгээ алдаж, бүх зүйл нэг хавтгайд "угаагдсан" харагдаж
+   байв.
+
+   Альфа-г шууд хуулахгүй: бараан зураас цагаан дээр илүү хүчтэй
+   уншигддаг тул бага зэрэг өргөтгөв (8% → 13%), ингэснээр шөнийн
+   шатлал хадгалагдана. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.03)]"]:not([class*=":border-[rgba(255,255,255,0.03)]"]) {
+  border-color: rgba(23,23,26,0.07) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.03)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.03)]"]:focus {
+  border-color: rgba(23,23,26,0.07) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.04)]"]:not([class*=":border-[rgba(255,255,255,0.04)]"]) {
+  border-color: rgba(23,23,26,0.07) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.04)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.04)]"]:focus {
+  border-color: rgba(23,23,26,0.07) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.05)]"]:not([class*=":border-[rgba(255,255,255,0.05)]"]) {
+  border-color: rgba(23,23,26,0.1) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.05)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.05)]"]:focus {
+  border-color: rgba(23,23,26,0.1) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.06)]"]:not([class*=":border-[rgba(255,255,255,0.06)]"]) {
+  border-color: rgba(23,23,26,0.11) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.06)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.06)]"]:focus {
+  border-color: rgba(23,23,26,0.11) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.07)]"]:not([class*=":border-[rgba(255,255,255,0.07)]"]) {
+  border-color: rgba(23,23,26,0.12) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.07)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.07)]"]:focus {
+  border-color: rgba(23,23,26,0.12) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.08)]"]:not([class*=":border-[rgba(255,255,255,0.08)]"]) {
+  border-color: rgba(23,23,26,0.13) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.08)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.08)]"]:focus {
+  border-color: rgba(23,23,26,0.13) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.1)]"]:not([class*=":border-[rgba(255,255,255,0.1)]"]) {
+  border-color: rgba(23,23,26,0.15) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.1)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.1)]"]:focus {
+  border-color: rgba(23,23,26,0.15) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.10)]"]:not([class*=":border-[rgba(255,255,255,0.10)]"]) {
+  border-color: rgba(23,23,26,0.15) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.10)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.10)]"]:focus {
+  border-color: rgba(23,23,26,0.15) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.12)]"]:not([class*=":border-[rgba(255,255,255,0.12)]"]) {
+  border-color: rgba(23,23,26,0.17) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.12)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.12)]"]:focus {
+  border-color: rgba(23,23,26,0.17) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.14)]"]:not([class*=":border-[rgba(255,255,255,0.14)]"]) {
+  border-color: rgba(23,23,26,0.2) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.14)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.14)]"]:focus {
+  border-color: rgba(23,23,26,0.2) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.15)]"]:not([class*=":border-[rgba(255,255,255,0.15)]"]) {
+  border-color: rgba(23,23,26,0.21) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.15)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.15)]"]:focus {
+  border-color: rgba(23,23,26,0.21) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.16)]"]:not([class*=":border-[rgba(255,255,255,0.16)]"]) {
+  border-color: rgba(23,23,26,0.22) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.16)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.16)]"]:focus {
+  border-color: rgba(23,23,26,0.22) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.2)]"]:not([class*=":border-[rgba(255,255,255,0.2)]"]) {
+  border-color: rgba(23,23,26,0.26) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.2)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.2)]"]:focus {
+  border-color: rgba(23,23,26,0.26) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.20)]"]:not([class*=":border-[rgba(255,255,255,0.20)]"]) {
+  border-color: rgba(23,23,26,0.26) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.20)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.20)]"]:focus {
+  border-color: rgba(23,23,26,0.26) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.3)]"]:not([class*=":border-[rgba(255,255,255,0.3)]"]) {
+  border-color: rgba(23,23,26,0.34) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.3)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.3)]"]:focus {
+  border-color: rgba(23,23,26,0.34) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[rgba(255,255,255,0.5)]"]:not([class*=":border-[rgba(255,255,255,0.5)]"]) {
+  border-color: rgba(23,23,26,0.48) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:border-[rgba(255,255,255,0.5)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="focus:border-[rgba(255,255,255,0.5)]"]:focus {
+  border-color: rgba(23,23,26,0.48) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.02)]"]:not([class*=":bg-[rgba(255,255,255,0.02)]"]) {
+  background-color: #FAFAFB !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.02)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.02)]"] {
+  background-color: #FAFAFB !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.025)]"]:not([class*=":bg-[rgba(255,255,255,0.025)]"]) {
+  background-color: #FAFAFB !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.025)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.025)]"] {
+  background-color: #FAFAFB !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.03)]"]:not([class*=":bg-[rgba(255,255,255,0.03)]"]) {
+  background-color: #F8F8FA !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.03)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.03)]"] {
+  background-color: #F8F8FA !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.04)]"]:not([class*=":bg-[rgba(255,255,255,0.04)]"]) {
+  background-color: #F5F5F7 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.04)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.04)]"] {
+  background-color: #F5F5F7 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.05)]"]:not([class*=":bg-[rgba(255,255,255,0.05)]"]) {
+  background-color: #F3F3F6 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.05)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.05)]"] {
+  background-color: #F3F3F6 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.06)]"]:not([class*=":bg-[rgba(255,255,255,0.06)]"]) {
+  background-color: #F1F1F4 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.06)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.06)]"] {
+  background-color: #F1F1F4 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.07)]"]:not([class*=":bg-[rgba(255,255,255,0.07)]"]) {
+  background-color: #EFEFF3 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.07)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.07)]"] {
+  background-color: #EFEFF3 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.08)]"]:not([class*=":bg-[rgba(255,255,255,0.08)]"]) {
+  background-color: #EDEDF1 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.08)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.08)]"] {
+  background-color: #EDEDF1 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.1)]"]:not([class*=":bg-[rgba(255,255,255,0.1)]"]) {
+  background-color: #E9E9EE !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.1)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.1)]"] {
+  background-color: #E9E9EE !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.10)]"]:not([class*=":bg-[rgba(255,255,255,0.10)]"]) {
+  background-color: #E9E9EE !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.10)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.10)]"] {
+  background-color: #E9E9EE !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.12)]"]:not([class*=":bg-[rgba(255,255,255,0.12)]"]) {
+  background-color: #E6E6EC !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.12)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.12)]"] {
+  background-color: #E6E6EC !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.14)]"]:not([class*=":bg-[rgba(255,255,255,0.14)]"]) {
+  background-color: #E3E3EA !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.14)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.14)]"] {
+  background-color: #E3E3EA !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[rgba(255,255,255,0.2)]"]:not([class*=":bg-[rgba(255,255,255,0.2)]"]) {
+  background-color: #DBDBE3 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[rgba(255,255,255,0.2)]"]:hover,
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:bg-[rgba(255,255,255,0.2)]"] {
+  background-color: #DBDBE3 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="divide-[rgba(255,255,255,0.04)]"] > * + * {
+  border-color: rgba(23,23,26,0.07) !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="divide-[rgba(255,255,255,0.06)]"] > * + * {
+  border-color: rgba(23,23,26,0.11) !important;
+}
+
+
+/* ─── 7. СААРАЛ ШАТЫГ ХҮЙТЭН БОЛГОХ ─────────────────────────────────────
+   Үүсгэгчийн саарал нь ДУЛААН байсан: #EEEBE7 дээр цэнхэр нь улаанаас
+   7 нэгж доогуур. Цэвэр цагаан суурь (саармаг) ба #00E5C7 (хүйтэн)
+   хоёрын хооронд дулаан шаржин саарал нь бохир, хуучирсан мэт
+   уншигдана. Саармаг/хүйтэн рүү шилжүүлэв — ижил гэрэлтэлт, өөр өнгө. */
+:root[data-theme="light"] {
+  --l-surface-2:   #F3F3F6;
+  --l-surface-3:   #E8E8EE;
+  --surface-2:     #F3F3F6;
+  --surface-hover: #E8E8EE;
+  --nav-hover-bg:  #F3F3F6;
+  --l-line-solid:  #E4E4EA;
+  --color-border:  #E4E4EA;
+  --l-tint:        rgba(23,23,26,0.045);
+  --tt-track:      #E8E8EE;
+  --tt-edge:       rgba(23,23,26,0.14);
+}
+
+/* ─── 8. INPUT — дүүргэлт биш, ХҮРЭЭ нь талбарыг тодорхойлно ────────────
+   Дүүргэлт нь цагаанаас арайхийн ялгардаг тул хэрэглэгч хаана бичихээ
+   мэдэхгүй байв ("саарал хавтан"). Цагаан дээрх стандарт хэв маяг руу
+   шилжүүлэв: цайвар дүүргэлт + ТОД 1px хүрээ + фокусын тод цагираг.
+   `bg-transparent` талбаруудыг ОРХИНО — тэдгээр нь картанд шигдсэн
+   (⌘K палетт гэх мэт) бөгөөд хүрээ нь илүүц. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([class*="bg-transparent"]),
+:root[data-theme="light"] body:not(:has(.yuki-root)) textarea:not([class*="bg-transparent"]),
+:root[data-theme="light"] body:not(:has(.yuki-root)) select:not([class*="bg-transparent"]) {
+  border: 1px solid #DCDCE4;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus-visible,
+:root[data-theme="light"] body:not(:has(.yuki-root)) textarea:focus-visible,
+:root[data-theme="light"] body:not(:has(.yuki-root)) select:focus-visible {
+  border-color: #0B8F7E !important;
+  box-shadow: 0 0 0 3px rgba(0,229,199,0.22);
+  outline: none;
+}
+/* Placeholder — 4.6:1. Шошгоос ялгарах ёстой ч уншигдахаа болих ёсгүй. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) ::placeholder {
+  color: #767680 !important;
+  opacity: 1;
+}
+
+
+/* ─── 9. АЮУЛЫН УЛААН — шөнийн утга цагаан дээр AA давахгүй ─────────────
+   `#FF3D69` нь харанхуй дээр тод, гэвч ЦАГААН БИЧИГТЭЙ дүүргэлт болоход
+   3.43:1 буюу AA (4.5:1) давахгүй. Өнгөний аясыг хадгалаад гэрэлтэлтийг
+   нь бууруулав: #D81B4A дээр цагаан бичиг 5.03:1.
+
+   `#FF8B8B` нь алдааны БИЧИГ байсан — цагаан дээр 2.25:1, бараг
+   үл үзэгдэнэ. Ижил гэр бүлийн #C81E4A нь 5.61:1. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#FF3D69]" i]:not([class*=":bg-[#FF3D69]" i]) {
+  background-color: #D81B4A !important;
+  color: #FFFFFF !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[#FF3D69]" i]:hover {
+  background-color: #BE123C !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FF8B8B]" i]:not([class*=":text-[#FF8B8B]" i]),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FF3D69]" i]:not([class*=":text-[#FF3D69]" i]) {
+  color: #C81E4A !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="border-[#FF3D69]" i] {
+  border-color: rgba(216,27,74,0.42) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §10 — ӨДРИЙН ГОРИМ ДАХИН АНХДАГЧ: #F8F9FC суурь + #068FA3 өргөлт.
+   (2026-10-06)  Энэ файлын ХАМГИЙН СҮҮЛД — дээрх бүх утгыг дарна.
+
+   Шөнийн палитр 2026-10-01-нд #068FA3 болсон ч энэ хоёр гэрлийн файл
+   тэр сэглэлтэд ЗОРИУД ороогүй (цагаан дэвсгэрт тооцсон контраст) —
+   тиймээс #068FA3-ийн ангиуд энд нэг ч сонгогчид таарахгүй байв.
+   Контрастыг #F8F9FC дээр ДАХИН ТООЦОВ:
+
+     #068FA3 бичиг     3.65:1  ✗  → #057282  5.34:1 ✓
+     #0AA6BD бичиг     2.77:1  ✗  → #046B7A  5.89:1 ✓
+     цагаан / #068FA3  3.84:1  ✗  → дүүргэлт #057282, цагаан 5.62:1 ✓
+     #068FA3 хүрээ     3.65:1  ✓  (хүрээнд 3:1 хангалттай — хөндөхгүй)
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+  --l-canvas: #F8F9FC;
+  --l-surface: #FFFFFF;
+  --l-surface-2: #EEF0F5;
+  --l-surface-3: #E4E7EE;
+  --color-background: #F8F9FC;
+  --color-black: #F8F9FC;
+  --surface: #FFFFFF;
+  --surface-2: #EEF0F5;
+  --surface-hover: #E4E7EE;
+
+  /* Суурь цэвэр цагаан биш болсон тул карт (цагаан) дахин ДҮҮРГЭЛТЭЭРЭЭ
+     өргөгдөнө — хүрээг 0.14-өөс бага зэрэг зөөллөв. */
+  --l-line: rgba(16, 24, 40, 0.11);
+  --l-line-strong: rgba(16, 24, 40, 0.22);
+  --l-line-solid: #E3E6EC;
+  --line: rgba(16, 24, 40, 0.11);
+  --line-strong: rgba(16, 24, 40, 0.22);
+  --color-border: #E3E6EC;
+
+  --l-accent-ink: #057282;
+  --l-accent-deep: #057282;
+  --nav-hover-bg: #EEF0F5;
+  --nav-active-bg: rgba(6, 143, 163, 0.10);
+  --glow: 0 0 0 1px #068FA3, 0 8px 22px -8px rgba(6, 143, 163, 0.45);
+
+  --chrome-bg: rgba(248, 249, 252, 0.88);
+  --chrome-line: rgba(16, 24, 40, 0.10);
+
+  --tt-ico-on: #057282;
+
+  /* Inline style-д ашиглагддаг токенууд (шөнө нь var()-ын fallback-аар
+     хуучин утгаа авна — энд л тодорхойлогдоно). CSS-ийн хүрч чаддаггүй
+     `style={{ color: … }}` болон модулийн INK/SUB/SURFACE тогтмолууд. */
+  --t-ink: #0F1420;
+  --t-body: #2E3440;
+  --t-sub: #5B6170;
+  --t-line: rgba(16, 24, 40, 0.12);
+  --t-surface: #FFFFFF;
+  --accent-ink: #05798A;
+  --accent-ink-2: #046B7A;
+}
+:root[data-theme="dark"] {
+  --tt-track: #1E1E21;
+  --tt-thumb: #333338;
+  --tt-ico-on: #068FA3;
+}
+:root[data-theme="light"] { background: #F8F9FC; }
+:root[data-theme="light"] body { background: #F8F9FC; }
+:root[data-theme="light"] .theme-toggle:focus-visible { outline-color: #068FA3; }
+:root[data-theme="dark"] .theme-toggle:focus-visible { outline-color: #068FA3; }
+
+/* ─── Өргөлт БИЧИГ болж хэрэглэгдэх үед гүнзгийрнэ ─────────────────────── */
+:root[data-theme="light"] .text-\[\#068FA3\]:not(#_),
+:root[data-theme="light"] [class*="hover:text-[#068FA3]"]:hover,
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#068FA3]"],
+:root[data-theme="light"] [class*="text-[#068FA3]/"] {
+  color: #057282 !important;
+}
+:root[data-theme="light"] .text-\[\#0AA6BD\]:not(#_),
+:root[data-theme="light"] [class*="hover:text-[#0AA6BD]"]:hover,
+:root[data-theme="light"] .group:hover [class*="group-hover:text-[#0AA6BD]"] {
+  color: #046B7A !important;
+}
+
+/* ─── Өргөлтийн ДҮҮРГЭЛТ: гүн teal + цагаан бичиг ───────────────────────
+   Шөнө #068FA3 дүүргэлт дээр бараан бичиг тавьдаг (globals.css, мөр
+   ~1228) — тэр дүрэм `html:not([data-theme="light"])` тул өдөр унтарна.
+   Өдөр нь эсрэгээрээ: дүүргэлтийг гүнзгийрүүлж ЦАГААН бичигтэй болгоно.
+   Тунгалаг хувилбар (`bg-[#068FA3]/10`) энд ОРОХГҮЙ — `.bg-\[\#068FA3\]`
+   нь яг тэр ангийг л заана. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#068FA3\]:not(:hover),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#068FA3\]:not([class*="hover:bg-"]) {
+  background-color: #057282 !important;
+}
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0AA6BD\],
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="hover:bg-[#0AA6BD]"]:hover {
+  background-color: #046B7A !important;
+}
+/* `:not(#_)` нь ID-ийн жин нэмнэ: theme-light.css-ийн `.text-white` дүрэм
+   дөрвөн :not()-оор (0,7,0) жинтэй тул үүнгүйгээр ялагдана. */
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#068FA3\]:not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#068FA3\] :is([class*="text-white" i], [class*="text-[#100C14]" i], [class*="text-[#F2F2F4]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0AA6BD\]:not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .bg-\[\#0AA6BD\] [class*="text-white" i]:not(#_) {
+  color: #FFFFFF !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §11 — ӨДӨР ГЭРЭЛ / ШӨНӨ ХАРАНХУЙ (2026-10-11, эзний хүсэлт).
+   layout.tsx-ийн скрипт 07:00–19:00 (төхөөрөмжийн цаг) data-theme="light",
+   бусад үед "dark" тавина. Өдрийн суурь #F8F9FD, шөнийн суурь #100C14.
+
+   Яагаад шинэ хэсэг: theme-light.css-ийн сонгогчид ТОМ/жижиг үсэг
+   ялгадаг, жижиг үсгээр үүссэн (`text-[#c9c9d1]`) — шинэ код том үсгээр
+   (`text-[#C9C9D1]`) бичдэг тул таардаггүй байв. 10-09-ний teal/coral ч
+   энд огт байгаагүй. Доорх бүх сонгогч ` i` (case-insensitive) тугтай.
+   Үүсгэгч: scratchpad gen.py — өнгө нэмбэл энд гараар нэмж болно.
+
+     #1BD1C6/#4FE0D7 бичиг → #08756F  5.27:1   (дүүргэлт хэвээр + бараан бичиг 10.12)
+     #FF7B5B бичиг         → #B8432A  5.15:1   (дүүргэлт хэвээр + бараан бичиг 7.59)
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+  --l-canvas: #F8F9FD;
+  --color-background: #F8F9FD;
+  --color-black: #F8F9FD;
+  --chrome-bg: rgba(248, 249, 253, 0.88);
+  --l-accent-ink: #08756F;
+  --l-accent-deep: #08756F;
+  --accent-ink: #08756F;
+  --accent-ink-2: #08756F;
+  --tt-ico-on: #08756F;
+  --neon-ink: #08756F;
+  --nav-active-bg: rgba(27, 209, 198, 0.14);
+  --glow: 0 0 0 1px #1BD1C6, 0 8px 22px -8px rgba(27, 209, 198, 0.45);
+  color-scheme: light;
+}
+:root[data-theme="light"], :root[data-theme="light"] body { background: #F8F9FD; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#1BD1C6]" i]:not([class*=":text-[#1BD1C6]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#1BD1C6]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#1BD1C6]" i]:not(#_) { color: #08756F !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#4FE0D7]" i]:not([class*=":text-[#4FE0D7]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#4FE0D7]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#4FE0D7]" i]:not(#_) { color: #08756F !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#FF7B5B]" i]:not([class*=":text-[#FF7B5B]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#FF7B5B]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#FF7B5B]" i]:not(#_) { color: #B8432A !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#F2F2F4]" i]:not([class*=":text-[#F2F2F4]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#F2F2F4]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#F2F2F4]" i]:not(#_) { color: #0F1420 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#E2E4E8]" i]:not([class*=":text-[#E2E4E8]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#E2E4E8]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#E2E4E8]" i]:not(#_) { color: #2E3440 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#C9C9D1]" i]:not([class*=":text-[#C9C9D1]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#C9C9D1]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#C9C9D1]" i]:not(#_) { color: #3D4350 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#9C9CA6]" i]:not([class*=":text-[#9C9CA6]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#9C9CA6]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#9C9CA6]" i]:not(#_) { color: #5B6170 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#6A6A72]" i]:not([class*=":text-[#6A6A72]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#6A6A72]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#6A6A72]" i]:not(#_) { color: #5B6170 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="text-[#767677]" i]:not([class*=":text-[#767677]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*=":text-[#767677]" i]:is(:hover,:focus-visible):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) .group:hover [class*="group-hover:text-[#767677]" i]:not(#_) { color: #5B6170 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#100C14]" i]:not([class*=":bg-[#100C14]" i]) { background-color: #F8F9FD !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#16141A]" i]:not([class*=":bg-[#16141A]" i]) { background-color: #FFFFFF !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1A1A1D]" i]:not([class*=":bg-[#1A1A1D]" i]) { background-color: #FFFFFF !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1A1522]" i]:not([class*=":bg-[#1A1522]" i]) { background-color: #FFFFFF !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1E1C22]" i]:not([class*=":bg-[#1E1C22]" i]) { background-color: #FFFFFF !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#171719]" i]:not([class*=":bg-[#171719]" i]) { background-color: #FFFFFF !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#26242B]" i]:not([class*=":bg-[#26242B]" i]) { background-color: #EEF0F5 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1BD1C6]" i]:not([class*="bg-[#1BD1C6]/" i]),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#4FE0D7]" i]:not([class*="bg-[#4FE0D7]/" i]),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#FF7B5B]" i]:not([class*="bg-[#FF7B5B]/" i]) { color: #100C14 !important; }
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#1BD1C6]" i]:not([class*="bg-[#1BD1C6]/" i]) :is([class*="text-white" i],[class*="text-[#100C14]" i],[class*="text-[#F2F2F4]" i],[class*="text-[#1BD1C6]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#4FE0D7]" i]:not([class*="bg-[#4FE0D7]/" i]) :is([class*="text-white" i],[class*="text-[#100C14]" i],[class*="text-[#F2F2F4]" i],[class*="text-[#1BD1C6]" i]):not(#_),
+:root[data-theme="light"] body:not(:has(.yuki-root)) [class*="bg-[#FF7B5B]" i]:not([class*="bg-[#FF7B5B]/" i]) :is([class*="text-white" i],[class*="text-[#100C14]" i],[class*="text-[#F2F2F4]" i],[class*="text-[#1BD1C6]" i]):not(#_) { color: #100C14 !important; }
+
+/* §11b — Зураг/видео ДЭЭР давхарласан бичиг өдөр ч цайвар хэвээр.
+   Дээрх §11 нь #F2F2F4/#E2E4E8… бичгийг бараан болгодог — харин hero,
+   reel, хавтасны absolute давхарга дээр дэвсгэр нь ЗУРАГ тул бараан бичиг
+   алга болно (hero-ийн "ANTAQOR" 1.05:1 болсон). Хоёр #id жин = §11-ийг дарна. */
+:root[data-theme="light"] :is(.hero-panel, :has(> img, > video, > picture)) > [class*="absolute"] :is([class*="text-[#F2F2F4]" i], [class*="text-[#E2E4E8]" i], [class*="text-white" i]):not(#_):not(#__),
+:root[data-theme="light"] :is(.hero-panel, :has(> img, > video, > picture)) > [class*="absolute"]:is([class*="text-[#F2F2F4]" i], [class*="text-[#E2E4E8]" i], [class*="text-white" i]):not(#_):not(#__) {
+  color: #FFFFFF !important;
+}
+:root[data-theme="light"] :is(.hero-panel, :has(> img, > video, > picture)) > [class*="absolute"] :is([class*="text-[#C9C9D1]" i], [class*="text-[#9C9CA6]" i]):not(#_):not(#__) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}

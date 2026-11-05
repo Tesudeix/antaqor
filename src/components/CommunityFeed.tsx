@@ -68,7 +68,7 @@ export default function CommunityFeed() {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-2">
-        <div className="h-[2px] w-4 bg-[#1080CA]" />
+        <div className="h-[2px] w-4 bg-[#2E29FF]" />
         <span className="text-[12px] font-bold tracking-[0.1em] text-[#0E1726]">ФИД</span>
       </div>
 
@@ -81,8 +81,8 @@ export default function CommunityFeed() {
               <button
                 key={tab.key}
                 onClick={() => setActive(tab.key)}
-                className="group shrink-0 inline-flex items-center gap-1.5 rounded-none px-3 py-1.5 text-[12px] font-semibold transition-all duration-200"
-                style={{ background: on ? "#1080CA" : "rgba(15,23,38,0.04)", color: on ? "#FFFFFF" : "#6b7280" }}
+                className="group shrink-0 inline-flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-[12px] font-semibold transition-all duration-200"
+                style={{ background: on ? "#2E29FF" : "rgba(15,23,38,0.04)", color: on ? "#FFFFFF" : "#30333F" }}
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
@@ -96,11 +96,11 @@ export default function CommunityFeed() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="h-2 w-2 animate-pulse rounded-none bg-[#1080CA]" />
+          <div className="h-2 w-2 animate-pulse rounded-[4px] bg-[#2E29FF]" />
         </div>
       ) : posts.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-[14px] text-[#6b7280]">Одоогоор нийтлэл байхгүй</p>
+          <p className="text-[14px] text-[#E2E4E8]">Одоогоор нийтлэл байхгүй</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -109,9 +109,9 @@ export default function CommunityFeed() {
           ))}
           <Link
             href="/clan"
-            className="flex w-full items-center justify-center gap-2 rounded-none border border-[rgba(15,23,38,0.1)] bg-[#F6F8FB] py-3 text-[12px] font-bold text-[#6b7280] transition hover:border-[rgba(16,128,202,0.4)] hover:text-[#1080CA]"
+            className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-[rgba(15,23,38,0.1)] bg-[#F6F8FB] py-3 text-[12px] font-bold text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.4)] hover:text-[#2E29FF]"
           >
-            Бүх постыг үзэхийн тулд Edgerunners нэгдэх →
+            Бүх постыг үзэхийн тулд Хүрээлэлд нэгдэх →
           </Link>
         </div>
       )}

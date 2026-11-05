@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 const REFINE_MODEL = process.env.OPENAI_INTRO_MODEL || "gpt-5-mini";
 
-const REFINE_SYSTEM = `Чи Edgerunners community-н entrepreneur intro-г бичдэг бичээч.
+const REFINE_SYSTEM = `Чи Antaqor AI хүрээлэл-н entrepreneur intro-г бичдэг бичээч.
 Хэрэглэгчийн 7 хариултыг авч, түүнийг ХУРЦ, өөртөө итгэлтэй, бизнесмэн entrepreneur танилцуулга болгон Монголоор дахин бичнэ үү.
 
 Дүрэм:

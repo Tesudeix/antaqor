@@ -6,12 +6,13 @@ import MetaMessage from "@/models/MetaMessage";
 import MetaSettings from "@/models/MetaSettings";
 import MetaTrigger, { IMetaTrigger } from "@/models/MetaTrigger";
 import MetaWelcome from "@/models/MetaWelcome";
+import PostReply from "@/models/PostReply";
 import { findMatchingTrigger, renderTemplate } from "@/lib/metaTriggers";
-import { accountForPageId, ensurePageRegistry, type MetaAccount } from "@/lib/metaAccounts";
+import { accountForPageId, ensurePageRegistry, isRegisteredPage, type MetaAccount } from "@/lib/metaAccounts";
 import { generateReply, ChatTurn } from "@/lib/metaAI";
 import { antaqorAgentReply } from "@/lib/antaqorAgent";
 import { sendDm, sendButtonTemplate, sendGenericTemplate, sendImageAttachment, QuickReply } from "@/lib/metaDm";
-import { sendPrivateReplyToComment, replyToComment } from "@/lib/metaComment";
+import { sendPrivateReplyToComment, replyToComment, likeComment } from "@/lib/metaComment";
 import { getOrCreateUserForPartner, tryHandleCommand, wantsHuman } from "@/lib/metaCommands";
 import { fetchPartnerProfile } from "@/lib/metaProfile";
 import { scoreIntent } from "@/lib/metaIntent";
@@ -22,6 +23,7 @@ import { findMatchingFlow, findMainFlow, startFlow, handleFlowPostback, resendCu
 import { findMatchingSocialFlow, startSocialFlow, handleSocialFlowPostback } from "@/lib/socialFlowRun";
 import { processCommentForBots, handleOrderDm, handleOrderPostback } from "@/lib/orderBot";
 import { getMemo, memoToContext, updateMemoFromTurn } from "@/lib/metaMemory";
+import { getConciergeConfig, conciergeTurn } from "@/lib/concierge";
 
 const AI_DISCLOSURE_PREFIX = "🤖 ";
 const AI_DISCLOSURE_FOOTER = "";
@@ -34,6 +36,8 @@ const APP_SECRETS = (process.env.META_APP_SECRETS || process.env.META_APP_SECRET
   .split(",").map((s) => s.trim()).filter(Boolean);
 const SELF_IDS = (process.env.META_SELF_IDS || "").split(",").map((s) => s.trim()).filter(Boolean);
 const AI_HISTORY_DEPTH = 6;
+// A human handoff nobody answered should not mute the bot forever.
+const ESCALATION_TTL_MS = 12 * 60 * 60 * 1000;
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -124,8 +128,16 @@ async function handlePayload(payload: WebhookPayload) {
     payload.object === "instagram" ? "instagram" : "messenger";
 
   for (const entry of payload.entry || []) {
-    const account = accountForPageId((entry as { id?: string }).id);
-    console.log("[meta/route]", platform, "entryId=" + ((entry as { id?: string }).id || "?"), "->", account);
+    const entryId = (entry as { id?: string }).id;
+    /* Салгасан / бүртгэлгүй хуудас — ЧИМЭЭГҮЙ ОРХИНО.
+       Үүнгүй бол `accountForPageId` нь "antaqor" буцааж, өөр брэндийн
+       үйлчлүүлэгч Antaqor-ийн боттой ярилцаж эхэлнэ. */
+    if (!isRegisteredPage(entryId)) {
+      console.log("[meta/route]", platform, "entryId=" + (entryId || "?"), "-> БҮРТГЭЛГҮЙ, алгасав");
+      continue;
+    }
+    const account = accountForPageId(entryId);
+    console.log("[meta/route]", platform, "entryId=" + (entryId || "?"), "->", account);
     for (const ev of entry.messaging || []) {
       // Postback / quick reply takes priority over plain text
       const postbackPayload = ev.postback?.payload || ev.message?.quick_reply?.payload;
@@ -142,6 +154,17 @@ async function handlePayload(payload: WebhookPayload) {
         console.error("[meta/webhook] dm handler", e)
       );
     }
+    if ((entry.changes || []).length || (entry.messaging || []).length) {
+      console.log(
+        "[meta/shape]",
+        platform,
+        "messaging=" + (entry.messaging || []).length,
+        "changes=" + JSON.stringify((entry.changes || []).map((c) => ({
+          field: c.field,
+          keys: Object.keys((c.value || {}) as Record<string, unknown>),
+        })))
+      );
+    }
     for (const ch of entry.changes || []) {
       if (ch.field === "comments" || ch.field === "feed") {
         await handleCommentEvent(platform, account, ch).catch((e) =>
@@ -155,7 +178,16 @@ async function handlePayload(payload: WebhookPayload) {
 async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount, ev: MessagingEvent) {
   const senderId = ev.sender?.id;
   const text = ev.message?.text?.trim();
-  if (!senderId || !text || ev.message?.is_echo) return;
+  if (ev.message?.is_echo) {
+    /* Page inbox-оос эзэн гараар бичсэн (манай app-аас биш) echo → агент 20 мин чимээгүй. */
+    const aid = String((ev.message as { app_id?: number | string }).app_id || "");
+    const ours = process.env.META_FB_APP_ID || "";
+    if (platform === "messenger" && aid && ours && aid !== ours && ev.recipient?.id) {
+      await MetaConversation.updateOne({ partnerId: ev.recipient.id, platform }, { $set: { humanAt: new Date() } }).catch(() => {});
+    }
+    return;
+  }
+  if (!senderId || !text) return;
   if (SELF_IDS.includes(senderId)) return;
 
   const user = await getOrCreateUserForPartner(platform, senderId);
@@ -201,6 +233,7 @@ async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount
     await MetaConversation.findByIdAndUpdate(conv._id, {
       aiDisabled: true,
       escalatedToHuman: true,
+      escalatedAt: new Date(),
       safetyFlag: safety.flag,
     });
     console.warn("[meta/webhook] SAFETY_FLAG", safety.flag, "conv", conv._id.toString());
@@ -208,8 +241,24 @@ async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount
     return;
   }
 
-  // If conversation was escalated to human, do not auto-respond at all
-  if (conv.escalatedToHuman) return;
+  // Escalated to a human → stay silent, but never permanently. Antaqor's
+  // RESUME commands only run for the antaqor account, so for every other
+  // tenant one tap of "Хүнтэй ярих" killed the bot for that customer for good
+  // and the lead was silently lost. Two escape hatches: the customer asks for
+  // the bot back, or the handoff goes unanswered past ESCALATION_TTL_MS.
+  if (conv.escalatedToHuman) {
+    const asksForBot = /^(эхлүүл|үргэлжлүүл|resume|start|бот|bot|дахин эхэл)\b/i.test(text.trim());
+    const since = conv.escalatedAt ? Date.now() - new Date(conv.escalatedAt).getTime() : Infinity;
+    if (!asksForBot && since < ESCALATION_TTL_MS) return;
+    await MetaConversation.findByIdAndUpdate(conv._id, {
+      escalatedToHuman: false,
+      aiDisabled: false,
+      escalatedAt: null,
+    });
+    conv.escalatedToHuman = false;
+    conv.aiDisabled = false;
+    console.log("[meta/webhook] escalation cleared", asksForBot ? "(customer asked)" : "(expired)", conv._id.toString());
+  }
 
   // MASTER AUTOMATION SWITCH — when an admin turns automation off, the bot
   // goes silent and every incoming DM is left for a human (admin inbox).
@@ -228,10 +277,13 @@ async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount
   // HUMAN HANDOFF (typed) — "talk to human" / "хүнтэй ярих" / "operator" etc.
   // Mirrors the MENU_HUMAN quick-reply button: escalate, acknowledge, alert the
   // admin. Runs before triggers/AI/welcome so it always works, on any account.
-  if (wantsHuman(text)) {
+  const ccfg = await getConciergeConfig().catch(() => null);
+  const conciergeOn = !!(ccfg?.enabled && account === "antaqor" && (platform === "messenger" || ccfg.includeInstagram));
+  if (!conciergeOn && wantsHuman(text)) {
     await MetaConversation.findByIdAndUpdate(conv._id, {
       escalatedToHuman: true,
       aiDisabled: true,
+      escalatedAt: new Date(),
     });
     await sendAndPersist(
       platform,
@@ -262,6 +314,41 @@ async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount
     } else {
       const stillInFlow = await resendCurrentCard(platform, account, senderId, conv._id.toString(), af);
       if (stillInFlow) return;
+    }
+  }
+
+  // CHAT АГЕНТ (/admin/concierge) — асаалттай үед хуучин цэс/товч/автомат хариуг
+  // бүгдийг алгасаж, хүн шиг ярилцана. Эзний гараар бүтээсэн богино keyword урсгал л үлдэнэ.
+  if (conciergeOn && ccfg && !conv.aiDisabled) {
+    const freshC = await MetaConversation.findById(conv._id, "funnel").lean<{ funnel?: { name?: string } }>();
+    if (!freshC?.funnel?.name) {
+      if (text.length <= 24) {
+        const kwSocial = await findMatchingSocialFlow(text, platform, account);
+        if (kwSocial) { await startSocialFlow(kwSocial, { platform, account, partnerId: senderId, conversationId: conv._id.toString(), lastText: text }); return; }
+        const kwFlow = await findMatchingFlow(text, platform, account);
+        if (kwFlow) { await startFlow(platform, account, senderId, conv._id.toString(), kwFlow); return; }
+        const kwTrig = await findMatchingTrigger(text, "dm", platform, account);
+        if (kwTrig) { await fireDmTrigger(platform, account, senderId, conv._id.toString(), kwTrig); return; }
+      }
+      await MetaConversation.updateOne({ _id: conv._id }, { $set: { welcomeMenuSent: true } });
+      const cid = conv._id.toString();
+      void conciergeTurn({
+        platform, account, senderId, convId: cid, mid: ev.message?.mid, text,
+        partnerName: conv.partnerName, cfg: ccfg, userCtx: buildUserContext(user),
+        send: async (t) => {
+          let out = t;
+          if (ccfg.disclosure) {
+            const d = await MetaConversation.findById(cid, "disclosureSent").lean<{ disclosureSent?: boolean }>();
+            if (!d?.disclosureSent) { out = `AI туслах: ${t}`; await MetaConversation.findByIdAndUpdate(cid, { disclosureSent: true }); }
+          }
+          await sendAndPersist(platform, senderId, cid, out, "ai");
+        },
+        handoff: async (why) => {
+          await MetaConversation.findByIdAndUpdate(cid, { escalatedToHuman: true, aiDisabled: true, escalatedAt: new Date() });
+          await alertHotLead("human", { _id: cid, platform: conv.platform, partnerId: conv.partnerId, partnerName: conv.partnerName }, { "Хүсэлт": "Агент танд шилжүүлсэн", "Шалтгаан": why, "Мессеж": text.slice(0, 200) }).catch((e) => console.error("[concierge] alert", e));
+        },
+      }).catch((e) => console.error("[concierge] turn", e));
+      return;
     }
   }
 
@@ -339,11 +426,17 @@ async function handleMessagingEvent(platform: MetaPlatform, account: MetaAccount
   // Stop active nurture sequences (if their current step.stopOnReply=true)
   void stopEnrollmentsForConversation(conv._id.toString(), "user_replied");
 
-  // 1. Command path
-  const cmd = await tryHandleCommand(text, user, conv._id.toString());
-  if (cmd) {
-    await sendAndPersist(platform, senderId, conv._id.toString(), cmd.text, "ai");
-    return;
+  // 1. Command path — ANTAQOR ONLY. These are Antaqor's own membership /
+  //    credit / account-linking commands. Running them for every tenant leaked
+  //    Antaqor into other brands' chats (a REVA shopper typing "тусламж" got
+  //    "холбох <код> — Antaqor бүртгэлээ холбох"), and tryHandleCommand also
+  //    calls wantsHuman, which escalated ordinary shopper phrases to a human.
+  if (account === "antaqor") {
+    const cmd = await tryHandleCommand(text, user, conv._id.toString());
+    if (cmd) {
+      await sendAndPersist(platform, senderId, conv._id.toString(), cmd.text, "ai");
+      return;
+    }
   }
 
   // 1a-sf. SOCIAL FLOW (визуал builder) — шинэ систем хамгийн түрүүнд гүйнэ.
@@ -506,7 +599,7 @@ async function handlePostback(
     const fr = await handleFlowPostback(platform, account, senderId, conv._id.toString(), payload);
     if (fr === "nav" || fr === "end") return;
     if (fr === "human") {
-      await MetaConversation.findByIdAndUpdate(conv._id, { escalatedToHuman: true });
+      await MetaConversation.findByIdAndUpdate(conv._id, { escalatedToHuman: true, escalatedAt: new Date() });
       await sendAndPersist(platform, senderId, conv._id.toString(), "Таныг хүнтэй холболоо 🙋 Манай ажилтан удахгүй хариулна, түр хүлээнэ үү.", "ai");
       void alertHotLead("human", { _id: String(conv._id), platform: conv.platform, partnerId: conv.partnerId, partnerName: conv.partnerName }, { "Хүсэлт": "Flow → хүнтэй ярих" }).catch((e) => console.error("[meta] human alert", e));
       return;
@@ -543,7 +636,7 @@ async function handlePostback(
   // Subsequent user replies are captured in handleMessagingEvent.
   // MENU_HUMAN → escalate to a human agent + alert admin.
   if (payload === "MENU_HUMAN") {
-    await MetaConversation.findByIdAndUpdate(conv._id, { escalatedToHuman: true });
+    await MetaConversation.findByIdAndUpdate(conv._id, { escalatedToHuman: true, escalatedAt: new Date() });
     await sendAndPersist(platform, senderId, conv._id.toString(), "Таныг хүнтэй холболоо 🙋 Манай ажилтан удахгүй хариулна, түр хүлээнэ үү.", "ai");
     void alertHotLead("human", { _id: String(conv._id), platform: conv.platform, partnerId: conv.partnerId, partnerName: conv.partnerName }, { "Хүсэлт": "Хүнтэй ярих" }).catch((e) => console.error("[meta] human alert", e));
     return;
@@ -553,6 +646,7 @@ async function handlePostback(
     MENU_INTRO: "intro",
     MENU_HR: "hr",
     MENU_BOOK: "book",
+    MENU_ORDER: "order",
   };
   if (funnelMap[payload]) {
     const start = await startFunnel(conv._id.toString(), funnelMap[payload]);
@@ -604,6 +698,16 @@ async function handlePostback(
         await fireDmTrigger(platform, account, senderId, conv._id.toString(), trig);
         return;
       }
+      // Route through the account's default action so the answer comes from its
+      // OWN knowledge base and voice. The bare generateReply below speaks as
+      // "Antaqor, founder of antaqor.com" — wrong for every other tenant.
+      const handledAsk = await runDefaultAction(
+        platform,
+        account,
+        { _id: conv._id, platform: conv.platform, partnerId: conv.partnerId, partnerName: conv.partnerName },
+        q
+      );
+      if (handledAsk) return;
       const settings = await MetaSettings.findOne({ singleton: "main" });
       const memo = await getMemo(conv._id.toString());
       const gen = await generateReply(q, settings, buildUserContext(user) + memoToContext(memo), []);
@@ -628,20 +732,37 @@ async function handlePostback(
   }
 
   const cmdText = payload.startsWith("cmd:") ? payload.slice("cmd:".length) : payload;
-  const cmd = await tryHandleCommand(cmdText, user, conv._id.toString());
-  if (cmd) {
-    await sendAndPersist(platform, senderId, conv._id.toString(), cmd.text, "ai");
+
+  // A tapped button carries the ACCOUNT'S OWN vocabulary, so match its triggers
+  // before anything else — otherwise "Захиалах" fell straight past them into
+  // Antaqor's command handler and answered with the generic help line.
+  const btnTrigger = await findMatchingTrigger(cmdText, "dm", platform, account);
+  if (btnTrigger) {
+    await fireDmTrigger(platform, account, senderId, conv._id.toString(), btnTrigger);
     return;
   }
 
-  // Last resort: send a fallback
-  await sendAndPersist(
+  if (account === "antaqor") {
+    const cmd = await tryHandleCommand(cmdText, user, conv._id.toString());
+    if (cmd) {
+      await sendAndPersist(platform, senderId, conv._id.toString(), cmd.text, "ai");
+      return;
+    }
+  }
+
+  // Answer from this account's own knowledge base / default action (which for a
+  // hot buying phrase starts its order funnel) instead of the old
+  // "«тусламж» гэж бичээрэй" line — that word is Antaqor vocabulary and means
+  // nothing to another brand's customer.
+  const handledBtn = await runDefaultAction(
     platform,
-    senderId,
-    conv._id.toString(),
-    "Боллоо! Юу хиймээр байна? «тусламж» гэж бичээрэй.",
-    "ai"
+    account,
+    { _id: conv._id, platform: conv.platform, partnerId: conv.partnerId, partnerName: conv.partnerName },
+    cmdText
   );
+  if (handledBtn) return;
+
+  await sendAndPersist(platform, senderId, conv._id.toString(), "Боллоо! Юу хиймээр байна? 🙂", "ai");
 }
 
 async function handleCommentEvent(platform: MetaPlatform, account: MetaAccount, ch: ChangeEvent) {
@@ -649,6 +770,10 @@ async function handleCommentEvent(platform: MetaPlatform, account: MetaAccount, 
   if (ch.field === "feed" && !(ch.value?.item === "comment" && (!ch.value?.verb || ch.value?.verb === "add"))) return;
   const text = (ch.value?.message ?? ch.value?.text)?.trim();
   const commentId = ch.value?.comment_id ?? ch.value?.id;
+  // Facebook sends post_id; Instagram sends media.id and no post_id at all, so
+  // reading only the former left every IG comment with an empty post — which
+  // silently disabled per-post scoping and per-post answers on Instagram.
+  const postId = ch.value?.post_id || ch.value?.media?.id || "";
   const fromId = ch.value?.from?.id;
   const fromUsername = ch.value?.from?.username;
   if (!text || !commentId || !fromId) return;
@@ -661,7 +786,7 @@ async function handleCommentEvent(platform: MetaPlatform, account: MetaAccount, 
   const botHandled = await processCommentForBots(
     platform,
     account,
-    { postId: ch.value?.post_id || "", commentId, fromId, fromUsername: fromUsername || "", text },
+    { postId, commentId, fromId, fromUsername: fromUsername || "", text },
     async () => {
       const bu = await getOrCreateUserForPartner(platform, fromId, fromUsername);
       return upsertConversation(platform, fromId, `(comment) ${text}`, bu._id.toString(), account);
@@ -669,19 +794,65 @@ async function handleCommentEvent(platform: MetaPlatform, account: MetaAccount, 
   );
   if (botHandled) return;
 
-  const trigger = await findMatchingTrigger(text, "comment", platform, account, ch.value?.post_id || "");
+  const trigger = await findMatchingTrigger(text, "comment", platform, account, postId);
+  console.log(
+    "[meta/comment]", platform, "account=" + account,
+    "text=" + JSON.stringify((text || "").slice(0, 40)),
+    "commentId=" + (commentId || "-"),
+    "->", trigger ? "MATCH " + trigger.name : "no trigger"
+  );
   if (!trigger) return;
 
-  const rendered = renderTemplate(trigger.dmTemplate, {
+  // The trigger decided WHEN to answer; a PostReply decides WHAT for this
+  // particular post. No row = the trigger's own text, so a page that has not
+  // filled anything in keeps working exactly as before.
+  const perPost = postId
+    ? await PostReply.findOne({ account, postId, enabled: true }).lean<{
+        dmText?: string; buttons?: { label: string; url: string }[];
+        commentReply?: string; imageUrl?: string;
+      } | null>()
+    : null;
+
+  const bodyText = (perPost?.dmText || "").trim() || trigger.dmTemplate;
+  const rendered = renderTemplate(bodyText, {
     username: fromUsername || "",
     comment: text,
   });
+  if (perPost) {
+    void PostReply.updateOne(
+      { account, postId },
+      { $inc: { hitCount: 1 }, $set: { lastFiredAt: new Date() } }
+    ).catch(() => {});
+    console.log("[meta/comment] per-post answer for", postId);
+  }
 
   const dmRes = await sendPrivateReplyToComment(platform, commentId, rendered, { account });
   if (!dmRes.ok) console.error("[meta/webhook] private reply fail", dmRes.status, dmRes.body);
 
+  // A like is the fastest visible acknowledgement on the post itself, and it
+  // survives even when the public reply is refused.
+  // A per-post button set replaces the trigger's, so each post can carry its
+  // own link. Sent as a follow-up because the private reply above is plain text.
+  const btns = (perPost?.buttons?.length ? perPost.buttons : trigger.buttons) || [];
+  if (dmRes.ok && btns.length) {
+    await sendButtonTemplate(platform, fromId, "👇", btns.slice(0, 3), { account }).catch((e) =>
+      console.warn("[meta/webhook] comment buttons fail", e)
+    );
+  }
+
+  if (trigger.commentLike) {
+    const lk = await likeComment(platform, commentId, { account });
+    if (!lk.ok) console.warn("[meta/webhook] comment like fail", lk.status, lk.body.slice(0, 160));
+  }
+
   if (trigger.commentReply) {
-    const cr = await replyToComment(platform, commentId, trigger.commentReply, { account });
+    // Render the same tokens the DM gets, so a public reply can greet the
+    // commenter by name ({{username}}) instead of printing the raw token.
+    const publicReply = renderTemplate((perPost?.commentReply || "").trim() || trigger.commentReply, {
+      username: fromUsername || "",
+      comment: text,
+    });
+    const cr = await replyToComment(platform, commentId, publicReply, { account });
     if (!cr.ok) console.error("[meta/webhook] comment reply fail", cr.status, cr.body);
   }
 
@@ -1064,7 +1235,10 @@ async function runWelcome(
 // the caller can deflect to the menu / human — never the welcome greeting.
 async function answerFromKB(text: string, faq: string, convId: string): Promise<string | null> {
   const settings = await MetaSettings.findOne({ singleton: "main" });
-  if (settings && settings.aiReplyEnabled === false) return null;
+  // NOT gated on settings.aiReplyEnabled: that flag governs the open-ended
+  // Antaqor agent. A per-account businessFaq is its own explicit opt-in, and a
+  // scripted answer out of a knowledge base the owner wrote is a different
+  // thing — otherwise one global switch silences every tenant FAQ bot.
   const history = await loadHistory(convId);
   const ctx =
     "Чи энэ бизнесийн туслах. Доорх МЭДЭЭЛЛИЙН САНГ (FAQ) ашиглан хэрэглэгчийн асуултад ШУУД, товч хариул. " +
@@ -1072,7 +1246,16 @@ async function answerFromKB(text: string, faq: string, convId: string): Promise<
     "Хэрэв асуултын хариу мэдээллийн санд БАЙХГҮЙ бол ямар ч тайлбаргүйгээр яг '<NO_ANSWER>' гэж бич. " +
     "Цэс/командын жагсаалт бүү гарга.\n\n=== МЭДЭЭЛЛИЙН САН ===\n" +
     faq.slice(0, 4000);
-  const r = await generateReply(text, settings, ctx, history);
+  // The default persona is "Antaqor, founder of antaqor.com" — the wrong voice
+  // for another brand customers, who must never be told they are talking to
+  // Antaqor. Speak as the business that owns this knowledge base.
+  const kbSettings = {
+    ...(settings?.toObject?.() ?? {}),
+    systemPromptOverride:
+      "Чи энэ бизнесийн албан ёсны чат туслах. Өөрийгөө өөр брэнд, өөр компани " +
+      "эсвэл өөр хүн гэж БҮҮ танилцуул. Зөвхөн доорх мэдээллийн санд тулгуурла.",
+  } as unknown as typeof settings;
+  const r = await generateReply(text, kbSettings, ctx, history);
   if (!r.ok) return null;
   const out = (r.text || "").trim();
   if (!out || out.includes("<NO_ANSWER>")) return null;
@@ -1117,7 +1300,10 @@ async function runDefaultAction(
       await sendAndPersist(platform, senderId, convId, ans, "ai");
       return true;
     }
-    // <NO_ANSWER> → fall through (menu → greeting, ai → general AI auto-reply).
+    // <NO_ANSWER> → fall through to the menu, never to the general AI: that is
+    // the Antaqor agent, and answering another brand customer in Antaqor voice
+    // is worse than showing them the menu.
+    if (action === "ai") action = "menu";
   }
 
   switch (action) {
@@ -1139,7 +1325,7 @@ async function runDefaultAction(
     }
 
     case "human": {
-      await MetaConversation.findByIdAndUpdate(convId, { escalatedToHuman: true });
+      await MetaConversation.findByIdAndUpdate(convId, { escalatedToHuman: true, escalatedAt: new Date() });
       await sendAndPersist(
         platform,
         senderId,

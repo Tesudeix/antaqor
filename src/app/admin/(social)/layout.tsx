@@ -34,7 +34,7 @@ export default function SocialAutomationLayout({ children }: { children: ReactNo
         className="sticky top-0 z-20 -mx-4 mb-5 border-b px-4 pt-3 backdrop-blur-xl sm:-mx-6 sm:px-6 md:-mx-8 md:px-8"
         style={{ borderColor: T.border, background: "rgba(14,14,18,0.82)" }}
       >
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primary }}>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primaryInk }}>
           Social Automation
         </div>
         <div
@@ -48,7 +48,7 @@ export default function SocialAutomationLayout({ children }: { children: ReactNo
                 key={t.href}
                 href={t.href}
                 aria-current={active ? "page" : undefined}
-                className="flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition active:scale-[0.97]"
+                className="flex min-h-[44px] shrink-0 items-center gap-2 rounded-[4px] border px-4 text-[13px] font-semibold transition active:scale-[0.97]"
                 style={{
                   scrollSnapAlign: "start",
                   background: active ? T.primary : T.surface,

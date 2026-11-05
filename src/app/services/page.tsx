@@ -1,422 +1,168 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
+import dbConnect from "@/lib/mongodb";
+import Service from "@/models/Service";
 
-interface ServiceData {
-  _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  logo: string;
-  coverImage: string;
-  category: string;
-  url: string;
-  domain: string;
-  status: "active" | "coming_soon" | "inactive";
-  featured: boolean;
-  tags: string[];
-  stats: { users?: number; rating?: number };
-}
+/* ─── /services — Antaqor экосистемийн бизнесүүд (2026-10-11 шинэчлэл) ──────
+   Өмнө нь клиент талын жагсаалт: хайлт + ангиллын таб + YouTube→MP3 гэх мэт
+   хэрэгсэл холилдсон, Freelancer Market гэх "удахгүй" мөр — 3 бизнест
+   илүүдэл. Одоо ЗӨВХӨН жинхэнэ бизнесүүд, серверт зурагдана (ачаалал
+   хүлээхгүй):
+     • Онцлох (featured) — том хоёр баганат витрин
+     • Бусад — cover + logo тэмдэг + ангилал + тайлбар + tag + "Зочлох ↗"
+     • Төгсгөлд хамтын ажиллагааны CTA (/partnerships)
+   Өгөгдөл: `services` коллекц (/admin/services-ээр засна). inactive нь
+   нуугдана. Зураг нь энгийн <img> — гадны домэйны next/image тохиргоо
+   шаардлагагүй. */
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Зугаа цэнгэл": "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-  "Боловсрол": "M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84",
-  "Технологи": "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
-  "AI & Automation": "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
-  "Бизнес": "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
-  "Хэрэгсэл": "M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z",
+export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: "Үйлчилгээ — Antaqor экосистем",
+  description: "Antaqor-ын бүтээж, ажиллуулж буй бизнесүүд.",
+  alternates: { canonical: "/services" },
 };
 
-const DEFAULT_ICON = "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10";
+type Svc = {
+  _id: string; name: string; slug: string; description: string; logo: string; coverImage: string;
+  category: string; url: string; domain: string; status: "active" | "coming_soon" | "inactive";
+  featured: boolean; order: number; tags: string[];
+};
 
-const TOOLS: ServiceData[] = [
-  {
-    _id: "tool:youtube-mp3",
-    name: "YouTube → MP3",
-    slug: "youtube-mp3",
-    description: "YouTube видеог MP3 аудио болгож татах",
-    logo: "",
-    coverImage: "",
-    category: "Хэрэгсэл",
-    url: "/tools/youtube-mp3",
-    domain: "antaqor.com/tools",
-    status: "active",
-    featured: false,
-    tags: ["audio", "tool"],
-    stats: {},
-  },
-];
+const B = "var(--t-line, rgba(255,255,255,0.12))";
+const SURF = "var(--t-surface, #141414)";
 
-const ACCENT_PALETTE = ["#1080CA", "#1080CA", "#1080CA", "#1080CA", "#FF4473", "#EC4899"];
-function getAccent(name: string): string {
-  return ACCENT_PALETTE[name.charCodeAt(0) % ACCENT_PALETTE.length];
+function Logo({ s, size }: { s: Svc; size: number }) {
+  return s.logo ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={s.logo} alt="" width={size} height={size} className="shrink-0 rounded-[4px] bg-[#0A0A0A] object-contain" style={{ width: size, height: size, border: `2px solid #E3E6EE` }} />
+  ) : (
+    <span className="flex shrink-0 items-center justify-center rounded-[4px] bg-[#2E29FF] font-extrabold text-[#0A0A0A]" style={{ width: size, height: size, fontSize: size * 0.42 }}>
+      {s.name.charAt(0)}
+    </span>
+  );
 }
 
-export default function ServicesPage() {
-  const [remote, setRemote] = useState<ServiceData[]>([]);
-  const [remoteCategories, setRemoteCategories] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/services")
-      .then((r) => r.json())
-      .then((sData) => {
-        if (sData.services) setRemote(sData.services);
-        if (sData.categories) setRemoteCategories(sData.categories);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  // Merge in-app tools with remote services so the page is one unified surface.
-  const all = useMemo(() => [...TOOLS, ...remote], [remote]);
-  const categories = useMemo(() => {
-    const set = new Set<string>(remoteCategories);
-    TOOLS.forEach((t) => set.add(t.category));
-    return Array.from(set);
-  }, [remoteCategories]);
-
-  const filtered = useMemo(() => {
-    let list = activeCategory === "all" ? all : all.filter((s) => s.category === activeCategory);
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      list = list.filter(
-        (s) =>
-          s.name.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q) ||
-          s.tags.some((t) => t.toLowerCase().includes(q))
-      );
-    }
-    return list;
-  }, [all, activeCategory, query]);
-
-  const featured = filtered.find((s) => s.featured);
-  const rest = filtered.filter((s) => !s.featured);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-none bg-[#1080CA]" />
-      </div>
-    );
+function Visit({ s, big }: { s: Svc; big?: boolean }) {
+  if (s.status === "coming_soon" || !s.url || s.url === "#") {
+    return <span className="inline-flex h-11 items-center rounded-[4px] px-4 text-[14px] font-bold text-[#9C9CA6]" style={{ border: `1px solid ${B}` }}>Удахгүй</span>;
   }
+  return (
+    <a href={s.url} target="_blank" rel="noopener noreferrer"
+      className={`inline-flex items-center gap-2 rounded-[4px] bg-[#2E29FF] font-bold text-[#0A0A0A] transition hover:bg-[#1F1AD9] ${big ? "h-12 px-6 text-[15px]" : "h-10 px-4 text-[14px]"}`}>
+      Зочлох <span aria-hidden>↗</span>
+    </a>
+  );
+}
+
+function Tags({ tags }: { tags: string[] }) {
+  if (!tags?.length) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {tags.slice(0, 5).map((t) => (
+        <span key={t} className="rounded-[4px] px-2 py-0.5 text-[11.5px] text-[#C9C9D1]" style={{ background: "rgba(46,41,255,0.12)" }}>#{t}</span>
+      ))}
+    </div>
+  );
+}
+
+export default async function ServicesPage() {
+  await dbConnect();
+  const rows = (await Service.find({ status: { $ne: "inactive" } }).sort({ featured: -1, order: 1, createdAt: -1 }).lean()) as unknown as Svc[];
+  const list = rows.map((r) => ({ ...r, _id: String(r._id), tags: r.tags || [] }));
+  const featured = list.find((s) => s.featured) || list[0];
+  const rest = list.filter((s) => s !== featured);
+  const categories = new Set(list.map((s) => s.category)).size;
 
   return (
-    <div className="mx-auto max-w-4xl pb-12">
-      {/* ─── Header ─── */}
-      <div className="mb-5 flex items-end justify-between gap-4">
+    <main className="mx-auto w-full max-w-[1100px] px-4 pb-24 pt-4 lg:px-0">
+      {/* ── Толгой ── */}
+      <header className="flex flex-wrap items-end justify-between gap-4 pb-6">
         <div>
-          <div className="text-[10px] font-bold tracking-[0.22em] text-[#6b7280]">ANTAQOR</div>
-          <h1 className="mt-1 text-[26px] font-black leading-tight text-[#0e1726] md:text-[30px]">Үйлчилгээ</h1>
-          <p className="mt-1 text-[12px] text-[#6b7280]">
-            Antaqor экосистемийн бүх бүтээгдэхүүн нэг газар
+          <div className="font-mono text-[11px] font-bold tracking-[0.2em] text-[#2E29FF]">ANTAQOR · ЭКОСИСТЕМ</div>
+          <h1 className="mt-2 text-[clamp(34px,6vw,60px)] font-extrabold leading-[1] tracking-[-0.035em] text-white">Үйлчилгээ</h1>
+          <p className="mt-3 max-w-[560px] text-[15.5px] leading-[1.6] text-[#C9C9D1]">
+            Antaqor-ын бүтээж, ажиллуулж буй бизнесүүд — бодит хэрэглэгч, бодит үйлчилгээтэй.
           </p>
         </div>
-        <div className="hidden sm:block text-right">
-          <div className="text-[20px] font-black text-[#0e1726]">{all.length}</div>
-          <div className="text-[10px] font-bold tracking-[0.15em] text-[#94a3b8]">НИЙТ</div>
+        <div className="flex gap-6">
+          <div><div className="text-[30px] font-extrabold leading-none text-white">{list.length}</div><div className="mt-1 text-[12px] text-[#9C9CA6]">бизнес</div></div>
+          <div><div className="text-[30px] font-extrabold leading-none text-white">{categories}</div><div className="mt-1 text-[12px] text-[#9C9CA6]">салбар</div></div>
         </div>
-      </div>
+      </header>
 
-      {/* ─── Search + categories ─── */}
-      <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <svg className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6b7280]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
-          </svg>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Үйлчилгээ хайх…"
-            className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] py-2.5 pl-9 pr-3 text-[13px] text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[rgba(16,128,202,0.4)]"
-          />
-        </div>
-      </div>
-
-      {/* Categories — chip row */}
-      <div className="mb-5 flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-        <CategoryChip active={activeCategory === "all"} label="Бүгд" count={all.length} onClick={() => setActiveCategory("all")} />
-        {categories.map((cat) => {
-          const count = all.filter((s) => s.category === cat).length;
-          return (
-            <CategoryChip
-              key={cat}
-              active={activeCategory === cat}
-              label={cat}
-              count={count}
-              onClick={() => setActiveCategory(cat)}
-            />
-          );
-        })}
-      </div>
-
-      {/* ─── Featured (large) — only shown on All view ─── */}
-      {activeCategory === "all" && !query && featured && <FeaturedCard service={featured} />}
-
-      {/* ─── Grid ─── */}
-      {rest.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((s) => (
-            <ServiceCard key={s._id} service={s} />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <EmptyState query={query} />
-      ) : null}
-
-      {/* ─── Partner CTA ─── */}
-      <div className="mt-10 overflow-hidden rounded-none border border-[rgba(16,128,202,0.18)] bg-gradient-to-br from-[rgba(16,128,202,0.06)] via-[#f2f5f8] to-[#ffffff] p-6 text-center">
-        <div className="text-[10px] font-bold tracking-[0.18em] text-[#1080CA]">PARTNERSHIP</div>
-        <h2 className="mt-2 text-[18px] font-black text-[#0e1726]">Бизнесээ Antaqor-т нэгтгэх үү?</h2>
-        <p className="mx-auto mt-1 max-w-md text-[12px] leading-relaxed text-[#6b7280]">
-          Экосистемд нэгдэж, мянга мянган AI бүтээгчдэд хүрээрэй
-        </p>
-        <a
-          href="mailto:antaqor@gmail.com?subject=Partnership"
-          className="mt-4 inline-flex items-center gap-2 rounded-none bg-[#1080CA] px-6 py-2.5 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8]"
-        >
-          Хамтрах хүсэлт илгээх
-          <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function CategoryChip({
-  active,
-  label,
-  count,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  count: number;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`group inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-bold transition ${
-        active
-          ? "bg-[#1080CA] text-[#0E0E10]"
-          : "border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#6b7280] hover:border-[rgba(16,128,202,0.3)] hover:text-[#0e1726]"
-      }`}
-    >
-      {label}
-      <span
-        className={`inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-black ${
-          active ? "bg-white/20 text-white" : "bg-[rgba(15,23,38,0.05)] text-[#6b7280]"
-        }`}
-      >
-        {count}
-      </span>
-    </button>
-  );
-}
-
-function FeaturedCard({ service }: { service: ServiceData }) {
-  const accent = getAccent(service.name);
-  const isExternal =
-    !!service.url && !service.url.startsWith("/") && !service.url.startsWith("https://antaqor.com");
-  const className =
-    "group relative grid gap-4 overflow-hidden rounded-none border border-[rgba(16,128,202,0.22)] bg-gradient-to-br from-[rgba(16,128,202,0.05)] via-[#f2f5f8] to-[#ffffff] p-5 transition hover:border-[rgba(16,128,202,0.4)] sm:grid-cols-[200px_1fr] sm:p-6";
-
-  const inner = (
-    <>
-      {service.coverImage ? (
-          <div className="relative aspect-video overflow-hidden rounded-none bg-[#ffffff] sm:aspect-square">
-            <Image src={service.coverImage} alt={service.name} fill className="object-cover transition group-hover:scale-105" sizes="(max-width:640px) 100vw, 200px" />
-          </div>
-        ) : (
-          <div
-            className="flex aspect-video items-center justify-center rounded-none sm:aspect-square"
-            style={{ backgroundColor: `${accent}14` }}
-          >
-            <span className="text-[40px] font-black" style={{ color: accent }}>
-              {service.name.charAt(0)}
-            </span>
-          </div>
-        )}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            {service.status === "active" && <span className="h-1.5 w-1.5 rounded-full bg-[#1080CA]" />}
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#6b7280]">{service.category}</span>
-          </div>
-          <h2 className="mt-1.5 text-[20px] font-black text-[#0e1726] transition group-hover:text-[#1080CA]">
-            {service.name}
-          </h2>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-[#6b7280]">{service.description}</p>
-          <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
-            {service.domain && <span className="text-[10px] text-[#94a3b8]">{service.domain}</span>}
-            {service.stats?.rating ? (
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-[rgba(16,128,202,0.1)] px-2 py-0.5 text-[10px] font-bold text-[#1080CA]">
-                <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-                {service.stats.rating}
-              </span>
-            ) : null}
-            <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-black text-[#1080CA] transition group-hover:translate-x-0.5">
-              Орох
-              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </span>
-          </div>
-        </div>
-    </>
-  );
-
-  return (
-    <div className="mb-5">
-      <div className="mb-2 flex items-center gap-2">
-        <div className="h-[2px] w-4 bg-[#1080CA]" />
-        <span className="text-[10px] font-bold tracking-[0.15em] text-[#1080CA]">FEATURED</span>
-      </div>
-      {isExternal ? (
-        <a href={service.url} target="_blank" rel="noopener noreferrer" className={className}>
-          {inner}
-        </a>
+      {!featured ? (
+        <p className="py-16 text-center text-[15px] text-[#9C9CA6]">Үйлчилгээ удахгүй нэмэгдэнэ.</p>
       ) : (
-        <Link href={service.url || "#"} className={className}>
-          {inner}
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function ServiceCard({ service }: { service: ServiceData }) {
-  const isComingSoon = service.status === "coming_soon";
-  const accent = getAccent(service.name);
-  const isExternal =
-    !!service.url && !service.url.startsWith("/") && !service.url.startsWith("https://antaqor.com");
-  const interactive = !isComingSoon && service.url && service.url !== "#";
-
-  const Inner = (
-    <>
-      {/* Cover or category icon */}
-      {service.coverImage ? (
-        <div className="relative aspect-[16/9] overflow-hidden bg-[#F2F2F4]">
-          <Image
-            src={service.coverImage}
-            alt={service.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#eef2f6]/80 via-transparent to-transparent" />
-          {isComingSoon && (
-            <div className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold text-[#5b6573] backdrop-blur">
-              ТУН УДАХГҮЙ
-            </div>
-          )}
-        </div>
-      ) : (
-        <div
-          className="relative flex aspect-[16/9] items-center justify-center"
-          style={{ backgroundColor: `${accent}10` }}
-        >
-          <svg className="h-10 w-10 opacity-30" fill="none" stroke="currentColor" style={{ color: accent }} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={CATEGORY_ICONS[service.category] || DEFAULT_ICON} />
-          </svg>
-          {isComingSoon && (
-            <div className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold text-[#5b6573] backdrop-blur">
-              ТУН УДАХГҮЙ
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Info */}
-      <div className="p-3.5">
-        <div className="flex items-start gap-2.5">
-          <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none text-[14px] font-black"
-            style={{ backgroundColor: `${accent}18`, color: accent }}
-          >
-            {service.logo ? (
-              <Image src={service.logo} alt="" width={36} height={36} className="rounded-none" />
-            ) : (
-              service.name.charAt(0)
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h2 className="truncate text-[13px] font-bold text-[#0e1726] transition group-hover:text-[#1080CA]">
-                {service.name}
-              </h2>
-              {service.status === "active" && (
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1080CA]" />
+        <>
+          {/* ── Онцлох ── */}
+          <section className="grid overflow-hidden rounded-[4px] lg:grid-cols-[1.25fr_1fr]" style={{ border: `1px solid ${B}`, background: SURF }}>
+            <a href={featured.url} target="_blank" rel="noopener noreferrer" className="group relative block aspect-[16/9] overflow-hidden bg-black lg:aspect-auto lg:min-h-[340px]">
+              {featured.coverImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={featured.coverImage} alt={featured.name} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
               )}
+              <span className="absolute left-3 top-3 rounded-[4px] bg-[#FCEE0A] px-2 py-1 text-[11px] font-extrabold tracking-[0.06em] text-[#0A0A0A]">ОНЦЛОХ</span>
+            </a>
+            <div className="flex flex-col gap-4 p-5 sm:p-8">
+              <div className="flex items-center gap-3">
+                <Logo s={featured} size={52} />
+                <div className="min-w-0">
+                  <div className="text-[12px] font-bold text-[#FCEE0A]">{featured.category}</div>
+                  <h2 className="text-[clamp(24px,3vw,32px)] font-extrabold leading-tight text-white">{featured.name}</h2>
+                </div>
+              </div>
+              <p className="text-[15.5px] leading-[1.65] text-[#C9C9D1]">{featured.description}</p>
+              <Tags tags={featured.tags} />
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2">
+                <span className="font-mono text-[13px] text-[#9C9CA6]">{featured.domain}</span>
+                <Visit s={featured} big />
+              </div>
             </div>
-            <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-[#6b7280]">
-              {service.description}
-            </p>
-          </div>
-        </div>
+          </section>
 
-        <div className="mt-3 flex items-center justify-between border-t border-[rgba(15,23,38,0.05)] pt-2.5 text-[10px]">
-          <span className="font-medium text-[#94a3b8] truncate max-w-[60%]">
-            {service.domain || service.category}
-          </span>
-          {service.stats?.rating ? (
-            <span className="inline-flex items-center gap-0.5 font-semibold text-[#1080CA]">
-              <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-              {service.stats.rating}
-            </span>
-          ) : (
-            <span className="rounded-full bg-[#F2F2F4] px-1.5 py-0.5 font-semibold text-[#6b7280]">
-              {service.category}
-            </span>
+          {/* ── Бусад ── */}
+          {rest.length > 0 && (
+            <section className="mt-6 grid gap-5 sm:grid-cols-2">
+              {rest.map((s) => (
+                <article key={s._id} className="group flex flex-col overflow-hidden rounded-[4px] transition hover:-translate-y-0.5" style={{ border: `1px solid ${B}`, background: SURF }}>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[16/9] overflow-hidden bg-black">
+                    {s.coverImage && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.coverImage} alt={s.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                    )}
+                  </a>
+                  <div className="relative flex flex-1 flex-col gap-3 px-5 pb-5">
+                    <div className="-mt-7 flex items-end gap-3">
+                      <Logo s={s} size={56} />
+                      <span className="mb-1 rounded-[4px] px-2 py-0.5 text-[11.5px] font-bold" style={{ background: "rgba(252,238,10,0.14)", color: "#FCEE0A" }}>{s.category}</span>
+                    </div>
+                    <h3 className="text-[22px] font-extrabold leading-tight text-white">{s.name}</h3>
+                    <p className="line-clamp-3 text-[14.5px] leading-[1.6] text-[#C9C9D1]">{s.description}</p>
+                    <Tags tags={s.tags} />
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+                      <span className="truncate font-mono text-[12.5px] text-[#9C9CA6]">{s.domain}</span>
+                      <Visit s={s} />
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </section>
           )}
+        </>
+      )}
+
+      {/* ── Хамтын ажиллагаа ── */}
+      <section className="mt-10 flex flex-col items-start justify-between gap-4 rounded-[4px] p-6 sm:flex-row sm:items-center sm:p-8"
+        style={{ border: "1px solid rgba(46,41,255,0.4)", background: "linear-gradient(180deg, rgba(46,41,255,0.10), rgba(46,41,255,0.02))" }}>
+        <div>
+          <h2 className="text-[22px] font-extrabold text-white">Танай бизнест AI шийдэл хэрэгтэй юу?</h2>
+          <p className="mt-1 text-[14.5px] text-[#C9C9D1]">Вэб сайт, автоматжуулалт, AI агент — эдгээр бизнесийг бүтээсэн баг танд ч бүтээнэ.</p>
         </div>
-      </div>
-    </>
-  );
-
-  const baseClass = `group block overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] transition-all ${
-    interactive ? "hover:border-[rgba(16,128,202,0.25)] hover:-translate-y-[1px]" : "cursor-default opacity-60"
-  }`;
-
-  if (!interactive) {
-    return <div className={baseClass}>{Inner}</div>;
-  }
-
-  if (isExternal) {
-    return (
-      <a href={service.url} target="_blank" rel="noopener noreferrer" className={baseClass}>
-        {Inner}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={service.url} className={baseClass}>
-      {Inner}
-    </Link>
-  );
-}
-
-function EmptyState({ query }: { query: string }) {
-  return (
-    <div className="flex flex-col items-center py-16 text-center">
-      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8]">
-        <svg className="h-5 w-5 text-[#6b7280]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d={DEFAULT_ICON} />
-        </svg>
-      </div>
-      <p className="text-[14px] font-bold text-[#0e1726]">
-        {query ? `«${query}» гэсэн үйлчилгээ олдсонгүй` : "Үйлчилгээ удахгүй нэмэгдэнэ"}
-      </p>
-      <p className="mt-1 text-[11px] text-[#6b7280]">
-        {query ? "Өөр үг хайж эсвэл бүх үйлчилгээг үзнэ үү" : "Шинэ бүтээгдэхүүн идэвхтэй бэлтгэгдэж байна"}
-      </p>
-    </div>
+        <Link href="/partnerships" className="inline-flex h-12 shrink-0 items-center rounded-[4px] bg-[#2E29FF] px-6 text-[15px] font-bold text-[#0A0A0A] transition hover:bg-[#1F1AD9]">
+          Хамтран ажиллах →
+        </Link>
+      </section>
+    </main>
   );
 }

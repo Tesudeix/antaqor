@@ -12,6 +12,13 @@ interface MembershipState {
   isLoggedIn: boolean;
   expired: boolean;
   expiresAt: string | null;
+  /* 2026-08-26-ны төлбөрт шилжилт. `hasAccess` нь "гишүүн үү" гэсэн
+     асуултаас ӨӨР: хуучин хэрэглэгч 7 хоногийн түр эрхээр орж болно.
+     UI дандаа `hasAccess`-ийг л шалгана, `isMember`-ийг биш. */
+  hasAccess: boolean;
+  inGrace: boolean;
+  graceEndsAt: string | null;
+  graceDaysLeft: number;
 }
 
 export function useMembership(): MembershipState {
@@ -23,6 +30,10 @@ export function useMembership(): MembershipState {
     isLoggedIn: false,
     expired: false,
     expiresAt: null,
+    hasAccess: false,
+    inGrace: false,
+    graceEndsAt: null,
+    graceDaysLeft: 0,
   });
 
   useEffect(() => {
@@ -36,6 +47,10 @@ export function useMembership(): MembershipState {
         isLoggedIn: false,
         expired: false,
         expiresAt: null,
+        hasAccess: false,
+        inGrace: false,
+        graceEndsAt: null,
+        graceDaysLeft: 0,
       });
       return;
     }
@@ -51,6 +66,10 @@ export function useMembership(): MembershipState {
         isLoggedIn: true,
         expired: false,
         expiresAt: null,
+        hasAccess: true,
+        inGrace: false,
+        graceEndsAt: null,
+        graceDaysLeft: 0,
       });
       return;
     }
@@ -66,6 +85,10 @@ export function useMembership(): MembershipState {
           isLoggedIn: true,
           expired: !!data.expired,
           expiresAt: data.expiresAt || null,
+          hasAccess: !!data.hasAccess,
+          inGrace: !!data.inGrace,
+          graceEndsAt: data.graceEndsAt || null,
+          graceDaysLeft: Number(data.graceDaysLeft) || 0,
         });
       } catch {
         setState({
@@ -75,6 +98,10 @@ export function useMembership(): MembershipState {
           isLoggedIn: true,
           expired: false,
           expiresAt: null,
+          hasAccess: false,
+          inGrace: false,
+          graceEndsAt: null,
+          graceDaysLeft: 0,
         });
       }
     };

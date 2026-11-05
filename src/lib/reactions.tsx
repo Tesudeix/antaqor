@@ -75,7 +75,7 @@ const Love = ({ size = 22, active }: { size?: number; active?: boolean }) => {
 };
 
 const Fire = ({ size = 22, active }: { size?: number; active?: boolean }) => {
-  const c = "#FF7847";
+  const c = "#47ACFF";
   return (
     <svg {...baseSvg(size)}>
       <Hex color={c} active={active} />
@@ -152,7 +152,7 @@ const Celebrate = ({ size = 22, active }: { size?: number; active?: boolean }) =
 export const REACTIONS: Record<ReactionKey, ReactionConfig> = {
   like: { key: "like", label: "Like", color: "#1B74E4", bg: "rgba(27,116,228,0.12)", Icon: Like },
   love: { key: "love", label: "Love", color: "#F33E58", bg: "rgba(243,62,88,0.12)", Icon: Love },
-  fire: { key: "fire", label: "Fire", color: "#FF7847", bg: "rgba(255,120,71,0.12)", Icon: Fire },
+  fire: { key: "fire", label: "Fire", color: "#47ACFF", bg: "rgba(255,120,71,0.12)", Icon: Fire },
   idea: { key: "idea", label: "Idea", color: "#FFD300", bg: "rgba(255,211,0,0.12)", Icon: Idea },
   haha: { key: "haha", label: "Haha", color: "#FFC700", bg: "rgba(255,199,0,0.12)", Icon: Haha },
   celebrate: { key: "celebrate", label: "Баяр", color: "#E0218A", bg: "rgba(224,33,138,0.12)", Icon: Celebrate },

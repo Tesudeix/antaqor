@@ -128,7 +128,7 @@ export default function ThreadsManagementPage() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin border-2 border-[#1080CA] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin border-2 border-[#2E29FF] border-t-transparent" />
       </div>
     );
   }
@@ -137,9 +137,9 @@ export default function ThreadsManagementPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl tracking-[2px] md:text-4xl">
-          THREADS <span className="text-[#1080CA]">POSTS</span>
+          THREADS <span className="text-[#2E29FF]">POSTS</span>
         </h1>
-        <p className="mt-2 text-[11px] tracking-[2px] text-[#5b6573]">
+        <p className="mt-2 text-[11px] tracking-[2px] text-[#E2E4E8]">
           CREATE, VIEW, AND MANAGE YOUR THREADS
         </p>
       </div>
@@ -150,7 +150,7 @@ export default function ThreadsManagementPage() {
         <div
           className={`border px-4 py-3 text-[12px] ${
             flash.type === "error"
-              ? "border-[#0C3050]/50 bg-[#07203A]/30 text-[#4E94D0]"
+              ? "border-[#0C3050]/50 bg-[#111111]/30 text-[#4C47FF]"
               : "border-green-900/50 bg-green-950/30 text-green-400"
           }`}
         >
@@ -169,7 +169,7 @@ export default function ThreadsManagementPage() {
           maxLength={500}
         />
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-[#5b6573]">
+          <span className="text-[11px] text-[#E2E4E8]">
             {postText.length}/500
           </span>
           <button
@@ -185,7 +185,7 @@ export default function ThreadsManagementPage() {
       {/* Posts List */}
       <div className="space-y-3">
         {posts.length === 0 ? (
-          <div className="card p-8 text-center text-[12px] text-[#5b6573]">
+          <div className="card p-8 text-center text-[12px] text-[#E2E4E8]">
             No threads yet. Create your first post above!
           </div>
         ) : (
@@ -203,15 +203,15 @@ export default function ThreadsManagementPage() {
                       className="mt-3 max-h-48 border border-[rgba(255,255,255,0.08)] object-cover"
                     />
                   )}
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] text-[#5b6573]">
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] text-[#E2E4E8]">
                     <span>{formatDate(post.timestamp)}</span>
                     {post.is_quote_post && (
-                      <span className="border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[9px] uppercase tracking-[1px]">
+                      <span className="border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[11px] uppercase tracking-[1px]">
                         Quote
                       </span>
                     )}
                     {post.has_replies && (
-                      <span className="border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[9px] uppercase tracking-[1px]">
+                      <span className="border border-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[11px] uppercase tracking-[1px]">
                         Has Replies
                       </span>
                     )}
@@ -221,7 +221,7 @@ export default function ThreadsManagementPage() {
                 <div className="flex shrink-0 items-center gap-2 opacity-0 transition group-hover:opacity-100">
                   <Link
                     href={`/admin/threads/${post.id}`}
-                    className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#5b6573] transition hover:border-[#1080CA] hover:text-[#1080CA]"
+                    className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#E2E4E8] transition hover:border-[#2E29FF] hover:text-[#2E29FF]"
                     title="View replies"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +233,7 @@ export default function ThreadsManagementPage() {
                       href={post.permalink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#5b6573] transition hover:border-[#56565E] hover:text-[#8A8A92]"
+                      className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#E2E4E8] transition hover:border-[#62666F] hover:text-[#E2E4E8]"
                       title="View on Threads"
                     >
                       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,7 +244,7 @@ export default function ThreadsManagementPage() {
                   <button
                     onClick={() => handleDelete(post.id)}
                     disabled={deletingId === post.id}
-                    className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#5b6573] transition hover:border-[#0E3A61] hover:text-[#1080CA] disabled:opacity-50"
+                    className="flex h-8 w-8 items-center justify-center border border-[rgba(255,255,255,0.08)] text-[#E2E4E8] transition hover:border-[#0E3A61] hover:text-[#2E29FF] disabled:opacity-50"
                     title="Delete"
                   >
                     {deletingId === post.id ? (

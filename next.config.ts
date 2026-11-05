@@ -5,7 +5,9 @@ import type { NextConfig } from "next";
 // lives under experimental.proxyClientMaxBodySize. Cast around the missing
 // type until @types/next ships it.
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["livekit-server-sdk"],
   poweredByHeader: false,
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
@@ -28,6 +30,23 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  /* Видео студи /tools/runway -> /tools/video болов (2026-09-22).
+     Хуучин хаяг нь bookmark, хуваалцсан холбоос, гадаад сайтууд дээр
+     үлдсэн тул 301-ээр чиглүүлнэ — 404 болгохгүй. */
+  async redirects() {
+    return [
+      { source: "/tools/runway", destination: "/tools/video", permanent: true },
+    ];
+  },
+  async rewrites() {
+    return [
+      { source: "/policy", destination: "/policy.html" },
+      { source: "/privacy-policy", destination: "/policy.html" },
+      { source: "/privacy", destination: "/policy.html" },
+      { source: "/terms", destination: "/terms.html" },
+      { source: "/data-deletion", destination: "/data-deletion.html" },
+    ];
+  },
   async headers() {
     return [
       {
@@ -46,6 +65,10 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
+      },
+      {
+        source: "/admin/live",
+        headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(self), display-capture=(self), geolocation=()" }],
       },
       {
         source: "/api/:path*",

@@ -169,27 +169,27 @@ export default function AdminTestimonialsPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
       )}
 
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Testimonials</h1>
-          <p className="mt-0.5 text-[12px] text-[#56565E]">Гишүүдийн үр дүн · Homepage + /clan-д social proof</p>
+          <p className="mt-0.5 text-[12px] text-[#E2E4E8]">Гишүүдийн үр дүн · Homepage + /clan-д social proof</p>
         </div>
-        <Link href="/" target="_blank" className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10]">
+        <Link href="/" target="_blank" className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-bold text-white">
           Homepage харах
         </Link>
       </div>
 
       {/* Editor */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">
             {editingId ? "Засварлаж байна" : "Шинэ testimonial"}
           </span>
           {editingId && (
-            <button onClick={resetForm} className="text-[11px] text-[#8A8A92] hover:text-[#E8E8E8]">Цуцлах</button>
+            <button onClick={resetForm} className="text-[11px] text-[#E2E4E8] hover:text-[#E8E8E8]">Цуцлах</button>
           )}
         </div>
 
@@ -199,25 +199,25 @@ export default function AdminTestimonialsPage() {
             type="button"
             onClick={() => avatarRef.current?.click()}
             disabled={avatarUploading}
-            className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-dashed border-[rgba(255,255,255,0.12)] bg-[#0A0A0A] transition hover:border-[rgba(16,128,202,0.4)]"
+            className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-[4px] border-2 border-dashed border-[rgba(255,255,255,0.12)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.4)]"
           >
             {form.avatar ? (
               <img src={form.avatar} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-[#56565E]">
+              <div className="flex h-full w-full items-center justify-center text-[#E2E4E8]">
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               </div>
             )}
           </button>
           <div className="leading-tight">
             <div className="text-[12px] font-bold text-[#E8E8E8]">Нүүрний зураг</div>
-            <div className="text-[10px] text-[#8A8A92]">{avatarUploading ? "Байршуулж байна..." : "Дүгрэг товч дарж сонго"}</div>
+            <div className="text-[10px] text-[#E2E4E8]">{avatarUploading ? "Байршуулж байна..." : "Дүгрэг товч дарж сонго"}</div>
           </div>
           {form.avatar && (
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, avatar: "" }))}
-              className="ml-auto text-[10px] text-[#56565E] hover:text-[#1080CA]"
+              className="ml-auto text-[10px] text-[#E2E4E8] hover:text-[#2E29FF]"
             >
               Устгах
             </button>
@@ -228,85 +228,85 @@ export default function AdminTestimonialsPage() {
         <div className="space-y-2.5">
           <div className="grid gap-2.5 sm:grid-cols-2">
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Нэр · жишээ: Болор Б."
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] font-bold text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" maxLength={100} />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] font-bold text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" maxLength={100} />
             <input value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} placeholder="Role · жишээ: AI freelancer"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" maxLength={100} />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" maxLength={100} />
           </div>
           <input value={form.result} onChange={(e) => setForm((f) => ({ ...f, result: e.target.value }))}
             placeholder='Result headline · жишээ: "Сард ₮2m нэмж олсон"'
-            className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" maxLength={160} />
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" maxLength={160} />
           <textarea value={form.quote} onChange={(e) => setForm((f) => ({ ...f, quote: e.target.value }))}
             placeholder='Quote body (заавал биш) · Нарийн тайлбар'
-            rows={3} className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" maxLength={1000} />
+            rows={3} className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" maxLength={1000} />
           <div className="grid gap-2.5 sm:grid-cols-2">
             <input value={form.tagsRaw} onChange={(e) => setForm((f) => ({ ...f, tagsRaw: e.target.value }))} placeholder="Tags (comma: ai, automation)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.link} onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))} placeholder="Social / profile link (optional)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input type="number" value={form.order} onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) || 0 }))} placeholder="Order (lower = earlier)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
-            <div className="flex items-center gap-4 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5">
-              <label className="flex cursor-pointer items-center gap-1.5 text-[12px] text-[#8A8A92]">
-                <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
+            <div className="flex items-center gap-4 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5">
+              <label className="flex cursor-pointer items-center gap-1.5 text-[12px] text-[#E2E4E8]">
+                <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#2E29FF]" />
                 Featured
               </label>
-              <label className="flex cursor-pointer items-center gap-1.5 text-[12px] text-[#8A8A92]">
-                <input type="checkbox" checked={form.published} onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))} className="accent-[#1080CA]" />
+              <label className="flex cursor-pointer items-center gap-1.5 text-[12px] text-[#E2E4E8]">
+                <input type="checkbox" checked={form.published} onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))} className="accent-[#2E29FF]" />
                 Published
               </label>
             </div>
           </div>
 
           <button onClick={save} disabled={!form.name.trim() || !form.result.trim() || saving}
-            className="w-full rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40">
+            className="w-full rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-40">
             {saving ? "..." : editingId ? "Шинэчлэх" : "Нэмэх"}
           </button>
         </div>
       </div>
 
       {/* List */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Бүх testimonial ({items.length})</span>
-          <button onClick={load} className="text-[11px] text-[#8A8A92] hover:text-[#1080CA]">Шинэчлэх</button>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">Бүх testimonial ({items.length})</span>
+          <button onClick={load} className="text-[11px] text-[#E2E4E8] hover:text-[#2E29FF]">Шинэчлэх</button>
         </div>
         {loading ? (
-          <div className="py-10 text-center text-[12px] text-[#56565E]">Ачааллаж байна...</div>
+          <div className="py-10 text-center text-[12px] text-[#E2E4E8]">Ачааллаж байна...</div>
         ) : items.length === 0 ? (
-          <div className="py-10 text-center text-[12px] text-[#56565E]">
+          <div className="py-10 text-center text-[12px] text-[#E2E4E8]">
             Testimonial байхгүй — эхний 3-ыг нэм (Homepage + /clan дээр автоматаар гарна)
           </div>
         ) : (
           <div className="space-y-2">
             {items.map((t) => (
-              <div key={t._id} className="flex items-start gap-3 rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+              <div key={t._id} className="flex items-start gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
                 {t.avatar ? (
                   <img src={t.avatar} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
                 ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[rgba(16,128,202,0.1)] text-[16px] font-black text-[#1080CA]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] text-[16px] font-black text-[#2E29FF]">
                     {t.name.charAt(0)}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate text-[13px] font-bold text-[#E8E8E8]">{t.name}</span>
-                    {t.role && <span className="truncate text-[10px] text-[#8A8A92]">· {t.role}</span>}
-                    {t.featured && <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">FEATURED</span>}
-                    {!t.published && <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">DRAFT</span>}
-                    <span className="text-[10px] text-[#56565E]">#{t.order}</span>
+                    {t.role && <span className="truncate text-[10px] text-[#E2E4E8]">· {t.role}</span>}
+                    {t.featured && <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 text-[11px] font-bold text-[#2E29FF]">FEATURED</span>}
+                    {!t.published && <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 text-[11px] font-bold text-[#2E29FF]">DRAFT</span>}
+                    <span className="text-[10px] text-[#E2E4E8]">#{t.order}</span>
                   </div>
-                  <div className="mt-0.5 truncate text-[12px] font-semibold text-[#1080CA]">{t.result}</div>
-                  {t.quote && <div className="mt-0.5 line-clamp-2 text-[11px] text-[#8A8A92]">{t.quote}</div>}
+                  <div className="mt-0.5 truncate text-[12px] font-semibold text-[#2E29FF]">{t.result}</div>
+                  {t.quote && <div className="mt-0.5 line-clamp-2 text-[11px] text-[#E2E4E8]">{t.quote}</div>}
                 </div>
                 <div className="flex shrink-0 gap-1.5">
                   <button onClick={() => toggleFeatured(t)} title={t.featured ? "Unfeature" : "Feature"}
-                    className="rounded-none px-2 py-1 text-[11px] font-bold text-[#8A8A92] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
+                    className="rounded-[4px] px-2 py-1 text-[11px] font-bold text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
                   <button onClick={() => togglePublished(t)}
-                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#8A8A92] transition hover:bg-[rgba(255,255,255,0.06)]">{t.published ? "Нуух" : "Нийтлэх"}</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.06)]">{t.published ? "Нуух" : "Нийтлэх"}</button>
                   <button onClick={() => edit(t)}
-                    className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.08)]">Засах</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.08)]">Засах</button>
                   <button onClick={() => remove(t._id)}
-                    className="rounded-none px-2.5 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.08)] hover:text-[#1080CA]">Устгах</button>
+                    className="rounded-[4px] px-2.5 py-1 text-[11px] text-[#E2E4E8] transition hover:bg-[rgba(46,41,255,0.08)] hover:text-[#2E29FF]">Устгах</button>
                 </div>
               </div>
             ))}

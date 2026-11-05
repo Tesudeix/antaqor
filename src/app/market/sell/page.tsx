@@ -69,33 +69,33 @@ export default function SellPromptPage() {
     } catch { setError("Сүлжээний алдаа"); } finally { setSaving(false); }
   };
 
-  if (status === "loading") return <div className="flex min-h-[50vh] items-center justify-center"><div className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" /></div>;
+  if (status === "loading") return <div className="flex min-h-[50vh] items-center justify-center"><div className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" /></div>;
   if (!session) return (
     <div className="mx-auto max-w-md px-4 py-20 text-center">
       <h1 className="text-[20px] font-bold text-[#F2F2F4]">Промт зарахын тулд нэвтэрнэ үү</h1>
-      <p className="mt-2 text-[13px] text-[#B4B4BA]">Бүртгэл үнэгүй — гишүүнчлэл шаардлагагүй.</p>
-      <Link href="/auth/signin?next=/market/sell" className="mt-6 inline-block rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]">Нэвтрэх</Link>
+      <p className="mt-2 text-[13px] text-[#E2E4E8]">Бүртгэл үнэгүй — гишүүнчлэл шаардлагагүй.</p>
+      <Link href="/auth/signin?next=/market/sell" className="mt-6 inline-block rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9]">Нэвтрэх</Link>
     </div>
   );
 
   const inputCls =
-    "w-full rounded-none border border-[rgba(255,255,255,0.10)] bg-[#1E1E21] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none transition focus:border-[rgba(16,128,202,0.6)] placeholder:text-[#84848C]";
+    "w-full rounded-[4px] border border-[rgba(255,255,255,0.10)] bg-[#0A0A0A] px-4 py-3 text-[14px] text-[#F2F2F4] outline-none transition focus:border-[rgba(46,41,255,0.6)] placeholder:text-[#E2E4E8]";
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-20 pt-6">
       <div className="mb-6">
-        <div className="flex items-center gap-2"><div className="h-[2px] w-4 bg-[#1080CA]" /><span className="text-[11px] font-bold uppercase tracking-[2px] text-[#0E0E10]">Промт зарах</span></div>
+        <div className="flex items-center gap-2"><div className="h-[2px] w-4 bg-[#2E29FF]" /><span className="text-[11px] font-bold uppercase tracking-[2px] text-white">Промт зарах</span></div>
         <h1 className="mt-3 text-[28px] font-black tracking-tight text-[#F2F2F4]">Промтоо бүтээгдэхүүн болго</h1>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-[#B4B4BA]">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-[#E2E4E8]">
           Хэн ч зарж болно — гишүүнчлэл шаардлагагүй. Сайн нэр, тод зураг, ойлгомжтой тайлбар = илүү борлуулалт.
         </p>
       </div>
 
       {done ? (
-        <div className="rounded-none border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] p-8 text-center">
-          <div className="text-[32px]">✓</div>
+        <div className="rounded-[4px] border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] p-8 text-center">
+          <div className="text-[22px] md:text-[32px]">✓</div>
           <div className="mt-2 text-[16px] font-bold text-[#F2F2F4]">Зар нийтлэгдлээ</div>
-          <p className="mt-1 text-[13px] text-[#B4B4BA]">Бүтээгдэхүүний хуудас руу шилжиж байна…</p>
+          <p className="mt-1 text-[13px] text-[#E2E4E8]">Бүтээгдэхүүний хуудас руу шилжиж байна…</p>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-3">
@@ -108,12 +108,12 @@ export default function SellPromptPage() {
             onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadPhoto(f); e.target.value = ""; }}
           />
           {form.coverImage ? (
-            <div className="group relative overflow-hidden rounded-none border border-[rgba(255,255,255,0.10)]">
+            <div className="group relative overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.10)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={form.coverImage} alt="Cover" className="aspect-video w-full object-cover" />
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/55 opacity-0 transition group-hover:opacity-100">
-                <button type="button" onClick={() => fileRef.current?.click()} className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10]">Солих</button>
-                <button type="button" onClick={() => setForm((f) => ({ ...f, coverImage: "" }))} className="rounded-none border border-[rgba(255,255,255,0.3)] px-4 py-2 text-[12px] font-bold text-white">Устгах</button>
+                <button type="button" onClick={() => fileRef.current?.click()} className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-bold text-white">Солих</button>
+                <button type="button" onClick={() => setForm((f) => ({ ...f, coverImage: "" }))} className="rounded-[4px] border border-[rgba(255,255,255,0.3)] px-4 py-2 text-[12px] font-bold text-white">Устгах</button>
               </div>
             </div>
           ) : (
@@ -121,7 +121,7 @@ export default function SellPromptPage() {
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="flex aspect-[3/1] w-full flex-col items-center justify-center gap-2 rounded-none border border-dashed border-[rgba(255,255,255,0.16)] bg-[#1E1E21] text-[#B4B4BA] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[#F2F2F4] disabled:opacity-60"
+              className="flex aspect-[3/1] w-full flex-col items-center justify-center gap-2 rounded-[4px] border border-dashed border-[rgba(255,255,255,0.16)] bg-[#0A0A0A] text-[#E2E4E8] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[#F2F2F4] disabled:opacity-60"
             >
               {uploading ? (
                 <span className="text-[13px] font-bold">Зураг оруулж байна…</span>
@@ -133,7 +133,7 @@ export default function SellPromptPage() {
                     <path d="M21 15l-5-5L5 21" />
                   </svg>
                   <span className="text-[13px] font-bold">Cover зураг нэмэх</span>
-                  <span className="text-[11px] text-[#84848C]">Үр дүнгийн жишээ зураг хамгийн сайн зарагддаг</span>
+                  <span className="text-[11px] text-[#E2E4E8]">Үр дүнгийн жишээ зураг хамгийн сайн зарагддаг</span>
                 </>
               )}
             </button>
@@ -144,26 +144,26 @@ export default function SellPromptPage() {
           <textarea value={form.description} onChange={set("description")} rows={8} placeholder="Промтын бүрэн агуулга / хэрэглэх заавар *" className={`${inputCls} resize-none leading-relaxed`} />
 
           {/* Price */}
-          <div className="rounded-none border border-[rgba(255,255,255,0.10)] bg-[#1E1E21] p-4">
-            <div className="mb-2 text-[11px] font-bold uppercase tracking-[1.5px] text-[#84848C]">Үнэ</div>
+          <div className="rounded-[4px] border border-[rgba(255,255,255,0.10)] bg-[#0A0A0A] p-4">
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[1.5px] text-[#E2E4E8]">Үнэ</div>
             <div className="flex flex-wrap items-center gap-2">
               {PRICE_CHIPS.map((p) => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, price: String(p) }))}
-                  className={`rounded-none px-3 py-1.5 text-[12px] font-bold transition ${
+                  className={`rounded-[4px] px-3 py-1.5 text-[12px] font-bold transition ${
                     Number(form.price) === p && form.price !== ""
-                      ? "bg-[#1080CA] text-[#0E0E10]"
-                      : "border border-[rgba(255,255,255,0.10)] text-[#B4B4BA] hover:text-[#F2F2F4]"
+                      ? "bg-[#2E29FF] text-white"
+                      : "border border-[rgba(255,255,255,0.10)] text-[#E2E4E8] hover:text-[#F2F2F4]"
                   }`}
                 >
                   {p === 0 ? "Үнэгүй" : `₮${p.toLocaleString()}`}
                 </button>
               ))}
-              <div className="flex min-w-[140px] flex-1 items-center gap-1.5 rounded-none border border-[rgba(255,255,255,0.10)] px-3 py-1.5">
-                <span className="text-[13px] font-black text-[#1080CA]">₮</span>
-                <input value={form.price} onChange={set("price")} type="number" min="0" placeholder="Өөр үнэ" className="w-full bg-transparent text-[13px] text-[#F2F2F4] outline-none placeholder:text-[#84848C]" />
+              <div className="flex min-w-[140px] flex-1 items-center gap-1.5 rounded-[4px] border border-[rgba(255,255,255,0.10)] px-3 py-1.5">
+                <span className="text-[13px] font-black text-[#2E29FF]">₮</span>
+                <input value={form.price} onChange={set("price")} type="number" min="0" placeholder="Өөр үнэ" className="w-full bg-transparent text-[13px] text-[#F2F2F4] outline-none placeholder:text-[#E2E4E8]" />
               </div>
             </div>
           </div>
@@ -171,12 +171,12 @@ export default function SellPromptPage() {
           <input value={form.tags} onChange={set("tags")} placeholder="Tags — таслалаар (marketing, зураг, видео…)" className={inputCls} />
 
           {error && (
-            <p className="rounded-none border border-[rgba(245,158,11,0.3)] bg-[rgba(245,158,11,0.08)] px-3 py-2 text-[12px] text-[#fbbf24]">{error}</p>
+            <p className="rounded-[4px] border border-[rgba(245,158,11,0.3)] bg-[rgba(245,158,11,0.08)] px-3 py-2 text-[12px] text-[#fbbf24]">{error}</p>
           )}
-          <button type="submit" disabled={saving || uploading} className="w-full rounded-none bg-[#1080CA] px-6 py-3.5 text-[14px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8] hover:shadow-[0_0_24px_rgba(16,128,202,0.3)] disabled:opacity-50">
+          <button type="submit" disabled={saving || uploading} className="w-full rounded-[4px] bg-[#2E29FF] px-6 py-3.5 text-[14px] font-black text-white transition hover:bg-[#1F1AD9] hover:shadow-[0_0_24px_rgba(46,41,255,0.3)] disabled:opacity-50">
             {saving ? "Нийтэлж байна…" : "Зар нийтлэх"}
           </button>
-          <p className="text-center text-[11px] text-[#84848C]">Нийтэлснээр маркетын журмыг зөвшөөрсөнд тооцно. Борлуулалтын 20% платформын шимтгэл.</p>
+          <p className="text-center text-[11px] text-[#E2E4E8]">Нийтэлснээр маркетын журмыг зөвшөөрсөнд тооцно. Борлуулалтын 20% платформын шимтгэл.</p>
         </form>
       )}
     </div>

@@ -52,6 +52,10 @@ const LandingContentSchema = new Schema<ILandingContent>(
     homeCta2Label: { type: String, default: LANDING_DEFAULTS.homeCta2Label, maxlength: 40 },
     homeCta2Href: { type: String, default: LANDING_DEFAULTS.homeCta2Href, maxlength: 200 },
     homeImage: { type: String, default: "", maxlength: 500 },
+    homeHeroLayout: { type: String, default: LANDING_DEFAULTS.homeHeroLayout, maxlength: 16 },
+    enrollDeadline: { type: String, default: LANDING_DEFAULTS.enrollDeadline, maxlength: 40 },
+    homeSections: { type: [String], default: [] },
+    homeManifesto: { type: String, default: "", maxlength: 4000 },
 
     programHeading: { type: String, default: LANDING_DEFAULTS.programHeading, maxlength: 120 },
     programMeta: { type: String, default: LANDING_DEFAULTS.programMeta, maxlength: 120 },

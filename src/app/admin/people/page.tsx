@@ -27,8 +27,8 @@ function fmtDate(iso: string): string {
 }
 
 const SEG_STYLE: Record<string, { label: string; color: string }> = {
-  member: { label: "Гишүүн", color: T.ok },
-  lead: { label: "Lead", color: T.secondary },
+  member: { label: "Гишүүн", color: T.okInk },
+  lead: { label: "Lead", color: T.secondaryInk },
   free: { label: "Үнэгүй", color: T.faint },
 };
 
@@ -65,7 +65,7 @@ export default function PeopleDirectory() {
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-7">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primary }}>Хүмүүс</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primaryInk }}>Хүмүүс</div>
         <h1 className="mt-1 text-[26px] font-semibold tracking-tight" style={{ color: T.text }}>People</h1>
         <p className="mt-0.5 text-[12px]" style={{ color: T.faint }}>Гишүүд · Lead · бүх контакт нэг лавлахад</p>
       </div>
@@ -86,7 +86,7 @@ export default function PeopleDirectory() {
         <div className="relative flex-1" style={{ minWidth: 220 }}>
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ color: T.faint }}><Ico d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" className="h-4 w-4" /></span>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Нэр, имэйл, утас, username хайх…"
-            className="w-full rounded-none border bg-[#0E0E12] py-2.5 pl-9 pr-3 text-[14px] outline-none transition focus:border-[rgba(16,128,202,0.5)]"
+            className="w-full rounded-[4px] border bg-[#0A0A0A] py-2.5 pl-9 pr-3 text-[14px] outline-none transition focus:border-[rgba(46,41,255,0.5)]"
             style={{ borderColor: T.border, color: T.text }} />
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -94,7 +94,7 @@ export default function PeopleDirectory() {
             const active = filter === s.key;
             return (
               <button key={s.key} onClick={() => setFilter(s.key)}
-                className="rounded-none px-3 py-1.5 text-[12px] font-semibold transition"
+                className="rounded-[4px] px-3 py-1.5 text-[12px] font-semibold transition"
                 style={active ? { background: T.primary, color: "#fff" } : { color: T.muted, background: "rgba(255,255,255,0.03)" }}>
                 {s.label} <span style={{ fontFamily: MONO, opacity: 0.7 }}>{counts[s.key as keyof typeof counts]}</span>
               </button>
@@ -131,7 +131,7 @@ export default function PeopleDirectory() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: T.text }}>
                             {p.name}
-                            {p.banned && <span className="rounded-none px-1.5 py-0.5 text-[9px] font-bold" style={{ color: T.bad, background: "rgba(78,148,208,0.12)" }}>BANNED</span>}
+                            {p.banned && <span className="rounded-[4px] px-1.5 py-0.5 text-[11px] font-bold" style={{ color: T.badInk, background: "rgba(78,148,208,0.12)" }}>BANNED</span>}
                           </div>
                           {p.username && <div className="text-[11px]" style={{ color: T.faint }}>@{p.username}</div>}
                         </td>
@@ -139,7 +139,7 @@ export default function PeopleDirectory() {
                           {p.email || "—"}{p.phone ? <div style={{ fontFamily: MONO, color: T.faint }}>{p.phone}</div> : null}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center gap-1.5 rounded-none px-2 py-1 text-[11px] font-semibold" style={{ color: s.color, background: `${s.color}1A` }}>
+                          <span className="inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 text-[11px] font-semibold" style={{ color: s.color, background: `${s.color}1A` }}>
                             <span className="h-1.5 w-1.5 rounded-full" style={{ background: s.color }} />{s.label}
                           </span>
                         </td>
@@ -160,7 +160,7 @@ export default function PeopleDirectory() {
       </div>
 
       <p className="mt-4 text-[11px]" style={{ color: T.faint }}>
-        Гишүүнчлэл, хориг, оноо засварлах бүрэн удирдлага <Link href="/admin/members" className="underline" style={{ color: T.secondary }}>Гишүүд</Link> хэсэгт.
+        Гишүүнчлэл, хориг, оноо засварлах бүрэн удирдлага <Link href="/admin/members" className="underline" style={{ color: T.secondaryInk }}>Гишүүд</Link> хэсэгт.
       </p>
     </div>
   );

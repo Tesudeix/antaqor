@@ -43,21 +43,21 @@ export async function POST(req: NextRequest) {
         replyTo: email,
         subject: `Шинэ креатор өргөдөл — ${name}${handle ? ` @${handle}` : ""}`,
         html: `
-          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#161618;color:#F2F2F4;padding:40px;">
-            <div style="font-size:22px;font-weight:bold;letter-spacing:4px;margin-bottom:8px;">ANTA<span style="color:#1080CA;">QOR</span></div>
-            <p style="font-size:11px;color:#B4B4BA;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">Шинэ инфлюенсер өргөдөл</p>
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0A0A0A;color:#F2F2F4;padding:40px;">
+            <div style="font-size:22px;font-weight:bold;letter-spacing:4px;margin-bottom:8px;">ANTA<span style="color:#2E29FF;">QOR</span></div>
+            <p style="font-size:11px;color:#E2E4E8;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">Шинэ инфлюенсер өргөдөл</p>
             <table style="width:100%;font-size:14px;color:#c8c8c0;line-height:1.9;">
-              <tr><td style="color:#84848C;width:130px;">Нэр</td><td><strong>${esc(name)}</strong></td></tr>
-              ${handle ? `<tr><td style="color:#84848C;">Handle</td><td>@${esc(handle)}</td></tr>` : ""}
-              <tr><td style="color:#84848C;">Имэйл</td><td>${esc(email)}</td></tr>
-              ${phone ? `<tr><td style="color:#84848C;">Утас</td><td>${esc(phone)}</td></tr>` : ""}
-              ${niche ? `<tr><td style="color:#84848C;">Чиглэл</td><td>${esc(niche)}</td></tr>` : ""}
-              ${primaryPlatform ? `<tr><td style="color:#84848C;">Платформ</td><td>${esc(primaryPlatform)}</td></tr>` : ""}
-              ${followers ? `<tr><td style="color:#84848C;">Дагагч</td><td>${followers.toLocaleString()}</td></tr>` : ""}
-              ${portfolioUrl ? `<tr><td style="color:#84848C;">Portfolio</td><td>${esc(portfolioUrl)}</td></tr>` : ""}
+              <tr><td style="color:#E2E4E8;width:130px;">Нэр</td><td><strong>${esc(name)}</strong></td></tr>
+              ${handle ? `<tr><td style="color:#E2E4E8;">Handle</td><td>@${esc(handle)}</td></tr>` : ""}
+              <tr><td style="color:#E2E4E8;">Имэйл</td><td>${esc(email)}</td></tr>
+              ${phone ? `<tr><td style="color:#E2E4E8;">Утас</td><td>${esc(phone)}</td></tr>` : ""}
+              ${niche ? `<tr><td style="color:#E2E4E8;">Чиглэл</td><td>${esc(niche)}</td></tr>` : ""}
+              ${primaryPlatform ? `<tr><td style="color:#E2E4E8;">Платформ</td><td>${esc(primaryPlatform)}</td></tr>` : ""}
+              ${followers ? `<tr><td style="color:#E2E4E8;">Дагагч</td><td>${followers.toLocaleString()}</td></tr>` : ""}
+              ${portfolioUrl ? `<tr><td style="color:#E2E4E8;">Portfolio</td><td>${esc(portfolioUrl)}</td></tr>` : ""}
             </table>
-            ${message ? `<div style="margin-top:18px;padding:16px;background:#1E1E21;font-size:14px;color:#c8c8c0;line-height:1.7;white-space:pre-wrap;">${esc(message)}</div>` : ""}
-            <div style="margin-top:24px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-size:10px;color:#84848C;letter-spacing:2px;">ДИЖИТАЛ ҮНДЭСТЭН · ANTAQOR</div>
+            ${message ? `<div style="margin-top:18px;padding:16px;background:#0A0A0A;font-size:14px;color:#c8c8c0;line-height:1.7;white-space:pre-wrap;">${esc(message)}</div>` : ""}
+            <div style="margin-top:24px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-size:10px;color:#E2E4E8;letter-spacing:2px;">ДИЖИТАЛ ҮНДЭСТЭН · ANTAQOR</div>
           </div>`,
       });
     } catch (mailErr) {

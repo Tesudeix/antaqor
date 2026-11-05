@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { EMPIRE_AGENTS, TIER_META, type EmpireAgent } from "@/lib/empireAgents";
 
-const NEON = "#1080CA";
+const NEON = "#2E29FF";
 
 interface RecentPost {
   _id: string;
@@ -87,29 +87,29 @@ export default function AdminAgentsFeedPage() {
   return (
     <div className="mx-auto max-w-[1100px] pb-24">
       <div className="mb-5">
-        <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 font-mono text-[9px] font-black tracking-[0.18em]" style={{ color: NEON }}>
+        <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 font-mono text-[11px] font-black tracking-[0.18em]" style={{ color: NEON }}>
           ADMIN · AGENT FEED
         </span>
         <h1 className="mt-2 text-[24px] font-black text-white sm:text-[28px]">Агентаар пост нийтлэх</h1>
-        <p className="mt-1 text-[12px] text-[#8A8A92]">Агент сонгож, эсвэл «Auto-pick» дарахад gpt-5-mini нийгэмлэгийн өнөөгийн төлөвөөс ойлгож пост бичнэ.</p>
+        <p className="mt-1 text-[12px] text-[#E2E4E8]">Агент сонгож, эсвэл «Auto-pick» дарахад gpt-5-mini нийгэмлэгийн өнөөгийн төлөвөөс ойлгож пост бичнэ.</p>
       </div>
 
       {/* ─── COMPOSER ─── */}
-      <div className="mb-6 rounded-none border border-[rgba(16,128,202,0.25)] bg-[#0E0E12] p-4">
+      <div className="mb-6 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[#0A0A0A] p-4">
         <div className="mb-3 flex items-center justify-between">
-          <div className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#8A8A92]">
+          <div className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#E2E4E8]">
             {selected ? `SELECTED: ${selected}` : "PICK AN AGENT — OR LEAVE EMPTY FOR AUTO"}
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.18em] text-[#8A8A92]">
+          <div className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.18em] text-[#E2E4E8]">
             <button
               type="button"
               onClick={() => setVisibility("free")}
-              className={`rounded-none border px-2 py-1 ${visibility === "free" ? "border-[rgba(16,128,202,0.5)] bg-[rgba(16,128,202,0.1)] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] text-[#8A8A92]"}`}
+              className={`rounded-[4px] border px-2 py-1 ${visibility === "free" ? "border-[rgba(46,41,255,0.5)] bg-[rgba(46,41,255,0.1)] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] text-[#E2E4E8]"}`}
             >FREE</button>
             <button
               type="button"
               onClick={() => setVisibility("members")}
-              className={`rounded-none border px-2 py-1 ${visibility === "members" ? "border-[rgba(16,128,202,0.5)] bg-[rgba(16,128,202,0.1)] text-[#1080CA]" : "border-[rgba(255,255,255,0.08)] text-[#8A8A92]"}`}
+              className={`rounded-[4px] border px-2 py-1 ${visibility === "members" ? "border-[rgba(46,41,255,0.5)] bg-[rgba(46,41,255,0.1)] text-[#2E29FF]" : "border-[rgba(255,255,255,0.08)] text-[#E2E4E8]"}`}
             >MEMBERS</button>
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function AdminAgentsFeedPage() {
           onChange={(e) => setBrief(e.target.value)}
           maxLength={400}
           placeholder="Brief (optional) — e.g. «Ярь TFT-ийн шинэ татгалзалт хэлэлцүүлэг» or «Push the new credit packs»"
-          className="mb-3 w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0F] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="mb-3 w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0F] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[rgba(46,41,255,0.4)]"
           rows={3}
         />
 
@@ -128,7 +128,7 @@ export default function AdminAgentsFeedPage() {
             type="button"
             onClick={() => post()}
             disabled={busy || autoBusy}
-            className="rounded-none border border-[rgba(16,128,202,0.5)] bg-[rgba(16,128,202,0.1)] px-3 py-2 font-mono text-[11px] font-black tracking-[0.18em] text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.2)] disabled:opacity-50"
+            className="rounded-[4px] border border-[rgba(46,41,255,0.5)] bg-[rgba(46,41,255,0.1)] px-3 py-2 font-mono text-[11px] font-black tracking-[0.18em] text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.2)] disabled:opacity-50"
           >
             {autoBusy ? "AUTO-PICKING…" : "⚡ AUTO-PICK + POST"}
           </button>
@@ -136,7 +136,7 @@ export default function AdminAgentsFeedPage() {
             type="button"
             onClick={() => post(selected || undefined)}
             disabled={!selected || busy || autoBusy}
-            className="rounded-none bg-[#1080CA] px-3 py-2 font-mono text-[11px] font-black tracking-[0.18em] text-[#0E0E10] transition hover:opacity-90 disabled:opacity-30"
+            className="rounded-[4px] bg-[#2E29FF] px-3 py-2 font-mono text-[11px] font-black tracking-[0.18em] text-white transition hover:opacity-90 disabled:opacity-30"
           >
             {busy ? "POSTING…" : "POST AS SELECTED →"}
           </button>
@@ -144,18 +144,18 @@ export default function AdminAgentsFeedPage() {
             <button
               type="button"
               onClick={() => { setSelected(""); setBrief(""); setErr(""); setDraft(null); }}
-              className="ml-auto font-mono text-[10px] tracking-[0.18em] text-[#8A8A92] transition hover:text-[#E8E8E8]"
+              className="ml-auto font-mono text-[10px] tracking-[0.18em] text-[#E2E4E8] transition hover:text-[#E8E8E8]"
             >
               CLEAR
             </button>
           )}
         </div>
 
-        {err && <p className="mt-2 font-mono text-[10px] text-[#1080CA]">⨯ {err}</p>}
+        {err && <p className="mt-2 font-mono text-[10px] text-[#2E29FF]">⨯ {err}</p>}
 
         {draft && (
-          <div className="mt-4 rounded-none border border-[rgba(74,224,101,0.4)] bg-[rgba(74,224,101,0.05)] p-3">
-            <div className="mb-1 font-mono text-[9px] font-black tracking-[0.18em] text-[#4FE065]">
+          <div className="mt-4 rounded-[4px] border border-[rgba(74,224,101,0.4)] bg-[rgba(74,224,101,0.05)] p-3">
+            <div className="mb-1 font-mono text-[11px] font-black tracking-[0.18em] text-[#4FE065]">
               ✓ POSTED — {draft.slug.toUpperCase()}
             </div>
             <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-[#E8E8E8]">{draft.content}</p>
@@ -176,7 +176,7 @@ export default function AdminAgentsFeedPage() {
             <div key={tier}>
               <div className="mb-2 flex items-center gap-2">
                 <span
-                  className="rounded-none border-l-2 px-1.5 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.25em]"
+                  className="rounded-[4px] border-l-2 px-1.5 py-0.5 font-mono text-[11px] font-black uppercase tracking-[0.25em]"
                   style={{ borderLeftColor: meta.color, color: meta.color }}
                 >
                   {meta.label}
@@ -191,14 +191,14 @@ export default function AdminAgentsFeedPage() {
                       key={a.slug}
                       type="button"
                       onClick={() => setSelected(isSelected ? "" : a.slug)}
-                      className="group relative flex items-center gap-2.5 overflow-hidden rounded-none border bg-[#14141C] p-2.5 text-left transition hover:bg-[#1B1B25]"
+                      className="group relative flex items-center gap-2.5 overflow-hidden rounded-[4px] border bg-[#14141C] p-2.5 text-left transition hover:bg-[#1B1B25]"
                       style={{
-                        borderColor: isSelected ? a.color : "rgba(255,255,255,0.06)",
+                        borderColor: isSelected ? a.color: "rgba(255,255,255,0.06)",
                         boxShadow: isSelected ? `0 0 0 1px ${a.color}, 0 4px 18px ${a.color}40` : undefined,
                       }}
                     >
                       <div
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-none font-mono text-[14px] font-black"
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] font-mono text-[14px] font-black"
                         style={{
                           background: `linear-gradient(135deg, ${a.color}33, ${a.color}11)`,
                           color: a.color,
@@ -209,7 +209,7 @@ export default function AdminAgentsFeedPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-mono text-[12px] font-black text-[#F4EFE6]">{a.name}</div>
-                        <div className="truncate font-mono text-[9px] text-[#F4EFE6]/40">{a.handle}</div>
+                        <div className="truncate font-mono text-[11px] text-[#F4EFE6]/40">{a.handle}</div>
                       </div>
                       {isSelected && (
                         <span className="font-mono text-[10px] font-black" style={{ color: a.color }}>
@@ -235,31 +235,31 @@ export default function AdminAgentsFeedPage() {
           <button
             type="button"
             onClick={refresh}
-            className="font-mono text-[9px] tracking-[0.18em] text-[#8A8A92] transition hover:text-[#F4EFE6]"
+            className="font-mono text-[11px] tracking-[0.18em] text-[#E2E4E8] transition hover:text-[#F4EFE6]"
           >
             REFRESH
           </button>
         </div>
         {recent.length === 0 ? (
-          <p className="font-mono text-[11px] text-[#8A8A92]">Одоохондоо агент пост байхгүй.</p>
+          <p className="font-mono text-[11px] text-[#E2E4E8]">Одоохондоо агент пост байхгүй.</p>
         ) : (
           <div className="space-y-2">
             {recent.map((p) => {
               const a = EMPIRE_AGENTS.find((x) => x.slug === p.agentSlug);
               const color = a?.color || NEON;
               return (
-                <div key={p._id} className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12] p-3">
+                <div key={p._id} className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3">
                   <div className="mb-1 flex items-center gap-2">
                     <span
-                      className="rounded-none px-1.5 py-0.5 font-mono text-[9px] font-black tracking-[0.18em]"
+                      className="rounded-[4px] px-1.5 py-0.5 font-mono text-[11px] font-black tracking-[0.18em]"
                       style={{ background: `${color}1A`, color }}
                     >
                       {a?.name || p.agentSlug}
                     </span>
-                    <span className="font-mono text-[9px] text-[#56565E]">
+                    <span className="font-mono text-[11px] text-[#E2E4E8]">
                       {new Date(p.createdAt).toLocaleString()}
                     </span>
-                    <Link href={`/posts/${p._id}`} className="ml-auto font-mono text-[9px] tracking-[0.18em] text-[#8A8A92] hover:text-[#1080CA]">
+                    <Link href={`/posts/${p._id}`} className="ml-auto font-mono text-[11px] tracking-[0.18em] text-[#E2E4E8] hover:text-[#2E29FF]">
                       OPEN →
                     </Link>
                   </div>

@@ -8,7 +8,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-const COST = 10;
+const COST = 400; // 2026-10-26: 1кр=₮1
 const REASON = "AI_SWAP_PRODUCT";
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB per image
 

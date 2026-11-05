@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Payment from "@/models/Payment";
-import User from "@/models/User";
-import { maybeAwardReferralPayment } from "@/lib/credits";
+import { activateMembership } from "@/lib/membershipGrant";
 import { getWireIntentStatus, wireEnabled } from "@/lib/wire";
 
 // GET — return the user's latest payment + subscription state.
@@ -21,7 +20,10 @@ export async function GET() {
 
     await dbConnect();
 
-    const payment = (await Payment.findOne({ user: userId })
+    /* Зөвхөн ГИШҮҮНЧЛЭЛИЙН төлбөр. Өмнө нь төрлөөс үл хамааран хамгийн
+       сүүлийнхийг авдаг байсан тул Wire-ээр төлөгдсөн кредит / Agent бизнес
+       багцын (2026-10-26) төлбөрийг ч гишүүнчлэл болгон нээх эрсдэлтэй байв. */
+    const payment = (await Payment.findOne({ user: userId, kind: { $in: ["membership", null] } })
       .sort({ createdAt: -1 })
       .select(
         "status amount plan referenceCode receiptImage receiptUploadedAt claimedAt adminNote paidAt createdAt wireIntentId"
@@ -41,28 +43,20 @@ export async function GET() {
           // Same fulfillment as admin approve (membership branch, 30 days).
           const doc = await Payment.findById(payment._id);
           if (doc && doc.status === "pending") {
-            doc.status = "paid";
-            doc.paidAt = new Date();
+            /* `activateMembership` нь төлбөрийг өөрөө `paid` болгоно —
+               энд урьдчилж хааж болохгүй: хаачихвал доорх дуудлага
+               "аль хэдийн төлөгдсөн" гэж үзээд шат/мэдэгдлийг алгасах
+               эрсдэлтэй. Тэмдэглэлийг л урьдчилж бичив. */
             doc.adminNote = "Wire автомат баталгаажуулалт";
             await doc.save();
 
-            const user = await User.findById(userId);
-            if (user) {
-              const now = new Date();
-              const base =
-                user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now
-                  ? new Date(user.subscriptionExpiresAt)
-                  : now;
-              const expiresAt = new Date(base);
-              expiresAt.setDate(expiresAt.getDate() + (Number(doc.periodDays) || 30));
-              user.subscriptionExpiresAt = expiresAt;
-              user.plan =
-                doc.plan === "builder" || doc.plan === "operator" ? doc.plan : "starter";
-              if (!user.clan) user.clan = "antaqor";
-              if (!user.clanJoinedAt) user.clanJoinedAt = now;
-              await user.save();
-              maybeAwardReferralPayment(String(user._id)).catch(() => {});
-            }
+            await activateMembership({
+              userId,
+              days: Number(doc.periodDays) || 30,
+              plan: doc.plan || undefined,
+              paymentId: String(doc._id),
+              source: "wire",
+            });
           }
           payment.status = "paid";
           payment.paidAt = payment.paidAt ?? new Date();

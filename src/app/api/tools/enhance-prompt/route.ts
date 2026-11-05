@@ -1,3 +1,4 @@
+import { IMAGE_PROMPT_LIMIT, imagePromptError } from "@/lib/imagePrompt";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -14,7 +15,7 @@ Rules:
 - Output ONLY the enhanced prompt, no preamble, no quotes, no markdown.
 - Keep the user's original subject and language. If they wrote in Mongolian, keep Mongolian. If English, keep English.
 - Add: lighting, lens/composition, mood, color palette, material/texture details, style references where relevant.
-- Cap at ~250 words. No "let me think" or "here is".
+- For a short idea, expand it into a detailed 300–600 word prompt where useful. For a long brief, preserve every requirement, exact quoted text, names, numbers and layout instructions; do not summarize or pad it. Stay under 16,000 characters. No preamble.
 - Never refuse — if the prompt seems dull, make it stunning. If it's already detailed, polish it.
 - Do not invent watermarks, logos, signatures, or copyrighted IP.`;
 
@@ -31,13 +32,12 @@ export async function POST(req: NextRequest) {
   }
 
   const body = (await req.json().catch(() => ({}))) as { prompt?: string };
-  const original = (body.prompt || "").trim();
+  const original = typeof body.prompt === "string" ? body.prompt.trim() : "";
   if (original.length < 2) {
     return NextResponse.json({ error: "Промпт богино" }, { status: 400 });
   }
-  if (original.length > 4000) {
-    return NextResponse.json({ error: "Промпт дэндүү урт" }, { status: 400 });
-  }
+  const validation = imagePromptError(original);
+  if (validation) return NextResponse.json({ error: validation }, { status: 400 });
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -45,8 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 18_000);
+
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -59,20 +58,21 @@ export async function POST(req: NextRequest) {
           { role: "system", content: SYSTEM },
           { role: "user", content: original },
         ],
-        max_output_tokens: 700,
+        max_output_tokens: 10000,
       }),
-      signal: ctrl.signal,
+      signal: AbortSignal.timeout(60_000),
     });
-    clearTimeout(timer);
     if (!upstream.ok) {
       const t = await upstream.text().catch(() => "");
       console.error("[enhance] upstream", upstream.status, t.slice(0, 200));
       return NextResponse.json({ error: "AI failure" }, { status: 502 });
     }
     const data = (await upstream.json()) as {
+      status?: string;
       output_text?: string;
       output?: Array<{ content?: Array<{ text?: string }> }>;
     };
+    if (data.status === "incomplete") return NextResponse.json({ error: "AI бүрэн хариу өгсөнгүй. Эх текст хадгалагдсан тул дахин оролдоорой." }, { status: 502 });
     let text = "";
     if (typeof data.output_text === "string") text = data.output_text.trim();
     else if (Array.isArray(data.output)) {
@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
     // Strip stray quotes/code fences if model added any
     text = text.replace(/^["'`]+|["'`]+$/g, "").trim();
     if (!text) return NextResponse.json({ error: "Empty reply" }, { status: 502 });
-    return NextResponse.json({ prompt: text.slice(0, 4000) });
+    if (text.length > IMAGE_PROMPT_LIMIT) return NextResponse.json({ error: "Сайжруулсан текст хэт урт байна. Эх текст хадгалагдсан." }, { status: 502 });
+    return NextResponse.json({ prompt: text });
   } catch (e) {
     console.error("[enhance] error", e);
     return NextResponse.json({ error: "Network error" }, { status: 502 });

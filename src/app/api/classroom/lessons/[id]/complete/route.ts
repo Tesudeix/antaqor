@@ -28,6 +28,17 @@ export async function POST(
       (uid: { toString: () => string }) => uid.toString() === userId
     );
 
+    // Body { done: boolean } бол idempotent; хоосон бол хуучин toggle.
+    let want: boolean | null = null;
+    try {
+      const b = await req.json();
+      if (typeof b?.done === "boolean") want = b.done;
+    } catch { /* no body */ }
+    const target = want === null ? !alreadyCompleted : want;
+    if (target === alreadyCompleted) {
+      return NextResponse.json({ completed: alreadyCompleted, completedCount: lesson.completedBy.length });
+    }
+
     if (alreadyCompleted) {
       lesson.completedBy = lesson.completedBy.filter(
         (uid: { toString: () => string }) => uid.toString() !== userId

@@ -36,6 +36,26 @@ export function accountForPageId(pageId?: string | null): MetaAccount {
   return "antaqor";
 }
 
+/**
+ * Тухайн хуудас БИДНИЙ систем дээр бүртгэлтэй юу?
+ *
+ * ЯАГААД ХЭРЭГТЭЙ ВЭ: `accountForPageId` нь танихгүй хуудсыг "antaqor"
+ * гэж буцаадаг (доторх сүүлийн мөр). Түрээслэгчийг салгахад түүний
+ * Facebook хуудас нь манай апп дээр бүртгэлтэй хэвээр үлдвэл ирэх бүх
+ * мессеж Antaqor-ийн триггер рүү унаж, тэр брэндийн үйлчлүүлэгч
+ * Antaqor-ийн гишүүнчлэлийн автомат хариуг авч эхэлнэ — салгасан ч
+ * дордсон байдал. Энэ шалгуур нь вэбхүүд тийм эвентийг ЗҮГЭЭР Л
+ * ОРХИХ боломж өгнө.
+ */
+export function isRegisteredPage(pageId?: string | null): boolean {
+  if (!pageId) return false;
+  if (_registry.some((r) => r.pageId === pageId || r.igBusinessId === pageId)) return true;
+  return [
+    process.env.JOYMASSAGE_PAGE_ID, process.env.JOYMASSAGE_IG_BUSINESS_ID,
+    process.env.JOYBILLIARD_PAGE_ID, process.env.JOYBILLIARD_IG_BUSINESS_ID,
+  ].filter(Boolean).includes(pageId);
+}
+
 export function pageTokenFor(account: MetaAccount): string {
   const hit = _registry.find((r) => r.key === account);
   if (hit && hit.pageAccessToken) return hit.pageAccessToken;

@@ -13,10 +13,14 @@ import { PROGRAM_DAYS } from "@/lib/program";
 // ─────────────────────────────────────────────────────────────────────────
 
 type Content = LandingContentFields;
-type Tab = "home" | "course" | "days";
+type Tab = "home" | "body" | "course" | "days";
+
+import { HOME_SECTION_META } from "@/lib/homeSectionsMeta";
+import { HERO_LAYOUTS } from "@/lib/heroLayouts";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "home", label: "Нүүр" },
+  { id: "body", label: "Их бие" },
   { id: "course", label: "Курс" },
   { id: "days", label: "7 өдөр" },
 ];
@@ -28,6 +32,7 @@ function Field({
   onChange,
   rows,
   placeholder,
+  type,
 }: {
   label: string;
   hint?: string;
@@ -35,12 +40,13 @@ function Field({
   onChange: (v: string) => void;
   rows?: number;
   placeholder?: string;
+  type?: string;
 }) {
   const shared =
-    "w-full rounded-[4px] border bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#1080CA]";
+    "w-full rounded-[4px] border bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#2E29FF]";
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8A8A92]">
+      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#E2E4E8]">
         {label}
       </span>
       {rows ? (
@@ -54,6 +60,7 @@ function Field({
         />
       ) : (
         <input
+          type={type}
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
@@ -61,7 +68,7 @@ function Field({
           style={{ borderColor: T.border }}
         />
       )}
-      {hint && <span className="mt-1 block text-[11px] text-[#56565E]">{hint}</span>}
+      {hint && <span className="mt-1 block text-[11px] text-[#E2E4E8]">{hint}</span>}
     </label>
   );
 }
@@ -158,8 +165,8 @@ export default function AdminLandingPage() {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`rounded-[3px] px-4 py-2 text-[12px] font-semibold transition ${
-              tab === t.id ? "bg-[#1080CA] text-[#0A0A0A]" : "text-[#8A8A92] hover:text-[#E8E8E8]"
+            className={`rounded-[4px] px-4 py-2 text-[12px] font-semibold transition ${
+              tab === t.id ? "bg-[#2E29FF] text-white" : "text-[#E2E4E8] hover:text-[#E8E8E8]"
             }`}
           >
             {t.label}
@@ -170,7 +177,7 @@ export default function AdminLandingPage() {
       {tab === "home" && (
         <div className="space-y-5">
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">Hero</div>
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">Hero</div>
             <Field label="Eyebrow" value={content.homeEyebrow} onChange={(v) => set("homeEyebrow", v)} />
             <Field label="Гарчиг" value={content.homeTitle} onChange={(v) => set("homeTitle", v)} />
             <Field label="Тайлбар" rows={3} value={content.homeSub} onChange={(v) => set("homeSub", v)} />
@@ -182,28 +189,55 @@ export default function AdminLandingPage() {
             </div>
             <Field
               label="Hero зураг (URL)"
-              hint="Дугуй хүрээнд харагдана. Хоосон бол A/// монограм. Олон слайд хүсвэл /admin/hero ашигла — тэр нь давуу эрхтэй."
+              hint="Дугуй хүрээнд харагдана. Хоосон бол A монограм. Олон слайд хүсвэл /admin/hero ашигла — тэр нь давуу эрхтэй."
               value={content.homeImage}
               onChange={(v) => set("homeImage", v)}
             />
+            <Field
+              label="Элсэлт хаагдах огноо/цаг (УБ)"
+              hint="Хоосон бол нүүр дэх тоолуур огт харагдахгүй. Хугацаа өнгөрмөгц өөрөө алга болно."
+              type="datetime-local"
+              value={content.enrollDeadline}
+              onChange={(v) => set("enrollDeadline", v)}
+            />
+            <label className="block">
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#E2E4E8]">
+                Hero загвар
+              </span>
+              <select
+                value={content.homeHeroLayout}
+                onChange={(e) => set("homeHeroLayout", e.target.value)}
+                className="w-full rounded-[4px] border bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none transition focus:border-[#2E29FF]"
+                style={{ borderColor: T.border }}
+              >
+                {HERO_LAYOUTS.map((l) => (
+                  <option key={l.key} value={l.key}>
+                    {l.label} — {l.hint}
+                  </option>
+                ))}
+              </select>
+              <span className="mt-1 block text-[11px] text-[#6B6B73]">
+                Зөвхөн /admin/hero дээр слайд байхгүй үед хэрэглэгдэнэ.
+              </span>
+            </label>
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
               [02] Хөтөлбөр
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Гарчиг" value={content.programHeading} onChange={(v) => set("programHeading", v)} />
               <Field label="Meta мөр" value={content.programMeta} onChange={(v) => set("programMeta", v)} />
             </div>
-            <p className="text-[11px] leading-relaxed text-[#56565E]">
+            <p className="text-[11px] leading-relaxed text-[#E2E4E8]">
               Өдрүүдийн нэр, тайлбар, минут, XP нь <code>lib/program.ts</code>-ээс ирнэ — хичээл ба
               mission-г «7 өдөр» табаас засна.
             </p>
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
               [03] Community
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -214,12 +248,12 @@ export default function AdminLandingPage() {
               {content.features.map((f, i) => (
                 <div key={i} className="rounded-[4px] border p-4" style={{ borderColor: T.border }}>
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-[#8A8A92]">
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-[#E2E4E8]">
                       Мөр {String(i + 1).padStart(2, "0")}
                     </span>
                     <button
                       onClick={() => set("features", content.features.filter((_, j) => j !== i))}
-                      className="text-[11px] text-[#4FA8E8] hover:underline"
+                      className="text-[11px] text-[#4C47FF] hover:underline"
                     >
                       Устгах
                     </button>
@@ -248,7 +282,7 @@ export default function AdminLandingPage() {
                           set("features", content.features.map((x, j) => (j === i ? { ...x, chip: v } : x)))
                         }
                       />
-                      <label className="flex items-center gap-2 pb-2.5 text-[12px] text-[#8A8A92]">
+                      <label className="flex items-center gap-2 pb-2.5 text-[12px] text-[#E2E4E8]">
                         <input
                           type="checkbox"
                           checked={f.live}
@@ -258,7 +292,7 @@ export default function AdminLandingPage() {
                               content.features.map((x, j) => (j === i ? { ...x, live: e.target.checked } : x))
                             )
                           }
-                          className="accent-[#1080CA]"
+                          className="accent-[#2E29FF]"
                         />
                         LIVE (улаан)
                       </label>
@@ -279,19 +313,19 @@ export default function AdminLandingPage() {
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">[04] Plan</div>
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">[04] Plan</div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Гарчиг" value={content.planHeading} onChange={(v) => set("planHeading", v)} />
               <Field label="Meta мөр" value={content.planMeta} onChange={(v) => set("planMeta", v)} />
             </div>
-            <p className="text-[11px] leading-relaxed text-[#56565E]">
+            <p className="text-[11px] leading-relaxed text-[#E2E4E8]">
               Үнэ ба багцын агуулга <code>lib/plans.ts</code>-ээс — төлбөртэй шууд холбоотой тул эндээс
               өөрчлөгдөхгүй.
             </p>
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
               Эцсийн дуудлага
             </div>
             <Field label="Гарчиг" value={content.payoffTitle} onChange={(v) => set("payoffTitle", v)} />
@@ -304,10 +338,93 @@ export default function AdminLandingPage() {
         </div>
       )}
 
+      {tab === "body" && (
+        <div className="space-y-3">
+          <Field
+            label="Манифест (үүсгэн байгуулагчийн үг)"
+            hint="Догол мөрийг ХООСОН МӨРӨӨР тусгаарла. **од хоёр** = тод үсэг. Хоосон бол хэсэг харагдахгүй."
+            rows={12}
+            value={content.homeManifesto}
+            onChange={(v) => set("homeManifesto", v)}
+          />
+          <div className="h-px w-full bg-[#1E1E1E]" />
+          <p className="text-[12px] leading-relaxed text-[#E2E4E8]">
+            Hero-гийн дор харагдах хэсгүүд. Аль нь ч сонгогдоогүй бол зөвхөн hero
+            харагдана. Жагсаалтын дараалал = хуудсан дээрх дараалал.
+          </p>
+          {HOME_SECTION_META.map((meta) => {
+            const on = content.homeSections.includes(meta.key);
+            const pos = content.homeSections.indexOf(meta.key);
+            const move = (dir: number) => {
+              const arr = [...content.homeSections];
+              const i = arr.indexOf(meta.key);
+              const j = i + dir;
+              if (i < 0 || j < 0 || j >= arr.length) return;
+              const tmp = arr[i];
+              arr[i] = arr[j];
+              arr[j] = tmp;
+              set("homeSections", arr);
+            };
+            return (
+              <div
+                key={meta.key}
+                className="flex items-center gap-3 rounded-[4px] border px-3 py-2.5"
+                style={{ borderColor: T.border, background: on ? "#141416" : "transparent" }}
+              >
+                <button
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() =>
+                    set(
+                      "homeSections",
+                      on
+                        ? content.homeSections.filter((k) => k !== meta.key)
+                        : [...content.homeSections, meta.key]
+                    )
+                  }
+                  className={
+                    on
+                      ? "h-5 w-5 shrink-0 rounded-[4px] border border-[#2E29FF] bg-[#2E29FF] text-[11px] font-bold leading-none text-white"
+                      : "h-5 w-5 shrink-0 rounded-[4px] border border-[#262626] text-[11px] font-bold leading-none text-transparent"
+                  }
+                >
+                  Y
+                </button>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] text-[#E8E8E8]">{meta.label}</span>
+                  <span className="block text-[11px] text-[#6B6B73]">{meta.hint}</span>
+                </span>
+                {on && (
+                  <span className="flex shrink-0 items-center gap-1">
+                    <span className="mr-1 text-[11px] tabular-nums text-[#6B6B73]">{pos + 1}</span>
+                    <button
+                      type="button"
+                      aria-label="Deesh"
+                      onClick={() => move(-1)}
+                      className="h-7 w-7 rounded-[4px] border border-[#262626] text-[#E2E4E8] hover:text-[#E8E8E8]"
+                    >
+                      &uarr;
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Doosh"
+                      onClick={() => move(1)}
+                      className="h-7 w-7 rounded-[4px] border border-[#262626] text-[#E2E4E8] hover:text-[#E8E8E8]"
+                    >
+                      &darr;
+                    </button>
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {tab === "course" && (
         <div className="space-y-5">
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">Толгой</div>
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">Толгой</div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Курсын код" value={content.courseCode} onChange={(v) => set("courseCode", v)} />
               <Field label="Түвшин" value={content.courseLevel} onChange={(v) => set("courseLevel", v)} />
@@ -322,7 +439,7 @@ export default function AdminLandingPage() {
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
               [01]–[02] Хөтөлбөр ба үр дүн
             </div>
             <Field
@@ -334,7 +451,7 @@ export default function AdminLandingPage() {
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
               [03] Оператор
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -348,14 +465,14 @@ export default function AdminLandingPage() {
             <Field label="Танилцуулга" rows={4} value={content.operatorBio} onChange={(v) => set("operatorBio", v)} />
             <Field
               label="Зураг (URL)"
-              hint="Дугуй хүрээнд. Хоосон бол A/// монограм."
+              hint="Дугуй хүрээнд. Хоосон бол A монограм."
               value={content.operatorPhoto}
               onChange={(v) => set("operatorPhoto", v)}
             />
           </Card>
 
           <Card className="space-y-4 p-5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">Доод хэсэг</div>
+            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">Доод хэсэг</div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="CTA гарчиг" value={content.courseCtaTitle} onChange={(v) => set("courseCtaTitle", v)} />
               <Field label="Координат" value={content.coords} onChange={(v) => set("coords", v)} />
@@ -366,7 +483,7 @@ export default function AdminLandingPage() {
 
       {tab === "days" && (
         <div className="space-y-4">
-          <p className="text-[12px] leading-relaxed text-[#8A8A92]">
+          <p className="text-[12px] leading-relaxed text-[#E2E4E8]">
             Өдрийн нэр, mission, хичээлүүд — курсын хуудасны accordion дотор харагдана. Минут ба XP нь
             <code className="mx-1">lib/program.ts</code>-ээс ирдэг тул эндээс өөрчлөгдөхгүй.
           </p>
@@ -384,17 +501,17 @@ export default function AdminLandingPage() {
             return (
               <Card key={def.day} className="space-y-4 p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1080CA]">
+                  <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#2E29FF]">
                     DAY {def.day}
                   </span>
-                  <span className="text-[11px] text-[#56565E]">
+                  <span className="text-[11px] text-[#E2E4E8]">
                     ~{def.durationMin} мин · +{def.xpReward} XP
                   </span>
                 </div>
                 <Field label="Нэр" value={d.title} onChange={(v) => update({ title: v })} />
                 <Field label="Mission" rows={2} value={d.mission} onChange={(v) => update({ mission: v })} />
                 <div className="space-y-2">
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8A8A92]">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#E2E4E8]">
                     Хичээлүүд
                   </span>
                   {d.lessons.map((l, j) => (
@@ -405,7 +522,7 @@ export default function AdminLandingPage() {
                         onChange={(e) =>
                           update({ lessons: d.lessons.map((x, k) => (k === j ? { ...x, t: e.target.value } : x)) })
                         }
-                        className="flex-1 rounded-[4px] border bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[#1080CA]"
+                        className="flex-1 rounded-[4px] border bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[#2E29FF]"
                         style={{ borderColor: T.border }}
                       />
                       <input
@@ -418,12 +535,12 @@ export default function AdminLandingPage() {
                             ),
                           })
                         }
-                        className="w-20 rounded-[4px] border bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[#1080CA]"
+                        className="w-20 rounded-[4px] border bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] outline-none focus:border-[#2E29FF]"
                         style={{ borderColor: T.border }}
                       />
                       <button
                         onClick={() => update({ lessons: d.lessons.filter((_, k) => k !== j) })}
-                        className="px-2 text-[13px] text-[#4FA8E8] hover:underline"
+                        className="px-2 text-[13px] text-[#4C47FF] hover:underline"
                         aria-label="Устгах"
                       >
                         ×
@@ -450,9 +567,9 @@ export default function AdminLandingPage() {
         style={{ borderColor: T.border }}
       >
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
-          <span className="text-[12px] text-[#8A8A92]">{msg}</span>
+          <span className="text-[12px] text-[#E2E4E8]">{msg}</span>
           <div className="flex items-center gap-2">
-            <Link href="/admin/hero" className="text-[12px] text-[#8A8A92] hover:text-[#E8E8E8]">
+            <Link href="/admin/hero" className="text-[12px] text-[#E2E4E8] hover:text-[#E8E8E8]">
               Hero слайд →
             </Link>
             <Btn onClick={save} loading={saving} disabled={saving}>

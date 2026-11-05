@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
+import { crosspostFeedPost } from "@/lib/feedCrosspost";
 import dbConnect from "@/lib/mongodb";
 import Post from "@/models/Post";
+import type { Types } from "mongoose";
+import Circle from "@/models/Circle";
+import CircleMember from "@/models/CircleMember";
 import { broadcastSSE } from "@/lib/sseHub";
 import Task from "@/models/Task";
 import User from "@/models/User";
 import Category from "@/models/Category";
 import { broadcastNotification } from "@/lib/notifications";
 import { awardXP } from "@/lib/xp";
-import { isActiveMember, effectiveLevel, feedBand } from "@/lib/membership";
+import { isActiveMember, effectiveLevel, feedBand, accessState } from "@/lib/membership";
 import { getAllLevelSettings } from "@/lib/siteSettings";
 import { rateLimit, LIMITS } from "@/lib/rateLimit";
 import { safeExternalUrl } from "@/lib/urlSafety";
@@ -27,9 +31,13 @@ export async function GET(req: NextRequest) {
     const authorId = searchParams.get("author");
     const visibility = searchParams.get("visibility");
     const category = searchParams.get("category");
+    const circle = searchParams.get("circle");
 
     const query: Record<string, unknown> = {};
     if (authorId) query.author = authorId;
+    // Профайлын "Таалагдсан" таб (2026-10-11): тухайн хүний love дарсан постууд.
+    const likedBy = searchParams.get("likedBy");
+    if (likedBy && /^[a-f0-9]{24}$/i.test(likedBy)) query["reactions.love"] = likedBy;
     if (category === "reels") {
       // "Reels" is not a real post category — it's a feed filter that
       // selects any post with a short-form video attached, across every
@@ -39,11 +47,58 @@ export async function GET(req: NextRequest) {
     } else if (category && typeof category === "string" && category.length <= 50) {
       query.category = category;
     }
+    /* Хүрээллийн урсгал. Заагаагүй үед НИЙТИЙН урсгал гарна —
+       хүрээллийн постыг нийтэд урсгахгүйн тулд хоосныг нь шүүнэ. */
+    if (circle) {
+      query.circle = circle;
+    } else {
+      query.circle = { $in: ["", null] };
+      /* 2026-10-11: reel-only дууссан — текст, зураг, карусель, видео бүгд
+         урсгалд. `?kind=` нь төрлөөр шүүнэ (урсгалын табууд). */
+    }
+    const kind = searchParams.get("kind");
+    const noVideo = { $in: ["", null] };
+    if (kind === "video") query.video = { $exists: true, $nin: ["", null] };
+    else if (kind === "image") Object.assign(query, { video: noVideo, $or: [{ "images.0": { $exists: true } }, { image: { $nin: ["", null] } }] });
+    else if (kind === "text") Object.assign(query, { video: noVideo, "images.0": { $exists: false }, image: { $in: ["", null] } });
     // Default "Бүгд" feed now shows ALL categories (incl. "бүтээл" AI art) —
     // no category is excluded by default.
 
-    // Posts are publicly visible (free + members) to everyone, including guests.
-    // Visibility filter still honored when explicitly requested via ?visibility=.
+    /* ─── Хаалт: `members` пост нь ТӨЛБӨРТЭЙ гишүүнд л ─────────────────
+       Өмнө нь энд "постууд зочин ч оруулаад бүгдэд нээлттэй" гэж бичээд
+       үнэхээр тэгж ажилладаг байсан — `?visibility=` нь зүгээр л шүүлтүүр,
+       хаалт биш. Өөрөөр хэлбэл гишүүдэд зориулсан бүх пост нэвтрээгүй хүнд
+       ил байв. Хаалтыг ЭНД, серверт хийх ёстой: дэлгэц дээр таб нуих нь
+       хаяг руу шууд орсон хүнийг зогсоохгүй.
+
+       Эрхгүй хүн юу гуйсан ч `free`-ээс цааш харахгүй. Эрхтэй хүн `?visibility=`
+       -ээр өөрөө сонгоно. */
+    const viewerId = (session?.user as { id?: string } | undefined)?.id;
+    const viewerIsAdmin = isAdmin(session?.user?.email);
+    /* "Дагаж буй" урсгал (2026-10-11): зөвхөн дагасан хүмүүсийн пост. */
+    if (searchParams.get("following") === "1") {
+      const meDoc = viewerId ? await User.findById(viewerId).select("following").lean() : null;
+      query.author = { $in: ((meDoc as { following?: unknown[] } | null)?.following || []) };
+    }
+
+    /* ─── 2026-08-26: ҮНЭГҮЙ УРСГАЛ БАЙХГҮЙ ───────────────────────────
+       Өмнө нь эрхгүй хүн `visibility: "free"` постуудыг харж болдог байв.
+       Одоо урсгал бүхэлдээ гишүүнчлэлийн цаана. Хоосон массив буцаах нь
+       401 буцаахаас ДЭЭР: урсгалыг олон газраас (нүүр, профайл, хайлт)
+       дууддаг тул алдаа шидвэл тэр бүх дэлгэц эвдэрнэ. Оронд нь
+       `needsMembership` тугийг өгвөл UI өөрөө төлбөрийн хана үзүүлнэ. */
+    /* 2026-10-06: зочинд урсгал нээгээд мөн өдөртөө БУЦААВ (зочны урсгал
+       нүүрнээс хасагдсан) — эрхгүй хүнд урсгал хоосон хэвээр. */
+    const access = await accessState(viewerId, session?.user?.email || null);
+    if (!access.ok) {
+      return NextResponse.json({
+        posts: [],
+        pagination: { page: 1, pages: 0, total: 0, limit },
+        needsMembership: true,
+      });
+    }
+
+    const canSeeMembers = true; // энд ирсэн бүхэн эрхтэй
     if (visibility === "free") {
       query.visibility = "free";
     } else if (visibility === "members") {
@@ -54,8 +109,8 @@ export async function GET(req: NextRequest) {
     // Applies only to members-visibility posts (free posts remain public to all).
     // Browsing a specific author (authorId) skips the gate — profile view stays coherent.
     const settings = await getAllLevelSettings();
-    const userId = (session?.user as { id?: string } | undefined)?.id;
-    const isAdminUser = isAdmin(session?.user?.email);
+    const userId = viewerId;
+    const isAdminUser = viewerIsAdmin;
 
     if (
       settings.enabled &&
@@ -66,7 +121,7 @@ export async function GET(req: NextRequest) {
     ) {
       const me = await User.findById(userId).select("level subscriptionExpiresAt").lean();
       const myLevel = (me as unknown as { level?: number } | null)?.level || 1;
-      const paid = await isActiveMember(userId, session.user.email);
+      const paid = canSeeMembers;
       const effLevel = effectiveLevel(myLevel, paid, settings.cap);
       const { lo, hi } = feedBand(effLevel, settings.band);
 
@@ -91,10 +146,14 @@ export async function GET(req: NextRequest) {
 
     const [posts, total] = await Promise.all([
       Post.find(query)
-        .sort({ createdAt: -1 })
+        /* Тогтоосон пост эхэнд. Хоёрдугаар түлхүүр нь createdAt хэвээр тул
+           тогтоосон нь олон байвал тэдгээр нь бас шинэ нь дээрээ эрэмбэлэгдэнэ.
+           Хуудаслалт эвдрэхгүй: эрэмбэ тогтвортой, `skip` нь ижил дараалал
+           дээр ажиллана. */
+        .sort({ pinned: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("author", "name avatar level")
+        .populate("author", "name username avatar level")
         .lean(),
       Post.countDocuments(query),
     ]);
@@ -168,7 +227,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { content, image, images, visibility, category, taskId, aiPrompt, video, videoDurationSec } = await req.json();
+    const { content, image, images, visibility, category, taskId, aiPrompt, video, videoDurationSec, circle, crosspost, aspect, textStyle, fileUrl, fileName, fileSize } = await req.json();
 
     const hasContent = content && content.trim().length > 0;
     // Accept new `images[]` (multi) or legacy single `image`. Either is enough.
@@ -177,8 +236,8 @@ export async function POST(req: NextRequest) {
       : (image && image.trim().length > 0 ? [image.trim()] : []);
     const hasImage = rawImages.length > 0;
     const hasVideo = typeof video === "string" && video.trim().length > 0;
-
-    if (!hasContent && !hasImage && !hasVideo) {
+    const hasFile = typeof fileUrl === "string" && /^\/uploads\/docs\/[0-9a-f-]{36}\.pdf$/.test(fileUrl);
+    if (!hasContent && !hasImage && !hasVideo && !hasFile) {
       return NextResponse.json(
         { error: "Post must have text, an image, or a video" },
         { status: 400 }
@@ -249,10 +308,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    /* Хэн юуг хаана нийтлэх вэ:
+       · Админ — өөрөө сонгоно.
+       · Төлбөртэй гишүүн — гишүүдийн урсгал руу.
+       · Төлбөргүй хэрэглэгч — ҮНЭГҮЙ урсгал руу.
+
+       Сүүлийнх нь чухал: өмнө нь БҮХ пост `members` болдог байсан тул
+       төлбөргүй хүн бичсэн ч өөрийнхөө постыг харж чаддаггүй байв (гишүүд
+       урсгал нь түүнд хаалттай). Өөрийн бичсэн зүйл нь алга болдог систем
+       нь эвдэрсэн систем. Одоо тэдний пост нээлттэй урсгалд буух бөгөөд
+       тэр урсгал ингэж л дүүрнэ. */
     const postVisibility =
       userIsAdmin && (visibility === "free" || visibility === "members")
         ? visibility
-        : "members";
+        : paid
+          ? "members"
+          : "free";
 
     // Validate category against the Category collection (admin-manageable).
     let postCategory = "пост";
@@ -289,7 +360,30 @@ export async function POST(req: NextRequest) {
       images: safeImages,
       visibility: postVisibility,
       category: postCategory,
+      aspect: ["1:1", "4:5", "16:9", "9:16"].includes(aspect) ? aspect : "",
+      textStyle: textStyle === "card" && !safeImages.length && !hasVideo ? "card" : "",
     };
+
+    /* ХҮРЭЭЛЛИЙН ПОСТ. Зөвхөн ГИШҮҮН тэр хүрээлэлд бичнэ — үгүй бол
+       хэн ч дурын slug илгээж чужой хүрээлэлд пост хийх боломжтой.
+       Байхгүй эсвэл гишүүн биш бол хүрээллийг ЧИМЭЭГҮЙ хаяхгүй,
+       алдаа буцаана: пост нийтийн урсгалд ороод дуусах нь хүний
+       хүсээгүй зүйл. */
+    const rawCircle = typeof circle === "string" ? circle.trim().slice(0, 40) : "";
+    if (rawCircle) {
+      const circleDoc = await Circle.findOne({ slug: rawCircle, published: true }).select("_id").lean();
+      if (!circleDoc) {
+        return NextResponse.json({ error: "Хүрээлэл олдсонгүй" }, { status: 404 });
+      }
+      const isMember = await CircleMember.exists({
+        circle: (circleDoc as unknown as { _id: Types.ObjectId })._id,
+        user: userId,
+      });
+      if (!isMember) {
+        return NextResponse.json({ error: "Эхлээд хүрээлэлд нэгдэнэ үү" }, { status: 403 });
+      }
+      postData.circle = rawCircle;
+    }
 
     // Optional AI prompt — gated to members on the read side.
     if (typeof aiPrompt === "string" && aiPrompt.trim().length > 0) {
@@ -304,12 +398,22 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Видео URL хүчингүй." }, { status: 400 });
       }
       const dur = Number(videoDurationSec);
-      if (Number.isFinite(dur) && dur > 22) {
-        return NextResponse.json({ error: "Видео 20 секундээс хэтрэх ёсгүй." }, { status: 400 });
+      // Reel хэмжээ: ≤60с (+2с encode зөрүү). 2026-10-06; өмнө нь 20с.
+      if (Number.isFinite(dur) && dur > 62) {
+        return NextResponse.json({ error: "Видео 60 секундээс хэтрэх ёсгүй." }, { status: 400 });
       }
       postData.video = safeVideo;
-      postData.videoDurationSec = Number.isFinite(dur) ? Math.max(0, Math.min(22, Math.round(dur))) : 0;
+      postData.videoDurationSec = Number.isFinite(dur) ? Math.max(0, Math.min(62, Math.round(dur))) : 0;
     }
+
+    if (hasFile) {
+      postData.fileUrl = fileUrl;
+      postData.fileName = typeof fileName === "string" ? fileName.slice(0, 120) : "file.pdf";
+      postData.fileSize = Number.isFinite(Number(fileSize)) ? Math.max(0, Math.round(Number(fileSize))) : 0;
+    }
+
+    // 2026-10-11: зураг + видео хамт ирвэл видео нь давамгайлна (нэг медиа).
+    if (postData.video) { postData.images = []; postData.image = ""; }
 
     // Link to task if provided
     let linkedTask = null;
@@ -323,10 +427,46 @@ export async function POST(req: NextRequest) {
 
     const post = await Post.create(postData);
 
+    /* ─── ГАДААД СУВГУУД РУУ ДАВХАР ──────────────────────────────────
+       Хариу ХҮЛЭЭХГҮЙ: Threads нь контейнер бэлэн болохыг хүлээдэг,
+       Instagram нь зургийг өөрөө татаж авдаг — хоёулаа хэдэн секунд.
+       Тэрийг хүлээвэл сайт дээрх "Нийтлэх" товч гацсан мэт болно.
+       Үр дүн нь `SocialPost` бичлэг болж /admin/social дээр харагдана,
+       тиймээс алдаа чимээгүй алга болохгүй.
+
+       ХОЁР ХААЛТ:
+       · `visibility === "members"` — төлбөртэй контентыг Facebook дээр
+         үнэгүй тараавал гишүүнчлэл өөрөө утгагүй болно.
+       · хүрээллийн пост — зөвхөн тэр хүрээлэлд зориулагдсан.
+       Админаас өөр хүн нийтлэхэд ч явахгүй: эдгээр нь брэндийн хаягууд. */
+    /* 2026-10-09: composer нь админд СУВАГ СОНГУУЛНА (`crosspost: ["instagram",
+       "facebook", …]`). Тодорхой сонголт нь "members" хаалтыг давна — эзэн
+       өөрөө хуваалцахаар шийдсэн. Хуучин хэлбэр (true/undefined) хэвээр:
+       members пост гадагш явахгүй. Энэ хаалтаас болж feed-ийн давхар
+       нийтлэлт НЭГ Ч удаа ажиллаж байгаагүй (бүх пост "members"). */
+    const xpPlatforms = Array.isArray(crosspost)
+      ? (crosspost as unknown[]).filter((p): p is "facebook" | "instagram" | "threads" => p === "facebook" || p === "instagram" || p === "threads")
+      : null;
+    if (
+      userIsAdmin &&
+      !postData.circle &&
+      (xpPlatforms ? xpPlatforms.length > 0 : crosspost !== false && postVisibility !== "members")
+    ) {
+      void crosspostFeedPost({
+        postId: String(post._id),
+        content: typeof content === "string" ? content : "",
+        images: rawImages,
+        video: typeof video === "string" ? video : "",
+        byEmail: session.user.email || "",
+        platforms: xpPlatforms ?? undefined,
+      }).catch((e) => console.error("[crosspost]", e));
+    }
+
     const populated = await post.populate("author", "name avatar");
 
     // Base XP for creating post
     let totalXP = 50;
+    let taskAward: Awaited<ReturnType<typeof awardXP>> = null;
 
     // If task linked, complete the task and award task XP
     if (linkedTask) {
@@ -335,10 +475,24 @@ export async function POST(req: NextRequest) {
       linkedTask.submissionNote = `Post: /posts/${post._id}`;
       await linkedTask.save();
       totalXP += linkedTask.xpReward;
-      awardXP(userId, "COMPLETE_TASK", linkedTask.xpReward, linkedTask._id.toString()).catch(() => {});
+      taskAward = await awardXP(userId, "COMPLETE_TASK", linkedTask.xpReward, linkedTask._id.toString()).catch(() => null);
     }
 
-    awardXP(userId, "CREATE_POST", 50, post._id.toString()).catch(() => {});
+    /* ХҮЛЭЭЖ авдаг болов (өмнө нь fire-and-forget байсан). Шалтгаан: клиент
+       "+50 XP" гэдгийг ХАРИУНААС л мэднэ. Дахин дуудлага хийж мэдэх бол
+       нэг постонд хоёр дугуй болно, таамаглаж хэвлэх бол үржүүлэгчийг
+       (төлбөрт гишүүд өөр коэффициенттэй) буруу тооцно. Хоёр DB үйлдэл нь
+       нэг сүлжээний дугуйгаас хамаагүй хямд. */
+    const postAward = await awardXP(userId, "CREATE_POST", 50, post._id.toString()).catch(() => null);
+    const xp =
+      postAward || taskAward
+        ? {
+            awarded: (postAward?.awarded || 0) + (taskAward?.awarded || 0),
+            total: postAward?.xp ?? taskAward?.xp ?? 0,
+            level: postAward?.level ?? taskAward?.level ?? 1,
+            leveledUp: !!(postAward?.leveledUp || taskAward?.leveledUp),
+          }
+        : null;
 
     broadcastNotification({
       type: "new_post",
@@ -350,7 +504,7 @@ export async function POST(req: NextRequest) {
 
     // Realtime fan-out — every authed connected client gets the new post
     try { broadcastSSE("post-created", { post: populated }); } catch { /* non-fatal */ }
-    return NextResponse.json({ post: populated }, { status: 201 });
+    return NextResponse.json({ post: populated, xp }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ error: message }, { status: 500 });

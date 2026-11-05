@@ -204,23 +204,23 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-none border border-[#1080CA]/40 bg-[#0B0B0F] shadow-[0_0_60px_rgba(16,128,202,0.25)]">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-[4px] border border-[#2E29FF]/40 bg-[#0B0B0F] shadow-[0_0_60px_rgba(46,41,255,0.25)]">
         {/* Header */}
         <div className="border-b border-[rgba(15,23,38,0.06)] px-5 py-3.5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <div className="h-[2px] w-4 bg-[#1080CA]" />
+              <div className="h-[2px] w-4 bg-[#2E29FF]" />
               <span
                 className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0e1726]"
                 style={{ fontFamily: "Inter, system-ui, sans-serif" }}
               >
-                [ INTRO PROTOCOL · EDGERUNNERS ]
+                [ INTRO PROTOCOL · ХҮРЭЭЛЭЛ ]
               </span>
             </div>
             {!isRefiningStep && (
               <button
                 onClick={onClose}
-                className="text-[#6b7280] transition hover:text-[#0e1726]"
+                className="text-[#E2E4E8] transition hover:text-[#0e1726]"
                 aria-label="Хаах"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -229,9 +229,9 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
               </button>
             )}
           </div>
-          <div className="mt-2 h-[2px] w-full overflow-hidden rounded bg-[rgba(16,128,202,0.12)]">
+          <div className="mt-2 h-[2px] w-full overflow-hidden rounded bg-[rgba(46,41,255,0.12)]">
             <div
-              className="h-full bg-[#1080CA] transition-all duration-300"
+              className="h-full bg-[#2E29FF] transition-all duration-300"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
@@ -242,10 +242,10 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
           {isQuestionStep && current && (
             <div className="space-y-3">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[12px] font-black text-[#1080CA]">
+                <span className="font-mono text-[12px] font-black text-[#2E29FF]">
                   {String(current.number).padStart(2, "0")} /
                 </span>
-                <span className="text-[10px] font-mono text-[#6b7280]">
+                <span className="text-[10px] font-mono text-[#E2E4E8]">
                   {current.number} OF {STEPS.length}
                 </span>
               </div>
@@ -253,7 +253,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                 {current.label}
               </h2>
               {current.hint && (
-                <p className="text-[12px] italic text-[#6b7280]">({current.hint})</p>
+                <p className="text-[12px] italic text-[#E2E4E8]">({current.hint})</p>
               )}
               {current.options ? (
                 <div className="grid grid-cols-3 gap-2 pt-1">
@@ -266,10 +266,10 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                           setVal(current.key, opt);
                           setTimeout(advance, 120);
                         }}
-                        className={`rounded-none border px-3 py-2.5 text-[13px] font-semibold transition ${
+                        className={`rounded-[4px] border px-3 py-2.5 text-[13px] font-semibold transition ${
                           active
-                            ? "border-[#1080CA] bg-[rgba(16,128,202,0.15)] text-white"
-                            : "border-[rgba(15,23,38,0.08)] bg-[rgba(15,23,38,0.02)] text-[#6b7280] hover:border-[#1080CA]/50 hover:text-[#0e1726]"
+                            ? "border-[#2E29FF] bg-[rgba(46,41,255,0.15)] text-white"
+                            : "border-[rgba(15,23,38,0.08)] bg-[rgba(15,23,38,0.02)] text-[#E2E4E8] hover:border-[#2E29FF]/50 hover:text-[#0e1726]"
                         }`}
                       >
                         {opt}
@@ -285,7 +285,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                   onKeyDown={handleEnter}
                   placeholder={current.placeholder}
                   rows={4}
-                  className="w-full resize-none rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] text-[#0e1726] outline-none transition focus:border-[#1080CA]"
+                  className="w-full resize-none rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-2.5 text-[14px] text-[#0e1726] outline-none transition focus:border-[#2E29FF]"
                 />
               ) : (
                 <input
@@ -296,23 +296,23 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                   onChange={(e) => setVal(current.key, e.target.value)}
                   onKeyDown={handleEnter}
                   placeholder={current.placeholder}
-                  className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-3 text-[15px] text-[#0e1726] outline-none transition focus:border-[#1080CA]"
+                  className="w-full rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-3 py-3 text-[15px] text-[#0e1726] outline-none transition focus:border-[#2E29FF]"
                 />
               )}
-              {error && <p className="text-[12px] text-[#1080CA]">{error}</p>}
+              {error && <p className="text-[12px] text-[#2E29FF]">{error}</p>}
             </div>
           )}
 
           {isMediaStep && (
             <div className="space-y-3">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[12px] font-black text-[#1080CA]">⚡</span>
-                <span className="text-[10px] font-mono text-[#6b7280]">FINAL · MEDIA</span>
+                <span className="font-mono text-[12px] font-black text-[#2E29FF]">⚡</span>
+                <span className="text-[10px] font-mono text-[#E2E4E8]">FINAL · MEDIA</span>
               </div>
               <h2 className="text-[16px] font-bold leading-snug text-[#0e1726]">
                 Гоё зураг ЭСВЭЛ ажил/амьдралын видео хавсарга
               </h2>
-              <p className="text-[12px] italic text-[#6b7280]">
+              <p className="text-[12px] italic text-[#E2E4E8]">
                 (Зураггүй пост = invisible пост)
               </p>
 
@@ -320,9 +320,9 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                 <button
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading}
-                  className="group flex w-full items-center justify-center gap-2 rounded-none border-2 border-dashed border-[#1080CA]/40 bg-[rgba(16,128,202,0.04)] px-4 py-8 transition hover:border-[#1080CA]"
+                  className="group flex w-full items-center justify-center gap-2 rounded-[4px] border-2 border-dashed border-[#2E29FF]/40 bg-[rgba(46,41,255,0.04)] px-4 py-8 transition hover:border-[#2E29FF]"
                 >
-                  <svg className="h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
                   <span className="text-[13px] font-semibold text-[#0e1726]">
@@ -330,7 +330,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                   </span>
                 </button>
               ) : (
-                <div className="relative overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)]">
+                <div className="relative overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)]">
                   {mediaIsVideo ? (
                     <video src={mediaPreview} controls className="max-h-[260px] w-full bg-black object-contain" />
                   ) : (
@@ -344,7 +344,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                       setMediaIsVideo(false);
                     }}
                     disabled={uploading}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-1.5 text-white transition hover:bg-black"
+                    className="absolute right-2 top-2 rounded-[4px] bg-black/70 p-1.5 text-white transition hover:bg-black"
                     aria-label="Устгах"
                   >
                     <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -353,7 +353,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                   </button>
                   {uploading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                      <div className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" />
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" />
                     </div>
                   )}
                 </div>
@@ -369,23 +369,23 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
                   e.target.value = "";
                 }}
               />
-              {error && <p className="text-[12px] text-[#1080CA]">{error}</p>}
+              {error && <p className="text-[12px] text-[#2E29FF]">{error}</p>}
             </div>
           )}
 
           {isRefiningStep && (
             <div className="flex flex-col items-center justify-center gap-4 py-10">
               <div className="relative h-12 w-12">
-                <div className="absolute inset-0 animate-ping rounded-full bg-[#1080CA]/30" />
-                <div className="absolute inset-2 rounded-full bg-[#1080CA]" />
+                <div className="absolute inset-0 animate-ping rounded-[4px] bg-[#2E29FF]/30" />
+                <div className="absolute inset-2 rounded-[4px] bg-[#2E29FF]" />
               </div>
               <p
-                className="font-mono text-[12px] font-black tracking-[0.22em] text-[#1080CA]"
+                className="font-mono text-[12px] font-black tracking-[0.22em] text-[#2E29FF]"
                 style={{ fontFamily: "Inter, system-ui, sans-serif" }}
               >
                 REFINING ENTREPRENEUR PROFILE…
               </p>
-              <p className="text-[11px] text-[#6b7280]">Танилцуулгыг AI боловсруулж байна.</p>
+              <p className="text-[11px] text-[#E2E4E8]">Танилцуулгыг AI боловсруулж байна.</p>
             </div>
           )}
         </div>
@@ -396,7 +396,7 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
             <button
               onClick={back}
               disabled={step === 0}
-              className="text-[12px] font-medium text-[#6b7280] transition hover:text-[#0e1726] disabled:opacity-30"
+              className="text-[12px] font-medium text-[#E2E4E8] transition hover:text-[#0e1726] disabled:opacity-30"
             >
               ← Буцах
             </button>
@@ -404,14 +404,14 @@ export default function IntroProtocolModal({ open, onClose, onComplete }: Props)
               <button
                 onClick={submit}
                 disabled={!mediaUrl || uploading || submitting}
-                className="rounded-none bg-[#1080CA] px-5 py-2 text-[13px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.45)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-[4px] bg-[#2E29FF] px-5 py-2 text-[13px] font-bold text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.45)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Танилцуулга илгээх →
               </button>
             ) : (
               <button
                 onClick={advance}
-                className="rounded-none bg-[#1080CA] px-5 py-2 text-[13px] font-bold text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.45)]"
+                className="rounded-[4px] bg-[#2E29FF] px-5 py-2 text-[13px] font-bold text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.45)]"
               >
                 Үргэлжлүүлэх →
               </button>

@@ -36,9 +36,9 @@ interface Influencer {
 }
 
 const TIERS: Record<Tier, { label: string; color: string }> = {
-  nano: { label: "НАНО", color: "#B4B4BA" },
-  micro: { label: "МИКРО", color: "#1080CA" },
-  macro: { label: "МАКРО", color: "#4FA8E8" },
+  nano: { label: "НАНО", color: "var(--t-body, #30333F)" },
+  micro: { label: "МИКРО", color: "var(--accent-ink, #2E29FF)" },
+  macro: { label: "МАКРО", color: "var(--accent-ink-2, #1F1AD9)" },
   mega: { label: "МЕГА", color: "#FF6E86" },
   celebrity: { label: "ОД", color: "#F5C542" },
 };
@@ -61,7 +61,7 @@ function fmt(n: number): string {
   return String(n);
 }
 function accentFor(seed: string): string {
-  const p = ["#1080CA", "#4FA8E8", "#FF6E86", "#0C669E"];
+  const p = ["#2E29FF", "#1F1AD9", "#FF6E86", "#1E1E1E"];
   return p[(seed.charCodeAt(0) || 0) % p.length];
 }
 
@@ -113,10 +113,10 @@ export default function InfluencersPage() {
   return (
     <div className="light-page mx-auto max-w-6xl">
       {/* ── HERO ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[#0d0d10]">
+      <section className="relative overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#0d0d10]">
         {/* neon grid + glow */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.5]"
-          style={{ background: "radial-gradient(60% 80% at 85% 0%, rgba(16,128,202,0.22), transparent 60%), radial-gradient(50% 60% at 0% 100%, rgba(255,61,92,0.12), transparent 60%)" }} />
+          style={{ background: "radial-gradient(60% 80% at 85% 0%, rgba(46,41,255,0.22), transparent 60%), radial-gradient(50% 60% at 0% 100%, rgba(255,61,92,0.12), transparent 60%)" }} />
         <div className="pointer-events-none absolute inset-0 opacity-[0.06]"
           style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
 
@@ -126,7 +126,7 @@ export default function InfluencersPage() {
             ANTAQOR // INFLUENCER NETWORK
           </div>
 
-          <h1 className="headline mt-4 text-[42px] leading-[0.95] sm:text-[68px]">
+          <h1 className="headline mt-4 text-[26px] md:text-[42px] leading-[0.95] sm:text-[68px]">
             ИНФЛЮЕНСЕР<br />
             <span className="accent">СҮЛЖЭЭ</span><span className="dot">.</span>
           </h1>
@@ -137,7 +137,7 @@ export default function InfluencersPage() {
           </p>
 
           {/* stat strip */}
-          <div className="mt-8 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[var(--color-border)]">
+          <div className="mt-8 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[var(--color-border)]">
             {[
               { k: fmt(list.length).replace("K", "K+"), v: "Креатор" },
               { k: fmt(totalReach), v: "Нийт хүрэлт" },
@@ -145,7 +145,7 @@ export default function InfluencersPage() {
             ].map((s) => (
               <div key={s.v} className="bg-[#0d0d10] px-4 py-4">
                 <div className="font-display text-[22px] font-extrabold text-[var(--color-ink)] sm:text-[26px]">{s.k}</div>
-                <div className="chrome mt-1 text-[9px] text-[var(--color-dim)]">{s.v}</div>
+                <div className="chrome mt-1 text-[11px] text-[var(--color-dim)]">{s.v}</div>
               </div>
             ))}
           </div>
@@ -153,12 +153,12 @@ export default function InfluencersPage() {
           {/* CTAs */}
           <div className="mt-8 flex flex-wrap gap-3">
             <button onClick={() => setCollabFor("open")}
-              className="group inline-flex items-center gap-2 rounded-[2px] bg-[var(--color-accent)] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_28px_rgba(16,128,202,0.5)]">
+              className="group inline-flex items-center gap-2 rounded-[4px] bg-[var(--color-accent)] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_28px_rgba(46,41,255,0.5)]">
               Брэнд · Кампанит ажил
               <span className="transition group-hover:translate-x-0.5">→</span>
             </button>
             <button onClick={() => setApplyOpen(true)}
-              className="inline-flex items-center gap-2 rounded-[2px] border border-[var(--color-border)] bg-[#141418] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)] transition hover:border-[rgba(16,128,202,0.5)] hover:text-[var(--color-accent)]">
+              className="inline-flex items-center gap-2 rounded-[4px] border border-[var(--color-border)] bg-[#141414] px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--color-ink)] transition hover:border-[rgba(46,41,255,0.5)] hover:text-[var(--color-accent)]">
               Креатор болох
             </button>
           </div>
@@ -167,14 +167,14 @@ export default function InfluencersPage() {
 
       {/* ── FILTER BAR ────────────────────────────────────────────────── */}
       <div className="sticky top-2 z-20 mt-6">
-        <div className="rounded-[2px] border border-[var(--color-border)] bg-[rgba(13,13,16,0.85)] p-3 backdrop-blur-xl">
+        <div className="rounded-[4px] border border-[var(--color-border)] bg-[rgba(13,13,16,0.85)] p-3 backdrop-blur-xl">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 min-w-[180px]">
               <svg className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-dim)]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
               </svg>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Креатор, чиглэл, tag хайх…"
-                className="w-full rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] py-2 pl-9 pr-3 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(16,128,202,0.5)]" />
+                className="w-full rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] py-2 pl-9 pr-3 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(46,41,255,0.5)]" />
             </div>
             {/* platform quick filter */}
             <div className="flex items-center gap-1">
@@ -182,7 +182,7 @@ export default function InfluencersPage() {
               {(Object.keys(NETWORKS) as Network[]).map((n) => (
                 <button key={n} onClick={() => setPlatform(platform === n ? "all" : n)}
                   title={NETWORKS[n].label}
-                  className={`flex h-8 w-8 items-center justify-center rounded-[2px] border transition ${platform === n ? "border-[var(--color-accent)] bg-[rgba(16,128,202,0.12)] text-[var(--color-accent)]" : "border-[var(--color-border)] bg-[#0a0a0c] text-[var(--color-dim)] hover:text-[var(--color-ink)]"}`}>
+                  className={`flex h-8 w-8 items-center justify-center rounded-[4px] border transition ${platform === n ? "border-[var(--color-accent)] bg-[rgba(46,41,255,0.12)] text-[var(--color-accent)]" : "border-[var(--color-border)] bg-[#0A0A0A] text-[var(--color-dim)] hover:text-[var(--color-ink)]"}`}>
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor"><path d={NETWORKS[n].path} /></svg>
                 </button>
               ))}
@@ -210,14 +210,14 @@ export default function InfluencersPage() {
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-[320px] animate-pulse rounded-[2px] border border-[var(--color-border)] bg-[#101014]" />
+              <div key={i} className="h-[320px] animate-pulse rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A]" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-[2px] border-2 border-dashed border-[var(--color-border)] p-16 text-center">
+          <div className="rounded-[4px] border-2 border-dashed border-[var(--color-border)] p-16 text-center">
             <p className="chrome text-[10px] text-[var(--color-dim)]">ҮР ДҮН ОЛДСОНГҮЙ</p>
             <p className="mt-2 text-[13px] text-[var(--color-muted)]">Шүүлтүүрээ өөрчлөх эсвэл эхний креатор болж бүртгүүл.</p>
-            <button onClick={() => setApplyOpen(true)} className="mt-4 rounded-[2px] bg-[var(--color-accent)] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+            <button onClick={() => setApplyOpen(true)} className="mt-4 rounded-[4px] bg-[var(--color-accent)] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">
               Креатор болох
             </button>
           </div>
@@ -231,14 +231,14 @@ export default function InfluencersPage() {
       </div>
 
       {/* ── BRAND BAND ────────────────────────────────────────────────── */}
-      <section className="mt-8 mb-4 overflow-hidden rounded-[2px] border border-[rgba(16,128,202,0.25)] bg-gradient-to-br from-[#141018] to-[#0d0d10] px-6 py-10 text-center sm:px-10">
+      <section className="mt-8 mb-4 overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-gradient-to-br from-[#141018] to-[#0d0d10] px-6 py-10 text-center sm:px-10">
         <p className="chrome text-[10px] text-[var(--color-accent)]">БРЭНДҮҮДЭД</p>
-        <h2 className="headline mt-3 text-[26px] sm:text-[34px]">Зөв креатор. Хэмжигдэх <span className="accent">үр дүн</span>.</h2>
+        <h2 className="headline mt-3 text-[26px] sm:text-[22px] md:text-[34px]">Зөв креатор. Хэмжигдэх <span className="accent">үр дүн</span>.</h2>
         <p className="mx-auto mt-3 max-w-lg text-[13px] text-[var(--color-muted)]">
           Брифээ илгээ — бид зорилго, төсөв, чиглэлд тохирсон креаторуудыг санал болгож,
           кампанит ажлыг эхнээс нь дуустал зохион байгуулна.
         </p>
-        <button onClick={() => setCollabFor("open")} className="mt-6 inline-flex items-center gap-2 rounded-[2px] bg-[var(--color-accent)] px-6 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_28px_rgba(16,128,202,0.5)]">
+        <button onClick={() => setCollabFor("open")} className="mt-6 inline-flex items-center gap-2 rounded-[4px] bg-[var(--color-accent)] px-6 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_28px_rgba(46,41,255,0.5)]">
           Бриф илгээх →
         </button>
       </section>
@@ -261,7 +261,7 @@ function Chip({ active, onClick, children, color }: { active: boolean; onClick: 
   return (
     <button onClick={onClick}
       style={active && color ? { borderColor: color, color, background: `${color}1a` } : undefined}
-      className={`rounded-[2px] border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${active ? "border-[var(--color-accent)] bg-[rgba(16,128,202,0.12)] text-[var(--color-accent)]" : "border-[var(--color-border)] bg-[#0a0a0c] text-[var(--color-dim)] hover:text-[var(--color-ink)]"}`}>
+      className={`rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] transition ${active ? "border-[var(--color-accent)] bg-[rgba(46,41,255,0.12)] text-[var(--color-accent)]" : "border-[var(--color-border)] bg-[#0A0A0A] text-[var(--color-dim)] hover:text-[var(--color-ink)]"}`}>
       {children}
     </button>
   );
@@ -277,9 +277,9 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: Math.min(idx * 0.04, 0.4) }}
-      className="group relative flex flex-col overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[#101014] transition hover:border-[rgba(16,128,202,0.45)]">
+      className="group relative flex flex-col overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] transition hover:border-[rgba(46,41,255,0.45)]">
       {inf.featured && (
-        <span className="absolute right-2 top-2 z-10 rounded-[2px] bg-[var(--color-accent)] px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-white">FEATURED</span>
+        <span className="absolute right-2 top-2 z-10 rounded-[4px] bg-[var(--color-accent)] px-2 py-0.5 font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-white">FEATURED</span>
       )}
       {/* cover */}
       <Link href={`/influencers/${inf.slug}`} className="relative block h-24 overflow-hidden">
@@ -287,15 +287,15 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
           // eslint-disable-next-line @next/next/no-img-element
           <img src={inf.cover} alt="" className="h-full w-full object-cover opacity-80 transition group-hover:scale-105 group-hover:opacity-100" />
         ) : (
-          <div className="h-full w-full" style={{ background: `radial-gradient(120% 100% at 80% 0%, ${accent}44, transparent 60%), #0b0b0e` }} />
+          <div className="h-full w-full" style={{ background: `radial-gradient(120% 100% at 80% 0%, ${accent}44, transparent 60%), #F8F9FD` }} />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#101014] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
       </Link>
 
       <div className="relative -mt-8 flex flex-1 flex-col px-4 pb-4">
         <div className="flex items-end gap-3">
           <Link href={`/influencers/${inf.slug}`} className="relative">
-            <div className="h-16 w-16 overflow-hidden rounded-[2px] border-2 border-[#101014] bg-[#0a0a0c] shadow-lg" style={{ boxShadow: `0 0 0 1px ${accent}55` }}>
+            <div className="h-16 w-16 overflow-hidden rounded-[4px] border-2 border-[#0A0A0A] bg-[#0A0A0A] shadow-lg" style={{ boxShadow: `0 0 0 1px ${accent}55` }}>
               {inf.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={inf.avatar} alt={inf.name} className="h-full w-full object-cover" />
@@ -304,7 +304,7 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
               )}
             </div>
           </Link>
-          <span className="mb-1 rounded-[2px] px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em]"
+          <span className="mb-1 rounded-[4px] px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em]"
             style={{ color: tier.color, background: `${tier.color}1a`, border: `1px solid ${tier.color}44` }}>{tier.label}</span>
         </div>
 
@@ -324,7 +324,7 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
         {inf.bio && <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-[var(--color-muted)]">{inf.bio}</p>}
 
         {/* metrics */}
-        <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[2px] border border-[var(--color-border)] bg-[var(--color-border)]">
+        <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[var(--color-border)]">
           <div className="bg-[#0c0c0f] px-3 py-2">
             <div className="font-display text-[16px] font-extrabold text-[var(--color-ink)]">{fmt(inf.totalFollowers)}</div>
             <div className="chrome text-[8px] text-[var(--color-dim)]">Дагагч</div>
@@ -341,9 +341,9 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
             {inf.platforms.map((p) => (
               <a key={p.network} href={p.url || undefined} target="_blank" rel="noreferrer"
                 title={`${NETWORKS[p.network]?.label} · ${fmt(p.followers)}`}
-                className="flex items-center gap-1 rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] px-1.5 py-1 text-[var(--color-muted)] transition hover:border-[rgba(16,128,202,0.4)] hover:text-[var(--color-ink)]">
+                className="flex items-center gap-1 rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] px-1.5 py-1 text-[var(--color-muted)] transition hover:border-[rgba(46,41,255,0.4)] hover:text-[var(--color-ink)]">
                 <svg viewBox="0 0 24 24" className="h-3 w-3" fill="currentColor"><path d={NETWORKS[p.network]?.path} /></svg>
-                <span className="font-mono text-[9px] font-bold">{fmt(p.followers)}</span>
+                <span className="font-mono text-[11px] font-bold">{fmt(p.followers)}</span>
               </a>
             ))}
           </div>
@@ -351,11 +351,11 @@ function Card({ inf, idx, onCollab }: { inf: Influencer; idx: number; onCollab: 
 
         <div className="mt-auto flex items-center gap-2 pt-4">
           <button onClick={onCollab}
-            className="flex-1 rounded-[2px] bg-[var(--color-accent)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white transition hover:shadow-[0_0_18px_rgba(16,128,202,0.45)]">
+            className="flex-1 rounded-[4px] bg-[var(--color-accent)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.45)]">
             Хамтрах
           </button>
           <Link href={`/influencers/${inf.slug}`}
-            className="rounded-[2px] border border-[var(--color-border)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-muted)] transition hover:border-[rgba(16,128,202,0.4)] hover:text-[var(--color-ink)]">
+            className="rounded-[4px] border border-[var(--color-border)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-muted)] transition hover:border-[rgba(46,41,255,0.4)] hover:text-[var(--color-ink)]">
             Профайл
           </Link>
         </div>
@@ -372,7 +372,7 @@ function Modal({ title, eyebrow, onClose, children }: { title: string; eyebrow: 
       <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[10px] border border-[var(--color-border)] bg-[#0d0d10] p-6 sm:rounded-[4px]">
+        className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[4px] border border-[var(--color-border)] bg-[#0d0d10] p-6 sm:rounded-[4px]">
         <button onClick={onClose} aria-label="Хаах" className="absolute right-4 top-4 text-[var(--color-dim)] transition hover:text-[var(--color-ink)]">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
@@ -387,12 +387,12 @@ function Modal({ title, eyebrow, onClose, children }: { title: string; eyebrow: 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="chrome mb-1.5 block text-[9px] text-[var(--color-dim)]">{label}</span>
+      <span className="chrome mb-1.5 block text-[11px] text-[var(--color-dim)]">{label}</span>
       {children}
     </label>
   );
 }
-const inputCls = "w-full rounded-[2px] border border-[var(--color-border)] bg-[#0a0a0c] px-3 py-2.5 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(16,128,202,0.5)]";
+const inputCls = "w-full rounded-[4px] border border-[var(--color-border)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[var(--color-ink)] placeholder-[var(--color-dim)] outline-none focus:border-[rgba(46,41,255,0.5)]";
 
 /* ── Apply modal (creator) ────────────────────────────────────────────── */
 function ApplyModal({ onClose, niches }: { onClose: () => void; niches: string[] }) {
@@ -420,12 +420,12 @@ function ApplyModal({ onClose, niches }: { onClose: () => void; niches: string[]
     <Modal eyebrow="ROSTER // APPLY" title={done ? "Хүлээн авлаа" : "Креатор болох"} onClose={onClose}>
       {done ? (
         <div className="py-4 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(16,128,202,0.12)]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)]">
             <svg className="h-7 w-7 text-[var(--color-accent)]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           </div>
           <p className="mt-4 text-[14px] text-[var(--color-ink)]">Өргөдөл хүлээн авлаа.</p>
           <p className="mt-1 text-[12px] text-[var(--color-muted)]">Багийнхан тун удахгүй холбогдоно.</p>
-          <button onClick={onClose} className="mt-5 rounded-[2px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">Хаах</button>
+          <button onClick={onClose} className="mt-5 rounded-[4px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">Хаах</button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -454,7 +454,7 @@ function ApplyModal({ onClose, niches }: { onClose: () => void; niches: string[]
           </div>
           <Field label="Танилцуулга"><textarea className={inputCls + " min-h-[80px] resize-y"} value={f.message} onChange={(e) => set("message", e.target.value)} placeholder="Юу бүтээдэг вэ? Ямар брэндтэй ажилламаар байна?" /></Field>
           {err && <p className="text-[11px] text-[var(--color-accent)]">{err}</p>}
-          <button onClick={submit} disabled={busy} className="w-full rounded-[2px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(16,128,202,0.5)] disabled:opacity-50">
+          <button onClick={submit} disabled={busy} className="w-full rounded-[4px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(46,41,255,0.5)] disabled:opacity-50">
             {busy ? "Илгээж байна…" : "Өргөдөл илгээх"}
           </button>
         </div>
@@ -494,18 +494,18 @@ function CollabModal({ target, onClose }: { target: Influencer | null; onClose: 
     <Modal eyebrow={target ? "COLLAB REQUEST" : "OPEN BRIEF"} title={done ? "Хүлээн авлаа" : target ? `${target.name}-тэй хамтрах` : "Кампанит ажил"} onClose={onClose}>
       {done ? (
         <div className="py-4 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(16,128,202,0.12)]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)]">
             <svg className="h-7 w-7 text-[var(--color-accent)]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           </div>
           <p className="mt-4 text-[14px] text-[var(--color-ink)]">Хүсэлт хүлээн авлаа.</p>
           <p className="mt-1 text-[12px] text-[var(--color-muted)]">Бид 24 цагийн дотор холбогдоно.</p>
-          <button onClick={onClose} className="mt-5 rounded-[2px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">Хаах</button>
+          <button onClick={onClose} className="mt-5 rounded-[4px] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">Хаах</button>
         </div>
       ) : (
         <div className="space-y-3">
           {target && (
-            <div className="flex items-center gap-3 rounded-[2px] border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.06)] p-2.5">
-              <div className="h-9 w-9 overflow-hidden rounded-[2px] bg-[#0a0a0c]">
+            <div className="flex items-center gap-3 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.06)] p-2.5">
+              <div className="h-9 w-9 overflow-hidden rounded-[4px] bg-[#0A0A0A]">
                 {target.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={target.avatar} alt="" className="h-full w-full object-cover" />
@@ -533,7 +533,7 @@ function CollabModal({ target, onClose }: { target: Influencer | null; onClose: 
           </div>
           <Field label="Брифийн тайлбар *"><textarea className={inputCls + " min-h-[90px] resize-y"} value={f.message} onChange={(e) => set("message", e.target.value)} placeholder="Кампанит ажлын зорилго, хугацаа, хүлээлт…" /></Field>
           {err && <p className="text-[11px] text-[var(--color-accent)]">{err}</p>}
-          <button onClick={submit} disabled={busy} className="w-full rounded-[2px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(16,128,202,0.5)] disabled:opacity-50">
+          <button onClick={submit} disabled={busy} className="w-full rounded-[4px] bg-[var(--color-accent)] px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:shadow-[0_0_20px_rgba(46,41,255,0.5)] disabled:opacity-50">
             {busy ? "Илгээж байна…" : "Хүсэлт илгээх"}
           </button>
         </div>

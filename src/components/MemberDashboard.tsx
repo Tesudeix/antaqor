@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PLANS, type PlanId } from "@/lib/plans";
 import JourneyBoard from "@/components/JourneyBoard";
-import { HeroSlider } from "@/components/HomeLanding";
 
 // ─── Нэвтэрсэн нүүр — 7 хоногийн аялал гол нь. ───
 // Дараалал: Тавтай морил → JourneyBoard (одоо хийх / countdown / 7 өдөр / явц)
@@ -58,7 +57,7 @@ export default function MemberDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center" aria-busy="true">
-        <div className="h-2 w-2 animate-pulse bg-[#1080CA]" />
+        <div className="h-2 w-2 animate-pulse bg-[#2E29FF]" />
       </div>
     );
   }
@@ -70,22 +69,20 @@ export default function MemberDashboard() {
   return (
     <main className="w-full pb-24">
       {/* ── Hero — нэвтрээгүй нүүртэй яг ижил (өндөр, full-bleed) ── */}
-      <HeroSlider stats={stats} />
 
       <div className="mx-auto w-full max-w-6xl pt-6">
       {/* ── Цомхон мэндчилгээ — level/streak нь [03]-т байгаа тул давхардуулахгүй ── */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="chrome flex items-center gap-2 text-[9px] font-bold">
-            <span className="text-[#1080CA]">[DASHBOARD]</span>
-            <span className="text-[#1080CA]">/////</span>
+          <div className="chrome flex items-center gap-2 text-[11px] font-bold">
+            <span className="text-[#2E29FF]">DASHBOARD</span>
           </div>
-          <h1 className="headline mt-1 text-[clamp(20px,4vw,26px)]">
+          <h1 className="headline mt-1 text-[clamp(18px,2.8vw,24px)]">
             {firstName ? `Тавтай морил, ${firstName}` : "Тавтай морил"}
           </h1>
         </div>
         <span
-          className="chrome rounded-[4px] border px-3 py-1.5 text-[9px] font-bold"
+          className="chrome rounded-[4px] border px-3 py-1.5 text-[11px] font-bold"
           style={{ borderColor: PLANS[user.plan].accent + "55", color: PLANS[user.plan].accent }}
         >
           {PLANS[user.plan].name.toUpperCase()}
@@ -97,32 +94,31 @@ export default function MemberDashboard() {
 
       {/* ── Хоёрдогч: community + шууд линкүүд ── */}
       <div className="mt-8 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-        <section aria-label="Community" className="rounded-[4px] border border-[#2E2E33] bg-[#1E1E21] p-5">
+        <section aria-label="Community" className="rounded-[4px] bg-[#141414] bg-[#0A0A0A] p-5">
           <div className="mb-3 flex items-center justify-between">
-            <div className="chrome flex items-center gap-2 text-[9px] font-bold">
-              <span className="text-[#1080CA]">[04]</span>
-              <span className="text-[#1080CA]">/////</span>
-              <span className="text-[#84848C]">COMMUNITY</span>
+            <div className="chrome flex items-center gap-2 text-[11px] font-bold">
+              <span className="text-[#2E29FF]">04</span>
+              <span className="text-[#E2E4E8]">COMMUNITY</span>
             </div>
-            <Link href="/feed" className="chrome text-[9px] font-bold text-[#1080CA] hover:brightness-110">
+            <Link href="/feed" className="chrome text-[11px] font-bold text-[#2E29FF] hover:brightness-110">
               FEED →
             </Link>
           </div>
           <div className="space-y-3">
-            {posts.length === 0 && <div className="text-[12px] text-[#84848C]">Идэвх алга — эхнийхийг нь чи бич.</div>}
+            {posts.length === 0 && <div className="text-[12px] text-[#E2E4E8]">Идэвх алга — эхнийхийг нь чи бич.</div>}
             {posts.map((p) => (
-              <Link key={p._id} href="/feed" className="block border-b border-[#2E2E33] pb-3 last:border-b-0 last:pb-0">
-                <div className="mb-0.5 flex items-center gap-2 text-[11px] text-[#B4B4BA]">
+              <Link key={p._id} href="/feed" className="block border-b border-[#262626] pb-3 last:border-b-0 last:pb-0">
+                <div className="mb-0.5 flex items-center gap-2 text-[11px] text-[#E2E4E8]">
                   <span className="font-semibold text-[#F2F2F4]">{p.author?.name || "Гишүүн"}</span>
-                  <span className="text-[#84848C]">{timeAgo(p.createdAt)}</span>
+                  <span className="text-[#E2E4E8]">{timeAgo(p.createdAt)}</span>
                 </div>
-                <div className="line-clamp-2 text-[12px] leading-snug text-[#B4B4BA]">{p.content}</div>
+                <div className="line-clamp-2 text-[12px] leading-snug text-[#E2E4E8]">{p.content}</div>
               </Link>
             ))}
           </div>
         </section>
 
-        <nav aria-label="Шууд линкүүд" className="grid grid-cols-2 content-start gap-px overflow-hidden rounded-[4px] bg-[#2E2E33]">
+        <nav aria-label="Шууд линкүүд" className="grid grid-cols-2 content-start gap-px overflow-hidden rounded-[4px] bg-[#262626]">
           {[
             { href: "/classroom", label: "Курсууд" },
             { href: "/missions", label: "Mission" },
@@ -132,7 +128,7 @@ export default function MemberDashboard() {
             <Link
               key={l.href}
               href={l.href}
-              className="bg-[#161618] p-4 text-center text-[12px] font-semibold text-[#F2F2F4] transition hover:bg-[#1E1E21] hover:text-[#1080CA] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1080CA]"
+              className="bg-[#0A0A0A] p-4 text-center text-[12px] font-semibold text-[#F2F2F4] transition hover:bg-[#0A0A0A] hover:text-[#2E29FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2E29FF]"
             >
               {l.label}
             </Link>

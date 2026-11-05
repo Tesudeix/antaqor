@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { CreditIcon } from "@/components/CreditIcon";
 
 const COST = 10;
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -107,25 +108,25 @@ export default function SwapProductPage() {
   return (
     <div className="relative mx-auto max-w-[1100px] pb-16">
       <div className="mb-3 flex items-center justify-between">
-        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#6b7280] transition hover:text-[#1080CA]">
+        <Link href="/tools" className="inline-flex items-center gap-1 text-[11px] text-[#E2E4E8] transition hover:text-[#2E29FF]">
           ← Бүх хэрэгсэл
         </Link>
         {session && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(16,128,202,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#1080CA] backdrop-blur-md shadow-[0_0_12px_rgba(16,128,202,0.3)]">
+          <span className="inline-flex items-center gap-1 rounded-[4px] border border-[rgba(46,41,255,0.4)] bg-black/40 px-2 py-0.5 text-[10px] font-black text-[#2E29FF] backdrop-blur-md shadow-[0_0_12px_rgba(46,41,255,0.3)]">
             <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>
-            {balance ?? "…"}₵
+            <CreditIcon size={12} className="mr-0.5" />{balance ?? "…"}
           </span>
         )}
       </div>
 
       <div className="mb-6">
-        <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 text-[9px] font-black tracking-[0.18em] text-[#1080CA]">
+        <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 text-[11px] font-black tracking-[0.18em] text-[#2E29FF]">
           AI ХЭРЭГСЭЛ
         </span>
-        <h1 className="mt-2 text-[24px] font-black leading-tight text-[#0e1726] sm:text-[30px]">
+        <h1 className="mt-2 text-[24px] font-black leading-tight text-[#0e1726] sm:text-[22px] md:text-[30px]">
           Бүтээгдэхүүн солих
         </h1>
-        <p className="mt-1.5 max-w-[640px] text-[13px] leading-relaxed text-[#6b7280]">
+        <p className="mt-1.5 max-w-[640px] text-[13px] leading-relaxed text-[#E2E4E8]">
           Хүний барьж байгаа бүтээгдэхүүнийг өөр бүтээгдэхүүнээр AI-аар солино.
           Influencer marketing, online дэлгүүр, brand partnership-д бэлэн зураг.
         </p>
@@ -164,31 +165,31 @@ export default function SwapProductPage() {
       </div>
 
       {/* Visual flow indicator */}
-      <div className="mt-3 flex items-center justify-center gap-2 text-[10px] font-bold text-[#6b7280]">
-        <span className="rounded-full bg-[#f2f5f8] px-2 py-1">Хүн</span>
-        <svg className="h-3 w-3 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+      <div className="mt-3 flex items-center justify-center gap-2 text-[10px] font-bold text-[#E2E4E8]">
+        <span className="rounded-[4px] bg-[#f2f5f8] px-2 py-1">Хүн</span>
+        <svg className="h-3 w-3 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
         </svg>
-        <span className="rounded-full bg-[#f2f5f8] px-2 py-1">Шинэ бүтээгдэхүүн</span>
-        <svg className="h-3 w-3 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <span className="rounded-[4px] bg-[#f2f5f8] px-2 py-1">Шинэ бүтээгдэхүүн</span>
+        <svg className="h-3 w-3 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
         </svg>
-        <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-2 py-1 text-[#1080CA]">AI үр дүн</span>
+        <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-2 py-1 text-[#2E29FF]">AI үр дүн</span>
       </div>
 
       {lowBalance && !error && (
-        <div className="mt-4 flex items-center justify-between rounded-none border border-[rgba(16,128,202,0.3)] bg-[rgba(16,128,202,0.06)] px-4 py-3">
+        <div className="mt-4 flex items-center justify-between rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[rgba(46,41,255,0.06)] px-4 py-3">
           <div>
-            <div className="text-[12px] font-bold text-[#1080CA]">Кредит дутуу</div>
-            <div className="text-[11px] text-[#6b7280]">Танд {balance}₵ байна, {COST}₵ шаардлагатай.</div>
+            <div className="text-[12px] font-bold text-[#2E29FF]">Кредит дутуу</div>
+            <div className="text-[11px] text-[#E2E4E8]">Танд {balance} кредит байна, {COST} шаардлагатай.</div>
           </div>
-          <Link href="/credits/buy" className="rounded-none bg-[#1080CA] px-3 py-1.5 text-[11px] font-black text-[#0E0E10] shadow-[0_0_18px_rgba(16,128,202,0.5)]">
+          <Link href="/credits/buy" className="rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_0_18px_rgba(46,41,255,0.5)]">
             Кредит авах →
           </Link>
         </div>
       )}
       {error && (
-        <div className="mt-4 rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] text-[#1080CA]">
+        <div className="mt-4 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] text-[#2E29FF]">
           {error}
         </div>
       )}
@@ -198,11 +199,11 @@ export default function SwapProductPage() {
         <button
           onClick={submit}
           disabled={!canSubmit}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-gradient-to-r from-[#1080CA] to-[#1080CA] px-6 py-3.5 text-[13px] font-black text-[#0E0E10] shadow-[0_0_24px_rgba(16,128,202,0.45)] transition hover:shadow-[0_0_36px_rgba(16,128,202,0.7)] disabled:opacity-40 disabled:shadow-none"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-gradient-to-r from-[#2E29FF] to-[#2E29FF] px-6 py-3.5 text-[13px] font-black text-white shadow-[0_0_24px_rgba(46,41,255,0.45)] transition hover:shadow-[0_0_36px_rgba(46,41,255,0.7)] disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? (
             <>
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-[4px] border-2 border-white border-t-transparent" />
               AI боловсруулж байна...
             </>
           ) : (
@@ -210,7 +211,7 @@ export default function SwapProductPage() {
               <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
               </svg>
-              Бүтээгдэхүүн солих · {COST}₵
+              Бүтээгдэхүүн солих · <CreditIcon size={11} className="mx-0.5" />{COST}
             </>
           )}
         </button>
@@ -219,9 +220,9 @@ export default function SwapProductPage() {
       {/* Result */}
       {(busy || resultUrl) && (
         <div className="mt-6">
-          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#6b7280]">Үр дүн</div>
-          <div className="relative rounded-none border border-[rgba(16,128,202,0.3)] bg-[#ffffff] p-1 shadow-[0_0_28px_rgba(16,128,202,0.15)]">
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-none bg-[#f2f5f8]">
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#E2E4E8]">Үр дүн</div>
+          <div className="relative rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-[#ffffff] p-1 shadow-[0_0_28px_rgba(46,41,255,0.15)]">
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[4px] bg-[#f2f5f8]">
               {busy ? (
                 <Skeleton />
               ) : (
@@ -235,7 +236,7 @@ export default function SwapProductPage() {
               <a
                 href={resultUrl}
                 download={`swap-${Date.now()}.png`}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-none bg-[#1080CA] py-2.5 text-[12px] font-black text-[#0E0E10] transition hover:bg-[#4FA8E8]"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[4px] bg-[#2E29FF] py-2.5 text-[12px] font-black text-white transition hover:bg-[#1F1AD9]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -244,7 +245,7 @@ export default function SwapProductPage() {
               </a>
               <button
                 onClick={reset}
-                className="rounded-none border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#6b7280] transition hover:text-[#0e1726]"
+                className="rounded-[4px] border border-[rgba(15,23,38,0.08)] px-4 py-2.5 text-[12px] font-bold text-[#E2E4E8] transition hover:text-[#0e1726]"
               >
                 Шинээр
               </button>
@@ -254,15 +255,15 @@ export default function SwapProductPage() {
       )}
 
       {/* How-to */}
-      <details className="mt-8 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4">
+      <details className="mt-8 rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-4">
         <summary className="cursor-pointer text-[12px] font-bold text-[#0e1726]">
           Хэрхэн ашиглах вэ?
         </summary>
-        <div className="mt-3 space-y-2 text-[12px] leading-relaxed text-[#6b7280]">
-          <p><strong className="text-[#1080CA]">1-р зураг:</strong> Хүн ямар нэг бараа барьсан зураг (жишээ: гар утас, ундаа, кредит карт).</p>
-          <p><strong className="text-[#1080CA]">2-р зураг:</strong> Гарт нь оруулах шинэ бараа (цагаан фон дээр илүү сайн ажиллана).</p>
+        <div className="mt-3 space-y-2 text-[12px] leading-relaxed text-[#E2E4E8]">
+          <p><strong className="text-[#2E29FF]">1-р зураг:</strong> Хүн ямар нэг бараа барьсан зураг (жишээ: гар утас, ундаа, кредит карт).</p>
+          <p><strong className="text-[#2E29FF]">2-р зураг:</strong> Гарт нь оруулах шинэ бараа (цагаан фон дээр илүү сайн ажиллана).</p>
           <p>AI хүний хувцас, нүүр, поз, фоныг өөрчлөхгүй — зөвхөн гарт нь байсан барааг шинээр сольно.</p>
-          <p className="text-[11px] text-[#6b7280]">Powered by Google Gemini Nano Banana — multi-image edit AI.</p>
+          <p className="text-[11px] text-[#E2E4E8]">Powered by Google Gemini Nano Banana — multi-image edit AI.</p>
         </div>
       </details>
     </div>
@@ -287,18 +288,18 @@ function UploadSlot({
 }) {
   const ringActive =
     accent === "rose"
-      ? "border-[#1080CA] bg-[rgba(16,128,202,0.06)]"
-      : "border-[#1080CA] bg-[rgba(16,128,202,0.06)]";
+      ? "border-[#2E29FF] bg-[rgba(46,41,255,0.06)]"
+      : "border-[#2E29FF] bg-[rgba(46,41,255,0.06)]";
   const ringIdle =
     accent === "rose"
-      ? "border-[rgba(16,128,202,0.3)] hover:border-[rgba(16,128,202,0.5)]"
-      : "border-[rgba(16,128,202,0.3)] hover:border-[rgba(16,128,202,0.55)]";
-  const tone = accent === "rose" ? "#1080CA" : "#1080CA";
+      ? "border-[rgba(46,41,255,0.3)] hover:border-[rgba(46,41,255,0.5)]"
+      : "border-[rgba(46,41,255,0.3)] hover:border-[rgba(46,41,255,0.55)]";
+  const tone = accent === "rose" ? "#2E29FF" : "#2E29FF";
 
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black text-white" style={{ background: tone }}>
+        <span className="flex h-5 w-5 items-center justify-center rounded-[4px] text-[10px] font-black text-white" style={{ background: tone }}>
           {step}
         </span>
         <div className="text-[12px] font-bold text-[#0e1726]">{title}</div>
@@ -310,24 +311,24 @@ function UploadSlot({
           onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
           onDragLeave={() => setDrag(false)}
           onDrop={onDrop}
-          className={`flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-none border-2 border-dashed bg-[#ffffff] p-4 text-center transition ${
+          className={`flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-[4px] border-2 border-dashed bg-[#ffffff] p-4 text-center transition ${
             drag ? ringActive : ringIdle
           }`}
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-none" style={{ background: `${tone}1A`, color: tone }}>
+          <span className="flex h-12 w-12 items-center justify-center rounded-[4px]" style={{ background: `${tone}1A`, color: tone }}>
             <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z" />
             </svg>
           </span>
           <span>
             <span className="block text-[12px] font-bold text-[#0e1726]">Зураг сонгох</span>
-            <span className="mt-0.5 block text-[10px] text-[#6b7280]">эсвэл энд чирж тавь</span>
-            <span className="mt-1.5 block text-[10px] text-[#94a3b8]">{hint}</span>
-            <span className="mt-1 block text-[10px] text-[#94a3b8]">JPG / PNG / WebP · 5MB хүртэл</span>
+            <span className="mt-0.5 block text-[10px] text-[#E2E4E8]">эсвэл энд чирж тавь</span>
+            <span className="mt-1.5 block text-[10px] text-[#E2E4E8]">{hint}</span>
+            <span className="mt-1 block text-[10px] text-[#E2E4E8]">JPG / PNG / WebP · 5MB хүртэл</span>
           </span>
         </button>
       ) : (
-        <div className="relative aspect-square w-full overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
+        <div className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#ffffff]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={preview} alt="" className="absolute inset-0 h-full w-full object-contain" />
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent p-2">
@@ -335,7 +336,7 @@ function UploadSlot({
             <div className="flex gap-1">
               <button
                 onClick={() => inputRef.current?.click()}
-                className="rounded-none bg-black/60 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-md transition hover:bg-black/80"
+                className="rounded-[4px] bg-black/60 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-md transition hover:bg-black/80"
               >
                 Солих
               </button>
@@ -360,16 +361,16 @@ function Skeleton() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(16,128,202,0.18) 50%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(46,41,255,0.18) 50%, transparent 100%)",
           animation: "swapShimmer 1.4s ease-in-out infinite",
         }}
       />
       <div className="relative z-10 flex flex-col items-center gap-2.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-none bg-[rgba(16,128,202,0.1)] shadow-[0_0_24px_rgba(16,128,202,0.5)]">
-          <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+        <span className="flex h-14 w-14 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.1)] shadow-[0_0_24px_rgba(46,41,255,0.5)]">
+          <span className="h-6 w-6 animate-spin rounded-[4px] border-2 border-[#2E29FF] border-t-transparent" />
         </span>
         <p className="text-[12px] font-bold text-[#0e1726]">Бүтээгдэхүүн солиж байна</p>
-        <p className="text-[10px] text-[#6b7280]">10–25 секунд хүртэл хүлээгээрэй</p>
+        <p className="text-[10px] text-[#E2E4E8]">10–25 секунд хүртэл хүлээгээрэй</p>
       </div>
       <style jsx>{`
         @keyframes swapShimmer {

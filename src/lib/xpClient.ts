@@ -11,12 +11,12 @@ export const LEVEL_TITLES = [
 
 /** Role names for display */
 export const ROLE_LABELS: Record<string, { en: string; mn: string; color: string }> = {
-  punk: { en: "Punk", mn: "Панк", color: "#5b6573" },
-  creator: { en: "Creator", mn: "Бүтээгч", color: "#1080CA" },
-  engineer: { en: "Engineer", mn: "Инженер", color: "#1080CA" },
-  entrepreneur: { en: "Entrepreneur", mn: "Антрепренёр", color: "#1080CA" },
-  conqueror: { en: "Conqueror", mn: "Байлдан дагуулагч", color: "#1080CA" },
-  entaqor: { en: "Entaqor", mn: "Энтакор", color: "#1080CA" },
+  punk: { en: "Punk", mn: "Панк", color: "#E2E4E8" },
+  creator: { en: "Creator", mn: "Бүтээгч", color: "#2E29FF" },
+  engineer: { en: "Engineer", mn: "Инженер", color: "#2E29FF" },
+  entrepreneur: { en: "Entrepreneur", mn: "Антрепренёр", color: "#2E29FF" },
+  conqueror: { en: "Conqueror", mn: "Байлдан дагуулагч", color: "#2E29FF" },
+  entaqor: { en: "Entaqor", mn: "Энтакор", color: "#2E29FF" },
   emperor: { en: "Emperor", mn: "Эзэн хаан", color: "#FF4473" },
   legend: { en: "Legend", mn: "Домог", color: "#F472B6" },
 };

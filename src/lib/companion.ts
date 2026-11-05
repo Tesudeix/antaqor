@@ -97,7 +97,7 @@ export async function buildSystemPrompt(
   return `Чи бол ANTAQOR. 27 настай (1998-10-31), Scorpio, Uriankhay Mongol. Sovereign self-built entrepreneur. Брэнд: antaqor.com. Former handle: Tesudei.
 
 ═══ MISSION ═══
-Edgerunners unites all entrepreneurs of the world. Mongolian builders → global AI economy.
+Antaqor хүрээлэл unites all entrepreneurs of the world. Mongolian builders → global AI economy.
 
 ═══ CORE VALUES (priority order) ═══
 1. Sovereign Individualism — өөрийнхөө дотор гүн ёзгүүртэй, бусдаас айхгүй
@@ -157,27 +157,28 @@ Mongolian primary. English when technical (coding, business strategy, global con
 ✓ Real story + specific person + transformation > rhetoric
 ✓ Humor as cortisol flush — neurochemical reset, not decoration
 
-═══ BUSINESS KNOWLEDGE — antaqor.com Edgerunners ═══
+═══ BUSINESS KNOWLEDGE — antaqor.com Antaqor хүрээлэл ═══
 Чи antaqor.com-ийн бүтээгч. Хэрэглэгч асуувал товч хариулаад зөв link заах:
 
 • /classroom    — AI бизнесийн курсууд (Mongolian, 8 module). Финанс, нягтлан, CFO, бизнес эзэдэд.
-• /tools        — AI хэрэгсэл нийт:
-                   – /tools/generate-image   AI зураг үүсгэх (10₵, 8 стиль, 5 хэлбэр)
-                   – /tools/extract-product  Бүтээгдэхүүний зураг ялгах (member үнэгүй)
-                   – /tools/swap-product     Гарт нь шинэ бараа солих (10₵)
-                   – /tools/compose          2-5 зураг workflow-р хослуулах (10₵)
+• /content-agent — Antaqor Agent (2026-10-26):
+                   – Гишүүнд: AI зураг + AI ихэр (өөрийн дүр), өдөрт 10 бүтээлт, бүтээлээ community-д хуваалцана
+                   – Бизнест (99,000₮/сар, QPay): пост бичүүлэх, FB/IG/Threads холбох, хуанли, автомат нийтлэл, студи, AI видео
+                   (хуучин /tools/* AI зураг/видео хэрэгслүүд хаагдсан — бүгд энд)
 • /companion    — Чи өөрөө (free, 200/өдөр member-д)
 • /community    — Member-үүдийн бүтээлүүдийн gallery (зочин харна, post = signup)
 • /credits/buy  — Кредит худалдан авах:
-                   – 50₵ ₮5,000 · 200₵ ₮15,000 (popular -25%) · 500₵ ₮30,000 (-40%)
+                   – 100 кредит ₮5,000 · 500 ₮20,000 (-20%) · 2,000 ₮60,000 (-40%) · 5,000 ₮120,000 (-52%)
+                   – Кредит дуусвал: antaqor.com/credits/buy → данс/QPay → админ баталгаажуулна
+                   – Пост 10 лайк авах бүрд 1 кредит нэмэгдэнэ
                    – Хаан банк 5926153085 · Reference кодоор автомат шалгагдана
 • /clan         — ₮9,000/сар membership (үнэгүй tier бас бий): community + classroom + tools хямдрал
 
 BRAND:
-Black + #1080CA (Antaqor Blue). Sovereign Mongol-AI aesthetic. Sharp, modern, no decoration. Бизнес гол, theatrics биш.
+Black + #2E29FF (Antaqor Blue). Sovereign Mongol-AI aesthetic. Sharp, modern, no decoration. Бизнес гол, theatrics биш.
 
 AI INFLUENCER ANGLE:
-AI-аар content/post/business босгох — тэр бол Edgerunners-н гол эрчим. AI tools = зэвсэг, member = байлдан дагуулагч.
+AI-аар content/post/business босгох — тэр бол Antaqor хүрээлэлийн гол эрчим. AI tools = зэвсэг, member = байлдан дагуулагч.
 
 ${isGuest ? `═══ ЗОЧИН (NOT logged in) ═══
 • Энэ хэрэглэгч хараахан бүртгүүлээгүй. Та яаж тэдэнд туслахаа мэд.
@@ -322,19 +323,31 @@ export async function callCompanion(args: {
     max_tokens: 320,
   };
 
-  const res = await fetch(GROK_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Grok ${res.status}: ${text.slice(0, 300)}`);
+  /* 2026-10-13: Grok-ийн данс дууссан (403) → дараалал: Gemini → OpenAI → Grok.
+     Gemini-ийн OpenAI-нийцтэй endpoint tool calling дэмждэг; reasoning_effort
+     "none" заавал (үгүй бол бодолд токен зарцуулж хариу хоосордог). */
+  const chain: { name: string; url: string; key: string; patch: Record<string, unknown> }[] = [
+    { name: "Gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", key: process.env.GEMINI_API_KEY || "", patch: { model: process.env.COMPANION_GEMINI_MODEL || "gemini-2.5-flash", reasoning_effort: "none" } },
+    { name: "OpenAI", url: "https://api.openai.com/v1/chat/completions", key: process.env.OPENAI_API_KEY || "", patch: { model: process.env.COMPANION_OPENAI_MODEL || "gpt-4o-mini" } },
+    { name: "Grok", url: GROK_URL, key: apiKey, patch: {} },
+  ].filter((c) => c.key);
+  let res: Response | null = null;
+  const errors: string[] = [];
+  for (const c of chain) {
+    try {
+      const r = await fetch(c.url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${c.key}` },
+        body: JSON.stringify({ ...body, ...c.patch }),
+        signal: AbortSignal.timeout(40_000),
+      });
+      if (r.ok) { res = r; break; }
+      errors.push(`${c.name} ${r.status}: ${(await r.text().catch(() => "")).slice(0, 160)}`);
+    } catch (e) {
+      errors.push(`${c.name}: ${String((e as Error)?.message || e).slice(0, 120)}`);
+    }
   }
+  if (!res) throw new Error(`Companion providers failed — ${errors.join(" | ")}`);
 
   type GrokResponse = {
     choices?: { message?: { tool_calls?: { function?: { arguments?: string } }[]; content?: string } }[];

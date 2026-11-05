@@ -5,7 +5,7 @@ import dbConnect from "./mongodb";
 import ThreadsToken from "@/models/ThreadsToken";
 import { ThreadsAPI } from "./threads";
 
-const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com", "cyberempire4444@gmail.com"];
+export const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com", "cyberempire4444@gmail.com"];
 
 export async function getAdminSession() {
   const session = await getServerSession(authOptions);
@@ -54,9 +54,26 @@ export async function getThreadsClient(threadsUserId?: string): Promise<ThreadsA
   await dbConnect();
   const query = threadsUserId ? { threadsUserId } : {};
   const token = await ThreadsToken.findOne(query).sort({ updatedAt: -1 });
+  if (!token && threadsUserId) return tenantThreadsClient(threadsUserId);
   if (!token) return null;
   if (!(await ensureFreshToken(token))) return null;
   return new ThreadsAPI(token.accessToken, token.threadsUserId);
+}
+
+/* Antaqor Agent-ийн түрээслэгчийн Threads (AgentConn) — зөвхөн threadsUserId-аар, нийтлэгчид.
+   Эзний ThreadsToken жагсаалт, бот, инсайтад хэзээ ч орохгүй. */
+async function tenantThreadsClient(threadsUserId: string): Promise<ThreadsAPI | null> {
+  const { AgentConn } = await import("@/models/AgentWorkspace");
+  const c = await AgentConn.findOne({ platform: "threads", threadsUserId }).select("+accessToken expiresAt status");
+  if (!c?.accessToken || c.status === "reconnect_needed") return null;
+  if (c.expiresAt && c.expiresAt < new Date(Date.now() + 3 * 864e5)) {
+    try {
+      const r = await ThreadsAPI.refreshToken(c.accessToken);
+      if (r.access_token) { c.accessToken = r.access_token; c.expiresAt = new Date(Date.now() + (r.expires_in || 5184000) * 1000); await c.save(); }
+      else if (c.expiresAt < new Date()) { c.status = "reconnect_needed"; await c.save(); return null; }
+    } catch { if (c.expiresAt < new Date()) { c.status = "reconnect_needed"; await c.save(); return null; } }
+  }
+  return new ThreadsAPI(c.accessToken, threadsUserId);
 }
 
 // All connected accounts with a usable (refreshed) token — the engine loops these.

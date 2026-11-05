@@ -4,7 +4,7 @@ import mongoose, { Schema } from "mongoose";
 export interface IHeroSlide {
   _id: mongoose.Types.ObjectId;
   order: number;
-  chrome: string; // eyebrow, ж: "ANTAQOR /// ШИНЭ ЭЛСЭЛТ"
+  chrome: string; // eyebrow, ж: "ANTAQOR · ШИНЭ ЭЛСЭЛТ"
   line1: string; // шар мөр
   line2: string; // хар том мөр (accent)
   sub: string;
@@ -12,6 +12,7 @@ export interface IHeroSlide {
   ctaHref: string;
   image: string; // /uploads/... — баруун талд character/visual болж харагдана
   active: boolean;
+  layout: string; // split | poster | full | text — src/lib/heroLayouts.ts
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +27,7 @@ const HeroSlideSchema = new Schema<IHeroSlide>(
     ctaLabel: { type: String, default: "Эхлэх", maxlength: 40 },
     ctaHref: { type: String, default: "/auth/signup?plan=starter", maxlength: 200 },
     image: { type: String, default: "", maxlength: 500 },
+    layout: { type: String, default: "split", maxlength: 16 },
     active: { type: Boolean, default: true },
   },
   { timestamps: true }

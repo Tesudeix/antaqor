@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 
 interface Card {
   _id: string;
-  section: "ai_solution" | "resource";
+  section: "ai_solution" | "resource" | "tool";
   title: string;
   desc: string;
   emoji: string;
@@ -17,6 +17,7 @@ interface Card {
 const SECTIONS = [
   { value: "ai_solution" as const, label: "AI ШИЙДЭЛ" },
   { value: "resource" as const,    label: "ЭХ СУРВАЛЖ" },
+  { value: "tool" as const,        label: "ХЕРЕГСЕЛ" },
 ];
 
 export default function AdminHomepageCardsPage() {
@@ -57,7 +58,7 @@ export default function AdminHomepageCardsPage() {
     await load();
   };
 
-  const add = async (section: "ai_solution" | "resource") => {
+  const add = async (section: "ai_solution" | "resource" | "tool") => {
     const title = window.prompt("Гарчиг:");
     if (!title) return;
     const href = window.prompt("Холбоос (/чат, /tools/..., https://...):") || "/";
@@ -96,17 +97,17 @@ export default function AdminHomepageCardsPage() {
     input.click();
   };
 
-  if (loading) return <div className="p-6 text-[12px] text-[#8A8A92]">Уншиж байна...</div>;
+  if (loading) return <div className="p-6 text-[12px] text-[#E2E4E8]">Уншиж байна...</div>;
 
   return (
     <div className="space-y-6 p-4 md:p-6">
       <div>
         <h1 className="text-[20px] font-black text-[#E8E8E8]">Нүүр хуудасны карт</h1>
-        <p className="mt-1 text-[12px] text-[#5b6573]">AI Шийдэл болон Эх сурвалж картуудыг засварлах. Эрэмбэ нь жижигээс эхэлж жагсаалтын дарааллыг тогтооно.</p>
+        <p className="mt-1 text-[12px] text-[#E2E4E8]">AI Шийдэл болон Эх сурвалж картуудыг засварлах. Эрэмбэ нь жижигээс эхэлж жагсаалтын дарааллыг тогтооно.</p>
       </div>
 
       {error && (
-        <div className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/10 p-3 text-[12px] text-[#4E94D0]">{error}</div>
+        <div className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/10 p-3 text-[12px] text-[#4C47FF]">{error}</div>
       )}
 
       {SECTIONS.map((s) => {
@@ -114,11 +115,11 @@ export default function AdminHomepageCardsPage() {
         return (
           <section key={s.value} className="space-y-2">
             <div className="flex items-center justify-between">
-              <h2 className="text-[13px] font-black tracking-[0.1em] text-[#1080CA]">{s.label} <span className="ml-2 text-[#8A8A92]">({items.length})</span></h2>
+              <h2 className="text-[13px] font-black tracking-[0.1em] text-[#2E29FF]">{s.label} <span className="ml-2 text-[#E2E4E8]">({items.length})</span></h2>
               <button
                 type="button"
                 onClick={() => add(s.value)}
-                className="rounded-none bg-[#1080CA] px-3 py-1.5 text-[11px] font-bold text-[#0E0E10] transition hover:brightness-110"
+                className="rounded-[4px] bg-[#2E29FF] px-3 py-1.5 text-[11px] font-bold text-white transition hover:brightness-110"
               >
                 + Шинэ карт
               </button>
@@ -126,7 +127,7 @@ export default function AdminHomepageCardsPage() {
 
             <div className="overflow-x-auto">
               <table className="min-w-full text-[12px]">
-                <thead className="text-[10px] uppercase tracking-wider text-[#8A8A92]">
+                <thead className="text-[10px] uppercase tracking-wider text-[#E2E4E8]">
                   <tr>
                     <th className="px-2 py-1 text-left">Cover</th>
                     <th className="px-2 py-1 text-left">Эможи</th>
@@ -145,14 +146,14 @@ export default function AdminHomepageCardsPage() {
                         <button
                           type="button"
                           onClick={() => uploadCover(c._id)}
-                          className="relative block h-10 w-16 overflow-hidden rounded border border-dashed border-[rgba(255,255,255,0.20)] bg-[#0A0A0A] transition hover:border-[#1080CA]"
+                          className="relative block h-10 w-16 overflow-hidden rounded border border-dashed border-[rgba(255,255,255,0.20)] bg-[#0A0A0A] transition hover:border-[#2E29FF]"
                           title={c.coverImage ? "Зураг солих" : "Зураг оруулах"}
                         >
                           {c.coverImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={c.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
                           ) : (
-                            <span className="absolute inset-0 flex items-center justify-center text-[10px] text-[#8A8A92]">+</span>
+                            <span className="absolute inset-0 flex items-center justify-center text-[10px] text-[#E2E4E8]">+</span>
                           )}
                         </button>
                       </td>
@@ -203,7 +204,7 @@ export default function AdminHomepageCardsPage() {
                         <button
                           type="button"
                           onClick={() => remove(c._id)}
-                          className="rounded bg-[#1080CA]/20 px-2 py-1 text-[10px] font-bold text-[#4E94D0] transition hover:bg-[#1080CA]/30"
+                          className="rounded bg-[#2E29FF]/20 px-2 py-1 text-[10px] font-bold text-[#4C47FF] transition hover:bg-[#2E29FF]/30"
                         >
                           Устгах
                         </button>
@@ -211,7 +212,7 @@ export default function AdminHomepageCardsPage() {
                     </tr>
                   ))}
                   {items.length === 0 && (
-                    <tr><td colSpan={8} className="p-4 text-center text-[11px] text-[#8A8A92]">Хоосон. "+ Шинэ карт" дарж нэмнэ үү.</td></tr>
+                    <tr><td colSpan={8} className="p-4 text-center text-[11px] text-[#E2E4E8]">Хоосон. "+ Шинэ карт" дарж нэмнэ үү.</td></tr>
                   )}
                 </tbody>
               </table>

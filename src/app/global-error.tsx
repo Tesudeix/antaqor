@@ -13,7 +13,7 @@ export default function GlobalError({
           margin: 0,
           padding: 0,
           backgroundColor: "#F8F8F6",
-          color: "#F2F2F4",
+          color: "#14151C",
           fontFamily: "system-ui, sans-serif",
           display: "flex",
           alignItems: "center",
@@ -27,20 +27,20 @@ export default function GlobalError({
               fontFamily: "Bebas Neue, sans-serif",
               fontSize: "72px",
               letterSpacing: "6px",
-              color: "#1080CA",
+              color: "#2E29FF",
             }}
           >
             ERROR
           </div>
-          <p style={{ color: "#5b6573", fontSize: "13px", marginTop: "16px" }}>
+          <p style={{ color: "#30333F", fontSize: "13px", marginTop: "16px" }}>
             Something went wrong. Please try again.
           </p>
           <div style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "center" }}>
             <button
               onClick={() => reset()}
               style={{
-                background: "#1080CA",
-                color: "#F2F2F4",
+                background: "#2E29FF",
+                color: "#14151C",
                 border: "none",
                 padding: "10px 24px",
                 fontSize: "11px",
@@ -55,7 +55,7 @@ export default function GlobalError({
               onClick={() => (window.location.href = "/")}
               style={{
                 background: "transparent",
-                color: "#5b6573",
+                color: "#30333F",
                 border: "1px solid #E8E8E6",
                 padding: "10px 24px",
                 fontSize: "11px",

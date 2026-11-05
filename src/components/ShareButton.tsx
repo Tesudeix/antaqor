@@ -118,7 +118,7 @@ export default function ShareButton({
         disabled={busy}
         title={flash || "Хуваалцах"}
         aria-label={flash || "Хуваалцаж кредит олох"}
-        className={`group inline-flex items-center justify-center rounded-full border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] ${dim} text-[#475569] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA] disabled:opacity-50`}
+        className={`group inline-flex items-center justify-center rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] ${dim} text-[#475569] transition hover:border-[rgba(46,41,255,0.3)] hover:text-[#2E29FF] disabled:opacity-50`}
       >
         {/* Refined share-arrow icon (square + outgoing arrow) — clearer than the abstract dots */}
         <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export default function ShareButton({
         </svg>
       </button>
       {flash && (
-        <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#F2F2F4] px-2 py-0.5 text-[10px] font-bold text-[#1080CA] shadow-lg">
+        <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#F2F2F4] px-2 py-0.5 text-[10px] font-bold text-[#2E29FF] shadow-lg">
           {flash}
         </span>
       )}

@@ -1,7 +1,7 @@
 // Send a DM via Meta's Send API.
 // Supports plain text, quick-reply buttons, and outside-24h message tags.
 
-import { pageTokenFor, igTokenFor } from "@/lib/metaAccounts";
+import { pageTokenFor, igTokenFor, ensurePageRegistry } from "@/lib/metaAccounts";
 
 const IG_BASE = "https://graph.instagram.com/v23.0";
 const FB_BASE = "https://graph.facebook.com/v21.0";
@@ -25,6 +25,13 @@ export async function sendDm(
   text: string,
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  // Warm the MetaPage registry before any token lookup. ensurePageRegistry
+  // was only ever called from the webhook, so in every OTHER context —
+  // broadcast, nurture, the scheduler, an admin action — the in-memory
+  // registry was empty and pageTokenFor() fell through to
+  // FB_PAGE_ACCESS_TOKEN, the dead Antaqor token. Every registry-connected
+  // tenant silently sent as a logged-out Antaqor. Cached 30s, so free here.
+  await ensurePageRegistry();
   let token: string | undefined;
   let url: string;
 
@@ -101,6 +108,7 @@ export async function sendButtonTemplate(
   buttons: LinkButton[],
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  await ensurePageRegistry();
   let token: string | undefined;
   let url: string;
   if (platform === "instagram") {
@@ -142,6 +150,7 @@ export async function sendGenericTemplate(
   cards: MessageCard[],
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  await ensurePageRegistry();
   let token: string | undefined;
   let url: string;
   if (platform === "instagram") {
@@ -214,6 +223,7 @@ export async function sendImageAttachment(
   imageUrl: string,
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  await ensurePageRegistry();
   const { url, token } = resolveSend(platform, opts.account);
   if (!token) return { ok: false, status: 500, body: `missing ${platform} access token` };
   const img = normalizeButtonUrl(imageUrl);
@@ -239,6 +249,7 @@ export async function sendFlowCarousel(
   cards: Array<{ text: string; imageUrl?: string; subtitle?: string; buttons: FlowSendButton[] }>,
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  await ensurePageRegistry();
   if (cards.length <= 1) return sendFlowCard(platform, recipientId, cards[0] ?? { text: "—", buttons: [] }, opts);
   const { url, token } = resolveSend(platform, opts.account);
   if (!token) return { ok: false, status: 500, body: `missing ${platform} access token` };
@@ -285,6 +296,7 @@ export async function sendFlowCard(
   card: { text: string; imageUrl?: string; subtitle?: string; buttons: FlowSendButton[] },
   opts: SendDmOptions = {}
 ): Promise<{ ok: boolean; status: number; body: string }> {
+  await ensurePageRegistry();
   const { url, token } = resolveSend(platform, opts.account);
   if (!token) return { ok: false, status: 500, body: `missing ${platform} access token` };
 

@@ -95,13 +95,13 @@ export default function ReactionSheet({
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-t-[12px] border border-[#22222c] bg-[#f2f5f8] sm:rounded-none"
+        className="w-full max-w-md rounded-t-[4px] border border-[#22222c] bg-[#f2f5f8] sm:rounded-[4px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#F2F2F4] px-4 py-3">
           <h3 className="text-[14px] font-semibold text-[#e8e6e1]">Reactions</h3>
-          <button onClick={onClose} className="rounded-none p-1 text-[#6b7280] hover:text-[#e8e6e1]">
+          <button onClick={onClose} className="rounded-[4px] p-1 text-[#E2E4E8] hover:text-[#e8e6e1]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -118,15 +118,15 @@ export default function ReactionSheet({
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-none px-3 py-1.5 text-[12px] font-semibold transition ${
+                className={`flex shrink-0 items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-[12px] font-semibold transition ${
                   active
                     ? "bg-[#F2F2F4] text-[#e8e6e1]"
-                    : "text-[#6b7280] hover:text-[#e8e6e1]"
+                    : "text-[#E2E4E8] hover:text-[#e8e6e1]"
                 }`}
               >
                 {r && <r.Icon size={16} />}
                 <span>{t.label}</span>
-                <span className={active ? "text-[#FFD300]" : "text-[#4a4a55]"}>{t.count}</span>
+                <span className={active ? "text-[#FFD300]" : "text-[#E2E4E8]"}>{t.count}</span>
               </button>
             );
           })}
@@ -139,7 +139,7 @@ export default function ReactionSheet({
               <div className="h-2 w-2 animate-pulse rounded-full bg-[#FFD300]" />
             </div>
           ) : visibleReactors.length === 0 ? (
-            <p className="py-8 text-center text-[12px] text-[#6b7280]">Хэн ч react хийгээгүй байна</p>
+            <p className="py-8 text-center text-[12px] text-[#E2E4E8]">Хэн ч react хийгээгүй байна</p>
           ) : (
             visibleReactors.map(({ user, key }) => {
               const r = REACTIONS[key];
@@ -161,11 +161,11 @@ export default function ReactionSheet({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full object-cover" />
                     ) : (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F2F2F4] text-[11px] font-bold text-[#6b7280]">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[#F2F2F4] text-[11px] font-bold text-[#E2E4E8]">
                         {initials}
                       </div>
                     )}
-                    <div className="absolute -bottom-0.5 -right-0.5 rounded-full ring-2 ring-[#f2f5f8]">
+                    <div className="absolute -bottom-0.5 -right-0.5 rounded-[4px] ring-2 ring-[#f2f5f8]">
                       <r.Icon size={16} />
                     </div>
                   </div>

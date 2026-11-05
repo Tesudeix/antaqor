@@ -27,8 +27,8 @@ export interface CourseSlidePosterProps {
   image?: string;
 }
 
-const ACCENT = "#1080CA";
-const ACCENT_DEEP = "#4FA8E8";
+const ACCENT = "#2E29FF";
+const ACCENT_DEEP = "#1F1AD9";
 
 export function CourseSlidePoster({
   courseTitle = "ANTAQOR · АКАДЕМИ",
@@ -91,7 +91,7 @@ export function CourseSlidePoster({
                           fontWeight: 900,
                           letterSpacing: "0.04em",
                           textShadow:
-                            "0 0 24px rgba(16,128,202,0.55), 0 0 48px rgba(16,128,202,0.35)",
+                            "0 0 24px rgba(46,41,255,0.55), 0 0 48px rgba(46,41,255,0.35)",
                           WebkitTextStroke: "1px rgba(15,23,38,0.12)",
                         }
                       : undefined
@@ -143,13 +143,13 @@ export function CourseSlidePoster({
         <div className="mt-4">
           <div className="mb-2 flex items-baseline justify-between">
             <span
-              className="font-mono text-[9px] font-bold uppercase tracking-[0.24em]"
+              className="font-mono text-[11px] font-bold uppercase tracking-[0.24em]"
               style={{ color: ACCENT }}
             >
               MODULE · {String(lessonNumber).padStart(2, "0")}
             </span>
             <span
-              className="font-mono text-[9px] font-bold uppercase tabular-nums tracking-[0.22em]"
+              className="font-mono text-[11px] font-bold uppercase tabular-nums tracking-[0.22em]"
               style={{ color: "#6b6b73" }}
             >
               {stepLabel}
@@ -180,9 +180,9 @@ export function CourseSlidePoster({
               })}
             </div>
           ) : (
-            <div className="relative h-1 w-full overflow-hidden rounded-full bg-[rgba(15,23,38,0.06)]">
+            <div className="relative h-1 w-full overflow-hidden rounded-[4px] bg-[rgba(15,23,38,0.06)]">
               <div
-                className="absolute inset-y-0 left-0 rounded-full"
+                className="absolute inset-y-0 left-0 rounded-[4px]"
                 style={{
                   width: `${Math.round((lessonNumber / totalLessons) * 100)}%`,
                   background: `linear-gradient(90deg, ${ACCENT_DEEP}, ${ACCENT})`,

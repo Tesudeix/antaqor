@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-const PINK = "#EC4899";
+const PINK = "#1BD1C6";
 const PINK_SOFT = "#FBCFE8";
 const PINK_DEEP = "#BE185D";
 const PINK_TINT = "#FDF2F8";
@@ -36,7 +36,7 @@ export default function YukiLandingPage() {
       <header className="mb-8 flex items-center justify-between gap-4">
         <Link href="/yuki" className="flex items-center gap-2.5">
           <span
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[16px] font-black text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[16px] font-black text-white"
             style={{
               background: `linear-gradient(135deg, ${PINK} 0%, ${PINK_DEEP} 100%)`,
               boxShadow: `0 8px 22px rgba(236,72,153,0.35)`,
@@ -48,7 +48,7 @@ export default function YukiLandingPage() {
             <div className="text-[16px] font-black tracking-[2px]" style={{ color: INK }}>
               YUKI
             </div>
-            <div className="font-mono text-[9px] font-bold uppercase tracking-[0.24em]" style={{ color: PINK }}>
+            <div className="font-mono text-[11px] font-bold uppercase tracking-[0.24em]" style={{ color: PINK }}>
               СОРМУУСНЫ САЛОН
             </div>
           </div>
@@ -59,7 +59,7 @@ export default function YukiLandingPage() {
               <span className="hidden text-[12px] sm:inline" style={{ color: DIM }}>{userName || "Тавтай морил"}</span>
               <Link
                 href="/yuki/me"
-                className="rounded-full px-3.5 py-1.5 text-[12px] font-bold transition"
+                className="rounded-[4px] px-3.5 py-1.5 text-[12px] font-bold transition"
                 style={{
                   color: PINK_DEEP,
                   border: `1px solid ${PINK_SOFT}`,
@@ -73,14 +73,14 @@ export default function YukiLandingPage() {
             <>
               <Link
                 href="/auth/signin?callbackUrl=/yuki"
-                className="rounded-full px-3.5 py-1.5 text-[12px] font-bold transition hover:bg-[#FDF2F8]"
+                className="rounded-[4px] px-3.5 py-1.5 text-[12px] font-bold transition hover:bg-[#FDF2F8]"
                 style={{ color: INK }}
               >
                 Нэвтрэх
               </Link>
               <Link
                 href="/auth/signup?callbackUrl=/yuki"
-                className="rounded-full px-3.5 py-1.5 text-[12px] font-bold text-white transition hover:opacity-90"
+                className="rounded-[4px] px-3.5 py-1.5 text-[12px] font-bold text-white transition hover:opacity-90"
                 style={{ background: PINK, boxShadow: `0 6px 18px rgba(236,72,153,0.3)` }}
               >
                 Бүртгүүлэх
@@ -93,13 +93,13 @@ export default function YukiLandingPage() {
       {/* ─── Hero ─── */}
       <section className="mb-12 sm:mb-16">
         <span
-          className="inline-block rounded-full px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.25em]"
+          className="inline-block rounded-[4px] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.25em]"
           style={{ background: PINK_TINT, color: PINK_DEEP, border: `1px solid ${PINK_SOFT}` }}
         >
           YUKI · LASH STUDIO
         </span>
         <h1
-          className="mt-4 text-[36px] font-black leading-[1.05] tracking-tight sm:text-[56px] lg:text-[72px]"
+          className="mt-4 text-[22px] md:text-[36px] font-black leading-[1.05] tracking-tight sm:text-[56px] lg:text-[72px]"
           style={{ color: INK }}
         >
           Нүд чинь<br />
@@ -112,7 +112,7 @@ export default function YukiLandingPage() {
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <Link
             href="/yuki/book"
-            className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-black text-white transition hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-[4px] px-6 py-3.5 text-[14px] font-black text-white transition hover:scale-[1.02]"
             style={{ background: PINK, boxShadow: `0 12px 28px rgba(236,72,153,0.35)` }}
           >
             Цаг авах
@@ -172,19 +172,19 @@ export default function YukiLandingPage() {
 
       {/* ─── Final CTA ─── */}
       <section
-        className="overflow-hidden rounded-none border p-6 text-center sm:p-10"
+        className="overflow-hidden rounded-[4px] border p-6 text-center sm:p-10"
         style={{
           borderColor: PINK_SOFT,
           background: `linear-gradient(135deg, ${PINK_TINT} 0%, #FFFFFF 60%)`,
         }}
       >
-        <h3 className="text-[24px] font-black sm:text-[32px]" style={{ color: INK }}>
+        <h3 className="text-[24px] font-black sm:text-[22px] md:text-[32px]" style={{ color: INK }}>
           Цагаа <span style={{ color: PINK }}>одоо</span> авъя.
         </h3>
         <p className="mt-1.5 text-[13px]" style={{ color: DIM }}>30 секундийн зайтай.</p>
         <Link
           href="/yuki/book"
-          className="mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-[13px] font-black text-white transition hover:scale-[1.02]"
+          className="mt-5 inline-flex items-center gap-2 rounded-[4px] px-6 py-3 text-[13px] font-black text-white transition hover:scale-[1.02]"
           style={{ background: PINK, boxShadow: `0 10px 24px rgba(236,72,153,0.3)` }}
         >
           Захиалгаа эхлүүлэх
@@ -203,7 +203,7 @@ function ServiceCard({ service }: { service: Service }) {
   return (
     <Link
       href={`/yuki/book?service=${service._id}`}
-      className="group block overflow-hidden rounded-none border bg-white transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(236,72,153,0.12)]"
+      className="group block overflow-hidden rounded-[4px] border bg-white transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(236,72,153,0.12)]"
       style={{ borderColor: "#F1E3EC" }}
     >
       {service.image && (
@@ -244,14 +244,14 @@ function StylistCard({ stylist }: { stylist: Stylist }) {
       className="group flex w-[96px] shrink-0 flex-col items-center gap-1.5 text-center sm:w-[112px]"
     >
       <div
-        className="relative aspect-square w-full rounded-none p-[2px]"
+        className="relative aspect-square w-full rounded-[4px] p-[2px]"
         style={{
           background: `conic-gradient(from 215deg, ${PINK} 0deg, ${PINK_SOFT} 90deg, ${PINK_DEEP} 180deg, ${PINK_SOFT} 270deg, ${PINK} 360deg)`,
           boxShadow: `0 4px 14px rgba(236,72,153,0.18)`,
         }}
       >
         <div
-          className="relative h-full w-full overflow-hidden rounded-none"
+          className="relative h-full w-full overflow-hidden rounded-[4px]"
           style={{ background: PINK_TINT }}
         >
           {stylist.avatar ? (
@@ -291,7 +291,7 @@ function StylistCard({ stylist }: { stylist: Stylist }) {
 function EmptyHint({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="rounded-none border border-dashed py-12 text-center"
+      className="rounded-[4px] border border-dashed py-12 text-center"
       style={{ borderColor: PINK_SOFT, background: PINK_TINT }}
     >
       <p className="text-[13px]" style={{ color: DIM }}>{children}</p>

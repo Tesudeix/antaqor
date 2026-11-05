@@ -37,6 +37,10 @@ export async function PUT(
     if (body.type !== undefined) update.type = body.type;
     if (body.color !== undefined) update.color = body.color;
     if (body.recurring !== undefined) update.recurring = body.recurring;
+    /* Хоосон мөр ирвэл "хязгааргүй" гэсэн үг — талбарыг УСТГАНА, эс бөгөөс
+       Invalid Date хадгалагдаж цуврал чимээгүйхэн зогсоно. */
+    if (body.recurringUntil !== undefined)
+      update.recurringUntil = body.recurringUntil ? new Date(body.recurringUntil) : null;
 
     const event = await Event.findByIdAndUpdate(id, update, { new: true });
     if (!event) {

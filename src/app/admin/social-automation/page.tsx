@@ -26,11 +26,11 @@ interface Flow {
 const NODE_W = 232;
 
 const NODE_META: Record<NodeType, { label: string; color: string; icon: string }> = {
-  trigger:   { label: "Триггер",  color: "#22D3EE", icon: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" },
-  message:   { label: "Мессеж",   color: "#1080CA", icon: "M20 2H4a2 2 0 00-2 2v12a2 2 0 002 2h4l4 4 4-4h4a2 2 0 002-2V4a2 2 0 00-2-2z" },
+  trigger:   { label: "Триггер",  color: "#2E29FF", icon: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" },
+  message:   { label: "Мессеж",   color: "#2E29FF", icon: "M20 2H4a2 2 0 00-2 2v12a2 2 0 002 2h4l4 4 4-4h4a2 2 0 002-2V4a2 2 0 00-2-2z" },
   buttons:   { label: "Товчнууд", color: "#A855F7", icon: "M4 5h16M4 12h16M4 19h9" },
   delay:     { label: "Хүлээх",   color: "#FBBF24", icon: "M12 6v6l4 2M12 22a10 10 0 110-20 10 10 0 010 20z" },
-  condition: { label: "Нөхцөл",   color: "#4E94D0", icon: "M12 4v6m0 0l-5 5m5-5l5 5M7 20a2 2 0 11-.01 0M17 20a2 2 0 11-.01 0" },
+  condition: { label: "Нөхцөл",   color: "#4C47FF", icon: "M12 4v6m0 0l-5 5m5-5l5 5M7 20a2 2 0 11-.01 0M17 20a2 2 0 11-.01 0" },
   action:    { label: "Үйлдэл",   color: "#4ADE80", icon: "M13 3L4 14h6l-1 7 9-11h-6l1-7z" },
 };
 
@@ -104,12 +104,12 @@ function FlowList({ onOpen }: { onOpen: (id: string) => void }) {
     <div className="mx-auto max-w-4xl px-4 pb-16 pt-6">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.30em]" style={{ color: T.primary }}>ANTAQOR / AUTOMATION</p>
-          <h1 className="mt-1 text-[24px] font-black" style={{ color: T.text }}>Social Automation<span style={{ color: T.primary }}>.</span></h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.30em]" style={{ color: T.primaryInk }}>ANTAQOR / AUTOMATION</p>
+          <h1 className="mt-1 text-[24px] font-black" style={{ color: T.text }}>Social Automation<span style={{ color: T.primaryInk }}>.</span></h1>
           <p className="mt-1 text-[12px]" style={{ color: T.muted }}>ManyChat маягийн визуал flow builder — триггер → мессеж → салаа → үйлдэл</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/admin" className="rounded-none border px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em]" style={{ borderColor: T.border, color: T.muted }}>← Админ</Link>
+          <Link href="/admin" className="rounded-[4px] border px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em]" style={{ borderColor: T.border, color: T.muted }}>← Админ</Link>
           <Btn onClick={create} loading={creating}>+ Шинэ flow</Btn>
         </div>
       </div>
@@ -117,7 +117,7 @@ function FlowList({ onOpen }: { onOpen: (id: string) => void }) {
       {loading ? (
         <div className="py-16 text-center font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: T.muted }}>Ачааллаж байна…</div>
       ) : flows.length === 0 ? (
-        <div className="rounded-none border-2 border-dashed p-12 text-center" style={{ borderColor: T.border }}>
+        <div className="rounded-[4px] border-2 border-dashed p-12 text-center" style={{ borderColor: T.border }}>
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em]" style={{ color: T.muted }}>FLOW БАЙХГҮЙ</p>
           <p className="mt-2 text-[13px]" style={{ color: T.muted }}>Эхний автоматжуулалтаа үүсгэ — DM триггерээс эхэлнэ.</p>
           <div className="mt-5 flex justify-center"><Btn onClick={create} loading={creating}>+ Эхний flow үүсгэх</Btn></div>
@@ -128,7 +128,7 @@ function FlowList({ onOpen }: { onOpen: (id: string) => void }) {
             const trig = f.nodes?.find((n) => n.type === "trigger");
             const kws = (trig?.data?.keywords as string[]) || [];
             return (
-              <div key={f._id} className="group relative rounded-none border bg-[#0E0E12] p-4 transition hover:border-[rgba(16,128,202,0.45)]" style={{ borderColor: T.border }}>
+              <div key={f._id} className="group relative rounded-[4px] border bg-[#0A0A0A] p-4 transition hover:border-[rgba(46,41,255,0.45)]" style={{ borderColor: T.border }}>
                 <div className="flex items-start justify-between gap-2">
                   <button onClick={() => onOpen(f._id)} className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2">
@@ -136,7 +136,7 @@ function FlowList({ onOpen }: { onOpen: (id: string) => void }) {
                       <span className="truncate text-[14px] font-bold" style={{ color: T.text }}>{f.name}</span>
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[10px]" style={{ color: T.muted }}>
-                      <span className="rounded-none border px-1.5 py-0.5 uppercase tracking-[0.12em]" style={{ borderColor: T.border }}>{f.platform}</span>
+                      <span className="rounded-[4px] border px-1.5 py-0.5 uppercase tracking-[0.12em]" style={{ borderColor: T.border }}>{f.platform}</span>
                       <span>{f.nodes?.length || 0} node</span>
                       <span>·</span>
                       <span>{f.edges?.length || 0} холбоос</span>
@@ -147,7 +147,7 @@ function FlowList({ onOpen }: { onOpen: (id: string) => void }) {
                       <div className="mt-2 line-clamp-1 text-[11px]" style={{ color: T.faint }}>триггер: {kws.join(", ")}</div>
                     )}
                   </button>
-                  <button onClick={() => remove(f)} aria-label="Устгах" className="shrink-0 rounded-none p-1.5 transition hover:text-[#1080CA]" style={{ color: T.muted }}>
+                  <button onClick={() => remove(f)} aria-label="Устгах" className="shrink-0 rounded-[4px] p-1.5 transition hover:text-[#2E29FF]" style={{ color: T.muted }}>
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9M19.228 5.79L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M7.5 5.79h9" /></svg>
                   </button>
                 </div>
@@ -206,7 +206,7 @@ function FlowEditor({ id, onBack }: { id: string; onBack: () => void }) {
   };
 
   if (!flow) {
-    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-2 w-2 animate-pulse rounded-none" style={{ background: T.primary }} /></div>;
+    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-2 w-2 animate-pulse rounded-[4px]" style={{ background: T.primary }} /></div>;
   }
 
   return (
@@ -214,20 +214,20 @@ function FlowEditor({ id, onBack }: { id: string; onBack: () => void }) {
       {/* Top bar */}
       <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5" style={{ borderColor: T.border, background: T.surface }}>
         <div className="flex min-w-0 items-center gap-3">
-          <button onClick={onBack} className="rounded-none border px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em]" style={{ borderColor: T.border, color: T.muted }}>← Flows</button>
-          <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 max-w-[220px] flex-1 rounded-none border bg-transparent px-2.5 py-1.5 text-[13px] font-bold outline-none focus:border-[rgba(16,128,202,0.5)]" style={{ borderColor: T.border, color: T.text }} />
-          <select value={platform} onChange={(e) => setPlatform(e.target.value as Platform)} className="rounded-none border bg-[#0A0A0A] px-2 py-1.5 font-mono text-[11px]" style={{ borderColor: T.border, color: T.text }}>
+          <button onClick={onBack} className="rounded-[4px] bg-[#141414] px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: T.muted }}>← Flows</button>
+          <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 max-w-[220px] flex-1 rounded-[4px] border bg-transparent px-2.5 py-1.5 text-[13px] font-bold outline-none focus:border-[rgba(46,41,255,0.5)]" style={{ borderColor: T.border, color: T.text }} />
+          <select value={platform} onChange={(e) => setPlatform(e.target.value as Platform)} className="rounded-[4px] border bg-[#0A0A0A] px-2 py-1.5 font-mono text-[11px]" style={{ borderColor: T.border, color: T.text }}>
             {PLATFORMS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
           </select>
         </div>
         <div className="flex items-center gap-2.5">
           <button onClick={() => setEnabled((v) => !v)} className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: enabled ? T.ok : T.muted }}>
-            <span className="relative inline-block h-4 w-7 rounded-full transition" style={{ background: enabled ? T.ok : "rgba(255,255,255,0.12)" }}>
+            <span className="relative inline-block h-4 w-7 rounded-[4px] transition" style={{ background: enabled ? T.ok : "rgba(255,255,255,0.12)" }}>
               <span className="absolute top-0.5 h-3 w-3 rounded-full bg-white transition-all" style={{ left: enabled ? "14px" : "2px" }} />
             </span>
             {enabled ? "Идэвхтэй" : "Идэвхгүй"}
           </button>
-          {savedAt && !saving && <span className="font-mono text-[10px]" style={{ color: T.ok }}>✓ Хадгалсан</span>}
+          {savedAt && !saving && <span className="font-mono text-[10px]" style={{ color: T.okInk }}>✓ Хадгалсан</span>}
           <Btn size="sm" onClick={save} loading={saving}>Хадгалах</Btn>
         </div>
       </div>
@@ -353,11 +353,11 @@ function FlowCanvas({
       <style>{`@keyframes flowdash{to{stroke-dashoffset:-24}} .flowedge{animation:flowdash .55s linear infinite} @keyframes hpulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}`}</style>
 
       {/* Palette */}
-      <div className="absolute left-3 top-3 z-20 flex flex-col gap-1.5 rounded-none border bg-[#0E0E12]/95 p-1.5 backdrop-blur" style={{ borderColor: T.border }}>
+      <div className="absolute left-3 top-3 z-20 flex flex-col gap-1.5 rounded-[4px] border bg-[#0A0A0A]/95 p-1.5 backdrop-blur" style={{ borderColor: T.border }}>
         {(Object.keys(NODE_META) as NodeType[]).filter((t) => t !== "trigger").map((t) => (
           <button key={t} onClick={() => addNode(t)} title={`${NODE_META[t].label} нэмэх`}
-            className="group flex items-center gap-2 rounded-none px-2 py-1.5 text-left transition hover:bg-[rgba(255,255,255,0.05)]">
-            <span className="flex h-6 w-6 items-center justify-center rounded-none" style={{ background: `${NODE_META[t].color}1a`, color: NODE_META[t].color }}>
+            className="group flex items-center gap-2 rounded-[4px] px-2 py-1.5 text-left transition hover:bg-[rgba(255,255,255,0.05)]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-[4px]" style={{ background: `${NODE_META[t].color}1a`, color: NODE_META[t].color }}>
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={NODE_META[t].icon} /></svg>
             </span>
             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: T.muted }}>{NODE_META[t].label}</span>
@@ -366,16 +366,16 @@ function FlowCanvas({
       </div>
 
       {/* Zoom controls */}
-      <div className="absolute bottom-3 left-3 z-20 flex items-center gap-1 rounded-none border bg-[#0E0E12]/95 p-1 font-mono text-[12px] backdrop-blur" style={{ borderColor: T.border, color: T.text }}>
+      <div className="absolute bottom-3 left-3 z-20 flex items-center gap-1 rounded-[4px] border bg-[#0A0A0A]/95 p-1 font-mono text-[12px] backdrop-blur" style={{ borderColor: T.border, color: T.text }}>
         <button onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.1).toFixed(2)))} className="h-6 w-6">−</button>
         <span className="w-10 text-center text-[10px]" style={{ color: T.muted }}>{Math.round(zoom * 100)}%</span>
         <button onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.1).toFixed(2)))} className="h-6 w-6">+</button>
-        <button onClick={() => { setZoom(1); setPan({ x: 40, y: 20 }); }} className="ml-1 h-6 px-1.5 text-[9px] uppercase" style={{ color: T.muted }}>reset</button>
+        <button onClick={() => { setZoom(1); setPan({ x: 40, y: 20 }); }} className="ml-1 h-6 px-1.5 text-[11px] uppercase" style={{ color: T.muted }}>reset</button>
       </div>
 
       {/* Hint */}
       {linking && (
-        <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-none border bg-[#0E0E12]/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] backdrop-blur" style={{ borderColor: linking.color, color: linking.color }}>
+        <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-[4px] border bg-[#0A0A0A]/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] backdrop-blur" style={{ borderColor: linking.color, color: linking.color }}>
           Холбох node дээр дар · зогсоох бол хоосон зай
         </div>
       )}
@@ -432,7 +432,7 @@ function FlowCanvas({
                 initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 26 }}
                 onPointerDown={(e) => { if (linking) { completeLink(n); e.stopPropagation(); } else startNodeDrag(e, n); }}
-                className="absolute select-none rounded-none border bg-[#0E0E12]"
+                className="absolute select-none rounded-[4px] border bg-[#0A0A0A]"
                 style={{ left: n.x, top: n.y, width: NODE_W, borderColor: isSel ? meta.color : T.border, boxShadow: isSel ? `0 0 0 1px ${meta.color}, 0 0 22px ${meta.color}44` : "0 6px 18px rgba(0,0,0,0.5)", cursor: linking ? "pointer" : "grab" }}
               >
                 {/* input handle */}
@@ -441,7 +441,7 @@ function FlowCanvas({
                 )}
                 {/* header */}
                 <div className="flex items-center gap-2 border-b px-3 py-2" style={{ borderColor: T.border }}>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-none" style={{ background: `${meta.color}1a`, color: meta.color }}>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-[4px]" style={{ background: `${meta.color}1a`, color: meta.color }}>
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={meta.icon} /></svg>
                   </span>
                   <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: meta.color }}>{meta.label}</span>
@@ -456,7 +456,7 @@ function FlowCanvas({
                   <span key={o.id} className="group absolute z-10 -translate-x-1/2 translate-y-1/2" style={{ left: `${o.frac * 100}%`, bottom: 0 }}>
                     <button
                       onPointerDown={(e) => armLink(e, n, o.id)}
-                      className="block h-3.5 w-3.5 rounded-full border-2 transition hover:scale-125"
+                      className="block h-3.5 w-3.5 rounded-[4px] border-2 transition hover:scale-125"
                       style={{ background: linking?.source === n.id && linking.handle === o.id ? meta.color : T.canvas, borderColor: meta.color, boxShadow: `0 0 6px ${meta.color}88`, animation: linking ? "none" : undefined }}
                       aria-label="Гарц"
                     />
@@ -477,7 +477,7 @@ function NodeBody({ node }: { node: FNode }) {
   const d = node.data;
   if (node.type === "trigger") {
     const kws = (d.keywords as string[]) || [];
-    return kws.length ? <span>Түлхүүр үг: <b style={{ color: "#22D3EE" }}>{kws.join(", ")}</b></span>
+    return kws.length ? <span>Түлхүүр үг: <b style={{ color: "#2E29FF" }}>{kws.join(", ")}</b></span>
       : <span style={{ color: T.faint }}>Түлхүүр үг тохируулаагүй — дурын DM</span>;
   }
   if (node.type === "message") return <span className="line-clamp-3" style={{ color: T.muted }}>{(d.text as string) || "Хоосон мессеж"}</span>;
@@ -487,19 +487,19 @@ function NodeBody({ node }: { node: FNode }) {
       <div>
         <div className="line-clamp-2" style={{ color: T.muted }}>{(d.text as string) || "…"}</div>
         <div className="mt-1.5 flex flex-wrap gap-1">
-          {opts.map((o) => <span key={o.id} className="rounded-none border px-1.5 py-0.5 text-[10px]" style={{ borderColor: "rgba(168,85,247,0.5)", color: "#C084FC" }}>{o.label || "—"}</span>)}
+          {opts.map((o) => <span key={o.id} className="rounded-[4px] border px-1.5 py-0.5 text-[10px]" style={{ borderColor: "rgba(168,85,247,0.5)", color: "#C084FC" }}>{o.label || "—"}</span>)}
         </div>
       </div>
     );
   }
   if (node.type === "delay") { const m = Number(d.minutes) || 0; const label = m >= 1440 ? `${Math.round(m / 1440)} өдөр` : m >= 60 ? `${Math.round(m / 60)} цаг` : `${m} мин`; return <span style={{ color: T.muted }}>Хүлээх: <b style={{ color: "#FBBF24" }}>{label}</b></span>; }
-  if (node.type === "condition") return <span style={{ color: T.muted }}>Хэрэв <b style={{ color: "#4E94D0" }}>{(d.field as string) || "tag"}</b> {(d.op as string) || "has"} <b style={{ color: "#4E94D0" }}>{(d.value as string) || "…"}</b></span>;
+  if (node.type === "condition") return <span style={{ color: T.muted }}>Хэрэв <b style={{ color: "#4C47FF" }}>{(d.field as string) || "tag"}</b> {(d.op as string) || "has"} <b style={{ color: "#4C47FF" }}>{(d.value as string) || "…"}</b></span>;
   const A: Record<string, string> = { tag: "Таг өгөх", subscribe: "Захиалуулах", unsubscribe: "Захиалга цуцлах", notify: "Мэдэгдэл" };
   return <span style={{ color: T.muted }}>{A[String(d.kind)] || "Үйлдэл"}: <b style={{ color: "#4ADE80" }}>{(d.value as string) || "—"}</b></span>;
 }
 
 // ── Right inspector — edits the selected node's payload ─────────────────────
-const inp = "w-full rounded-none border bg-[#0A0A0A] px-2.5 py-2 text-[12px] outline-none focus:border-[rgba(16,128,202,0.5)]";
+const inp = "w-full rounded-[4px] border bg-[#0A0A0A] px-2.5 py-2 text-[12px] outline-none focus:border-[rgba(46,41,255,0.5)]";
 function Inspector({ node, onPatch, onDelete, onClose }: {
   node: FNode; onPatch: (d: Record<string, unknown>) => void; onDelete: () => void; onClose: () => void;
 }) {
@@ -507,10 +507,10 @@ function Inspector({ node, onPatch, onDelete, onClose }: {
   const opts = (d.options as { id: string; label: string }[]) || [];
   return (
     <motion.div initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 30, opacity: 0 }} transition={{ type: "spring", stiffness: 380, damping: 30 }}
-      className="absolute right-0 top-0 z-30 flex h-full w-[300px] flex-col border-l bg-[#0E0E12]" style={{ borderColor: T.border }}>
+      className="absolute right-0 top-0 z-30 flex h-full w-[300px] flex-col border-l bg-[#0A0A0A]" style={{ borderColor: T.border }}>
       <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: T.border }}>
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-none" style={{ background: `${meta.color}1a`, color: meta.color }}>
+          <span className="flex h-6 w-6 items-center justify-center rounded-[4px]" style={{ background: `${meta.color}1a`, color: meta.color }}>
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={meta.icon} /></svg>
           </span>
           <span className="font-mono text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: meta.color }}>{meta.label}</span>
@@ -549,7 +549,7 @@ function Inspector({ node, onPatch, onDelete, onClose }: {
                     <button onClick={() => onPatch({ options: opts.filter((_, j) => j !== i) })} className="shrink-0 px-1.5" style={{ color: T.muted }}>✕</button>
                   </div>
                 ))}
-                <button onClick={() => onPatch({ options: [...opts, { id: uid("o"), label: "Товч" }] })} className="w-full rounded-none border border-dashed py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ borderColor: T.border, color: "#C084FC" }}>+ Товч нэмэх</button>
+                <button onClick={() => onPatch({ options: [...opts, { id: uid("o"), label: "Товч" }] })} className="w-full rounded-[4px] border border-dashed py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ borderColor: T.border, color: "#C084FC" }}>+ Товч нэмэх</button>
               </div>
             </Field>
           </>
@@ -559,7 +559,7 @@ function Inspector({ node, onPatch, onDelete, onClose }: {
             <input type="number" className={inp} style={{ borderColor: T.border, color: T.text }} value={Number(d.minutes) || 0} onChange={(e) => onPatch({ minutes: Number(e.target.value) || 0 })} />
             <div className="mt-2 flex gap-1.5">
               {[[5, "5 мин"], [60, "1 цаг"], [1440, "1 өдөр"]].map(([m, l]) => (
-                <button key={m} onClick={() => onPatch({ minutes: m })} className="rounded-none border px-2 py-1 font-mono text-[10px]" style={{ borderColor: T.border, color: T.muted }}>{l}</button>
+                <button key={m} onClick={() => onPatch({ minutes: m })} className="rounded-[4px] border px-2 py-1 font-mono text-[10px]" style={{ borderColor: T.border, color: T.muted }}>{l}</button>
               ))}
             </div>
           </Field>
@@ -590,7 +590,7 @@ function Inspector({ node, onPatch, onDelete, onClose }: {
 
       {node.type !== "trigger" && (
         <div className="border-t p-3" style={{ borderColor: T.border }}>
-          <button onClick={onDelete} className="w-full rounded-none border py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition hover:bg-[rgba(16,128,202,0.08)]" style={{ borderColor: "rgba(16,128,202,0.35)", color: T.primary }}>Node устгах</button>
+          <button onClick={onDelete} className="w-full rounded-[4px] bg-[rgba(46,41,255,0.14)] py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] transition hover:bg-[rgba(46,41,255,0.26)]" style={{ color: T.primaryInk }}>Node устгах</button>
         </div>
       )}
     </motion.div>
@@ -600,7 +600,7 @@ function Inspector({ node, onPatch, onDelete, onClose }: {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block font-mono text-[9px] font-bold uppercase tracking-[0.16em]" style={{ color: T.faint }}>{label}</span>
+      <span className="mb-1 block font-mono text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: T.faint }}>{label}</span>
       {children}
     </label>
   );

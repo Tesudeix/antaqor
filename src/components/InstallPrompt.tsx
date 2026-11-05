@@ -37,13 +37,13 @@ export default function InstallPrompt() {
         animation: "slideDown 0.3s ease-out",
       }}
     >
-      <div className="flex items-center justify-between gap-3 rounded-none border border-[rgba(16,128,202,0.25)] bg-[#eef2f6] px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+      <div className="flex items-center justify-between gap-3 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[#eef2f6] px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
         <p className="text-[13px] font-medium text-[#0e1726]">
           Шинэ хувилбар бэлэн байна
         </p>
         <button
           onClick={handleUpdate}
-          className="shrink-0 rounded-none bg-[#1080CA] px-4 py-1.5 text-[12px] font-bold text-[#0E0E10]"
+          className="shrink-0 rounded-[4px] bg-[#2E29FF] px-4 py-1.5 text-[12px] font-bold text-white"
         >
           Шинэчлэх
         </button>

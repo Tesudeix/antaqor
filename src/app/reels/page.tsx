@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import LessonReels from "@/components/LessonReels";
+import ClientReels from "@/components/ClientReels";
 
+/* 2026-10-01: `/reels` нь КЛИЕНТЭД хийсэн AI видеоны тэжээл боллоо.
+   Өмнөх хичээлийн reel нь /classroom/reels руу нүүсэн. */
 export const metadata: Metadata = {
-  title: "Reel хичээл — Antaqor",
-  description: "60 секундын богино AI хичээлүүд — скролл хийгээд л сур.",
+  title: "Reels — Antaqor",
+  description: "Клиентүүдэд хийсэн AI видео. Скролл хийгээд үз, шууд тат.",
 };
 
 export default function ReelsPage() {
-  return <LessonReels />;
+  return <ClientReels />;
 }

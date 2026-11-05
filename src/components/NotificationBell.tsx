@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
@@ -15,7 +16,7 @@ interface NotificationItem {
   createdAt: string;
 }
 
-const NEON = "#1080CA";
+const NEON = "var(--accent-ink, #2E29FF)";
 
 // Icon + accent color per notification type. Falls back to a subtle pink
 // system spark for anything we don't recognize.
@@ -31,14 +32,14 @@ function iconFor(n: NotificationItem) {
   }
   if (t === "new_post") {
     return {
-      color: "#1080CA",
+      color: "var(--accent-ink, #2E29FF)",
       path: "M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z",
       strokeWidth: 1.6,
     };
   }
   if (t === "new_course") {
     return {
-      color: "#1080CA",
+      color: "var(--accent-ink, #2E29FF)",
       path: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25",
       strokeWidth: 1.6,
     };
@@ -113,6 +114,11 @@ export default function NotificationBell() {
       setOpen(false);
     }
   }, [isMobile, sheetY]);
+
+  /* Portal нь `document.body`-г шаарддаг бөгөөд тэр нь серверт байхгүй.
+     Эхний зурагдалтад portal-гүй, hydration-ы дараа л гарна. */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // ─── Fetch + visibility-aware polling ─────────────────────────────────
   const fetchNotifications = useCallback(async () => {
@@ -194,16 +200,42 @@ export default function NotificationBell() {
     return () => c.stop();
   }, [open, isMobile, sheetY]);
 
-  const toggleOpen = async () => {
+  /* ─── ХОНХ НЭЭХЭД БҮГД УНШСАН БОЛОХГҮЙ ─────────────────────────────
+     Өмнө нь хонх нээгдэх бүрд `/read` дуудагдаж, тухайн хүний БҮХ
+     уншаагүй мэдэгдэл уншсанд тооцогддог байв. 194 мэдэгдэлтэй хүн
+     хонхоо нэг харснаар тэдгээрийн дунд байсан "төлбөр баталгаажлаа"
+     гэсэн мэдэгдлийг УНШИЛГҮЙГЭЭР устгана. Мэдэгдэл уншигдсанд тооцох
+     цорын ганц үндэслэл нь хүн түүн рүү ХАНДСАН явдал. */
+  const toggleOpen = () => {
     if (open) { requestClose(); return; }
     setOpen(true);
-    if (unread > 0) {
-      // Mark-all-read fires when user opens the panel
-      await fetch("/api/notifications/read", { method: "POST" });
-      setUnread(0);
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    }
   };
+
+  /** Нэг мэдэгдэл дээр дарахад ЗӨВХӨН тэр нь уншсан болно. */
+  const markOne = useCallback(async (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n._id === id ? { ...n, read: true } : n)));
+    setUnread((u) => Math.max(0, u - 1));
+    try {
+      await fetch("/api/notifications/read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+    } catch { /* дэлгэц аль хэдийн шинэчлэгдсэн */ }
+  }, []);
+
+  /** Тодорхой сонголт — хүн өөрөө дарж бүгдийг уншсан болгоно. */
+  const markAll = useCallback(async () => {
+    setUnread(0);
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await fetch("/api/notifications/read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+    } catch { /* дэлгэц аль хэдийн шинэчлэгдсэн */ }
+  }, []);
 
   if (!session) return null;
 
@@ -213,14 +245,14 @@ export default function NotificationBell() {
       <button
         onClick={toggleOpen}
         aria-label="Мэдэгдэл"
-        className={`relative flex h-9 w-9 items-center justify-center rounded-none border transition active:scale-95 ${
+        aria-expanded={open}
+        className={`relative flex h-9 w-9 items-center justify-center rounded-[4px] transition-colors active:scale-95 ${
           open
-            ? "border-[rgba(16,128,202,0.5)] bg-[rgba(16,128,202,0.1)] text-white"
+            ? "bg-[rgba(46,41,255,0.12)] text-[#2E29FF]"
             : unread > 0
-              ? "border-[rgba(16,128,202,0.4)] text-[#0e1726] hover:bg-[rgba(16,128,202,0.08)]"
-              : "border-[rgba(15,23,38,0.08)] text-[#5b6573] hover:border-[rgba(15,23,38,0.18)] hover:text-[#0e1726]"
+              ? "bg-[#141414] text-[#F2F2F4] hover:bg-[#1E1E1E]"
+              : "bg-[#131316] text-[#E2E4E8] hover:bg-[#141414] hover:text-[#E2E4E8]"
         }`}
-        style={unread > 0 ? { boxShadow: "0 0 12px rgba(16,128,202,0.25)" } : undefined}
       >
         <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -230,218 +262,242 @@ export default function NotificationBell() {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", damping: 16, stiffness: 360 }}
-            className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[9px] font-black text-white ring-2 ring-[#ffffff]"
-            style={{ background: NEON, boxShadow: "0 0 8px rgba(16,128,202,0.6)" }}
+            className="absolute -right-1 -top-1 flex h-[17px] min-w-[17px] items-center justify-center rounded-[4px] px-1 text-[10px] font-bold text-white ring-2 ring-[#0A0A0A]"
+            style={{ background: NEON }}
           >
             {unread > 99 ? "99+" : unread}
           </motion.span>
         )}
       </button>
 
-      {/* ─── Mobile backdrop ─────────────────────────────────────────── */}
-      {open && isMobile && (
-        <motion.div
-          style={{ opacity: bgOpacity }}
-          className="fixed inset-0 z-[90] bg-black/65 backdrop-blur-sm"
-          onClick={requestClose}
-        />
-      )}
+      {/* ─── ЯАГААД PORTAL ВЭ ───────────────────────────────────────────
+          Энэ хонх `Navbar` дотор сууна. Navbar нь гүйлгэхэд нуугдахын тулд
+          `transform: translateY(...)`-ыг ҮРГЭЛЖ агуулдаг (нуугдаагүй үед ч
+          `translateY(0)`). CSS-ийн дүрмээр `transform` бүхий элемент нь
+          доторх `position: fixed` элементийн харьцангуй цэг болдог —
+          өөрөөр хэлбэл `fixed inset-0` хөшиг ба `fixed bottom-0` доод
+          самбар нь ДЭЛГЭЦЭД биш, НАВБАРТ харьцангуй байрлана. Тиймээс
+          мэдэгдлийн цонх буруу өндөрт, хагас дэлгэц дүүрч "хөвдөг" байв.
 
-      {/* ─── Panel ─────────────────────────────────────────────────────
-          Mobile: bottom sheet (drag-to-dismiss, spring up).
-          Desktop: anchored dropdown to the right of the bell. */}
-      {open && (
-        <motion.div
-          style={isMobile ? { y: sheetY } : undefined}
-          initial={isMobile ? false : { opacity: 0, y: -8, scale: 0.98 }}
-          animate={isMobile ? undefined : { opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-          drag={isMobile ? "y" : false}
-          dragConstraints={{ top: 0 }}
-          dragElastic={{ top: 0.04 }}
-          dragMomentum={false}
-          onDragEnd={(_, info) => {
-            if (info.offset.y > 100 || info.velocity.y > 500) {
-              requestClose();
-            } else {
-              animate(sheetY, 0, { type: "spring", damping: 30, stiffness: 320 });
-            }
-          }}
-          className={
-            isMobile
-              ? "fixed bottom-0 left-0 right-0 z-[100] max-h-[85vh] overflow-hidden rounded-t-[10px] border border-b-0 border-[rgba(16,128,202,0.22)] bg-[#0a0a0c] pb-[env(safe-area-inset-bottom)] shadow-[0_-24px_80px_rgba(0,0,0,0.8)]"
-              : "absolute right-0 top-full z-50 mt-2 w-[380px] overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#0a0a0c] shadow-[0_18px_40px_rgba(0,0,0,0.6)]"
-          }
-        >
-          {/* SKILL.md bracket corner ticks (top edges only on mobile sheet) */}
-          {isMobile && (
+          Navbar-ийн transform-ыг авах нь нуугдах анимацийг эвдэнэ, тиймээс
+          засвар нь энд: хөшиг ба самбарыг `document.body` руу гаргана.
+          Тэнд transform-той өвөг байхгүй тул `fixed` жинхэнэ дэлгэцээр
+          хэмжигдэнэ. */}
+      {mounted
+        ? createPortal(
             <>
-              <span className="pointer-events-none absolute left-3 top-3 h-2 w-2 border-l border-t border-[#1080CA]" />
-              <span className="pointer-events-none absolute right-3 top-3 h-2 w-2 border-r border-t border-[#1080CA]" />
-              <span className="pointer-events-none absolute left-3 top-0 h-px w-12 bg-gradient-to-r from-[#1080CA] via-[#1080CA] to-transparent shadow-[0_0_8px_rgba(16,128,202,0.6)]" />
-            </>
+          {/* ─── Mobile backdrop ─────────────────────────────────────────── */}
+          {open && isMobile && (
+            <motion.div
+              style={{ opacity: bgOpacity }}
+              className="fixed inset-0 z-[90] bg-black/65 backdrop-blur-sm"
+              onClick={requestClose}
+            />
           )}
 
-          {/* Drag handle on mobile */}
-          {isMobile && (
-            <div className="flex cursor-grab items-center justify-center pb-1 pt-2 active:cursor-grabbing">
-              <span className="h-1 w-10 rounded-full bg-[rgba(15,23,38,0.18)]" />
-            </div>
-          )}
-
-          {/* ─── Header — SKILL.md eyebrow + LIVE-style pill ──────── */}
-          <div className="flex items-center justify-between border-b border-[rgba(15,23,38,0.06)] px-4 py-3">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_8px_rgba(16,128,202,0.7)]" />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#1080CA]">
-                МЭДЭГДЭЛ
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {unread > 0 ? (
-                <span
-                  className="flex items-center gap-1 rounded-none border border-[rgba(16,128,202,0.45)] bg-[rgba(16,128,202,0.06)] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1080CA] backdrop-blur"
-                >
-                  <span className="h-1 w-1 animate-pulse rounded-full bg-[#1080CA] shadow-[0_0_6px_rgba(16,128,202,0.9)]" />
-                  {unread} ШИНЭ
-                </span>
-              ) : notifications.length > 0 ? (
-                <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#5a5a5a]">
-                  {notifications.length} НИЙТ
-                </span>
-              ) : null}
+          {/* ─── Panel ─────────────────────────────────────────────────────
+              Mobile: bottom sheet (drag-to-dismiss, spring up).
+              Desktop: anchored dropdown to the right of the bell. */}
+          {open && (
+            <motion.div
+              style={isMobile ? { y: sheetY } : undefined}
+              initial={isMobile ? false : { opacity: 0, y: -8, scale: 0.98 }}
+              animate={isMobile ? undefined : { opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              drag={isMobile ? "y" : false}
+              dragConstraints={{ top: 0 }}
+              dragElastic={{ top: 0.04 }}
+              dragMomentum={false}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 100 || info.velocity.y > 500) {
+                  requestClose();
+                } else {
+                  animate(sheetY, 0, { type: "spring", damping: 30, stiffness: 320 });
+                }
+              }}
+              className={
+                isMobile
+                  ? "fixed bottom-0 left-0 right-0 z-[100] max-h-[85vh] overflow-hidden rounded-t-[4px] border border-b-0 border-[rgba(46,41,255,0.22)] bg-[#0A0A0A] pb-[env(safe-area-inset-bottom)] shadow-[0_-24px_80px_rgba(0,0,0,0.8)]"
+                  : "absolute right-0 top-full z-50 mt-2 w-[380px] overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#0A0A0A] shadow-[0_18px_40px_rgba(0,0,0,0.6)]"
+              }
+            >
+              {/* SKILL.md bracket corner ticks (top edges only on mobile sheet) */}
               {isMobile && (
-                <button
-                  onClick={requestClose}
-                  className="flex h-6 w-6 items-center justify-center rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] text-[#6b7280] transition hover:border-[#1080CA] hover:text-[#1080CA]"
-                  aria-label="Хаах"
-                >
-                  <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <>
+
+                </>
               )}
-            </div>
-          </div>
 
-          {/* ─── List ─────────────────────────────────────────────── */}
-          <div
-            className="overflow-y-auto"
-            style={{
-              maxHeight: isMobile ? "62vh" : "440px",
-              overscrollBehavior: "contain",
-            }}
-          >
-            {loading ? (
-              <div className="space-y-2 p-3">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="flex gap-3 rounded-none bg-[#f2f5f8] p-3">
-                    <div className="h-9 w-9 shrink-0 animate-pulse rounded-none bg-[#F2F2F4]" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-3 w-3/4 animate-pulse rounded-none bg-[#F2F2F4]" />
-                      <div className="h-2.5 w-1/2 animate-pulse rounded-none bg-[#F2F2F4]" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
-                <div
-                  className="mb-3 flex h-14 w-14 items-center justify-center rounded-none border border-[rgba(16,128,202,0.18)]"
-                  style={{ background: "rgba(16,128,202,0.04)" }}
-                >
-                  <svg className="h-6 w-6" fill="none" stroke={NEON} strokeWidth={1.5} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                  </svg>
+              {/* Drag handle on mobile */}
+              {isMobile && (
+                <div className="flex cursor-grab items-center justify-center pb-1 pt-2 active:cursor-grabbing">
+                  <span className="h-1 w-10 rounded-[4px] bg-[rgba(15,23,38,0.18)]" />
                 </div>
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#0e1726]">
-                  ЦЭВЭР ХОНОГ
-                </p>
-                <p className="mt-1.5 max-w-[220px] text-[11px] leading-relaxed text-[#6b7280]">
-                  Шинэ мэдэгдэл хүлээж байна. Постоор оролц.
-                </p>
-              </div>
-            ) : (
-              <div>
-                {notifications.map((n, i) => {
-                  const ic = iconFor(n);
-                  return (
-                    <motion.div
-                      key={n._id}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.18, delay: Math.min(i * 0.025, 0.3), ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <Link
-                        href={n.link}
-                        onClick={requestClose}
-                        className="group relative flex items-start gap-3 px-4 py-3 transition hover:bg-[rgba(15,23,38,0.025)]"
-                        style={{
-                          borderBottom: i < notifications.length - 1 ? "1px solid rgba(15,23,38,0.04)" : "none",
-                        }}
-                      >
-                        {/* Unread strip — bright accent edge segment */}
-                        {!n.read && (
-                          <span
-                            className="absolute left-0 top-0 h-full w-[3px]"
-                            style={{ background: NEON, boxShadow: `0 0 6px ${NEON}` }}
-                          />
-                        )}
-                        {/* Type icon tile */}
-                        <span
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none"
-                          style={{ background: `${ic.color}1F` }}
-                        >
-                          <svg className="h-4 w-4" fill="none" stroke={ic.color} strokeWidth={ic.strokeWidth} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d={ic.path} />
-                          </svg>
-                        </span>
-                        {/* Content */}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-baseline justify-between gap-2">
-                            <p className={`truncate text-[13px] font-bold ${n.read ? "text-[#334155]" : "text-white"}`}>
-                              {n.title}
-                            </p>
-                            <span className="shrink-0 font-mono text-[10px] tabular-nums text-[#6b7280]">
-                              {timeAgo(n.createdAt)}
-                            </span>
-                          </div>
-                          <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-[#6b7280]">{n.message}</p>
-                        </div>
-                        {/* Hover chevron */}
-                        <span className="self-center opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100">
-                          <svg className="h-3 w-3 text-[#1080CA]" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                          </svg>
-                        </span>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* ─── Footer ───────────────────────────────────────────── */}
-          {notifications.length > 0 && (
-            <div className="relative border-t border-[rgba(15,23,38,0.06)] bg-[#0a0a0c] px-4 py-2.5">
-              <span className="pointer-events-none absolute left-3 top-0 h-px w-10 bg-gradient-to-r from-[#1080CA] via-[#1080CA] to-transparent shadow-[0_0_6px_rgba(16,128,202,0.5)]" />
-              <Link
-                href="/notifications"
-                onClick={requestClose}
-                className="group flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#6b7280] transition hover:text-[#1080CA]"
+              {/* ─── Header — SKILL.md eyebrow + LIVE-style pill ──────── */}
+              <div className="flex items-center justify-between border-b border-[rgba(15,23,38,0.06)] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-semibold text-[#F2F2F4]">
+                    МЭДЭГДЭЛ
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {unread > 0 ? (
+                    <>
+                      <span
+                        className="flex items-center rounded-[4px] bg-[#2E29FF] px-1.5 py-0.5 text-[10px] font-bold text-white"
+                      >
+                        {unread}
+                      </span>
+                      <button
+                        onClick={markAll}
+                        className="rounded-[4px] px-1.5 py-0.5 text-[10px] font-semibold text-[#E2E4E8] transition hover:text-[#2E29FF]"
+                      >
+                        Бүгдийг уншсан
+                      </button>
+                    </>
+                  ) : notifications.length > 0 ? (
+                    <span className="text-[11px] text-[#E2E4E8]">
+                      {notifications.length} НИЙТ
+                    </span>
+                  ) : null}
+                  {isMobile && (
+                    <button
+                      onClick={requestClose}
+                      className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-[#141414] text-[#E2E4E8] transition hover:bg-[#1E1E1E] hover:text-[#F2F2F4]"
+                      aria-label="Хаах"
+                    >
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ─── List ─────────────────────────────────────────────── */}
+              <div
+                className="overflow-y-auto"
+                style={{
+                  maxHeight: isMobile ? "62vh" : "440px",
+                  overscrollBehavior: "contain",
+                }}
               >
-                БҮГДИЙГ ХАРАХ
-                <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
-                  <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7l7 7-7 7" />
-                  </svg>
-                </span>
-              </Link>
-            </div>
+                {loading ? (
+                  <div className="space-y-2 p-3">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex gap-3 rounded-[4px] bg-[#f2f5f8] p-3">
+                        <div className="h-9 w-9 shrink-0 animate-pulse rounded-[4px] bg-[#F2F2F4]" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-3/4 animate-pulse rounded-[4px] bg-[#F2F2F4]" />
+                          <div className="h-2.5 w-1/2 animate-pulse rounded-[4px] bg-[#F2F2F4]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+                    <div
+                      className="mb-3 flex h-14 w-14 items-center justify-center rounded-[4px] border border-[rgba(46,41,255,0.18)]"
+                      style={{ background: "rgba(46,41,255,0.04)" }}
+                    >
+                      <svg className="h-6 w-6" fill="none" stroke={NEON} strokeWidth={1.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                      </svg>
+                    </div>
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#0e1726]">
+                      ЦЭВЭР ХОНОГ
+                    </p>
+                    <p className="mt-1.5 max-w-[220px] text-[11px] leading-relaxed text-[#E2E4E8]">
+                      Шинэ мэдэгдэл хүлээж байна. Постоор оролц.
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    {notifications.map((n, i) => {
+                      const ic = iconFor(n);
+                      return (
+                        <motion.div
+                          key={n._id}
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.18, delay: Math.min(i * 0.025, 0.3), ease: [0.16, 1, 0.3, 1] }}
+                        >
+                          <Link
+                            href={n.link || "/"}
+                            onClick={() => { if (!n.read) markOne(n._id); requestClose(); }}
+                            className="group relative flex items-start gap-3 px-4 py-3 transition hover:bg-[rgba(15,23,38,0.025)]"
+                            style={{
+                              borderBottom: i < notifications.length - 1 ? "1px solid rgba(15,23,38,0.04)" : "none",
+                            }}
+                          >
+                            {/* Unread strip — bright accent edge segment */}
+                            {!n.read && (
+                              <span
+                                className="absolute left-0 top-0 h-full w-[3px]"
+                                style={{ background: NEON, boxShadow: `0 0 6px ${NEON}` }}
+                              />
+                            )}
+                            {/* Type icon tile */}
+                            <span
+                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px]"
+                              style={{ background: `${ic.color}1F` }}
+                            >
+                              <svg className="h-4 w-4" fill="none" stroke={ic.color} strokeWidth={ic.strokeWidth} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d={ic.path} />
+                              </svg>
+                            </span>
+                            {/* Content */}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-baseline justify-between gap-2">
+                                <p className={`truncate text-[13px] font-bold ${n.read ? "text-[#334155]" : "text-white"}`}>
+                                  {n.title}
+                                </p>
+                                <span className="shrink-0 font-mono text-[10px] tabular-nums text-[#E2E4E8]">
+                                  {timeAgo(n.createdAt)}
+                                </span>
+                              </div>
+                              <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-[#E2E4E8]">{n.message}</p>
+                            </div>
+                            {/* Hover chevron */}
+                            <span className="self-center opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100">
+                              <svg className="h-3 w-3 text-[#2E29FF]" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </span>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* ─── Footer ───────────────────────────────────────────── */}
+              {notifications.length > 0 && (
+                <div className="relative border-t border-[rgba(15,23,38,0.06)] bg-[#0A0A0A] px-4 py-2.5">
+                  <span className="pointer-events-none absolute left-3 top-0 h-px w-10 bg-gradient-to-r from-[#2E29FF] via-[#2E29FF] to-transparent shadow-[0_0_6px_rgba(46,41,255,0.5)]" />
+                  <Link
+                    href="/notifications"
+                    onClick={requestClose}
+                    className="group flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
+                  >
+                    БҮГДИЙГ ХАРАХ
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </Link>
+                </div>
+              )}
+            </motion.div>
           )}
-        </motion.div>
-      )}
+            </>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

@@ -1,172 +1,50 @@
-const CACHE_VERSION = "antaqor-v4";
-const STATIC_CACHE = "antaqor-static-v4";
-const API_CACHE = "antaqor-api-v1";
-const OFFLINE_URL = "/offline";
+// Antaqor service worker — v77 (push-only, NO fetch interception).
+//
+// History: earlier versions cached navigations / pages / admin responses, which
+// repeatedly served stale content — including a cached 404 for /admin/broadcast
+// that survived refreshes and SW bumps. There is no real upside: nginx already
+// serves /_next/static as `immutable`, so the browser HTTP cache handles asset
+// perf. So this worker intentionally has **no fetch handler** — it never
+// intercepts a request, which makes stale-cache bugs structurally impossible —
+// while keeping push notifications working.
+//
+// On activate it deletes EVERY cache from older workers (clean slate) and claims
+// all clients, so any device that fetches this file is healed immediately.
 
-// App shell to precache
-const PRECACHE_URLS = [
-  "/",
-  "/offline",
-  "/manifest.json",
-  "/logo.png",
-  "/favicon.svg",
-];
+const SW_VERSION = "antaqor-v78-pushonly-heal";
 
-// ─── Install: precache app shell ───
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE_URLS))
-  );
+self.addEventListener("install", () => {
+  self.skipWaiting();
 });
 
-// ─── Activate: clean old caches ───
 self.addEventListener("activate", (event) => {
-  const keep = [STATIC_CACHE, API_CACHE];
   event.waitUntil(
     caches
       .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.filter((k) => !keep.includes(k)).map((k) => caches.delete(k))
-        )
-      )
+      .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
+      // One-time self-heal: force every open tab to reload once. This clears a
+      // stale in-memory Next.js router cache (a prefetch poisoned as "not-found"
+      // during a deploy, which made client-side clicks render a 404 even though
+      // the route returns 200). Same-version reloads don't re-trigger activate,
+      // so this runs exactly once per client.
+      .then(() => self.clients.matchAll({ type: "window" }))
+      .then((wins) =>
+        wins.forEach((c) => {
+          try { c.navigate(c.url); } catch (_e) { /* navigation not allowed; ignore */ }
+        })
+      )
   );
 });
 
-// ─── Fetch: strategy routing ───
-self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+// NO "fetch" listener on purpose — the browser handles every request directly,
+// so the SW can never serve a stale page / 404.
 
-  // Skip non-GET, chrome-extension, etc.
-  if (request.method !== "GET") return;
-  if (!url.protocol.startsWith("http")) return;
-
-  // Navigation requests: network-first with offline fallback
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
-          return response;
-        })
-        .catch(() =>
-          caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL))
-        )
-    );
-    return;
-  }
-
-  // Uploaded images: network-first (prevents stale broken images on mobile)
-  if (
-    url.pathname.startsWith("/uploads/") ||
-    url.pathname.startsWith("/_next/image")
-  ) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(request).then((cached) => cached || new Response("", { status: 404 })))
-    );
-    return;
-  }
-
-  // Static assets (JS/CSS/fonts): cache-first
-  if (
-    url.pathname.startsWith("/_next/static") ||
-    url.pathname.match(/\.(js|css|woff2?|ttf|otf)$/)
-  ) {
-    event.respondWith(
-      caches.match(request).then(
-        (cached) =>
-          cached ||
-          fetch(request).then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
-            }
-            return response;
-          })
-      )
-    );
-    return;
-  }
-
-  // Other static images (public/): stale-while-revalidate
-  if (url.pathname.match(/\.(png|jpg|jpeg|webp|svg|ico)$/)) {
-    event.respondWith(
-      caches.open(STATIC_CACHE).then((cache) =>
-        cache.match(request).then((cached) => {
-          const fetched = fetch(request)
-            .then((response) => {
-              if (response.ok) cache.put(request, response.clone());
-              return response;
-            })
-            .catch(() => cached);
-          return cached || fetched;
-        })
-      )
-    );
-    return;
-  }
-
-  // API requests: stale-while-revalidate
-  if (url.pathname.startsWith("/api/")) {
-    // Skip auth/push/upload endpoints
-    if (
-      url.pathname.includes("/auth/") ||
-      url.pathname.includes("/push/") ||
-      url.pathname.includes("/upload")
-    ) {
-      return;
-    }
-
-    event.respondWith(
-      caches.open(API_CACHE).then((cache) =>
-        cache.match(request).then((cached) => {
-          const fetched = fetch(request)
-            .then((response) => {
-              if (response.ok) {
-                cache.put(request, response.clone());
-              }
-              return response;
-            })
-            .catch(() => cached);
-
-          return cached || fetched;
-        })
-      )
-    );
-    return;
-  }
-
-  // Fonts (Google Fonts etc.): cache-first
-  if (url.hostname.includes("fonts.googleapis.com") || url.hostname.includes("fonts.gstatic.com")) {
-    event.respondWith(
-      caches.match(request).then(
-        (cached) =>
-          cached ||
-          fetch(request).then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(STATIC_CACHE).then((cache) => cache.put(request, clone));
-            }
-            return response;
-          })
-      )
-    );
-    return;
-  }
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
-// ─── Push Notifications ───
+// ─── Push Notifications (preserved) ───
 self.addEventListener("push", (event) => {
   let data = { title: "Antaqor", body: "Шинэ мэдэгдэл", url: "/" };
   try {
@@ -187,14 +65,11 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// ─── Notification Click ───
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const targetUrl = event.notification.data?.url || "/";
-
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
-      // Focus existing window if any
       for (const client of windowClients) {
         if (client.url.includes(self.location.origin) && "focus" in client) {
           client.navigate(targetUrl);
@@ -204,11 +79,4 @@ self.addEventListener("notificationclick", (event) => {
       return clients.openWindow(targetUrl);
     })
   );
-});
-
-// ─── Message: skip waiting ───
-self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
 });

@@ -65,23 +65,23 @@ export default function OnboardingPage() {
       {/* progress */}
       <div className="mb-8 flex items-center gap-2">
         {[1, 2, 3].map((n) => (
-          <div key={n} className={`h-1 flex-1 ${n <= step ? "bg-[#1080CA]" : "bg-[#2E2E33]"}`} />
+          <div key={n} className={`h-1 flex-1 ${n <= step ? "bg-[#2E29FF]" : "bg-[#262626]"}`} />
         ))}
       </div>
 
       {step === 1 && (
         <>
-          <div className="chrome mb-2 text-[10px] text-[#1080CA]">АЛХАМ 1/3</div>
+          <div className="chrome mb-2 text-[10px] text-[#2E29FF]">АЛХАМ 1/3</div>
           <h1 className="headline mb-6 text-[24px]">Одоо ямар зорилготой байна?</h1>
           <div className="space-y-3">
             {GOALS.map((g) => (
               <button
                 key={g.id}
                 onClick={() => pick("goal", g.id)}
-                className="w-full border border-[#2E2E33] bg-[#1E1E21] p-5 text-left transition hover:border-[#1080CA]"
+                className="w-full bg-[#141414] bg-[#0A0A0A] p-5 text-left transition hover:border-[#2E29FF]"
               >
                 <div className="mb-1 text-[15px] font-bold text-[#F2F2F4]">{g.label}</div>
-                <div className="text-[12px] text-[#B4B4BA]">{g.desc}</div>
+                <div className="text-[12px] text-[#E2E4E8]">{g.desc}</div>
               </button>
             ))}
           </div>
@@ -90,21 +90,21 @@ export default function OnboardingPage() {
 
       {step === 2 && (
         <>
-          <div className="chrome mb-2 text-[10px] text-[#1080CA]">АЛХАМ 2/3</div>
+          <div className="chrome mb-2 text-[10px] text-[#2E29FF]">АЛХАМ 2/3</div>
           <h1 className="headline mb-6 text-[24px]">AI туршлага чинь ямар вэ?</h1>
           <div className="space-y-3">
             {LEVELS.map((l) => (
               <button
                 key={l.id}
                 onClick={() => pick("level", l.id)}
-                className="w-full border border-[#2E2E33] bg-[#1E1E21] p-5 text-left transition hover:border-[#1080CA]"
+                className="w-full bg-[#141414] bg-[#0A0A0A] p-5 text-left transition hover:border-[#2E29FF]"
               >
                 <div className="mb-1 text-[15px] font-bold text-[#F2F2F4]">{l.label}</div>
-                <div className="text-[12px] text-[#B4B4BA]">{l.desc}</div>
+                <div className="text-[12px] text-[#E2E4E8]">{l.desc}</div>
               </button>
             ))}
           </div>
-          <button onClick={() => setStep(1)} className="chrome mt-6 text-left text-[10px] text-[#84848C] hover:text-[#F2F2F4]">
+          <button onClick={() => setStep(1)} className="chrome mt-6 text-left text-[10px] text-[#E2E4E8] hover:text-[#F2F2F4]">
             ← БУЦАХ
           </button>
         </>
@@ -112,14 +112,14 @@ export default function OnboardingPage() {
 
       {step === 3 && (
         <>
-          <div className="chrome mb-2 text-[10px] text-[#1080CA]">АЛХАМ 3/3</div>
+          <div className="chrome mb-2 text-[10px] text-[#2E29FF]">АЛХАМ 3/3</div>
           <h1 className="headline mb-3 text-[24px]">Бэлэн. Эхний хичээл чинь энэ.</h1>
-          <div className="mb-6 border border-[#1080CA]/40 bg-[#1E1E21] p-5">
-            <div className="chrome mb-2 text-[9px] text-[#1080CA]">ОДОО ХИЙХ ЗҮЙЛ</div>
+          <div className="mb-6 border border-[#2E29FF]/40 bg-[#0A0A0A] p-5">
+            <div className="chrome mb-2 text-[11px] text-[#2E29FF]">ОДОО ХИЙХ ЗҮЙЛ</div>
             <div className="mb-1 text-[16px] font-bold text-[#F2F2F4]">
               {lessonTitle ? `AI суурь — ${lessonTitle}` : "AI суурь — Хичээл 1"}
             </div>
-            <div className="text-[12px] text-[#B4B4BA]">Ойролцоогоор 8 минут · Free</div>
+            <div className="text-[12px] text-[#E2E4E8]">Ойролцоогоор 8 минут · Free</div>
           </div>
           <button
             onClick={() => {
@@ -127,13 +127,13 @@ export default function OnboardingPage() {
               router.push(courseId ? `/classroom/course/${courseId}` : "/");
             }}
             disabled={saving}
-            className="w-full bg-[#1080CA] py-4 text-[14px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-60"
+            className="w-full bg-[#2E29FF] py-4 text-[14px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-60"
           >
             Lesson эхлүүлэх →
           </button>
           <button
             onClick={() => router.push("/")}
-            className="mt-3 w-full py-2 text-[12px] text-[#84848C] transition hover:text-[#F2F2F4]"
+            className="mt-3 w-full py-2 text-[12px] text-[#E2E4E8] transition hover:text-[#F2F2F4]"
           >
             Дараа — dashboard руу
           </button>

@@ -1,0 +1,148 @@
+/* Цайвар нэг горим (2026-10-23): суурь #F8F9FD, карт #FFF, брэнд #2E29FF. */
+.card {
+  background: #FFFFFF;
+  border: 1px solid #E3E6EE;
+  border-radius: 12px;
+  padding: 18px;
+  color: #14151C;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4A4D5A;
+}
+.badge[data-live] { color: #15803D; }
+.badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+
+.range {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B6E7A;
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  margin: 10px 0 0;
+  font-size: clamp(28px, 6vw, 36px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #2E29FF;
+  font-variant-numeric: tabular-nums;
+}
+.title small {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: #6B6E7A;
+  letter-spacing: 0;
+}
+
+.sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4A4D5A;
+}
+
+.cells {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n, 7), minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 46px;
+  border-radius: 8px;
+  border: 1px solid #E3E6EE;
+  background: #F8F9FD;
+  color: #6B6E7A;
+  font-variant-numeric: tabular-nums;
+}
+.cell b { font-size: 13px; font-weight: 800; }
+.cell span { font-size: 10px; font-weight: 600; }
+.cell[data-st="past"] { background: rgba(46, 41, 255, 0.08); border-color: transparent; color: #2E29FF; }
+.cell[data-st="now"] { background: #2E29FF; border-color: #2E29FF; color: #FFFFFF; }
+
+.topics {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid #EEF0F5;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #4A4D5A;
+}
+.topics li { display: flex; gap: 10px; }
+.topics li span {
+  flex: none;
+  width: 44px;
+  font-weight: 700;
+  color: #6B6E7A;
+  font-variant-numeric: tabular-nums;
+}
+.topics li[data-now] { color: #14151C; font-weight: 700; }
+.topics li[data-now] span { color: #2E29FF; }
+
+/* ── Гишүүний урсгалын дээд талын нягт хувилбар ── */
+.compact { padding: 14px; }
+.compact .cells { margin-top: 12px; gap: 4px; }
+.compact .cell { min-height: 26px; border-radius: 6px; }
+.compact .cell b { font-size: 11px; }
+
+.row { display: flex; align-items: center; gap: 14px; }
+
+.big {
+  flex: none;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #2E29FF;
+  font-variant-numeric: tabular-nums;
+}
+.big small { font-size: 0.55em; font-weight: 700; color: #6B6E7A; letter-spacing: 0; }
+
+.meta { min-width: 0; }
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B6E7A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.today {
+  margin-top: 3px;
+  font-size: 14px;
+  color: #4A4D5A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.today b { color: #14151C; }

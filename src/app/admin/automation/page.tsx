@@ -54,7 +54,7 @@ interface Settings {
 }
 
 const ORDER_FLOW: Record<Order["status"], { label: string; next: Order["status"] | null; color: string }> = {
-  new: { label: "Шинэ", next: "confirmed", color: "#1080CA" },
+  new: { label: "Шинэ", next: "confirmed", color: "#2E29FF" },
   confirmed: { label: "Баталгаажсан", next: "paid", color: "#F59E0B" },
   paid: { label: "Төлсөн", next: "delivered", color: "#4ADE80" },
   delivered: { label: "Хүргэсэн", next: null, color: "#8A8680" },
@@ -84,7 +84,7 @@ const EMPTY_FORM = {
 type Form = typeof EMPTY_FORM;
 
 const INP =
-  "w-full rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0a0a0c] px-3 py-2.5 text-[13px] text-[#F4F0E8] outline-none transition focus:border-[#1080CA]";
+  "w-full rounded-[4px] border border-[rgba(255,255,255,0.1)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#F4F0E8] outline-none transition focus:border-[#2E29FF]";
 
 async function j<TT>(url: string, init?: RequestInit): Promise<TT> {
   const res = await fetch(url, init && { ...init, headers: { "Content-Type": "application/json" } });
@@ -249,16 +249,15 @@ export default function AutomationPage() {
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="chrome flex items-center gap-2 text-[9px] font-bold">
-            <span className="text-[#1080CA]">[АВТОМАТ]</span>
-            <span className="text-[#1080CA]">/////</span>
+          <div className="chrome flex items-center gap-2 text-[11px] font-bold">
+            <span className="text-[#2E29FF]">[АВТОМАТ]</span>
             <span style={{ color: T.faint }}>COMMENT → DM → ЗАХИАЛГА</span>
           </div>
-          <h1 className="mt-1 text-[24px] font-bold" style={{ color: "#1080CA", fontFamily: "var(--font-display)" }}>
+          <h1 className="mt-1 text-[24px] font-bold" style={{ color: "#2E29FF", fontFamily: "var(--font-display)" }}>
             Автоматжуулалт
           </h1>
         </div>
-        {msg && <span className="text-[12px] font-bold" style={{ color: msg.startsWith("✓") ? "#4ADE80" : "#4FA8E8" }}>{msg}</span>}
+        {msg && <span className="text-[12px] font-bold" style={{ color: msg.startsWith("✓") ? "#4ADE80" : "#1F1AD9" }}>{msg}</span>}
       </div>
 
       {/* Tabs */}
@@ -274,7 +273,7 @@ export default function AutomationPage() {
             key={id}
             onClick={() => setTab(id)}
             className={`chrome rounded-[4px] px-4 py-2.5 text-[10px] font-bold transition ${
-              tab === id ? "bg-[#1080CA] text-[#161618]" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680] hover:text-[#F4F0E8]"
+              tab === id ? "bg-[#2E29FF] text-white" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680] hover:text-[#F4F0E8]"
             }`}
           >
             {label}
@@ -314,7 +313,7 @@ export default function AutomationPage() {
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {b.keywords.map((k) => (
-                      <span key={k} className="chrome rounded-[4px] bg-[#1080CA] px-2 py-1 text-[8px] font-bold text-[#161618]">{k}</span>
+                      <span key={k} className="chrome rounded-[4px] bg-[#2E29FF] px-2 py-1 text-[8px] font-bold text-white">{k}</span>
                     ))}
                   </div>
                   <div className="chrome mt-2.5 text-[8px] font-bold" style={{ color: T.faint, fontFamily: MONO }}>
@@ -322,14 +321,14 @@ export default function AutomationPage() {
                     {b.collectOrders ? " · 🛒 ЗАХИАЛГА АВНА" : ""}
                   </div>
                   {b.lastError && (
-                    <div className="mt-1.5 text-[11px]" style={{ color: "#4FA8E8" }}>Сүүлийн алдаа: {b.lastError}</div>
+                    <div className="mt-1.5 text-[11px]" style={{ color: "#4C47FF" }}>Сүүлийн алдаа: {b.lastError}</div>
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <button
                     onClick={() => toggleBot(b)}
                     aria-label={b.enabled ? "Унтраах" : "Асаах"}
-                    className={`chrome rounded-[4px] px-3 py-2 text-[9px] font-bold transition ${
+                    className={`chrome rounded-[4px] px-3 py-2 text-[11px] font-bold transition ${
                       b.enabled ? "bg-[#4ADE80]/15 text-[#4ADE80]" : "border border-[rgba(255,255,255,0.14)] text-[#8A8680]"
                     }`}
                   >
@@ -357,8 +356,8 @@ export default function AutomationPage() {
               <button
                 key={v}
                 onClick={() => setOrderFilter(v)}
-                className={`chrome rounded-[4px] px-3 py-2 text-[9px] font-bold transition ${
-                  orderFilter === v ? "bg-[#1080CA] text-[#161618]" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"
+                className={`chrome rounded-[4px] px-3 py-2 text-[11px] font-bold transition ${
+                  orderFilter === v ? "bg-[#2E29FF] text-white" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"
                 }`}
               >
                 {l}
@@ -383,7 +382,7 @@ export default function AutomationPage() {
                           {o.product} × {o.qty}
                         </span>
                       </div>
-                      <div className="chrome mt-0.5 text-[9px]" style={{ color: T.faint, fontFamily: MONO }}>
+                      <div className="chrome mt-0.5 text-[11px]" style={{ color: T.faint, fontFamily: MONO }}>
                         {o.phone}{o.phoneUnverified ? " (ШАЛГААГҮЙ)" : ""} · {o.address.slice(0, 40)} · {ago(o.createdAt)}
                       </div>
                     </button>
@@ -412,7 +411,7 @@ export default function AutomationPage() {
           ) : (
             <>
               <Card hud className="space-y-3 p-5">
-                <div className="chrome text-[9px] font-bold" style={{ color: "#1080CA" }}>1 · ЭХНИЙ DM МЭНДЧИЛГЭЭ</div>
+                <div className="chrome text-[11px] font-bold" style={{ color: "#2E29FF" }}>1 · ЭХНИЙ DM МЭНДЧИЛГЭЭ</div>
                 <label className="flex items-center gap-2 text-[12px] font-bold" style={{ color: settings.enabled ? "#4ADE80" : T.faint }}>
                   <input type="checkbox" checked={settings.enabled} onChange={(e) => setSettings({ ...settings, enabled: e.target.checked })} />
                   Шинэ хүнд автоматаар мэндчилнэ
@@ -444,7 +443,7 @@ export default function AutomationPage() {
               </Card>
 
               <Card hud className="space-y-3 p-5">
-                <div className="chrome text-[9px] font-bold" style={{ color: "#1080CA" }}>2 · ТҮЛХҮҮР ҮГ ТААРААГҮЙ ҮЕД</div>
+                <div className="chrome text-[11px] font-bold" style={{ color: "#2E29FF" }}>2 · ТҮЛХҮҮР ҮГ ТААРААГҮЙ ҮЕД</div>
                 <select
                   value={settings.defaultAction}
                   onChange={(e) => setSettings({ ...settings, defaultAction: e.target.value })}
@@ -464,7 +463,7 @@ export default function AutomationPage() {
               </Card>
 
               <Card hud className="space-y-3 p-5">
-                <div className="chrome text-[9px] font-bold" style={{ color: "#1080CA" }}>3 · ТӨЛБӨРИЙН МЭДЭЭЛЭЛ (захиалгын дараа илгээгдэнэ)</div>
+                <div className="chrome text-[11px] font-bold" style={{ color: "#2E29FF" }}>3 · ТӨЛБӨРИЙН МЭДЭЭЛЭЛ (захиалгын дараа илгээгдэнэ)</div>
                 <textarea
                   value={settings.payText}
                   onChange={(e) => setSettings({ ...settings, payText: e.target.value })}
@@ -483,12 +482,12 @@ export default function AutomationPage() {
       {/* ═══ WIZARD — 4 алхам нэг дэлгэцэнд ═══ */}
       {wizard && (
         <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/70 sm:items-center sm:p-4" role="dialog" aria-modal="true" onClick={() => setWizard(false)}>
-          <div className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[8px] border bg-[#0E0E12] p-5 sm:rounded-[4px]" style={{ borderColor: T.border }} onClick={(e) => e.stopPropagation()}>
+          <div className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[4px] border bg-[#0A0A0A] p-5 sm:rounded-[4px]" style={{ borderColor: T.border }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <div className="chrome text-[10px] font-bold" style={{ color: "#1080CA" }}>
-                {form.id ? "БОТ ЗАСАХ" : "ШИНЭ БОТ"} <span className="text-[#1080CA]">/////</span>
+              <div className="chrome text-[10px] font-bold" style={{ color: "#2E29FF" }}>
+                {form.id ? "БОТ ЗАСАХ" : "ШИНЭ БОТ"}
               </div>
-              <button onClick={() => setWizard(false)} aria-label="Хаах" className="chrome rounded-[4px] border border-[rgba(255,255,255,0.14)] px-2.5 py-1.5 text-[9px] font-bold" style={{ color: T.faint }}>✕</button>
+              <button onClick={() => setWizard(false)} aria-label="Хаах" className="chrome rounded-[4px] border border-[rgba(255,255,255,0.14)] px-2.5 py-1.5 text-[11px] font-bold" style={{ color: T.faint }}>✕</button>
             </div>
 
             {/* Stepper */}
@@ -498,7 +497,7 @@ export default function AutomationPage() {
                   key={l}
                   onClick={() => setStep(i + 1)}
                   className={`chrome flex-1 rounded-[4px] px-2 py-2 text-[8px] font-bold transition ${
-                    step === i + 1 ? "bg-[#1080CA] text-[#0E0E10]" : step > i + 1 ? "bg-[#1080CA]/15 text-[#0E0E10]" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"
+                    step === i + 1 ? "bg-[#2E29FF] text-white" : step > i + 1 ? "bg-[#2E29FF]/15 text-white" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"
                   }`}
                 >
                   {i + 1} · {l}
@@ -515,7 +514,7 @@ export default function AutomationPage() {
                       <div className="flex flex-wrap gap-1.5">
                         {ACCOUNTS.map(([v, l]) => (
                           <button key={v} onClick={() => setForm({ ...form, account: v })}
-                            className={`chrome rounded-[4px] px-3 py-2 text-[9px] font-bold ${form.account === v ? "bg-[#1080CA] text-[#161618]" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"}`}>
+                            className={`chrome rounded-[4px] px-3 py-2 text-[11px] font-bold ${form.account === v ? "bg-[#2E29FF] text-white" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"}`}>
                             {l}
                           </button>
                         ))}
@@ -526,7 +525,7 @@ export default function AutomationPage() {
                       <div className="flex gap-1.5">
                         {([["instagram", "Instagram"], ["messenger", "Facebook"], ["both", "Хоёулаа"]] as const).map(([v, l]) => (
                           <button key={v} onClick={() => setForm({ ...form, platform: v })}
-                            className={`chrome rounded-[4px] px-3 py-2 text-[9px] font-bold ${form.platform === v ? "bg-[#1080CA] text-[#161618]" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"}`}>
+                            className={`chrome rounded-[4px] px-3 py-2 text-[11px] font-bold ${form.platform === v ? "bg-[#2E29FF] text-white" : "border border-[rgba(255,255,255,0.1)] text-[#8A8680]"}`}>
                             {l}
                           </button>
                         ))}
@@ -549,7 +548,7 @@ export default function AutomationPage() {
                       <input value={form.keywords} onChange={(e) => setForm({ ...form, keywords: e.target.value })} placeholder="үнэ, захиалга, +" className={INP} />
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {kwList.map((k) => (
-                          <span key={k} className="chrome rounded-[4px] bg-[#1080CA] px-2 py-1 text-[8px] font-bold text-[#161618]">{k}</span>
+                          <span key={k} className="chrome rounded-[4px] bg-[#2E29FF] px-2 py-1 text-[8px] font-bold text-white">{k}</span>
                         ))}
                       </div>
                     </div>
@@ -594,7 +593,7 @@ export default function AutomationPage() {
                           </div>
                         ))}
                         {form.products.length < 6 && (
-                          <button onClick={() => setForm({ ...form, products: [...form.products, { name: "", price: 0 }] })} className="chrome text-[9px] font-bold" style={{ color: "#1080CA" }}>
+                          <button onClick={() => setForm({ ...form, products: [...form.products, { name: "", price: 0 }] })} className="chrome text-[11px] font-bold" style={{ color: "#2E29FF" }}>
                             + Бүтээгдэхүүн нэмэх
                           </button>
                         )}
@@ -605,7 +604,7 @@ export default function AutomationPage() {
                     )}
                   </>
                 )}
-                {formErr && <p className="text-[12px] font-bold" style={{ color: "#4FA8E8" }}>{formErr}</p>}
+                {formErr && <p className="text-[12px] font-bold" style={{ color: "#4C47FF" }}>{formErr}</p>}
                 <div className="flex gap-2 pt-1">
                   {step > 1 && <Btn variant="ghost" onClick={() => setStep(step - 1)}>← Буцах</Btn>}
                   {step < 4 ? (
@@ -619,20 +618,20 @@ export default function AutomationPage() {
               {/* Live DM preview */}
               <div className="hidden md:block">
                 <div className="chrome mb-2 text-[8px] font-bold" style={{ color: T.faint }}>DM PREVIEW</div>
-                <div className="rounded-[4px] border p-3" style={{ borderColor: T.border, background: "#0a0a0c" }}>
+                <div className="rounded-[4px] border p-3" style={{ borderColor: T.border, background: "#F8F9FD" }}>
                   <div className="space-y-2 text-[11px] leading-snug">
-                    <div className="ml-6 rounded-[4px] bg-[#1080CA] p-2 text-[#0E0E10]">
+                    <div className="ml-6 rounded-[4px] bg-[#2E29FF] p-2 text-white">
                       {form.dmText.replace(/\{\{\s*username\s*\}\}/gi, "@buyer") || "…"}
                     </div>
                     {form.collectOrders && form.products.filter((p) => p.name).length > 0 && (
                       <>
-                        <div className="ml-6 rounded-[4px] bg-[#1080CA] p-2 text-[#0E0E10]">Аль бүтээгдэхүүнийг захиалах вэ?</div>
+                        <div className="ml-6 rounded-[4px] bg-[#2E29FF] p-2 text-white">Аль бүтээгдэхүүнийг захиалах вэ?</div>
                         <div className="flex flex-wrap gap-1">
                           {form.products.filter((p) => p.name).map((p) => (
-                            <span key={p.name} className="rounded-[4px] border border-[#1080CA]/50 px-2 py-1 text-[9px] text-[#1080CA]">{p.name}</span>
+                            <span key={p.name} className="rounded-[4px] border border-[#2E29FF]/50 px-2 py-1 text-[11px] text-[#2E29FF]">{p.name}</span>
                           ))}
                         </div>
-                        <div className="rounded-[4px] bg-[#1E1E21] p-2" style={{ color: T.muted }}>Хэдэн ширхэг? → Утас? → Хаяг? → Баталгаажуулах ✓</div>
+                        <div className="rounded-[4px] bg-[#0A0A0A] p-2" style={{ color: T.muted }}>Хэдэн ширхэг? → Утас? → Хаяг? → Баталгаажуулах ✓</div>
                       </>
                     )}
                   </div>
@@ -647,25 +646,25 @@ export default function AutomationPage() {
       {/* ═══ ORDER DRAWER ═══ */}
       {drawer && (
         <div className="fixed inset-0 z-[95] flex justify-end bg-black/60" role="dialog" aria-modal="true" onClick={() => setDrawer(null)}>
-          <div className="h-full w-full max-w-md overflow-y-auto border-l bg-[#0E0E12] p-5" style={{ borderColor: T.border }} onClick={(e) => e.stopPropagation()}>
+          <div className="h-full w-full max-w-md overflow-y-auto border-l bg-[#0A0A0A] p-5" style={{ borderColor: T.border }} onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <div className="chrome text-[9px] font-bold" style={{ color: "#1080CA" }}>ЗАХИАЛГА · @{drawer.username || drawer.partnerId.slice(-6)}</div>
+                <div className="chrome text-[11px] font-bold" style={{ color: "#2E29FF" }}>ЗАХИАЛГА · @{drawer.username || drawer.partnerId.slice(-6)}</div>
                 <div className="mt-1 text-[15px] font-bold" style={{ color: T.text, fontVariantNumeric: "tabular-nums" }}>
                   {drawer.product} × {drawer.qty}
                 </div>
-                <div className="chrome mt-0.5 text-[9px]" style={{ color: T.faint, fontFamily: MONO }}>
+                <div className="chrome mt-0.5 text-[11px]" style={{ color: T.faint, fontFamily: MONO }}>
                   {drawer.phone} · {drawer.address}
                 </div>
               </div>
-              <button onClick={() => setDrawer(null)} aria-label="Хаах" className="chrome rounded-[4px] border border-[rgba(255,255,255,0.14)] px-2.5 py-1.5 text-[9px]" style={{ color: T.faint }}>✕</button>
+              <button onClick={() => setDrawer(null)} aria-label="Хаах" className="chrome rounded-[4px] border border-[rgba(255,255,255,0.14)] px-2.5 py-1.5 text-[11px]" style={{ color: T.faint }}>✕</button>
             </div>
             <div className="chrome mb-2 text-[8px] font-bold" style={{ color: T.faint }}>ХАРИЛЦАН ЯРИА</div>
             {transcript === null && <Skeleton className="h-40" />}
             {transcript?.length === 0 && <p className="text-[12px]" style={{ color: T.faint }}>Яриа олдсонгүй.</p>}
             <div className="space-y-1.5">
               {(transcript ?? []).map((m, i) => (
-                <div key={i} className={`max-w-[85%] rounded-[4px] p-2 text-[11px] leading-snug ${m.direction === "out" ? "ml-auto bg-[#1080CA] text-[#0E0E10]" : "bg-[#1E1E21] text-[#F4F0E8]"}`}>
+                <div key={i} className={`max-w-[85%] rounded-[4px] p-2 text-[11px] leading-snug ${m.direction === "out" ? "ml-auto bg-[#2E29FF] text-white" : "bg-[#0A0A0A] text-[#F4F0E8]"}`}>
                   {m.text}
                 </div>
               ))}

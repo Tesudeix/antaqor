@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { accessState } from "@/lib/membership";
 
 const SUPER_ADMIN_EMAILS = ["antaqor@gmail.com"];
 
@@ -10,7 +11,10 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return NextResponse.json({ isMember: false, isAdmin: false });
+      return NextResponse.json({
+        isMember: false, isAdmin: false,
+        hasAccess: false, inGrace: false, graceEndsAt: null, graceDaysLeft: 0,
+      });
     }
 
     const userId = (session.user as { id?: string })?.id;
@@ -21,6 +25,10 @@ export async function GET() {
       return NextResponse.json({
         isMember: true,
         isAdmin: true,
+        hasAccess: true,
+        inGrace: false,
+        graceEndsAt: null,
+        graceDaysLeft: 0,
         plan: "operator",
         clan: "antaqor",
         joinedAt: null,
@@ -29,7 +37,10 @@ export async function GET() {
     }
 
     if (!userId) {
-      return NextResponse.json({ isMember: false, isAdmin: false });
+      return NextResponse.json({
+        isMember: false, isAdmin: false,
+        hasAccess: false, inGrace: false, graceEndsAt: null, graceDaysLeft: 0,
+      });
     }
 
     await dbConnect();
@@ -50,9 +61,18 @@ export async function GET() {
     const subActive = !!(user?.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > now);
     const plan = isAdmin ? "operator" : subActive ? user?.plan || "starter" : "free";
 
+    /* Эрхийг энд НЭГ УДАА тооцоолно. Хэрэв клиент "гишүүн үү + хугацаа
+       дуусаагүй юу" гэж өөрөө дахин угсарвал хоёр газар өөр дүрэм үүсч,
+       аль нэг нь эрт орой хэзээ нэгэн цагт зөрнө. */
+    const access = await accessState(userId, email);
+
     return NextResponse.json({
       isMember: hasClan && !isExpired,
       isAdmin,
+      hasAccess: access.ok,
+      inGrace: access.inGrace,
+      graceEndsAt: access.graceEndsAt,
+      graceDaysLeft: access.graceDaysLeft,
       plan,
       clan: user?.clan || null,
       joinedAt: user?.clanJoinedAt || null,
@@ -60,6 +80,9 @@ export async function GET() {
       expired: !!isExpired,
     });
   } catch {
-    return NextResponse.json({ isMember: false, isAdmin: false });
+    return NextResponse.json({
+      isMember: false, isAdmin: false,
+      hasAccess: false, inGrace: false, graceEndsAt: null, graceDaysLeft: 0,
+    });
   }
 }

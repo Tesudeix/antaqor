@@ -1,0 +1,106 @@
+/* Зочны нүүрний hero — постер + бичвэр (2026-10-26).
+   Цайвар нэг горим: өнгө нь шууд бичигдсэн (theme-day генератор module-ийг хөндөхгүй). */
+
+.grid {
+  position: relative;
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .split {
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    align-items: center;
+    gap: 40px;
+  }
+}
+
+.intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2E29FF;
+}
+
+.headline {
+  margin: 0;
+  font-size: clamp(30px, 7vw, 48px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #14151C;
+  text-wrap: balance;
+}
+
+.sub {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #4A4D5A;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 2px 0 6px;
+}
+
+.primary,
+.telegram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.primary:active,
+.telegram:active { transform: translateY(1px); }
+
+.primary {
+  flex: 1 1 160px;
+  background: #2E29FF;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 22px -10px rgba(46, 41, 255, 0.7);
+}
+
+/* Telegram-ийн өөрийн цэнхэр — гадагшаа гардаг холбоос гэдгийг өнгөөрөө хэлнэ. */
+.telegram {
+  flex: 1 1 160px;
+  background: #FFFFFF;
+  color: #1C8AD0 !important;
+  border: 1.5px solid #229ED9 !important;
+}
+.telegram:hover { background: #F0F8FD; }
+
+.live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid #E3E6EE;
+  background: #FFFFFF;
+  color: #14151C !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+.liveLink { font-size: 13px; color: #2E29FF; }

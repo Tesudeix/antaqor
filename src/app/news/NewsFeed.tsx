@@ -25,13 +25,13 @@ interface NewsItem {
 }
 
 const CATEGORY_COLORS: Record<Exclude<Category, "All">, string> = {
-  AI: "#1080CA",
-  LLM: "#1080CA",
-  Agents: "#1080CA",
-  Research: "#1080CA",
+  AI: "#2E29FF",
+  LLM: "#2E29FF",
+  Agents: "#2E29FF",
+  Research: "#2E29FF",
   "Бизнес": "#F59E0B",
   Tool: "#06B6D4",
-  "Монгол": "#EC4899",
+  "Монгол": "#2E29FF",
 };
 
 const CATEGORIES: Category[] = ["All", "AI", "LLM", "Agents", "Research", "Бизнес", "Tool", "Монгол"];
@@ -56,10 +56,10 @@ function isFresh(iso: string): boolean {
 
 function CategoryChip({ cat, size = "sm" }: { cat: Exclude<Category, "All">; size?: "sm" | "xs" }) {
   const color = CATEGORY_COLORS[cat];
-  const sz = size === "xs" ? "text-[9px] px-1.5 py-0.5" : "text-[10px] px-2 py-0.5";
+  const sz = size === "xs" ? "text-[11px] px-1.5 py-0.5" : "text-[10px] px-2 py-0.5";
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full font-bold tracking-wide uppercase ${sz}`}
+      className={`inline-flex items-center gap-1 rounded-[4px] font-bold tracking-wide uppercase ${sz}`}
       style={{ background: `${color}1F`, color }}
     >
       <span className="h-1 w-1 rounded-full" style={{ background: color }} />
@@ -72,7 +72,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
   return (
     <Link
       href={`/news/${item.slug}`}
-      className="group relative block overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f7f9fb]"
+      className="group relative block overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f7f9fb]"
     >
       <div className="grid md:grid-cols-[1.15fr_1fr]">
         <div className="relative aspect-[16/10] md:aspect-auto md:h-full bg-[#F2F2F4]">
@@ -89,7 +89,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent md:bg-gradient-to-r md:from-black/0 md:via-black/0 md:to-[#f7f9fb]/95" />
           <div className="absolute top-3 left-3 flex items-center gap-1.5">
-            <span className="rounded-full bg-[rgba(16,128,202,0.95)] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-white">
+            <span className="rounded-[4px] bg-[rgba(46,41,255,0.95)] px-2 py-0.5 text-[11px] font-black uppercase tracking-[0.12em] text-white">
               Featured
             </span>
             <CategoryChip cat={item.category} />
@@ -101,7 +101,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
               {item.title}
             </h2>
             {item.excerpt && (
-              <p className="mt-3 line-clamp-3 text-[13px] leading-relaxed text-[#5b6573] md:text-[14px]">
+              <p className="mt-3 line-clamp-3 text-[13px] leading-relaxed text-[#E2E4E8] md:text-[14px]">
                 {item.excerpt}
               </p>
             )}
@@ -110,7 +110,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
                 {item.tags.slice(0, 4).map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-2 py-0.5 text-[10px] text-[#6b7280]"
+                    className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-2 py-0.5 text-[10px] text-[#E2E4E8]"
                   >
                     #{t}
                   </span>
@@ -118,12 +118,12 @@ function FeaturedHero({ item }: { item: NewsItem }) {
               </div>
             )}
           </div>
-          <div className="flex items-center justify-between gap-3 text-[11px] text-[#6b7280]">
+          <div className="flex items-center justify-between gap-3 text-[11px] text-[#E2E4E8]">
             <div className="flex items-center gap-2 min-w-0">
               {item.authorAvatar ? (
                 <img src={item.authorAvatar} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[rgba(16,128,202,0.12)] text-[10px] font-bold text-[#1080CA]">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.12)] text-[10px] font-bold text-[#2E29FF]">
                   {item.authorName?.charAt(0) || "A"}
                 </div>
               )}
@@ -144,7 +144,7 @@ function FeaturedHero({ item }: { item: NewsItem }) {
           </div>
         </div>
       </div>
-      <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#1080CA]/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#2E29FF]/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     </Link>
   );
 }
@@ -158,7 +158,7 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
     >
       <Link
         href={`/news/${item.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition duration-300 hover:border-[rgba(16,128,202,0.25)] hover:bg-[#eef2f6]"
+        className="group flex h-full flex-col overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] transition duration-300 hover:border-[rgba(46,41,255,0.25)] hover:bg-[#eef2f6]"
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-[#F2F2F4]">
           {item.coverImage ? (
@@ -177,14 +177,14 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
           <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
             <CategoryChip cat={item.category} />
             {isFresh(item.publishedAt) && (
-              <span className="relative inline-flex items-center gap-1 rounded-full bg-[#1080CA] px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-[#0E0E10]">
-                <span className="absolute -left-0.5 -top-0.5 h-1.5 w-1.5 animate-ping rounded-full bg-[#1080CA]/70" />
+              <span className="relative inline-flex items-center gap-1 rounded-[4px] bg-[#2E29FF] px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
+                <span className="absolute -left-0.5 -top-0.5 h-1.5 w-1.5 animate-ping rounded-full bg-[#2E29FF]/70" />
                 <span className="relative h-1 w-1 rounded-full bg-white" />
                 NEW
               </span>
             )}
           </div>
-          <div className="absolute right-2.5 top-2.5 rounded-full bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white/80 backdrop-blur">
+          <div className="absolute right-2.5 top-2.5 rounded-[4px] bg-black/60 px-1.5 py-0.5 text-[11px] font-bold text-white/80 backdrop-blur">
             {item.readingMinutes}m
           </div>
         </div>
@@ -193,16 +193,16 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
             {item.title}
           </h3>
           {item.excerpt && (
-            <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-[#6b7280]">{item.excerpt}</p>
+            <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-[#E2E4E8]">{item.excerpt}</p>
           )}
-          <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-[10px] text-[#94a3b8]">
+          <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-[10px] text-[#E2E4E8]">
             <div className="flex min-w-0 items-center gap-1.5">
               {item.authorAvatar ? (
                 <img src={item.authorAvatar} alt="" className="h-4 w-4 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="h-4 w-4 shrink-0 rounded-full bg-[rgba(16,128,202,0.15)]" />
+                <div className="h-4 w-4 shrink-0 rounded-[4px] bg-[rgba(46,41,255,0.15)]" />
               )}
-              <span className="truncate font-semibold text-[#6b7280]">{item.authorName}</span>
+              <span className="truncate font-semibold text-[#E2E4E8]">{item.authorName}</span>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span>{formatRelative(item.publishedAt)}</span>
@@ -220,7 +220,7 @@ function Skeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8]">
+        <div key={i} className="overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8]">
           <div className="aspect-[16/10] animate-pulse bg-[#181818]" />
           <div className="space-y-2 p-4">
             <div className="h-3 w-3/4 animate-pulse rounded bg-[#181818]" />
@@ -314,34 +314,34 @@ export default function NewsFeed({
       {/* Hero header */}
       <section className="mb-7 pt-1">
         <div className="flex items-center gap-2">
-          <div className="h-[2px] w-5 bg-[#1080CA]" />
-          <span className="text-[11px] font-bold tracking-[0.2em] text-[#1080CA]">AI · NEWS</span>
+          <div className="h-[2px] w-5 bg-[#2E29FF]" />
+          <span className="text-[11px] font-bold tracking-[0.2em] text-[#2E29FF]">AI · NEWS</span>
         </div>
         <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-[28px] font-black leading-[1.05] tracking-tight text-[#0e1726] md:text-[40px]">
+            <h1 className="text-[28px] font-black leading-[1.05] tracking-tight text-[#0e1726] md:text-[26px] md:text-[40px]">
               AI-н хамгийн<br className="hidden md:block" /> сүүлийн үеийн мэдээ
             </h1>
-            <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#6b7280] md:text-[14px]">
+            <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-[#E2E4E8] md:text-[14px]">
               LLM, агент, судалгаа, Монголын AI салбарын шинэ мэдээ —
               өдөр бүр шинэчлэгддэг редактор хянасан блог.
             </p>
           </div>
           <div className="relative w-full md:w-[280px]">
-            <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#E2E4E8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Хайх — LLM, Agent, Claude..."
-              className="w-full rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] py-2.5 pl-9 pr-9 text-[13px] text-[#0e1726] placeholder-[#94a3b8] outline-none transition focus:border-[rgba(16,128,202,0.4)]"
+              className="w-full rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] py-2.5 pl-9 pr-9 text-[13px] text-[#0e1726] placeholder-[#62666F] outline-none transition focus:border-[rgba(46,41,255,0.4)]"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Цэвэрлэх"
-                className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-[#94a3b8] transition hover:bg-[#F2F2F4] hover:text-[#0e1726]"
+                className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-[4px] text-[#E2E4E8] transition hover:bg-[#F2F2F4] hover:text-[#0e1726]"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -356,15 +356,15 @@ export default function NewsFeed({
           <div className="flex items-center gap-1.5 pb-1 pr-6">
             {CATEGORIES.map((c) => {
               const active = category === c;
-              const color = c === "All" ? "#1080CA" : CATEGORY_COLORS[c as Exclude<Category, "All">];
+              const color = c === "All" ? "#2E29FF" : CATEGORY_COLORS[c as Exclude<Category, "All">];
               return (
                 <button
                   key={c}
                   onClick={() => setCategory(c)}
-                  className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
+                  className="shrink-0 rounded-[4px] px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200"
                   style={{
-                    background: active ? color : "rgba(15,23,38,0.04)",
-                    color: active ? "#FFFFFF" : "#6b7280",
+                    background: active ? color: "rgba(15,23,38,0.04)",
+                    color: active ? "#FFFFFF" : "#30333F",
                     boxShadow: active ? `0 0 20px ${color}26` : "none",
                   }}
                 >
@@ -380,15 +380,15 @@ export default function NewsFeed({
       {loading ? (
         <Skeleton />
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-none border border-dashed border-[rgba(15,23,38,0.08)] bg-[#f7f9fb] py-20 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(16,128,202,0.08)]">
-            <svg className="h-5 w-5 text-[#1080CA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-[4px] border border-dashed border-[rgba(15,23,38,0.08)] bg-[#f7f9fb] py-20 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[4px] bg-[rgba(46,41,255,0.08)]">
+            <svg className="h-5 w-5 text-[#2E29FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2zM7 8h10M7 12h10M7 16h6" />
             </svg>
           </div>
           <div>
             <div className="text-[15px] font-bold text-[#0e1726]">Мэдээ хараахан нийтлэгдээгүй</div>
-            <div className="mt-1 text-[12px] text-[#94a3b8]">Удахгүй шинэ контент нэмэгдэнэ</div>
+            <div className="mt-1 text-[12px] text-[#E2E4E8]">Удахгүй шинэ контент нэмэгдэнэ</div>
           </div>
         </div>
       ) : (
@@ -402,7 +402,7 @@ export default function NewsFeed({
                 style={{
                   background:
                     category === "All"
-                      ? "#1080CA"
+                      ? "#2E29FF"
                       : CATEGORY_COLORS[category as Exclude<Category, "All">],
                 }}
               />
@@ -414,21 +414,21 @@ export default function NewsFeed({
                     : `${category.toUpperCase()} · СҮҮЛИЙН ҮЕИЙН`}
               </span>
             </div>
-            <span className="text-[10px] text-[#94a3b8]">{filtered.length}+ мэдээ</span>
+            <span className="text-[10px] text-[#E2E4E8]">{filtered.length}+ мэдээ</span>
           </div>
 
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-none border border-dashed border-[rgba(15,23,38,0.08)] bg-[#f7f9fb] py-12 px-6 text-center">
-              <div className="text-[13px] text-[#5b6573]">
-                <span className="text-[#1080CA]">"{query}"</span>-д тохирох мэдээ олдсонгүй
+            <div className="flex flex-col items-center gap-4 rounded-[4px] border border-dashed border-[rgba(15,23,38,0.08)] bg-[#f7f9fb] py-12 px-6 text-center">
+              <div className="text-[13px] text-[#E2E4E8]">
+                <span className="text-[#2E29FF]">"{query}"</span>-д тохирох мэдээ олдсонгүй
               </div>
-              <div className="text-[11px] text-[#94a3b8]">Эдгээр ангилалаас үзвэл үү:</div>
+              <div className="text-[11px] text-[#E2E4E8]">Эдгээр ангилалаас үзвэл үү:</div>
               <div className="flex flex-wrap items-center justify-center gap-1.5">
                 {(["AI", "LLM", "Agents", "Бизнес"] as Exclude<Category, "All">[]).map((c) => (
                   <button
                     key={c}
                     onClick={() => { setQuery(""); setCategory(c); }}
-                    className="rounded-full border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-3 py-1 text-[11px] font-semibold text-[#475569] transition hover:border-[rgba(16,128,202,0.35)] hover:text-[#1080CA]"
+                    className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#eef2f6] px-3 py-1 text-[11px] font-semibold text-[#475569] transition hover:border-[rgba(46,41,255,0.35)] hover:text-[#2E29FF]"
                   >
                     {c}
                   </button>
@@ -448,11 +448,11 @@ export default function NewsFeed({
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="group flex items-center gap-2 rounded-full border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-6 py-2.5 text-[12px] font-bold text-[#475569] transition hover:border-[rgba(16,128,202,0.3)] hover:text-[#1080CA] disabled:opacity-50"
+                className="group flex items-center gap-2 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-6 py-2.5 text-[12px] font-bold text-[#475569] transition hover:border-[rgba(46,41,255,0.3)] hover:text-[#2E29FF] disabled:opacity-50"
               >
                 {loadingMore ? (
                   <>
-                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#1080CA] border-t-transparent" />
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#2E29FF] border-t-transparent" />
                     Ачаалж байна...
                   </>
                 ) : (
@@ -468,20 +468,20 @@ export default function NewsFeed({
       )}
 
       {/* Footer CTA — nudge non-users */}
-      <section className="mt-12 overflow-hidden rounded-none border border-[rgba(16,128,202,0.18)] bg-gradient-to-br from-[rgba(16,128,202,0.08)] via-[#f7f9fb] to-[#f7f9fb] p-6 md:p-8">
+      <section className="mt-12 overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.18)] bg-gradient-to-br from-[rgba(46,41,255,0.08)] via-[#f7f9fb] to-[#f7f9fb] p-6 md:p-8">
         <div className="flex flex-col items-start gap-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="text-[10px] font-bold tracking-[0.2em] text-[#1080CA]">COMMUNITY</div>
+            <div className="text-[10px] font-bold tracking-[0.2em] text-[#2E29FF]">COMMUNITY</div>
             <h3 className="mt-1.5 text-[20px] font-bold leading-tight text-[#0e1726] md:text-[22px]">
               Мэдээлэлд хамгийн түрүүнд хүр
             </h3>
-            <p className="mt-1 text-[12px] text-[#6b7280] md:text-[13px]">
-              Edgerunners нэгдэж промт, агент, AI бизнес-ийн дотоод контентод хандах эрх аваарай.
+            <p className="mt-1 text-[12px] text-[#E2E4E8] md:text-[13px]">
+              Хүрээлэлд нэгдэж промт, агент, AI бизнес-ийн дотоод контентод хандах эрх аваарай.
             </p>
           </div>
           <Link
             href="/auth/signup"
-            className="group relative overflow-hidden rounded-none bg-[#1080CA] px-6 py-3 text-[13px] font-bold text-[#0E0E10] shadow-[0_0_32px_rgba(16,128,202,0.15)] transition hover:shadow-[0_0_44px_rgba(16,128,202,0.35)]"
+            className="group relative overflow-hidden rounded-[4px] bg-[#2E29FF] px-6 py-3 text-[13px] font-bold text-white shadow-[0_0_32px_rgba(46,41,255,0.15)] transition hover:shadow-[0_0_44px_rgba(46,41,255,0.35)]"
           >
             <span className="relative z-10">Нэгдэх →</span>
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />

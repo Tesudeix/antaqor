@@ -75,15 +75,15 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
   if (inline) {
     return (
       <div className="hidden items-center gap-2 md:flex">
-        <span className="text-[9px] uppercase tracking-[3px] text-[#5b6573]">Зорилго</span>
-        <span className="text-sm tracking-[2px] text-[#1080CA]">
+        <span className="text-[11px] uppercase tracking-[3px] text-[#E2E4E8]">Зорилго</span>
+        <span className="text-sm tracking-[2px] text-[#2E29FF]">
           <AnimatedNumber value={conquerors} />
-          <span className="text-[#5b6573]">/{stats.goal.toLocaleString()}</span>
+          <span className="text-[#E2E4E8]">/{stats.goal.toLocaleString()}</span>
         </span>
-        <span className="text-[9px] uppercase tracking-[2px] text-[#5b6573]">AI Байлдагч</span>
+        <span className="text-[11px] uppercase tracking-[2px] text-[#E2E4E8]">AI Байлдагч</span>
         <div className="h-[2px] w-16 overflow-hidden bg-[#E8E8E6]">
           <div
-            className="h-full bg-[#1080CA] transition-all duration-1000"
+            className="h-full bg-[#2E29FF] transition-all duration-1000"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -95,18 +95,18 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
     <div className="mt-10 w-full max-w-xl">
       <div className="mb-3 flex items-end justify-between">
         <div>
-          <div className="text-[10px] uppercase tracking-[4px] text-[#5b6573]">
+          <div className="text-[10px] uppercase tracking-[4px] text-[#E2E4E8]">
             Эрхэм зорилго · Явц
           </div>
-          <div className="mt-1 text-[clamp(14px,2vw,18px)] tracking-[3px] text-[#0e1726]">
-            <span className="text-[#1080CA]">140</span> AI Байлдан дагуулагч бэлтгэх
+          <div className="mt-1 text-[clamp(18px,2.8vw,24px)] tracking-[3px] text-[#0e1726]">
+            <span className="text-[#2E29FF]">140</span> AI Байлдан дагуулагч бэлтгэх
           </div>
         </div>
         <div className="text-right">
-          <div className="text-[clamp(32px,5vw,52px)] leading-none tracking-[-1px] text-[#1080CA]">
+          <div className="text-[clamp(26px,4.6vw,42px)] leading-none tracking-[-1px] text-[#2E29FF]">
             <AnimatedNumber value={conquerors} />
           </div>
-          <div className="text-[9px] uppercase tracking-[3px] text-[#5b6573]">
+          <div className="text-[11px] uppercase tracking-[3px] text-[#E2E4E8]">
             нэгдсэн
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
 
       <div className="relative h-[3px] w-full overflow-hidden bg-[#E8E8E6]">
         <div
-          className="h-full bg-[#1080CA] transition-all duration-1000 ease-out"
+          className="h-full bg-[#2E29FF] transition-all duration-1000 ease-out"
           style={{ width: `${pct}%` }}
         />
         <div
@@ -129,7 +129,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             <span className="text-lg tracking-[2px] text-[#0e1726]">
               <AnimatedNumber value={stats.paidMembers} />
             </span>
-            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5b6573]">
+            <span className="ml-1 text-[11px] uppercase tracking-[2px] text-[#E2E4E8]">
               Кланы гишүүд
             </span>
           </div>
@@ -137,7 +137,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
             <span className="text-lg tracking-[2px] text-[rgba(240,236,227,0.3)]">
               <AnimatedNumber value={remaining > 0 ? remaining : 0} />
             </span>
-            <span className="ml-1 text-[9px] uppercase tracking-[2px] text-[#5b6573]">
+            <span className="ml-1 text-[11px] uppercase tracking-[2px] text-[#E2E4E8]">
               Үлдсэн
             </span>
           </div>
@@ -154,7 +154,7 @@ export default function ConquestCounter({ inline = false }: { inline?: boolean }
           <div className="h-[1px] flex-1 bg-[rgba(240,236,227,0.05)]" />
           <Link
             href="/auth/signup"
-            className="text-[9px] uppercase tracking-[3px] text-[#1080CA] transition hover:text-[#4FA8E8]"
+            className="text-[11px] uppercase tracking-[3px] text-[#2E29FF] transition hover:text-[#4C47FF]"
           >
             Тэдний нэг бол →
           </Link>

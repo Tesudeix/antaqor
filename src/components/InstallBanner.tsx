@@ -18,7 +18,7 @@ type Device =
   | "desktop-firefox"   // Firefox — no PWA install
   | "unknown";
 
-const NEON = "#1080CA";
+const NEON = "var(--accent-ink, #2E29FF)";
 
 function detectDevice(): Device {
   if (typeof navigator === "undefined") return "unknown";
@@ -91,9 +91,15 @@ export default function InstallBanner() {
     const d = detectDevice();
     // Desktop never sees the install prompt — desktop users have Chrome's
     // own install icon in the URL bar plus we don't want to nag laptops.
-    const isDesktop =
-      d === "desktop-chromium" || d === "desktop-firefox" || d === "mac-safari" || d === "unknown";
+    const isDesktop = d === "desktop-firefox" || d === "unknown";
     if (isDesktop) return;
+    // Анх орж ирэхэд л; 3 хоногийн дараа дахин нэг удаа. Refresh бүрт
+    // гарч ирдэг байсан нь заавар биш, зовоолт.
+    try {
+      const seen = Number(localStorage.getItem("aq_install_seen") || 0);
+      if (Date.now() - seen < 3 * 86_400_000) return;
+      localStorage.setItem("aq_install_seen", String(Date.now()));
+    } catch { /* private mode */ }
 
     // No sessionStorage suppression — banner returns on every refresh.
     // The X button only hides for the current page view; reload re-shows it.
@@ -158,19 +164,19 @@ export default function InstallBanner() {
   return (
     <>
       <div
-        className="relative w-full"
+        className="fixed left-3 right-3 z-[195] sm:left-auto sm:right-4 sm:w-[380px]"
         style={{
           animation: closing ? "slideUp 0.25s ease-in forwards" : "slideDown 0.3s ease-out",
-          transformOrigin: "top",
+          transformOrigin: "bottom",
+          bottom: "calc(env(safe-area-inset-bottom) + 76px)",
         }}
         data-pwa-device={device}
       >
         <div
-          className="relative flex items-center justify-between gap-3 overflow-hidden border-b px-4 py-2.5 sm:px-5"
+          className="relative flex items-center justify-between gap-3 overflow-hidden rounded-[4px] border px-4 py-3 shadow-[0_12px_32px_rgba(0,0,0,0.45)]"
           style={{
-            background: "linear-gradient(135deg, rgba(16,128,202,0.14) 0%, #f2f5f8 70%)",
-            borderColor: "rgba(16,128,202,0.35)",
-            paddingTop: "max(env(safe-area-inset-top), 10px)",
+            background: "var(--chrome-bg, #F8F9FD)",
+            borderColor: "rgba(46,41,255,0.35)",
           }}
         >
           {/* 10-second progress bar — shrinks left to right under the bar.
@@ -181,29 +187,29 @@ export default function InstallBanner() {
               background: NEON,
               width: "100%",
               animation: !sheetOpen ? "pwaShrink 10s linear forwards" : "none",
-              boxShadow: "0 0 6px rgba(16,128,202,0.6)",
+              boxShadow: "0 0 6px rgba(46,41,255,0.6)",
             }}
           />
           <div className="flex min-w-0 items-center gap-2.5">
             <span
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none"
-              style={{ background: NEON, boxShadow: "0 0 12px rgba(16,128,202,0.45)" }}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px]"
+              style={{ background: NEON, boxShadow: "0 0 12px rgba(46,41,255,0.45)" }}
             >
               <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" strokeWidth={2.4} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
             </span>
             <div className="min-w-0">
-              <div className="truncate text-[12px] font-black text-white">Antaqor нэмэх</div>
-              <div className="truncate text-[10px] text-[#5b6573]">{deviceTagline(device)}</div>
+              <div className="truncate text-[12px] font-black text-[var(--nav-fg-strong)]">Antaqor-ийг апп шиг нэм</div>
+              <div className="truncate text-[10px] text-[#E2E4E8]">{deviceTagline(device)}</div>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
               onClick={onCta}
-              className="rounded-none px-3 py-1.5 text-[11px] font-black text-white transition active:scale-95"
-              style={{ background: NEON, boxShadow: "0 0 12px rgba(16,128,202,0.4)" }}
+              className="rounded-[4px] px-3 py-1.5 text-[11px] font-black text-white transition active:scale-95"
+              style={{ background: NEON, boxShadow: "0 0 12px rgba(46,41,255,0.4)" }}
             >
               {ctaLabel}
             </button>
@@ -211,7 +217,7 @@ export default function InstallBanner() {
               type="button"
               onClick={dismiss}
               aria-label="Хаах"
-              className="flex h-7 w-7 items-center justify-center rounded-none text-[#6b7280] transition hover:bg-white/5 hover:text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-[4px] text-[#E2E4E8] transition hover:bg-white/5 hover:text-[var(--nav-fg-strong)]"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -249,24 +255,24 @@ function InstallSheet({ device, onClose }: { device: Device; onClose: () => void
       style={{ animation: "slideDown 0.2s ease-out" }}
     >
       <div
-        className="w-full max-w-md rounded-t-[12px] border border-[rgba(16,128,202,0.35)] bg-[#f2f5f8] p-5 sm:rounded-none"
+        className="w-full max-w-md rounded-t-[4px] border border-[rgba(46,41,255,0.35)] bg-[var(--chrome-bg,#0A0A0A)] p-5 sm:rounded-[4px]"
         onClick={(e) => e.stopPropagation()}
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 20px)" }}
       >
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: NEON, boxShadow: "0 0 8px #1080CA" }} />
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: NEON, boxShadow: "0 0 8px #2E29FF" }} />
             <span className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: NEON }}>{guide.tag}</span>
           </div>
-          <button onClick={onClose} aria-label="Хаах" className="rounded-none p-1 text-[#6b7280] hover:text-white">
+          <button onClick={onClose} aria-label="Хаах" className="rounded-[4px] p-1 text-[#E2E4E8] hover:text-[var(--nav-fg-strong)]">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <h2 className="text-[18px] font-black leading-tight text-white">{guide.title}</h2>
-        {guide.subtitle && <p className="mt-1 text-[11px] text-[#6b7280]">{guide.subtitle}</p>}
+        <h2 className="text-[18px] font-black leading-tight text-[var(--nav-fg-strong)]">{guide.title}</h2>
+        {guide.subtitle && <p className="mt-1 text-[11px] text-[#E2E4E8]">{guide.subtitle}</p>}
 
         <div className="mt-5 space-y-3">
           {guide.steps.map((s, i) => (
@@ -278,14 +284,14 @@ function InstallSheet({ device, onClose }: { device: Device; onClose: () => void
         </div>
 
         {guide.note && (
-          <p className="mt-3 text-[10px] leading-relaxed text-[#6b7280]" dangerouslySetInnerHTML={{ __html: guide.note }} />
+          <p className="mt-3 text-[10px] leading-relaxed text-[#E2E4E8]" dangerouslySetInnerHTML={{ __html: guide.note }} />
         )}
 
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 w-full rounded-none py-3 text-[12px] font-black text-white transition active:scale-[0.98]"
-          style={{ background: NEON, boxShadow: "0 0 18px rgba(16,128,202,0.4)" }}
+          className="mt-5 w-full rounded-[4px] py-3 text-[12px] font-black text-white transition active:scale-[0.98]"
+          style={{ background: NEON, boxShadow: "0 0 18px rgba(46,41,255,0.4)" }}
         >
           Ойлголоо
         </button>
@@ -304,7 +310,7 @@ interface Guide {
 
 function guideFor(device: Device): Guide {
   const shareIos = (
-    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-none border border-[rgba(15,23,38,0.12)] text-[#0A84FF]">
+    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-[4px] border border-[rgba(15,23,38,0.12)] text-[#0A84FF]">
       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 7l3-3 3 3M12 4v12" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13v5a2 2 0 002 2h10a2 2 0 002-2v-5" />
@@ -312,14 +318,14 @@ function guideFor(device: Device): Guide {
     </span>
   );
   const plusIcon = (
-    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-none border border-[rgba(15,23,38,0.12)] text-white">
+    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-[4px] border border-[rgba(128,128,128,0.3)] text-[var(--nav-fg-strong)]">
       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
       </svg>
     </span>
   );
   const dotsIcon = (
-    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-none border border-[rgba(15,23,38,0.12)] text-white">
+    <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-[4px] border border-[rgba(128,128,128,0.3)] text-[var(--nav-fg-strong)]">
       <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
         <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
       </svg>
@@ -333,11 +339,11 @@ function guideFor(device: Device): Guide {
         title: "3 алхамаар Antaqor нэмнэ",
         subtitle: "iPhone Safari нь автомат суулгах товчгүй",
         steps: [
-          { text: "Доорх <b class='text-white'>Share</b> товчийг дар", icon: shareIos },
-          { text: "Доош scroll хийж <b class='text-white'>\"Add to Home Screen\"</b> сонго", icon: plusIcon },
-          { text: "Баруун дээд <b class='text-white'>\"Add\"</b> дар → home screen дээр <b class='text-white'>Antaqor</b> гарна" },
+          { text: "Доорх <b class='text-[#2E29FF]'>Share</b> товчийг дар", icon: shareIos },
+          { text: "Доош scroll хийж <b class='text-[#2E29FF]'>\"Add to Home Screen\"</b> сонго", icon: plusIcon },
+          { text: "Баруун дээд <b class='text-[#2E29FF]'>\"Add\"</b> дар → home screen дээр <b class='text-[#2E29FF]'>Antaqor</b> гарна" },
         ],
-        note: "Хэрэв \"Add to Home Screen\" харагдахгүй бол share жагсаалтаас <b class='text-white'>\"Edit Actions\"</b> дарж нэмнэ",
+        note: "Хэрэв \"Add to Home Screen\" харагдахгүй бол share жагсаалтаас <b class='text-[#2E29FF]'>\"Edit Actions\"</b> дарж нэмнэ",
       };
 
     case "ios-chrome":
@@ -347,8 +353,8 @@ function guideFor(device: Device): Guide {
         subtitle: "iPhone дээр зөвхөн Safari аппликейшн суулгахыг зөвшөөрдөг",
         steps: [
           { text: "Энэ хуудасны URL-ийг хуул эсвэл хуваалц" },
-          { text: "<b class='text-white'>Safari</b> нээж URL-ийг paste хий" },
-          { text: "Доорх <b class='text-white'>Share</b> товч → <b class='text-white'>\"Add to Home Screen\"</b>", icon: shareIos },
+          { text: "<b class='text-[#2E29FF]'>Safari</b> нээж URL-ийг paste хий" },
+          { text: "Доорх <b class='text-[#2E29FF]'>Share</b> товч → <b class='text-[#2E29FF]'>\"Add to Home Screen\"</b>", icon: shareIos },
         ],
       };
 
@@ -358,9 +364,9 @@ function guideFor(device: Device): Guide {
         title: "Нэг товчоор суулгана",
         subtitle: "Дээрх \"Суулгах\" товчийг дар. Эсвэл гар аргаар:",
         steps: [
-          { text: "Баруун дээд <b class='text-white'>3 цэг</b> цэс", icon: dotsIcon },
-          { text: "<b class='text-white'>\"Install app\"</b> эсвэл <b class='text-white'>\"Add to Home screen\"</b>" },
-          { text: "<b class='text-white'>\"Install\"</b> дар" },
+          { text: "Баруун дээд <b class='text-[#2E29FF]'>3 цэг</b> цэс", icon: dotsIcon },
+          { text: "<b class='text-[#2E29FF]'>\"Install app\"</b> эсвэл <b class='text-[#2E29FF]'>\"Add to Home screen\"</b>" },
+          { text: "<b class='text-[#2E29FF]'>\"Install\"</b> дар" },
         ],
       };
 
@@ -371,8 +377,8 @@ function guideFor(device: Device): Guide {
         subtitle: "Энэ хөтөч аппликейшн суулгах хувилбарыг бүрэн дэмждэггүй",
         steps: [
           { text: "URL-ийг хуул" },
-          { text: "<b class='text-white'>Google Chrome</b> нээж paste хий" },
-          { text: "Цэснээс <b class='text-white'>\"Install app\"</b> сонго" },
+          { text: "<b class='text-[#2E29FF]'>Google Chrome</b> нээж paste хий" },
+          { text: "Цэснээс <b class='text-[#2E29FF]'>\"Install app\"</b> сонго" },
         ],
       };
 
@@ -382,11 +388,11 @@ function guideFor(device: Device): Guide {
         title: "Dock-д Antaqor нэмэх",
         subtitle: "macOS Safari 17+ дэмжинэ",
         steps: [
-          { text: "Дээд цэснээс <b class='text-white'>File</b> сонго" },
-          { text: "<b class='text-white'>\"Add to Dock…\"</b> дар" },
-          { text: "<b class='text-white'>\"Add\"</b> баталгаажуул" },
+          { text: "Дээд цэснээс <b class='text-[#2E29FF]'>File</b> сонго" },
+          { text: "<b class='text-[#2E29FF]'>\"Add to Dock…\"</b> дар" },
+          { text: "<b class='text-[#2E29FF]'>\"Add\"</b> баталгаажуул" },
         ],
-        note: "Mac Safari < 17 дээр энэ функц байхгүй. <b class='text-white'>Chrome</b> ашиглана уу.",
+        note: "Mac Safari < 17 дээр энэ функц байхгүй. <b class='text-[#2E29FF]'>Chrome</b> ашиглана уу.",
       };
 
     case "desktop-chromium":
@@ -395,9 +401,9 @@ function guideFor(device: Device): Guide {
         title: "Нэг товчоор суулгана",
         subtitle: "Дээрх \"Суулгах\" товчийг дар. Эсвэл гар аргаар:",
         steps: [
-          { text: "URL мөрний баруун талд <b class='text-white'>install икон</b> дар" },
-          { text: "Эсвэл <b class='text-white'>3 цэг</b> цэс → <b class='text-white'>\"Install Antaqor\"</b>", icon: dotsIcon },
-          { text: "<b class='text-white'>\"Install\"</b> баталгаажуул" },
+          { text: "URL мөрний баруун талд <b class='text-[#2E29FF]'>install икон</b> дар" },
+          { text: "Эсвэл <b class='text-[#2E29FF]'>3 цэг</b> цэс → <b class='text-[#2E29FF]'>\"Install Antaqor\"</b>", icon: dotsIcon },
+          { text: "<b class='text-[#2E29FF]'>\"Install\"</b> баталгаажуул" },
         ],
       };
 
@@ -407,8 +413,8 @@ function guideFor(device: Device): Guide {
         title: "Firefox дэмждэггүй",
         subtitle: "Firefox PWA суулгах функцыг хассан",
         steps: [
-          { text: "<b class='text-white'>Chrome</b> эсвэл <b class='text-white'>Edge</b> хөтөч ашиглана уу" },
-          { text: "Эсвэл хуудсыг <b class='text-white'>Bookmark</b> хий" },
+          { text: "<b class='text-[#2E29FF]'>Chrome</b> эсвэл <b class='text-[#2E29FF]'>Edge</b> хөтөч ашиглана уу" },
+          { text: "Эсвэл хуудсыг <b class='text-[#2E29FF]'>Bookmark</b> хий" },
         ],
       };
 
@@ -417,9 +423,9 @@ function guideFor(device: Device): Guide {
         tag: "ХӨТӨЧ ТАНИГДААГҮЙ",
         title: "Дэмжигдэх хөтөч ашиглана уу",
         steps: [
-          { text: "<b class='text-white'>iPhone:</b> Safari" },
-          { text: "<b class='text-white'>Android:</b> Chrome" },
-          { text: "<b class='text-white'>Desktop:</b> Chrome / Edge" },
+          { text: "<b class='text-[#2E29FF]'>iPhone:</b> Safari" },
+          { text: "<b class='text-[#2E29FF]'>Android:</b> Chrome" },
+          { text: "<b class='text-[#2E29FF]'>Desktop:</b> Chrome / Edge" },
         ],
       };
   }
@@ -427,14 +433,14 @@ function guideFor(device: Device): Guide {
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-none border border-[rgba(15,23,38,0.06)] bg-[#ffffff] p-3">
+    <div className="flex items-center gap-3 rounded-[4px] border border-[rgba(128,128,128,0.18)] bg-[rgba(128,128,128,0.08)] p-3">
       <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none text-[12px] font-black"
-        style={{ background: "rgba(16,128,202,0.15)", color: NEON, border: `1px solid ${NEON}40` }}
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[12px] font-black"
+        style={{ background: "rgba(46,41,255,0.15)", color: NEON, border: "1px solid rgba(46,41,255,0.25)" }}
       >
         {n}
       </span>
-      <div className="flex flex-1 items-center gap-2 text-[13px] text-[#334155]">{children}</div>
+      <div className="flex flex-1 items-center gap-2 text-[13px] text-[var(--nav-fg,#c8c8cc)]">{children}</div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export type TriggerMatchMode = "exact" | "contains" | "starts_with";
+export type TriggerMatchMode = "exact" | "contains" | "starts_with" | "word";
 export type TriggerPlatform = "instagram" | "messenger" | "both";
 export type TriggerSurface = "comment" | "dm" | "both";
 
@@ -19,6 +19,7 @@ export interface IMetaTrigger extends Document {
   account: string;
   dmTemplate: string;
   commentReply: string;
+  commentLike: boolean;
   postId: string;
   quickReplies: IQuickReplyButton[];
   buttons: { label: string; url: string }[];
@@ -36,12 +37,14 @@ const MetaTriggerSchema = new Schema<IMetaTrigger>(
   {
     name: { type: String, required: true },
     keywords: { type: [String], default: [] },
-    matchMode: { type: String, enum: ["exact", "contains", "starts_with"], default: "contains" },
+    matchMode: { type: String, enum: ["exact", "contains", "starts_with", "word"], default: "contains" },
     caseSensitive: { type: Boolean, default: false },
     platform: { type: String, enum: ["instagram", "messenger", "both"], default: "both" },
     surface: { type: String, enum: ["comment", "dm", "both"], default: "both" },
     dmTemplate: { type: String, required: true },
     commentReply: { type: String, default: "" },
+    // Like the commenter's comment as the Page when this trigger fires.
+    commentLike: { type: Boolean, default: false },
     postId: { type: String, default: "" },
     quickReplies: {
       type: [

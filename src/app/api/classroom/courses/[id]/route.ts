@@ -1,3 +1,4 @@
+import { classroomContentGate } from "@/lib/classroomContentGate";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -10,6 +11,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const denied = await classroomContentGate();
+  if (denied) return denied;
   try {
     const { id } = await params;
     await dbConnect();

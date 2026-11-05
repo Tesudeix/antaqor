@@ -33,7 +33,12 @@ export async function GET(req: NextRequest) {
     const featured = searchParams.get("featured");
     const q = (searchParams.get("q") || "").trim();
 
-    const query: Record<string, unknown> = { published: true };
+    /* ?all=1 — админ ноорогтой хамт харна (/admin/magazine). */
+    let query: Record<string, unknown> = { published: true };
+    if (searchParams.get("all") === "1") {
+      const s = await getServerSession(authOptions);
+      if (s?.user && isAdmin(s.user.email)) query = {};
+    }
     if (category && VALID_CATEGORIES.includes(category)) query.category = category;
     if (featured === "true") query.featured = true;
     if (q) {
@@ -92,6 +97,7 @@ export async function POST(req: NextRequest) {
       featured,
       slug: bodySlug,
       publishedAt,
+      published,
     } = body;
 
     if (!title?.trim()) {
@@ -120,7 +126,8 @@ export async function POST(req: NextRequest) {
       authorName: (authorName || "Antaqor").trim(),
       authorAvatar: authorAvatar || "",
       featured: !!featured,
-      published: true,
+      // /admin/magazine "Ноорог хадгалах" → false. Бусад дуудагчид өгдөггүй → true (хуучин зан).
+      published: published !== false,
       readingMinutes: estimateReadingMinutes(text),
       publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
     });

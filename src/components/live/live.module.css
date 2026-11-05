@@ -1,0 +1,140 @@
+/* ─── ШУУД ХИЧЭЭЛ — TikTok Live маяг, ХАРАНХУЙ (2026-10-09) ─────────────────
+   Өмнөх хувилбар бүхэлдээ ЦАГААН (#fff) ба 16:9 байв. Одоо:
+   • 9:16 тайз (reel стандарт) — дэлгэцийн өндөрт багтана.
+   • Видео дээр давхарга: дээр LIVE/үзэгч/хугацаа, доор чат + оруулах мөр,
+     баруун талд reaction-ууд хөвнө.
+   • Брэнд: #2E29FF үндсэн, #FCEE0A хоёрдогч (LIVE тэмдэг, хөтлөгчийн нэр).
+   • Радиус 4px. Дүүргэлт дээрх бичиг БАРААН (хоёр өнгө хоёулаа цайвар). */
+
+.stage {
+  position: relative;
+  height: min(calc(100svh - 140px), 820px);
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  color: #F2F2F4;
+}
+.compact { height: min(calc(100svh - 200px), 640px); }
+.video { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.video video { width: 100%; height: 100%; object-fit: cover; }
+.contain video { object-fit: contain; }
+.mirror video { transform: scaleX(-1); }
+.center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; color: #C9C9D1; font-size: 14px; }
+
+/* ── Дээд давхарга ─────────────────────────────────────────────── */
+.top {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 3;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  padding: 12px 12px 28px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0));
+}
+.badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.liveBadge { background: #FCEE0A; color: #0A0A0A; font-weight: 800; font-size: 12px; letter-spacing: .06em; padding: 4px 8px; border-radius: 4px; }
+.pill { background: rgba(0,0,0,0.5); color: #F2F2F4; font-size: 12.5px; font-weight: 600; padding: 4px 8px; border-radius: 4px; font-variant-numeric: tabular-nums; }
+.liveTitle { margin-top: 6px; max-width: 70%; font-size: 14px; font-weight: 700; color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+.topBtns { display: flex; flex-direction: column; gap: 8px; }
+
+/* ── Дугуй товчнууд ─────────────────────────────────────────────── */
+.round {
+  width: 42px; height: 42px; border-radius: 999px; border: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  background: rgba(0,0,0,0.45); color: #FFFFFF; backdrop-filter: blur(6px);
+}
+.round:disabled { opacity: .45; cursor: not-allowed; }
+.round.on { background: #2E29FF; color: #0A0A0A; }
+.endBtn { border: 0; cursor: pointer; background: #FCEE0A; color: #0A0A0A; font-weight: 800; font-size: 13px; padding: 9px 14px; border-radius: 4px; }
+
+/* ── Дуу асаах сануулга ─────────────────────────────────────────── */
+.soundHint {
+  position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 4;
+  border: 0; cursor: pointer; background: rgba(0,0,0,0.6); color: #FFFFFF;
+  font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 4px; white-space: nowrap;
+}
+
+/* ── Чат урсгал (зүүн доод) ─────────────────────────────────────── */
+.chat {
+  position: absolute; left: 10px; right: 64px; bottom: 66px; z-index: 2;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 5px;
+  max-height: 42%; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 28%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 28%);
+  pointer-events: none;
+}
+.msg { align-self: flex-start; max-width: 100%; background: rgba(0,0,0,0.38); padding: 5px 9px; border-radius: 4px; font-size: 13.5px; line-height: 1.35; color: #F2F2F4; word-break: break-word; }
+.msgName { font-weight: 800; color: #2E29FF; margin-right: 6px; }
+.msgHost { color: #FCEE0A; }
+.msgSys { color: #C9C9D1; font-style: italic; }
+
+/* ── Доод мөр: чат оруулах + reaction ───────────────────────────── */
+.bottom {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  display: flex; align-items: center; gap: 8px; padding: 10px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0));
+}
+.input {
+  flex: 1; min-width: 0; height: 42px; border-radius: 4px; padding: 0 12px; font-size: 14.5px;
+  background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; outline: none;
+}
+.input::placeholder { color: rgba(255,255,255,0.65); }
+.input:focus { border-color: #2E29FF; }
+.loginChat {
+  flex: 1; height: 42px; border-radius: 4px; border: 1px solid rgba(252,238,10,0.7); cursor: pointer;
+  background: rgba(0,0,0,0.35); color: #FCEE0A; font-weight: 700; font-size: 13.5px;
+}
+.heart { background: rgba(252,238,10,0.9); color: #0A0A0A; }
+.emojiBar {
+  position: absolute; right: 10px; bottom: 60px; z-index: 4;
+  display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.55);
+}
+.emojiBar button { width: 40px; height: 40px; border: 0; background: transparent; font-size: 22px; cursor: pointer; border-radius: 4px; }
+.emojiBar button:active { transform: scale(.9); }
+
+/* ── Хөвөх reaction (баруун доод) ───────────────────────────────── */
+.floats { position: absolute; right: 0; bottom: 60px; width: 90px; height: 60%; pointer-events: none; z-index: 2; }
+.float { position: absolute; bottom: 0; font-size: 30px; animation: rise 2.4s ease-out both; }
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(0) scale(.6); }
+  12% { opacity: 1; transform: translateY(-20px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-320px) scale(1); }
+}
+
+/* ── Хүлээлт / хуваарь ──────────────────────────────────────────── */
+.panel { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; color: #F2F2F4; }
+.eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .2em; color: #2E29FF; }
+.next {
+  border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px;
+  background: linear-gradient(180deg, rgba(46,41,255,0.16), rgba(46,41,255,0.03));
+  border: 1px solid rgba(46,41,255,0.45);
+}
+.nextTitle { font-size: clamp(22px, 4vw, 30px); font-weight: 800; line-height: 1.15; letter-spacing: -.02em; }
+.when { font-size: 14px; color: #C9C9D1; }
+.countdown { display: flex; gap: 8px; margin-top: 6px; }
+.countdown span { min-width: 64px; text-align: center; padding: 8px 6px; border-radius: 4px; background: rgba(0,0,0,0.35); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.countdown small { display: block; font-size: 10px; font-weight: 600; letter-spacing: .1em; color: #9C9CA6; }
+.list { display: flex; flex-direction: column; gap: 6px; }
+.item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 4px; background: #141414; border: 1px solid rgba(255,255,255,0.08); }
+.itemTitle { font-size: 14.5px; font-weight: 700; }
+.itemWhen { font-size: 12.5px; color: #9C9CA6; }
+.muted { color: #9C9CA6; font-size: 14px; line-height: 1.6; }
+.error { color: #FF6E86; font-size: 13px; }
+.link { color: #2E29FF; text-decoration: none; font-size: 13px; font-weight: 600; }
+
+/* ── Студи (хөтлөгч) ────────────────────────────────────────────── */
+.studio { max-width: 1040px; margin: 0 auto; padding: 8px 0 40px; display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); color: #F2F2F4; }
+@media (min-width: 900px) { .studio { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } }
+.side { display: flex; flex-direction: column; gap: 14px; }
+.card { border-radius: 4px; padding: 16px; background: #141414; border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 12px; }
+.label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: #C9C9D1; }
+.field { height: 46px; border-radius: 4px; padding: 0 12px; font-size: 15px; background: #1E1E1E; border: 1px solid rgba(255,255,255,0.12); color: #F2F2F4; outline: none; color-scheme: dark; }
+.field:focus { border-color: #2E29FF; }
+.goLive { height: 56px; border: 0; border-radius: 4px; cursor: pointer; background: #FCEE0A; color: #0A0A0A; font-size: 17px; font-weight: 800; letter-spacing: .02em; }
+.primary { height: 46px; border: 0; border-radius: 4px; cursor: pointer; background: #2E29FF; color: #0A0A0A; font-size: 14.5px; font-weight: 700; padding: 0 16px; }
+.secondary { height: 46px; border-radius: 4px; cursor: pointer; background: transparent; border: 1px solid rgba(252,238,10,0.6); color: #FCEE0A; font-size: 14px; font-weight: 700; padding: 0 16px; }
+.goLive:disabled, .primary:disabled, .secondary:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.del { border: 0; background: transparent; color: #FCEE0A; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) { .float { animation: none; display: none; } }

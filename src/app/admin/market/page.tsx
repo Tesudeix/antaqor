@@ -7,12 +7,12 @@ type Category = "Prompt" | "Course" | "Template" | "Agent" | "Service" | "Digita
 
 const CATEGORIES: Category[] = ["Prompt", "Course", "Template", "Agent", "Service", "Digital"];
 const CATEGORY_COLORS: Record<Category, string> = {
-  Prompt: "#1080CA",
-  Course: "#1080CA",
+  Prompt: "#2E29FF",
+  Course: "#2E29FF",
   Template: "#06B6D4",
   Agent: "#F59E0B",
-  Service: "#EC4899",
-  Digital: "#1080CA",
+  Service: "#2E29FF",
+  Digital: "#2E29FF",
 };
 
 interface Product {
@@ -204,90 +204,90 @@ export default function AdminMarketPage() {
   return (
     <div className="space-y-5 pb-6">
       {flash && (
-        <div className="fixed top-4 right-4 z-50 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
+        <div className="fixed top-4 right-4 z-50 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#F2F2F4] px-4 py-2.5 text-[13px] text-[#E8E8E8] shadow-xl">{flash}</div>
       )}
 
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#E8E8E8]">Market</h1>
-          <p className="mt-0.5 text-[12px] text-[#56565E]">Marketplace listing management · public catalog</p>
+          <p className="mt-0.5 text-[12px] text-[#E2E4E8]">Marketplace listing management · public catalog</p>
         </div>
-        <Link href="/market" target="_blank" className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8]">
+        <Link href="/market" target="_blank" className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-bold text-white transition hover:bg-[#1F1AD9]">
           Market харах
         </Link>
       </div>
 
       {/* Editor */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">
             {editingSlug ? "Засварлаж байна" : "Шинэ бүтээгдэхүүн"}
           </span>
           {editingSlug && (
-            <button onClick={resetForm} className="text-[11px] text-[#8A8A92] hover:text-[#E8E8E8]">Цуцлах</button>
+            <button onClick={resetForm} className="text-[11px] text-[#E2E4E8] hover:text-[#E8E8E8]">Цуцлах</button>
           )}
         </div>
 
         <div className="space-y-3">
           <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Гарчиг" maxLength={200}
-            className="w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+            className="w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[14px] font-bold text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
           <textarea value={form.summary} onChange={(e) => setForm((f) => ({ ...f, summary: e.target.value }))} placeholder="Summary (богино)" maxLength={300} rows={2}
-            className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
           <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Дэлгэрэнгүй тайлбар..." rows={6}
-            className="w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+            className="w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
 
           {/* Cover */}
-          <div className="rounded-none border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
+          <div className="rounded-[4px] border border-dashed border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-3">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#56565E]">Cover зураг</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#E2E4E8]">Cover зураг</span>
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => coverRef.current?.click()} disabled={coverUploading}
-                  className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#141419] px-2.5 py-1 text-[10px] font-bold text-[#8A8A92] transition hover:text-[#1080CA] disabled:opacity-50">
+                  className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-2.5 py-1 text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF] disabled:opacity-50">
                   {coverUploading ? "Байршуулж..." : form.coverImage ? "Солих" : "Сонгох"}
                 </button>
                 {form.coverImage && (
-                  <button type="button" onClick={() => setForm((f) => ({ ...f, coverImage: "" }))} className="text-[10px] text-[#56565E] hover:text-[#1080CA]">Устгах</button>
+                  <button type="button" onClick={() => setForm((f) => ({ ...f, coverImage: "" }))} className="text-[10px] text-[#E2E4E8] hover:text-[#2E29FF]">Устгах</button>
                 )}
                 <input ref={coverRef} type="file" accept="image/*" onChange={onCoverPick} className="hidden" />
               </div>
             </div>
             {form.coverImage ? (
-              <div className="relative aspect-[4/3] max-w-[280px] overflow-hidden rounded-none bg-[#141419]">
+              <div className="relative aspect-[4/3] max-w-[280px] overflow-hidden rounded-[4px] bg-[#0A0A0A]">
                 <img src={form.coverImage} alt="" className="h-full w-full object-cover" />
               </div>
             ) : (
-              <div className="py-4 text-center text-[11px] text-[#56565E]">JPG / PNG / WebP · max 10MB</div>
+              <div className="py-4 text-center text-[11px] text-[#E2E4E8]">JPG / PNG / WebP · max 10MB</div>
             )}
             <input value={form.coverImage} onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))} placeholder="эсвэл URL"
-              className="mt-2 w-full rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] px-2.5 py-1.5 text-[11px] text-[#8A8A92] placeholder-[#d5dce3] outline-none focus:border-[rgba(16,128,202,0.3)]" />
+              className="mt-2 w-full rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] px-2.5 py-1.5 text-[11px] text-[#E2E4E8] placeholder-[#d5dce3] outline-none focus:border-[rgba(46,41,255,0.3)]" />
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as Category }))}
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none focus:border-[#1080CA]">
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] outline-none focus:border-[#2E29FF]">
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <input value={form.tagsRaw} onChange={(e) => setForm((f) => ({ ...f, tagsRaw: e.target.value }))} placeholder="Tags (comma-separated)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} type="number" min={0} placeholder="Үнэ (MNT)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.compareAtPrice} onChange={(e) => setForm((f) => ({ ...f, compareAtPrice: e.target.value }))} type="number" min={0} placeholder="Хуучин үнэ (discount badge)"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.sellerName} onChange={(e) => setForm((f) => ({ ...f, sellerName: e.target.value }))} placeholder="Seller name"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.sellerAvatar} onChange={(e) => setForm((f) => ({ ...f, sellerAvatar: e.target.value }))} placeholder="Seller avatar URL"
-              className="rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
             <input value={form.externalUrl} onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} placeholder="Checkout URL (Stripe, Gumroad, etc)"
-              className="sm:col-span-2 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[#1080CA]" />
+              className="sm:col-span-2 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2.5 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[#2E29FF]" />
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-2">
-            <label className="flex cursor-pointer items-center gap-2 text-[12px] text-[#8A8A92]">
-              <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#1080CA]" />
+            <label className="flex cursor-pointer items-center gap-2 text-[12px] text-[#E2E4E8]">
+              <input type="checkbox" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="accent-[#2E29FF]" />
               Featured
             </label>
             <button onClick={save} disabled={!form.title.trim() || saving}
-              className="rounded-none bg-[#1080CA] px-6 py-2.5 text-[13px] font-bold text-[#0E0E10] transition hover:bg-[#4FA8E8] disabled:opacity-40">
+              className="rounded-[4px] bg-[#2E29FF] px-6 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#1F1AD9] disabled:opacity-40">
               {saving ? "..." : editingSlug ? "Шинэчлэх" : "Нийтлэх"}
             </button>
           </div>
@@ -295,37 +295,37 @@ export default function AdminMarketPage() {
       </div>
 
       {/* List */}
-      <div className="rounded-none border border-[rgba(255,255,255,0.06)] bg-[#141419] p-5">
+      <div className="rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-5">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1080CA]">Бүх бүтээгдэхүүн ({items.length})</span>
-          <button onClick={load} className="text-[11px] text-[#8A8A92] hover:text-[#1080CA]">Шинэчлэх</button>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#2E29FF]">Бүх бүтээгдэхүүн ({items.length})</span>
+          <button onClick={load} className="text-[11px] text-[#E2E4E8] hover:text-[#2E29FF]">Шинэчлэх</button>
         </div>
         {loading ? (
-          <div className="py-10 text-center text-[12px] text-[#56565E]">Ачааллаж байна...</div>
+          <div className="py-10 text-center text-[12px] text-[#E2E4E8]">Ачааллаж байна...</div>
         ) : items.length === 0 ? (
-          <div className="py-10 text-center text-[12px] text-[#56565E]">Бүтээгдэхүүн байхгүй</div>
+          <div className="py-10 text-center text-[12px] text-[#E2E4E8]">Бүтээгдэхүүн байхгүй</div>
         ) : (
           <div className="space-y-2">
             {items.map((p) => (
-              <div key={p._id} className="flex items-center gap-3 rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
-                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-none bg-[#F2F2F4]">
-                  {p.coverImage ? <img src={p.coverImage} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center text-[9px] text-[#d5dce3]">no img</div>}
+              <div key={p._id} className="flex items-center gap-3 rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A] p-3 transition hover:border-[rgba(255,255,255,0.12)]">
+                <div className="h-14 w-20 shrink-0 overflow-hidden rounded-[4px] bg-[#F2F2F4]">
+                  {p.coverImage ? <img src={p.coverImage} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center text-[11px] text-[#d5dce3]">no img</div>}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: `${CATEGORY_COLORS[p.category]}1F`, color: CATEGORY_COLORS[p.category] }}>{p.category}</span>
-                    {p.featured && <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">FEATURED</span>}
-                    {!p.published && <span className="rounded-full bg-[rgba(16,128,202,0.1)] px-1.5 py-0.5 text-[9px] font-bold text-[#1080CA]">DRAFT</span>}
-                    <span className="text-[10px] text-[#56565E]">{p.views} view · {p.clicks} click · ₮{p.price.toLocaleString()}</span>
+                    <span className="rounded-[4px] px-1.5 py-0.5 text-[11px] font-bold uppercase" style={{ background: `${CATEGORY_COLORS[p.category]}1F`, color: CATEGORY_COLORS[p.category] }}>{p.category}</span>
+                    {p.featured && <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 text-[11px] font-bold text-[#2E29FF]">FEATURED</span>}
+                    {!p.published && <span className="rounded-[4px] bg-[rgba(46,41,255,0.1)] px-1.5 py-0.5 text-[11px] font-bold text-[#2E29FF]">DRAFT</span>}
+                    <span className="text-[10px] text-[#E2E4E8]">{p.views} view · {p.clicks} click · ₮{p.price.toLocaleString()}</span>
                   </div>
                   <div className="mt-0.5 truncate text-[13px] font-bold text-[#E8E8E8]">{p.title}</div>
-                  <div className="truncate text-[11px] text-[#56565E]">/{p.slug} · by {p.sellerName}</div>
+                  <div className="truncate text-[11px] text-[#E2E4E8]">/{p.slug} · by {p.sellerName}</div>
                 </div>
                 <div className="flex shrink-0 gap-1.5">
-                  <button onClick={() => toggleFeatured(p)} className="rounded-none px-2 py-1 text-[11px] font-bold text-[#8A8A92] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
-                  <button onClick={() => togglePublished(p)} className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#8A8A92] transition hover:bg-[rgba(255,255,255,0.06)]">{p.published ? "Нуух" : "Нийтлэх"}</button>
-                  <button onClick={() => edit(p.slug)} className="rounded-none px-2.5 py-1 text-[11px] font-bold text-[#1080CA] transition hover:bg-[rgba(16,128,202,0.08)]">Засах</button>
-                  <button onClick={() => remove(p.slug)} className="rounded-none px-2.5 py-1 text-[11px] text-[#56565E] transition hover:bg-[rgba(16,128,202,0.08)] hover:text-[#1080CA]">Устгах</button>
+                  <button onClick={() => toggleFeatured(p)} className="rounded-[4px] px-2 py-1 text-[11px] font-bold text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.06)]">⭐</button>
+                  <button onClick={() => togglePublished(p)} className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#E2E4E8] transition hover:bg-[rgba(255,255,255,0.06)]">{p.published ? "Нуух" : "Нийтлэх"}</button>
+                  <button onClick={() => edit(p.slug)} className="rounded-[4px] px-2.5 py-1 text-[11px] font-bold text-[#2E29FF] transition hover:bg-[rgba(46,41,255,0.08)]">Засах</button>
+                  <button onClick={() => remove(p.slug)} className="rounded-[4px] px-2.5 py-1 text-[11px] text-[#E2E4E8] transition hover:bg-[rgba(46,41,255,0.08)] hover:text-[#2E29FF]">Устгах</button>
                 </div>
               </div>
             ))}

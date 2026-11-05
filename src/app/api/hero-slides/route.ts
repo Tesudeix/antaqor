@@ -20,6 +20,7 @@ export async function GET() {
           ctaLabel: s.ctaLabel,
           ctaHref: s.ctaHref,
           image: s.image,
+          layout: s.layout || "split",
         })),
       },
       { headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" } }

@@ -22,7 +22,7 @@ export interface PosterFrameProps {
   backgroundImage?: string;
 }
 
-const ACCENT = "#1080CA";
+const ACCENT = "#2E29FF";
 
 export function PosterFrame({
   children,
@@ -42,7 +42,7 @@ export function PosterFrame({
 
   return (
     <div
-      className={`relative ${ratio} w-full overflow-hidden bg-[#0a0a0c] text-[#f5f5f7]`}
+      className={`relative ${ratio} w-full overflow-hidden bg-[#0A0A0A] text-[#f5f5f7]`}
     >
       {/* ─── Optional full-bleed background image ─── */}
       {backgroundImage && (
@@ -63,7 +63,7 @@ export function PosterFrame({
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(70% 50% at 0% 0%, rgba(16,128,202,0.14) 0%, transparent 55%), radial-gradient(60% 45% at 100% 100%, rgba(192,20,74,0.16) 0%, transparent 55%)`,
+            backgroundImage: `radial-gradient(70% 50% at 0% 0%, rgba(46,41,255,0.14) 0%, transparent 55%), radial-gradient(60% 45% at 100% 100%, rgba(192,20,74,0.16) 0%, transparent 55%)`,
           }}
         />
       )}

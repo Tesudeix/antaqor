@@ -144,7 +144,7 @@ export default function HeroSlider() {
           />
           {/* Quiet loader — no wordmark */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" />
+            <div className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" />
           </div>
           <style jsx>{`
             @keyframes antaqorShimmer {
@@ -213,15 +213,15 @@ export default function HeroSlider() {
         {musicEnabled && (
           <button
             onClick={toggleMusic}
-            className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-none bg-black/55 shadow-sm backdrop-blur-md transition hover:bg-black/75"
+            className="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-[4px] bg-black/55 shadow-sm backdrop-blur-md transition hover:bg-black/75"
             aria-label={isPlaying ? "Хөгжим зогсоох" : "Хөгжим тоглуулах"}
           >
             {isPlaying ? (
-              <svg className="h-4 w-4 text-[#1080CA]" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 text-[#2E29FF]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
               </svg>
             ) : (
-              <svg className="h-4 w-4 text-[#1080CA]" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 text-[#2E29FF]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
             )}
@@ -234,7 +234,7 @@ export default function HeroSlider() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-[3px] rounded-none bg-[#1080CA]"
+                className="w-[3px] rounded-[4px] bg-[#2E29FF]"
                 style={{
                   animation: `musicBar 0.${3 + i}s ease-in-out infinite alternate`,
                   height: `${8 + i * 2}px`,
@@ -251,9 +251,9 @@ export default function HeroSlider() {
               <button
                 key={i}
                 onClick={() => { goTo(i); resetTimer(); }}
-                className={`h-[6px] rounded-none transition-all duration-300 ${
+                className={`h-[6px] rounded-[4px] transition-all duration-300 ${
                   i === current
-                    ? "w-[18px] bg-[#1080CA]"
+                    ? "w-[18px] bg-[#2E29FF]"
                     : "w-[6px] bg-[rgba(15,23,38,0.22)]"
                 }`}
               />

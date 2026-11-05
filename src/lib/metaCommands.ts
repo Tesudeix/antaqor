@@ -63,7 +63,7 @@ function statusBlock(user: IUser): string {
   return [
     `👤 ${user.name}`,
     subLine,
-    `💎 Кредит: ${user.credits ?? 0}₵`,
+    `✦ Кредит: ${user.credits ?? 0}`,
     user.level ? `⚡ Level ${user.level} · ${user.xp ?? 0} XP` : null,
     user.streakDays ? `🔥 Streak: ${user.streakDays} өдөр` : null,
   ].filter(Boolean).join("\n");
@@ -210,7 +210,7 @@ export async function tryHandleCommand(
   }
 
   if (matchesAny(text, CREDIT_KW)) {
-    return { text: `💎 Таны кредит: ${user.credits ?? 0}₵\n\nНэмэхдээ → antaqor.com/credits` };
+    return { text: `✦ Таны кредит: ${user.credits ?? 0}\n\nНэмэхдээ → antaqor.com/credits` };
   }
 
 

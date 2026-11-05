@@ -1,0 +1,277 @@
+/* ─── КЛАССРУМЫН ХИЧЭЭЛИЙН ТОГЛУУЛАГЧ ──────────────────────────────────
+   2026-09-25: цагаан сэдэвт бүрэн шилжүүлэв. Өмнө нь энэ файл шөнийн
+   үеийн хатуу өнгөтэй байсан (#1e2220 самбар, #16312a даалгавар, #0A0A0A
+   өргөн дэлгэц) — суурь нь цагаан болсон тул тэдгээр нь цагаан дээр
+   хөвөх хар хавтан болж үлдсэн.
+
+   ГУРВАН ДҮРЭМ:
+   • Радиус ҮРГЭЛЖ 4px. Өмнө нь 3/5/7/8/10/14px/50% гэж долоон өөр утга
+     байсан — нэг дэлгэц дээр долоон өөр булан нь эмх замбараагүй мэт
+     уншигддаг.
+   • Гадаргууг ДҮҮРГЭЛТЭЭР биш ХҮРЭЭГЭЭР ялгана. Цагаан суурин дээр
+     цагаан карт нь зураасаараа тодорно.
+   • ВИДЕОНЫ ТАЛБАР нь ХАРАНХУЙ ХЭВЭЭР. Энэ нь сэдвийн өнгө биш,
+     медиагийн шаардлага — бичлэгийн хүрээ гэрэлтвэл зураг угаагдана.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* 2026-10-09: САЙТ ДАХИН ЗӨВХӨН ХАРАНХУЙ — энэ модулийн хувьсагчдыг
+   харанхуй руу эргүүлэв (CSS module тул сайтын theme давхарга хүрдэггүй). */
+.page{
+  --ink:#F2F2F4;
+  --muted:#C9C9D1;
+  --dim:#9C9CA6;
+  --line:rgba(255,255,255,0.12);
+  --line-soft:rgba(255,255,255,0.06);
+  --surface:#141414;
+  --surface-2:#1E1E1E;
+  --surface-3:#262626;
+  /* Дүүргэлт ба бичгийн өргөлт нь ӨӨР утга: #2E29FF нь цагаан дээр
+     бичиг болоход 1.61:1 буюу уншигдахгүй, харин дүүргэлт дээрээ
+     бараан бичигтэй 12.53:1. */
+  --accent:#2E29FF;
+  --accent-ink:#2E29FF;
+  --accent-soft:rgba(46,41,255,0.18);
+  --r:4px;
+  color:var(--ink);
+  max-width:1280px;
+  margin:auto;
+  padding:4px 16px 48px;
+  font-family:var(--font-sans),sans-serif;
+}
+
+.page button,.page input,.page select,.reviews button,.reviews input,.reviews textarea{font:inherit}
+.page button,.reviews button{cursor:pointer}
+.page button:disabled,.reviews button:disabled{opacity:.45;cursor:not-allowed}
+.page button:focus-visible,.page a:focus-visible,.page select:focus-visible,.page input:focus-visible,.reviews button:focus-visible,.reviews textarea:focus-visible{
+  outline:2px solid var(--accent-ink);outline-offset:2px;border-radius:var(--r);
+}
+
+/* ── Дээд мөр ────────────────────────────────────────────────────── */
+.topbar,.topbar>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar{font-size:13px;margin-bottom:24px;flex-wrap:wrap}
+.topbar button,.playerToolbar button,.lessonNav button,.actions button{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink);
+  padding:9px 13px;
+  border-radius:var(--r);
+  font-size:12px;
+  font-weight:600;
+  transition:background .15s,border-color .15s;
+}
+.topbar button:hover,.playerToolbar button:hover,.lessonNav button:hover,.actions button:hover{
+  background:var(--surface-2);border-color:rgba(255,255,255,0.22);
+}
+.topbar a{color:var(--muted);text-decoration:none}
+.topbar a:hover{color:var(--ink)}
+
+/* ── Гарчиг ─────────────────────────────────────────────────────── */
+.header{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:24px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--accent-ink);margin:0 0 10px}
+.header h1{font-size:clamp(25px,3vw,38px);line-height:1.2;letter-spacing:-1px;font-weight:750;margin:0}
+.intro{max-width:660px;color:var(--muted);font-size:14px;line-height:1.7;margin:12px 0 0}
+
+.progress{min-width:175px;max-width:250px;font-size:12px;color:var(--muted)}
+.progress progress{display:block;width:100%;height:6px;border:0;border-radius:var(--r);margin-top:10px;accent-color:var(--accent-ink);overflow:hidden}
+.progress progress::-webkit-progress-bar{background:var(--surface-3);border-radius:var(--r)}
+.progress progress::-webkit-progress-value{background:var(--accent-ink);border-radius:var(--r)}
+
+/* ── Байрлал ────────────────────────────────────────────────────── */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start}
+.main{min-width:0}
+
+/* ── Тоглуулагч — ЗОРИУД ХАРАНХУЙ ───────────────────────────────── */
+/* 2026-10-09: хичээл REEL хэлбэрээр — 9:16 босоо, дэлгэцийн өндөрт багтана.
+   Өндрийг өгөөд өргөнийг харьцаагаар гаргана (aspect-ratio + height);
+   хэвтээ видео хар зурвастай (contain), тайрагдахгүй. */
+.player{
+  position:relative;aspect-ratio:9/16;height:min(calc(100svh - 150px),820px);width:auto;max-width:100%;margin:0 auto;background:#0A0A0A;
+  border-radius:var(--r);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  scroll-margin-top:90px;color:#F4F7F5;
+}
+.player video{width:100%;height:100%;position:absolute;inset:0;object-fit:contain;border:0;background:#000}
+/* YouTube/Vimeo embed нь өөрийн 16:9 харьцаагаар, reel хүрээний ГОЛД —
+   бүтэн 9:16 рүү сунгавал Vimeo хоосон хэсгийг ЦАГААНААР будаж байв. */
+.player iframe{position:absolute;left:-1%;top:50%;width:102%;height:auto;aspect-ratio:16/9;transform:translateY(-50%);border:0;background:#000}
+.player:fullscreen{width:100vw;height:100vh;border-radius:0;aspect-ratio:auto;background:#000}
+.player:fullscreen iframe{top:0;height:100%;aspect-ratio:auto;transform:none}
+.player:fullscreen video{object-fit:contain}
+
+.playerToolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 26px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.playerToolbar label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.playerToolbar input{accent-color:var(--accent-ink);width:16px;height:16px}
+
+/* ── Хичээлийн толгой ───────────────────────────────────────────── */
+.lessonMeta{color:var(--muted);font-size:12px;margin-bottom:8px}
+.lessonHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.lessonHeading h2{margin:0;font-weight:700;font-size:23px;line-height:1.35;letter-spacing:-.4px}
+
+.primary,.secondary{
+  border:1px solid transparent;border-radius:var(--r);padding:10px 15px;
+  white-space:nowrap;font-size:12px!important;font-weight:700!important;
+  transition:background .15s;
+}
+.primary{background:var(--accent);color:#0A0A0A}
+.primary:hover{background:#1F1AD9;color:#0A0A0A}
+/* 2026-10-11: ӨДРИЙН ГОРИМ. CSS module тул сайтын §11 давхарга хүрэхгүй —
+   хувьсагчдыг энд өдөрт тааруулна. Видео/бүтэн дэлгэцийн талбар (хатуу
+   бараан) хэвээр: медиагийн шаардлага. */
+:global(:root[data-theme="light"]) .page{
+  --ink:#0F1420;
+  --muted:#3D4350;
+  --dim:#5B6170;
+  --line:rgba(16,24,40,0.12);
+  --line-soft:rgba(16,24,40,0.06);
+  --surface:#FFFFFF;
+  --surface-2:#F1F3F8;
+  --surface-3:#E6E9F0;
+  --accent-ink:#08756F;
+  --accent-soft:rgba(46,41,255,0.16);
+}
+.secondary{background:var(--accent-soft);color:var(--accent-ink);border-color:rgba(46,41,255,0.34)}
+.secondary:hover{background:rgba(46,41,255,0.18)}
+
+/* ── Контент ────────────────────────────────────────────────────── */
+.article{font-size:15px;line-height:1.8;margin-top:22px;color:var(--ink)}
+.article>div+div{margin-top:20px}
+
+.resources{border:1px solid var(--line);padding:16px;border-radius:var(--r);margin:20px 0;background:var(--surface)}
+.resources h3{margin:0 0 10px;font-size:13px;font-weight:700}
+.resources a{display:block;color:var(--accent-ink);font-weight:600;padding:3px 0}
+
+.task{
+  display:block;background:var(--accent-soft);border:1px solid rgba(46,41,255,0.30);
+  padding:15px;border-radius:var(--r);color:var(--accent-ink);
+  font-size:13px;font-weight:600;margin-top:14px;text-decoration:none;
+}
+.task:hover{background:rgba(46,41,255,0.16)}
+
+.lessonNav{border-top:1px solid var(--line);margin-top:28px;padding-top:18px;display:flex;justify-content:space-between;gap:10px}
+
+/* ── Хөтөлбөрийн самбар ─────────────────────────────────────────── */
+.curriculum{
+  border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);overflow:hidden;min-width:0;
+}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 18px;gap:24px}
+.tabs button{border:0;border-bottom:2px solid transparent;padding:17px 0 14px;background:none;color:var(--muted);font-size:14px;font-weight:600}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected=true]{border-bottom-color:var(--accent-ink);color:var(--ink)}
+.tabs span{font-size:11px;background:var(--surface-3);color:var(--muted);border-radius:var(--r);padding:2px 6px;margin-left:5px;font-weight:700}
+
+.filters{padding:16px 18px;display:grid;gap:10px;border-bottom:1px solid var(--line-soft)}
+.filters label{font-size:11px;color:var(--muted);font-weight:600}
+.filters select,.filters input{
+  width:100%;min-width:0;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);color:var(--ink);padding:11px 10px;font-size:13px;
+}
+.filters select:focus,.filters input:focus{border-color:#1F1AD9;outline:none;box-shadow:0 0 0 3px rgba(46,41,255,.20)}
+
+.lessonList{max-height:660px;overflow:auto;padding:8px}
+.lessonCard{
+  border:1px solid transparent;border-radius:var(--r);background:var(--surface);
+  display:flex;gap:12px;padding:10px;width:100%;text-align:left;
+  align-items:flex-start;margin-bottom:2px;color:var(--ink);
+  transition:background .15s,border-color .15s;
+}
+.lessonCard:hover{background:var(--surface-2);border-color:var(--line-soft)}
+.lessonCard.active{background:var(--accent-soft);border-color:rgba(46,41,255,0.40)}
+
+.cover{position:relative;display:block;flex:0 0 64px;width:64px;aspect-ratio:9/16;border-radius:var(--r);overflow:hidden;background:var(--surface-3)}
+.cover img{height:100%;width:100%;object-fit:cover}
+.coverFallback{display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent-ink);height:100%;background:var(--surface-3)}
+.playBadge{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  border-radius:var(--r);width:28px;height:28px;display:grid;place-content:center;
+  font-size:10px;background:rgba(10,10,10,.62);color:#FFFFFF;
+}
+.duration{position:absolute;bottom:4px;right:4px;background:rgba(10,10,10,.78);color:#FFFFFF;border-radius:var(--r);padding:1px 5px;font-size:9px;font-weight:600}
+
+.cardText{display:flex;flex-direction:column;min-width:0;gap:5px}
+.cardText strong{font-size:13px;line-height:1.45;font-weight:650;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cardText>span{font-size:10px;color:var(--dim);font-weight:600}
+.active .cardText>span{color:var(--accent-ink)}
+.cardText small{font-size:11px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── Хоосон / түгжээтэй ─────────────────────────────────────────── */
+.empty{text-align:center;padding:52px 20px;font-size:14px;color:var(--muted)}
+.empty button,.empty a{display:inline-block;margin:12px 6px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);text-decoration:none;font-weight:600}
+.empty button:hover,.empty a:hover{background:var(--surface-2)}
+
+.locked{padding:24px;text-align:center}
+.locked>span{font-size:25px}
+.locked h2{font-size:18px;margin:10px 0;color:#F4F7F5}
+.locked p{font-size:13px;color:#C9D2CE;margin:0}
+
+/* ── Өргөн дэлгэц ───────────────────────────────────────────────── */
+.focus{
+  position:fixed;inset:0;z-index:10000;background:#0A0A0A;
+  max-width:none;overflow:auto;padding:20px max(20px,calc((100vw - 1600px)/2));
+}
+.focus .layout{grid-template-columns:minmax(0,1fr) 360px}
+.focus .header{margin-bottom:16px}
+.focus .intro,.focus .eyebrow{display:none}
+
+/* ═══ ХАРИУ ҮЙЛДЭЛ ══════════════════════════════════════════════ */
+@media(min-width:1500px){.layout,.focus .layout{grid-template-columns:minmax(0,1fr) 390px}}
+
+@media(max-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr) 320px;gap:20px}
+  .cover{flex-basis:60px;width:60px}
+  .header{display:block}
+  .progress{margin-top:18px;max-width:none}
+  .lessonHeading{flex-wrap:wrap}
+}
+
+@media(max-width:850px){
+  .layout,.focus .layout{grid-template-columns:1fr}
+  .curriculum{margin-top:4px}
+  .lessonList{max-height:none}
+  .cover{width:68px;flex-basis:68px}
+  .lessonCard{padding:12px 10px}
+  .cardText strong{font-size:14px}
+  .cardText>span{font-size:11px}
+  .cardText small{font-size:12px}
+  .playerToolbar{margin-bottom:22px}
+  .focus{padding:14px}
+  .header{margin-bottom:18px}
+  .header h1{font-size:28px}
+  .topbar{gap:8px;font-size:12px;margin-bottom:18px}
+  .topbar>div{gap:8px}
+  .intro{font-size:13px}
+  .lessonHeading h2{font-size:20px}
+  .player{border-radius:var(--r)}
+  .page{padding-bottom:32px}
+}
+
+/* ── Утас ───────────────────────────────────────────────────────
+   Хүрэх бай 44px-ээс багагүй. Хичээлийн толгойн товч мөрөнд
+   багтахаа больдог тул доошоо бүтэн өргөнөөр тавина. */
+@media(max-width:620px){
+  .page{padding:4px 12px 40px}
+  .topbar{font-size:11px}
+  .topbar button{padding:9px 10px}
+  .lessonHeading{flex-direction:column;align-items:stretch;gap:12px}
+  .lessonHeading h2{font-size:19px}
+  .primary,.secondary{width:100%;padding:13px 15px;font-size:13px!important}
+  .lessonNav{flex-direction:column}
+  .lessonNav button{width:100%;padding:13px}
+  .playerToolbar{gap:12px}
+  .playerToolbar button{padding:11px 14px;font-size:12px}
+  .cover{flex-basis:60px;width:60px}
+  .tabs{padding:0 14px;gap:18px}
+  .filters{padding:14px}
+  .lessonList{padding:6px}
+}
+
+/* Хэвтээ утас — өндөр багатай тул жагсаалтыг хязгаарлаж,
+   видеог дэлгэцэнд аль болох их эзлүүлнэ. */
+@media(max-height:500px) and (orientation:landscape){
+  .topbar,.intro,.eyebrow{display:none}
+  .header{margin-bottom:12px}
+  .player{height:78vh}
+}
+
+/* Тоглуулагчийн алдааны мэдэгдэл — өмнө нь ангигүй тул хэвгүй байв. */
+.error{margin:12px 0 0;padding:11px 13px;border:1px solid rgba(194,53,43,.32);background:rgba(194,53,43,.07);border-radius:var(--r);color:#C2352B;font-size:13px;font-weight:600}

@@ -11,7 +11,7 @@ interface TrendingPrompt {
   createdAt?: string;
 }
 
-const NEON = "#1080CA";
+const NEON = "#2E29FF";
 
 export default function AdminPromptsPage() {
   const [prompts, setPrompts] = useState<TrendingPrompt[]>([]);
@@ -64,81 +64,81 @@ export default function AdminPromptsPage() {
   return (
     <div className="mx-auto max-w-[700px] pb-16">
       <div className="mb-6">
-        <span className="rounded-full bg-[rgba(16,128,202,0.12)] px-2 py-0.5 text-[9px] font-black tracking-[0.18em]" style={{ color: NEON }}>
+        <span className="rounded-[4px] bg-[rgba(46,41,255,0.12)] px-2 py-0.5 text-[11px] font-black tracking-[0.18em]" style={{ color: NEON }}>
           ADMIN · TRENDING PROMPTS
         </span>
         <h1 className="mt-2 text-[24px] font-black text-white sm:text-[28px]">Trending промпт</h1>
-        <p className="mt-1 text-[12px] text-[#8A8A92]">Хэрэглэгчдэд харагдах урт жагсаалт. Идэвхтэйг л nano-banano хуудсанд харуулна.</p>
+        <p className="mt-1 text-[12px] text-[#E2E4E8]">Хэрэглэгчдэд харагдах урт жагсаалт. Идэвхтэйг л nano-banano хуудсанд харуулна.</p>
       </div>
 
       {/* Add new */}
-      <div className="mb-5 rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0E0E12] p-4">
-        <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#8A8A92]">Шинэ промпт</div>
+      <div className="mb-5 rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] p-4">
+        <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-[#E2E4E8]">Шинэ промпт</div>
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Label (chip text) — e.g. Cyber portrait"
           maxLength={40}
-          className="mb-2 w-full rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="mb-2 w-full rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[rgba(46,41,255,0.4)]"
         />
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Бүтэн промпт текст…"
           rows={3}
-          className="mb-2 w-full resize-y rounded-none border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#56565E] outline-none focus:border-[rgba(16,128,202,0.4)]"
+          className="mb-2 w-full resize-y rounded-[4px] border border-[rgba(255,255,255,0.08)] bg-[#0A0A0A] px-3 py-2 text-[13px] leading-relaxed text-[#E8E8E8] placeholder-[#62666F] outline-none focus:border-[rgba(46,41,255,0.4)]"
         />
         <div className="flex items-center justify-between">
-          <span className="text-[10px] text-[#56565E]">{text.length} тэмдэгт</span>
+          <span className="text-[10px] text-[#E2E4E8]">{text.length} тэмдэгт</span>
           <button
             type="button"
             onClick={add}
             disabled={busy || !label.trim() || !text.trim()}
-            className="rounded-none bg-[#1080CA] px-4 py-2 text-[12px] font-black text-[#0E0E10] transition disabled:opacity-50"
+            className="rounded-[4px] bg-[#2E29FF] px-4 py-2 text-[12px] font-black text-white transition disabled:opacity-50"
           >
             {busy ? "..." : "Нэмэх"}
           </button>
         </div>
-        {err && <p className="mt-2 text-[11px] text-[#1080CA]">{err}</p>}
+        {err && <p className="mt-2 text-[11px] text-[#2E29FF]">{err}</p>}
       </div>
 
       {loading ? (
-        <p className="text-[12px] text-[#8A8A92]">Татаж байна…</p>
+        <p className="text-[12px] text-[#E2E4E8]">Татаж байна…</p>
       ) : prompts.length === 0 ? (
-        <p className="text-[12px] text-[#8A8A92]">Промпт алга. Дээрээс нэмнэ үү.</p>
+        <p className="text-[12px] text-[#E2E4E8]">Промпт алга. Дээрээс нэмнэ үү.</p>
       ) : (
-        <div className="overflow-hidden rounded-none border border-[rgba(255,255,255,0.06)] bg-[#0E0E12]">
+        <div className="overflow-hidden rounded-[4px] border border-[rgba(255,255,255,0.06)] bg-[#0A0A0A]">
           {prompts.map((p, i) => (
             <div key={p._id} className={`px-4 py-3 ${i > 0 ? "border-t border-[rgba(255,255,255,0.04)]" : ""}`}>
               <div className="flex items-baseline justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className="inline-flex items-center gap-1 rounded-none px-1.5 py-0.5 text-[10px] font-black"
+                      className="inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[10px] font-black"
                       style={{
-                        background: p.active ? "rgba(16,128,202,0.12)" : "rgba(255,255,255,0.04)",
-                        color: p.active ? NEON : "#8A8A92",
+                        background: p.active ? "rgba(46,41,255,0.12)" : "rgba(255,255,255,0.04)",
+                        color: p.active ? NEON : "#30333F",
                       }}
                     >
                       {p.active && <span className="h-1 w-1 rounded-full" style={{ background: NEON }} />}
                       {p.label}
                     </span>
-                    <span className="text-[9px] text-[#56565E]">#{p.order}</span>
+                    <span className="text-[11px] text-[#E2E4E8]">#{p.order}</span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[#5b6573]">{p.text}</p>
+                  <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[#E2E4E8]">{p.text}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => toggle(p)}
-                    className="text-[10px] font-bold text-[#8A8A92] transition hover:text-[#E8E8E8]"
+                    className="text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#E8E8E8]"
                   >
                     {p.active ? "Унтраах" : "Нээх"}
                   </button>
                   <button
                     type="button"
                     onClick={() => remove(p)}
-                    className="text-[10px] font-bold text-[#8A8A92] transition hover:text-[#1080CA]"
+                    className="text-[10px] font-bold text-[#E2E4E8] transition hover:text-[#2E29FF]"
                   >
                     Устгах
                   </button>

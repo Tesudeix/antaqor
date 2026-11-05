@@ -19,6 +19,9 @@ export interface IThreadsAutoReplyLog extends Document {
   triggerName?: string;
   actionTaken?: string; // reply | log_lead | reply_and_log
   sentText?: string;
+  /* AI яагаад илгээсэн эсвэл алгассанаа энд бичнэ — алдаа БИШ тул
+     `error`-оос тусдаа: эрүүл алгаслыг алдаа мэт харуулах нь буруу. */
+  note?: string;
   error?: string;
   retryCount: number;
   createdAt: Date;
@@ -42,6 +45,9 @@ const ThreadsAutoReplyLogSchema = new Schema<IThreadsAutoReplyLog>(
     triggerName: { type: String, default: "" },
     actionTaken: { type: String, default: "" },
     sentText: { type: String, default: "" },
+    /* AI яагаад илгээсэн/алгассанаа энд бичнэ — алдаа биш тул `error`-оос
+       тусдаа байх ёстой, эс тэгвээс эрүүл skip нь алдаа мэт харагдана. */
+    note: { type: String, default: "" },
     error: { type: String, default: "" },
     retryCount: { type: Number, default: 0 },
   },

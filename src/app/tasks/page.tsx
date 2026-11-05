@@ -26,9 +26,9 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   open: "text-green-400 border-green-900",
-  submitted: "text-[#1080CA] border-[rgba(16,128,202,0.3)]",
-  accepted: "text-[#1080CA] border-[#1080CA]",
-  rejected: "text-[#5b6573] border-[#5b6573]",
+  submitted: "text-[#2E29FF] border-[rgba(46,41,255,0.3)]",
+  accepted: "text-[#2E29FF] border-[#2E29FF]",
+  rejected: "text-[#E2E4E8] border-[#62666F]",
 };
 
 export default function TasksPage() {
@@ -115,7 +115,7 @@ export default function TasksPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-3 w-3 animate-pulse bg-[#1080CA]" />
+        <div className="h-3 w-3 animate-pulse bg-[#2E29FF]" />
       </div>
     );
   }
@@ -131,7 +131,7 @@ export default function TasksPage() {
           <h1 className="text-[24px] font-bold tracking-[1px] text-[#0e1726]">
             ДААЛГАВРУУД
           </h1>
-          <p className="mt-1 text-[11px] tracking-[1px] text-[#5b6573]">
+          <p className="mt-1 text-[11px] tracking-[1px] text-[#E2E4E8]">
             Даалгавар гүйцэтгэж XP цуглуул
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function TasksPage() {
                 className="input-dark resize-none"
               />
               <div className="flex items-center gap-2">
-                <label className="text-[10px] text-[#5b6573]">XP шагнал:</label>
+                <label className="text-[10px] text-[#E2E4E8]">XP шагнал:</label>
                 <input
                   type="number"
                   min={200}
@@ -179,7 +179,7 @@ export default function TasksPage() {
           ) : (
             <button
               onClick={() => setShowCreate(true)}
-              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#5b6573] transition hover:border-[#1080CA] hover:text-[#1080CA]"
+              className="w-full border border-dashed border-[#2a2825] px-4 py-3 text-[10px] uppercase tracking-[2px] text-[#E2E4E8] transition hover:border-[#2E29FF] hover:text-[#2E29FF]"
             >
               + Даалгавар үүсгэх
             </button>
@@ -200,7 +200,7 @@ export default function TasksPage() {
                     {task.description && (
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
-                    <div className="mt-2 text-[10px] text-[#5b6573]">
+                    <div className="mt-2 text-[10px] text-[#E2E4E8]">
                       Гүйцэтгэсэн: {task.assignedTo?.name || "—"}
                     </div>
                     {task.submissionNote && (
@@ -209,15 +209,15 @@ export default function TasksPage() {
                       </p>
                     )}
                   </div>
-                  <span className="text-[16px] font-bold tracking-wide text-[#1080CA]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#2E29FF]">
                     +{task.xpReward} XP
                   </span>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <button onClick={() => handleAction(task._id, "accept")} className="btn-blood !py-1.5 !px-4 !text-[9px]">
+                  <button onClick={() => handleAction(task._id, "accept")} className="btn-blood !py-1.5 !px-4 !text-[11px]">
                     Зөвшөөрөх
                   </button>
-                  <button onClick={() => handleAction(task._id, "reject")} className="btn-ghost !py-1.5 !px-4 !text-[9px]">
+                  <button onClick={() => handleAction(task._id, "reject")} className="btn-ghost !py-1.5 !px-4 !text-[11px]">
                     Татгалзах
                   </button>
                 </div>
@@ -241,16 +241,16 @@ export default function TasksPage() {
                       <p className="mt-1 text-[12px] leading-[1.7] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
                   </div>
-                  <span className="text-[16px] font-bold tracking-wide text-[#1080CA]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#2E29FF]">
                     +{task.xpReward} XP
                   </span>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <button onClick={() => handleAction(task._id, "claim")} className="btn-blood !py-1.5 !px-4 !text-[9px]">
+                  <button onClick={() => handleAction(task._id, "claim")} className="btn-blood !py-1.5 !px-4 !text-[11px]">
                     Авах
                   </button>
                   {admin && (
-                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[9px] !text-[#1080CA]">
+                    <button onClick={() => handleDelete(task._id)} className="btn-ghost !py-1.5 !px-4 !text-[11px] !text-[#2E29FF]">
                       Устгах
                     </button>
                   )}
@@ -275,12 +275,12 @@ export default function TasksPage() {
                       <p className="mt-1 text-[12px] text-[rgba(240,236,227,0.4)]">{task.description}</p>
                     )}
                     <div className="mt-2 flex items-center gap-2">
-                      <span className={`border px-2 py-0.5 text-[9px] uppercase tracking-[1px] ${STATUS_COLORS[task.status]}`}>
+                      <span className={`border px-2 py-0.5 text-[11px] uppercase tracking-[1px] ${STATUS_COLORS[task.status]}`}>
                         {STATUS_LABELS[task.status]}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[16px] font-bold tracking-wide text-[#1080CA]">
+                  <span className="text-[16px] font-bold tracking-wide text-[#2E29FF]">
                     +{task.xpReward} XP
                   </span>
                 </div>
@@ -292,7 +292,7 @@ export default function TasksPage() {
                       placeholder="Тэмдэглэл (заавал биш)"
                       className="input-dark !py-1.5 !text-[11px]"
                     />
-                    <button onClick={() => handleAction(task._id, "submit")} className="btn-blood !py-1.5 !px-4 !text-[9px]">
+                    <button onClick={() => handleAction(task._id, "submit")} className="btn-blood !py-1.5 !px-4 !text-[11px]">
                       Илгээх
                     </button>
                   </div>
@@ -304,7 +304,7 @@ export default function TasksPage() {
       )}
 
       {tasks.length === 0 && (
-        <p className="py-12 text-center text-[12px] text-[#5b6573]">Даалгавар байхгүй байна.</p>
+        <p className="py-12 text-center text-[12px] text-[#E2E4E8]">Даалгавар байхгүй байна.</p>
       )}
     </div>
   );

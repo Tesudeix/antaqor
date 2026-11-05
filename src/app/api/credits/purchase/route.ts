@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     kind: "credits",
     creditAmount: pkg.credits,
     packageId: pkg.id,
-    description: `Antaqor Credits · ${pkg.label} · ${pkg.credits}₵ · ${userEmail}`,
+    description: `Antaqor Credits · ${pkg.label} · ${pkg.credits} кредит · ${userEmail}`,
     status: "pending",
   });
 
@@ -108,4 +108,33 @@ export async function POST(req: NextRequest) {
     status: "pending",
     hasReceipt: false,
   });
+}
+
+/* DELETE ?id= — дуусаагүй кредит хүсэлтээ цуцлах.
+   ЯАГААД ХЭРЭГТЭЙ ВЭ: сар хагасын өмнөх мартагдсан хүсэлт нь мөнхөд
+   "pending" хэвээр үлдэж, цэнэглэх хуудсанд гарсаар байдаг (эзний данс
+   дээр 4 сарын настай ₮60,000 ийм байдлаар сууж байсан). Хүн өөрөө
+   цэвэрлэж чаддаг байх ёстой — админ хүртэл хүлээхгүйгээр. */
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+  const userId = (session.user as { id: string }).id;
+  const id = new URL(req.url).searchParams.get("id") || "";
+
+  await dbConnect();
+  const query: Record<string, unknown> = { user: userId, kind: "credits", status: "pending" };
+  if (id) query._id = id;
+
+  const payment = await Payment.findOne(query).sort({ createdAt: -1 });
+  if (!payment) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  /* Устгахгүй, "failed" болгоно: төлбөрийн бүртгэл бол санхүүгийн ул мөр.
+     Хэрэв мөнгө нь дараа нь ирвэл админ юу болсныг харах ёстой. */
+  payment.status = "failed";
+  payment.adminNote = ((payment.adminNote || "") + " [хэрэглэгч өөрөө цуцалсан]").trim().slice(0, 500);
+  await payment.save();
+
+  return NextResponse.json({ ok: true, paymentId: String(payment._id) });
 }

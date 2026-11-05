@@ -29,10 +29,10 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div className="flex min-h-[60vh] items-center justify-center">
           <div className="text-center">
-            <div className="text-6xl tracking-[4px] text-[#1080CA]">
+            <div className="text-6xl tracking-[4px] text-[#2E29FF]">
               ERROR
             </div>
-            <p className="mt-4 text-[12px] text-[#5b6573]">
+            <p className="mt-4 text-[12px] text-[#E2E4E8]">
               Something went wrong. Try refreshing.
             </p>
             <button

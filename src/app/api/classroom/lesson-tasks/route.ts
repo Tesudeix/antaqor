@@ -1,3 +1,4 @@
+import { classroomContentGate } from "@/lib/classroomContentGate";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -10,6 +11,8 @@ import mongoose from "mongoose";
 
 // GET — list tasks (?lessonId= or ?sectionId= or ?subsectionId= or ?courseId=)
 export async function GET(req: NextRequest) {
+  const denied = await classroomContentGate();
+  if (denied) return denied;
   const { searchParams } = new URL(req.url);
   const lessonId = searchParams.get("lessonId");
   const sectionId = searchParams.get("sectionId");

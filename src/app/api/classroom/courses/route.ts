@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/admin";
 import dbConnect from "@/lib/mongodb";
 import Course from "@/models/Course";
 import Lesson from "@/models/Lesson";
+import mongoose from "mongoose";
 import { broadcastNotification } from "@/lib/notifications";
 
 export async function GET() {
@@ -17,9 +18,22 @@ export async function GET() {
     const durByCourse = new Map<string, number>(
       agg.map((a: { _id: unknown; total: number }) => [String(a._id), a.total])
     );
+    // Үзэгчийн явц — курс бүрд дуусгасан хичээлийн тоо (progress карт дээр).
+    const session = await getServerSession(authOptions);
+    const uid = (session?.user as { id?: string } | undefined)?.id;
+    const doneAgg = uid && mongoose.isValidObjectId(uid)
+      ? await Lesson.aggregate([
+          { $match: { completedBy: new mongoose.Types.ObjectId(uid) } },
+          { $group: { _id: "$course", n: { $sum: 1 } } },
+        ])
+      : [];
+    const doneByCourse = new Map<string, number>(
+      doneAgg.map((a: { _id: unknown; n: number }) => [String(a._id), a.n])
+    );
     const withTime = courses.map((c) => ({
       ...c,
       totalDurationSec: durByCourse.get(String(c._id)) || 0,
+      doneCount: doneByCourse.get(String(c._id)) || 0,
     }));
     return NextResponse.json({ courses: withTime });
   } catch (error: unknown) {

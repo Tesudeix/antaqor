@@ -4,7 +4,7 @@
 //     Messenger uses Pages `pages_messaging` + comment_id recipient.
 //   • replyToComment — public reply on the same comment.
 
-import { pageTokenFor, igTokenFor, type MetaAccount } from "@/lib/metaAccounts";
+import { pageTokenFor, igTokenFor, ensurePageRegistry, type MetaAccount } from "@/lib/metaAccounts";
 
 const IG_BASE = "https://graph.instagram.com/v23.0";
 const FB_BASE = "https://graph.facebook.com/v21.0";
@@ -31,6 +31,7 @@ export async function sendPrivateReplyToComment(
   text: string,
   opts: { account?: MetaAccount } = {}
 ): Promise<ApiResult> {
+  await ensurePageRegistry();
   const picked = pickToken(platform, opts.account || "antaqor");
   if (!picked) return { ok: false, status: 500, body: `missing ${platform} access token` };
   const url = `${picked.base}/me/messages?access_token=${encodeURIComponent(picked.token)}`;
@@ -53,15 +54,38 @@ export async function replyToComment(
   text: string,
   opts: { account?: MetaAccount } = {}
 ): Promise<ApiResult> {
+  await ensurePageRegistry();
   const picked = pickToken(platform, opts.account || "antaqor");
   if (!picked) return { ok: false, status: 500, body: `missing ${platform} access token` };
-  const url = `${picked.base}/${encodeURIComponent(commentId)}/replies?access_token=${encodeURIComponent(picked.token)}`;
+  // Facebook replies to a comment through /{comment-id}/comments. /replies is
+  // the INSTAGRAM edge — posting a Facebook reply there fails with a confusing
+  // "object does not exist" (code 100 subcode 33) even when the token is fine.
+  const edge = platform === "instagram" ? "replies" : "comments";
+  const url = `${picked.base}/${encodeURIComponent(commentId)}/${edge}?access_token=${encodeURIComponent(picked.token)}`;
   const body = new URLSearchParams({ message: text.slice(0, 1000) }).toString();
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
   });
+  const respText = await res.text().catch(() => "");
+  return { ok: res.ok, status: res.status, body: respText };
+}
+
+// Like a comment as the Page — the cheapest possible acknowledgement, and it
+// lands instantly next to the commenter's own words. Needs the same
+// pages_manage_engagement as a public reply, so it fails softly: the DM has
+// already gone out by the time this runs and must never be blocked by it.
+export async function likeComment(
+  platform: MetaPlatform,
+  commentId: string,
+  opts: { account?: MetaAccount } = {}
+): Promise<ApiResult> {
+  await ensurePageRegistry();
+  const picked = pickToken(platform, opts.account || "antaqor");
+  if (!picked) return { ok: false, status: 500, body: `missing ${platform} access token` };
+  const url = `${picked.base}/${encodeURIComponent(commentId)}/likes?access_token=${encodeURIComponent(picked.token)}`;
+  const res = await fetch(url, { method: "POST" });
   const respText = await res.text().catch(() => "");
   return { ok: res.ok, status: res.status, body: respText };
 }

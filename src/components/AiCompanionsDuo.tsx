@@ -19,7 +19,7 @@ interface Agent {
 }
 
 const ACCENT: Record<string, string> = {
-  antaqor: "#1080CA",
+  antaqor: "#2E29FF",
   budjargal: "#6366F1",
 };
 
@@ -73,12 +73,12 @@ export default function AiCompanionsDuo({ source = "home" }: { source?: string }
       {/* Eyebrow — keeps the cards visually dominant; section label recedes */}
       <div className="mb-2 flex items-baseline justify-between px-1">
         <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_6px_rgba(16,128,202,0.7)]" />
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#2E29FF] shadow-[0_0_6px_rgba(46,41,255,0.7)]" />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">
             AI КОМПАНЬОН
           </span>
         </div>
-        <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#94a3b8]">
+        <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#E2E4E8]">
           {agents.length} АГЕНТ
         </span>
       </div>
@@ -88,7 +88,7 @@ export default function AiCompanionsDuo({ source = "home" }: { source?: string }
             <PersonaCard
               key={agent._id}
               agent={agent}
-              accent={ACCENT[agent.slug] || "#1080CA"}
+              accent={ACCENT[agent.slug] || "#2E29FF"}
               invite={invites[agent.slug] || PLAYFUL_INVITES[0]}
               source={source}
             />
@@ -138,7 +138,7 @@ function PersonaCard({
     >
       {/* ── Gradient ring + avatar ── */}
       <div
-        className="relative aspect-square w-full rounded-none p-[2px]"
+        className="relative aspect-square w-full rounded-[4px] p-[2px]"
         style={{
           // IG-story-style sweep — brand accent across the ring with a dark
           // dip in the middle so it feels like a halo, not a flat border.
@@ -146,7 +146,7 @@ function PersonaCard({
           boxShadow: `0 4px 14px rgba(0,0,0,0.45), 0 0 10px ${accent}55`,
         }}
       >
-        <div className="relative h-full w-full overflow-hidden rounded-none bg-[#ffffff]">
+        <div className="relative h-full w-full overflow-hidden rounded-[4px] bg-[#ffffff]">
           <motion.img
             src={agent.avatar}
             alt={agent.name}
@@ -161,7 +161,7 @@ function PersonaCard({
             animate={tapping ? { scale: [1, 1.4, 1] } : { scale: 1 }}
             transition={{ duration: 0.4 }}
           >
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4FE065] opacity-75" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-[4px] bg-[#4FE065] opacity-75" />
             <span
               className="relative inline-flex h-2 w-2 rounded-full bg-[#4FE065]"
               style={{ boxShadow: "0 0 0 1.5px #ffffff" }}
@@ -173,7 +173,7 @@ function PersonaCard({
             {tapping && (
               <motion.span
                 key="ripple"
-                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[4px]"
                 style={{ background: accent, mixBlendMode: "screen" }}
                 initial={{ width: 0, height: 0, opacity: 0.55 }}
                 animate={{ width: 140, height: 140, opacity: 0 }}
@@ -206,18 +206,18 @@ function ComingSoonCard() {
   // as a uniform row. Dashed ring instead of solid gradient — signals "slot".
   return (
     <div className="flex w-[72px] shrink-0 flex-col items-center gap-1 text-center sm:w-[84px]">
-      <div className="aspect-square w-full rounded-none border border-dashed border-[rgba(15,23,38,0.15)] bg-[#ffffff] p-[2px]">
-        <div className="flex h-full w-full items-center justify-center rounded-none bg-[#0F0F11]">
-          <svg className="h-4 w-4 text-[#94a3b8]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+      <div className="aspect-square w-full rounded-[4px] border border-dashed border-[rgba(15,23,38,0.15)] bg-[#ffffff] p-[2px]">
+        <div className="flex h-full w-full items-center justify-center rounded-[4px] bg-[#0F0F11]">
+          <svg className="h-4 w-4 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
         </div>
       </div>
       <div className="w-full px-0.5 leading-tight">
-        <div className="truncate text-[11px] font-black text-[#6b7280]">
+        <div className="truncate text-[11px] font-black text-[#E2E4E8]">
           Шинэ
         </div>
-        <div className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#94a3b8]">SOON</div>
+        <div className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-[#E2E4E8]">SOON</div>
       </div>
     </div>
   );

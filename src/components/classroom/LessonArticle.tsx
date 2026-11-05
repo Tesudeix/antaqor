@@ -9,7 +9,7 @@ import remarkGfm from "remark-gfm";
 import { useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
 
-const ACCENT = "#1080CA";
+const ACCENT = "var(--accent-ink, #2E29FF)";
 
 // ─── Copyable code/prompt block ────────────────────────────────────────
 // Reads the inner text once, copies it to the clipboard, briefly shows a
@@ -44,13 +44,13 @@ function CopyablePre({ children }: { children: ReactNode }) {
   };
 
   return (
-    <pre className="group relative my-7 overflow-x-auto rounded-none border border-[rgba(15,23,38,0.06)] bg-[#ffffff] p-4 pr-12 font-mono text-[14px] leading-[1.55] text-[#D4D4D8]">
+    <pre className="group relative my-7 overflow-x-auto rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#ffffff] p-4 pr-12 font-mono text-[14px] leading-[1.55] text-[#D4D4D8]">
       {children}
       <button
         type="button"
         onClick={onCopy}
         title="Хуулах"
-        className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-none border border-[rgba(15,23,38,0.08)] bg-[#141416]/95 px-2 py-1 text-[10px] font-bold backdrop-blur-sm transition opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#141416]/95 px-2 py-1 text-[10px] font-bold backdrop-blur-sm transition opacity-0 group-hover:opacity-100 focus:opacity-100"
         style={{ color: copied ? "#4FE065" : ACCENT }}
       >
         {copied ? (
@@ -81,7 +81,7 @@ export function LessonArticle({ content }: { content: string }) {
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
-            <h1 className="mb-6 mt-12 text-[34px] font-black leading-[1.15] tracking-tight sm:text-[40px]" style={{ color: "#FFFFFF" }}>
+            <h1 className="mb-6 mt-12 text-[22px] md:text-[34px] font-black leading-[1.15] tracking-tight sm:text-[26px] md:text-[40px]" style={{ color: "#FFFFFF" }}>
               {children}
             </h1>
           ),
@@ -91,12 +91,12 @@ export function LessonArticle({ content }: { content: string }) {
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mb-3 mt-8 text-[19px] font-bold leading-[1.3] sm:text-[21px]" style={{ color: "#F0F0F2" }}>
+            <h3 className="mb-3 mt-8 text-[19px] font-bold leading-[1.3] sm:text-[21px]" style={{ color: "var(--t-ink, #14151C)" }}>
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="mb-2 mt-6 text-[15px] font-bold uppercase tracking-[0.12em]" style={{ color: "#B8B8C0" }}>
+            <h4 className="mb-2 mt-6 text-[15px] font-bold uppercase tracking-[0.12em]" style={{ color: "#565967" }}>
               {children}
             </h4>
           ),
@@ -111,7 +111,7 @@ export function LessonArticle({ content }: { content: string }) {
               target={href?.startsWith("http") ? "_blank" : undefined}
               rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
               className="border-b transition hover:opacity-90"
-              style={{ color: ACCENT, borderColor: `${ACCENT}55` }}
+              style={{ color: ACCENT, borderColor: "rgba(46,41,255,0.33)" }}
             >
               {children}
             </a>
@@ -120,36 +120,36 @@ export function LessonArticle({ content }: { content: string }) {
             <strong className="font-bold" style={{ color: "#FFFFFF" }}>{children}</strong>
           ),
           em: ({ children }) => (
-            <em className="italic" style={{ color: "#F0F0F2" }}>{children}</em>
+            <em className="italic" style={{ color: "var(--t-ink, #14151C)" }}>{children}</em>
           ),
           blockquote: ({ children }) => (
             <blockquote
               className="my-8 border-l-2 pl-5 text-[20px] italic leading-[1.65] sm:text-[22px]"
-              style={{ borderColor: ACCENT, color: "#F0F0F2" }}
+              style={{ borderColor: ACCENT, color: "var(--t-ink, #14151C)" }}
             >
               {children}
             </blockquote>
           ),
           ul: ({ children }) => (
-            <ul className="my-6 ml-5 list-disc space-y-2.5 text-[18px] leading-[1.7] text-[#D4D4D8] marker:text-[#6b7280] sm:text-[19px]">
+            <ul className="my-6 ml-5 list-disc space-y-2.5 text-[18px] leading-[1.7] text-[#D4D4D8] marker:text-[#E2E4E8] sm:text-[19px]">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="my-6 ml-5 list-decimal space-y-2.5 text-[18px] leading-[1.7] text-[#D4D4D8] marker:text-[#6b7280] sm:text-[19px]">
+            <ol className="my-6 ml-5 list-decimal space-y-2.5 text-[18px] leading-[1.7] text-[#D4D4D8] marker:text-[#E2E4E8] sm:text-[19px]">
               {children}
             </ol>
           ),
           li: ({ children }) => <li className="pl-1">{children}</li>,
           hr: () => (
-            <hr className="mx-auto my-12 w-16 border-0 border-t" style={{ borderColor: `${ACCENT}66` }} />
+            <hr className="mx-auto my-12 w-16 border-0 border-t" style={{ borderColor: "rgba(46,41,255,0.40)" }} />
           ),
           code: ({ inline, className, children, ...props }: ComponentProps<"code"> & { inline?: boolean }) => {
             if (inline) {
               return (
                 <code
-                  className="rounded-none px-1.5 py-0.5 font-mono text-[15px]"
-                  style={{ background: "rgba(16,128,202,0.12)", color: ACCENT }}
+                  className="rounded-[4px] px-1.5 py-0.5 font-mono text-[15px]"
+                  style={{ background: "rgba(46,41,255,0.12)", color: ACCENT }}
                   {...props}
                 >
                   {children}
@@ -170,17 +170,17 @@ export function LessonArticle({ content }: { content: string }) {
               <img
                 src={typeof src === "string" ? src : ""}
                 alt={alt || ""}
-                className="w-full rounded-none border border-[rgba(15,23,38,0.05)] bg-[#ffffff]"
+                className="w-full rounded-[4px] border border-[rgba(15,23,38,0.05)] bg-[#ffffff]"
               />
               {alt && (
-                <figcaption className="mt-2 text-center text-[13px] text-[#6b7280]">
+                <figcaption className="mt-2 text-center text-[13px] text-[#E2E4E8]">
                   {alt}
                 </figcaption>
               )}
             </figure>
           ),
           table: ({ children }) => (
-            <div className="my-7 overflow-x-auto rounded-none border border-[rgba(15,23,38,0.06)]">
+            <div className="my-7 overflow-x-auto rounded-[4px] border border-[rgba(15,23,38,0.06)]">
               <table className="w-full border-collapse text-[15px]">{children}</table>
             </div>
           ),

@@ -51,8 +51,15 @@ export default function GoogleSignInButton({ next = "/" }: { next?: string }) {
           }
         },
       });
+      /* Товчны загварыг сайтын горимоос авна. `filled_black` нь цагаан
+         картан дээр хэт хүнд хар хавтан болж, гэрэл горимын бусад бүх
+         зүйлээс тасарч харагдана. Монтолтын үед НЭГ удаа шийднэ: GSI нь
+         дахин зурахын тулд iframe-ээ бүтнээр нь солих шаардлагатай тул
+         горим солих бүрд дахин эхлүүлэх нь товчийг анивчуулна. */
+      const isLight =
+        document.documentElement.getAttribute("data-theme") !== "dark";
       gsi.renderButton(ref.current, {
-        theme: "filled_black",
+        theme: isLight ? "outline" : "filled_black",
         size: "large",
         shape: "rectangular",
         text: "continue_with",
@@ -83,13 +90,13 @@ export default function GoogleSignInButton({ next = "/" }: { next?: string }) {
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) return null;
   return (
     <div className="mt-4">
-      <div className="chrome mb-2 flex items-center gap-2 text-[8px] font-bold text-[#84848C]">
-        <span className="text-[#1080CA]">▸</span> ХАМГИЙН ХУРДАН — НЭГ ТОВШИЛТ
+      <div className="chrome mb-2 flex items-center gap-2 text-[8px] font-bold text-[#E2E4E8]">
+        <span className="text-[#2E29FF]">▸</span> ХАМГИЙН ХУРДАН — НЭГ ТОВШИЛТ
       </div>
       <div className="relative min-h-[44px] rounded-[4px]">
         {!ready && (
-          <div className="absolute inset-0 flex h-[44px] items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.12)] bg-[#0a0a0c]">
-            <span className="chrome text-[8px] font-bold text-[#84848C]">GOOGLE АЧААЛЖ БАЙНА…</span>
+          <div className="absolute inset-0 flex h-[44px] items-center justify-center rounded-[4px] border border-[rgba(255,255,255,0.12)] bg-[#0A0A0A]">
+            <span className="chrome text-[8px] font-bold text-[#E2E4E8]">GOOGLE АЧААЛЖ БАЙНА…</span>
           </div>
         )}
         <div ref={ref} className="flex justify-center" />

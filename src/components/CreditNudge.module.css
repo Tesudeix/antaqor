@@ -1,0 +1,20 @@
+/* Цайвар нэг горим; өнгө шууд (theme-day генератор module-ийг хөндөхгүй). */
+.box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #FCD9A8;
+  background: #FFF8EC;
+  color: #12131A;
+}
+.icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #2E29FF; color: #FFFFFF; font-size: 16px; }
+.text { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.text b { font-size: 14px; font-weight: 800; }
+.text span { font-size: 12.5px; color: #6B5A3A; line-height: 1.4; }
+.cta { flex: none; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #2E29FF; color: #FFFFFF !important; font-size: 13px; font-weight: 800; text-decoration: none; }
+.cta:hover { background: #1F1AD9; }
+.box .x.x { flex: none; width: 28px; height: 28px; border: 0 !important; border-radius: 50%; background: transparent; color: #8A7A5A; font-size: 20px; line-height: 1; cursor: pointer; }
+@media (max-width: 480px) { .box { flex-wrap: wrap; } .cta { order: 3; flex: 1; justify-content: center; } }
+.admin { display: block; margin-top: 4px; font-style: normal; font-size: 11.5px; font-weight: 600; color: #6B7280; }

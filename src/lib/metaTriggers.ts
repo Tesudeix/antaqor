@@ -1,5 +1,17 @@
 import MetaTrigger, { IMetaTrigger, TriggerSurface, TriggerPlatform } from "@/models/MetaTrigger";
 
+const WORD_CACHE = new Map<string, RegExp>();
+
+function wordHit(haystack: string, kw: string): boolean {
+  let re = WORD_CACHE.get(kw);
+  if (!re) {
+    const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    re = new RegExp(`(^|[^\\p{L}\\p{N}])${esc}($|[^\\p{L}\\p{N}])`, "u");
+    WORD_CACHE.set(kw, re);
+  }
+  return re.test(haystack);
+}
+
 export function matchKeyword(trigger: IMetaTrigger, text: string): boolean {
   const haystack = trigger.caseSensitive ? text : text.toLowerCase();
   for (const kwRaw of trigger.keywords) {
@@ -8,6 +20,11 @@ export function matchKeyword(trigger: IMetaTrigger, text: string): boolean {
     if (trigger.matchMode === "exact" && haystack.trim() === kw) return true;
     if (trigger.matchMode === "contains" && haystack.includes(kw)) return true;
     if (trigger.matchMode === "starts_with" && haystack.startsWith(kw)) return true;
+    // "word" — the keyword as a standalone word. This is what short keywords
+    // need: "ai" on `contains` also fires on sain, baina, hair, email, again,
+    // which would DM half the commenters. JS \b is ASCII-only, so Cyrillic is
+    // matched by explicitly excluding letters/digits on either side.
+    if (trigger.matchMode === "word" && wordHit(haystack, kw)) return true;
   }
   return false;
 }

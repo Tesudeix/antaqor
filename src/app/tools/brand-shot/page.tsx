@@ -4,12 +4,12 @@ import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-const NEON = "#1080CA";
+const NEON = "var(--accent-ink, #2E29FF)";
 
 // Opinionated prompt — locks the output style so the user only has to drop
 // an image and click. Mentions pink, 3D stylization, studio quality, and
 // hard-bans extras.
-const BRAND_PROMPT = `Extract the main subject/product from this reference image with clean cut-out edges. Place it perfectly centered on a vibrant brand-pink (#1080CA, magenta) seamless studio backdrop with a subtle soft radial gradient — slightly brighter behind the subject, falling off into deeper magenta at the corners. Render in premium 3D-stylized product photography: photoreal physical materials, sharp clean key light from front-top-left, soft natural rim light, soft realistic drop shadow under the subject, slight glossy floor reflection in matching pink. Square 1:1 framing, magazine-cover hero product shot quality. The pink backdrop and floor are one continuous gradient. No text overlay, no extra props, no watermarks, no extra people or objects.`;
+const BRAND_PROMPT = `Extract the main subject/product from this reference image with clean cut-out edges. Place it perfectly centered on a vibrant brand-pink (#2E29FF, magenta) seamless studio backdrop with a subtle soft radial gradient — slightly brighter behind the subject, falling off into deeper magenta at the corners. Render in premium 3D-stylized product photography: photoreal physical materials, sharp clean key light from front-top-left, soft natural rim light, soft realistic drop shadow under the subject, slight glossy floor reflection in matching pink. Square 1:1 framing, magazine-cover hero product shot quality. The pink backdrop and floor are one continuous gradient. No text overlay, no extra props, no watermarks, no extra people or objects.`;
 
 // ─── Character Sheet — full AAA-grade reference-sheet prompt ─────────────
 // 3 reference images expected, in this exact order:
@@ -138,7 +138,7 @@ const REMIX_STYLES: {
     id: "pixel",
     label: "ПИКСЕЛ",
     prompt:
-      "Convert this image to retro 8-bit pixel art with chunky pixels and a limited 16-color palette, vintage CRT vibe. Keep the magenta pink (#1080CA) backdrop. Square 1:1, no text.",
+      "Convert this image to retro 8-bit pixel art with chunky pixels and a limited 16-color palette, vintage CRT vibe. Keep the magenta pink (#2E29FF) backdrop. Square 1:1, no text.",
     // Geometric grid of squares — pixel-art icon
     iconPath:
       "M3 3h5v5H3z M11 3h5v5h-5z M19 3h2v5h-2z M3 11h5v5H3z M11 11h5v5h-5z M19 11h2v5h-2z M3 19h5v2H3z M11 19h5v2h-5z M19 19h2v2h-2z",
@@ -147,7 +147,7 @@ const REMIX_STYLES: {
     id: "lowpoly",
     label: "LOW-POLY",
     prompt:
-      "Convert this image to low-poly 3D triangulated geometric style: flat-shaded faceted polygon surfaces, soft volumetric lighting, vibrant magenta accents on a pink (#1080CA) gradient backdrop. Square 1:1, no text.",
+      "Convert this image to low-poly 3D triangulated geometric style: flat-shaded faceted polygon surfaces, soft volumetric lighting, vibrant magenta accents on a pink (#2E29FF) gradient backdrop. Square 1:1, no text.",
     // Triangulated diamond
     iconPath: "M12 2 L22 12 L12 22 L2 12 Z M12 2 L12 22 M2 12 L22 12",
   },
@@ -155,7 +155,7 @@ const REMIX_STYLES: {
     id: "stylized",
     label: "ИЛЛЮСТР",
     prompt:
-      "Convert this image to a clean modern 3D-stylized illustration: smooth Pixar-like materials, slight cel-shading, exaggerated proportions, premium magazine-cover quality. Magenta pink (#1080CA) backdrop preserved. Square 1:1, no text.",
+      "Convert this image to a clean modern 3D-stylized illustration: smooth Pixar-like materials, slight cel-shading, exaggerated proportions, premium magazine-cover quality. Magenta pink (#2E29FF) backdrop preserved. Square 1:1, no text.",
     // Sparkles
     iconPath:
       "M12 3 L13.5 9 L20 10.5 L13.5 12 L12 18 L10.5 12 L4 10.5 L10.5 9 Z M18 16 L18.7 18.3 L21 19 L18.7 19.7 L18 22 L17.3 19.7 L15 19 L17.3 18.3 Z",
@@ -164,7 +164,7 @@ const REMIX_STYLES: {
     id: "neon",
     label: "НЕОН",
     prompt:
-      "Convert this image to vibrant cyberpunk neon style: strong magenta (#1080CA) and cyan rim lighting, glow halos, dark deep-pink backdrop, glossy reflective floor. Square 1:1, no text.",
+      "Convert this image to vibrant cyberpunk neon style: strong magenta (#2E29FF) and cyan rim lighting, glow halos, dark deep-pink backdrop, glossy reflective floor. Square 1:1, no text.",
     // Concentric circles → glow vibe
     iconPath:
       "M12 5 a7 7 0 1 0 0 14 a7 7 0 1 0 0 -14 z M12 9 a3 3 0 1 0 0 6 a3 3 0 1 0 0 -6 z",
@@ -173,7 +173,7 @@ const REMIX_STYLES: {
     id: "sketch",
     label: "ЭСКИЗ",
     prompt:
-      "Convert this image to a clean black-and-white pencil sketch / line drawing on white paper with subtle pink accent strokes (#1080CA). Hand-drawn editorial fashion-illustration vibe. Square 1:1, no text.",
+      "Convert this image to a clean black-and-white pencil sketch / line drawing on white paper with subtle pink accent strokes (#2E29FF). Hand-drawn editorial fashion-illustration vibe. Square 1:1, no text.",
     // Pencil
     iconPath: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z M14.06 6.19l3.75 3.75",
   },
@@ -383,7 +383,7 @@ export default function BrandShotPage() {
   if (status === "loading") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-[#1080CA]" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-[#2E29FF]" />
       </div>
     );
   }
@@ -391,8 +391,8 @@ export default function BrandShotPage() {
     return (
       <div className="mx-auto max-w-md py-20 text-center">
         <h1 className="text-[22px] font-bold text-[#0e1726]">Бренд шот</h1>
-        <p className="mt-2 text-[14px] text-[#6b7280]">Зургаа бренд-пинк 3D шот болгох</p>
-        <Link href="/auth/signin?callbackUrl=/tools/brand-shot" className="mt-6 inline-flex rounded-none bg-[#1080CA] px-5 py-2 text-[13px] font-bold text-[#0E0E10] hover:shadow-[0_0_24px_rgba(16,128,202,0.25)]">Нэвтрэх</Link>
+        <p className="mt-2 text-[14px] text-[#E2E4E8]">Зургаа бренд-пинк 3D шот болгох</p>
+        <Link href="/auth/signin?callbackUrl=/tools/brand-shot" className="mt-6 inline-flex rounded-[4px] bg-[#2E29FF] px-5 py-2 text-[13px] font-bold text-white hover:shadow-[0_0_24px_rgba(46,41,255,0.25)]">Нэвтрэх</Link>
       </div>
     );
   }
@@ -402,8 +402,8 @@ export default function BrandShotPage() {
       {/* SKILL.md page header */}
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_10px_rgba(16,128,202,0.8)]" />
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#1080CA]">
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#2E29FF] shadow-[0_0_10px_rgba(46,41,255,0.8)]" />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#2E29FF]">
             ANTAQOR / BRAND SHOT
           </span>
         </div>
@@ -414,32 +414,32 @@ export default function BrandShotPage() {
             letterSpacing: "0.02em",
             lineHeight: 0.92,
           }}
-          className="text-[26px] uppercase text-[#f5f5f7] sm:text-[32px]"
+          className="text-[26px] uppercase text-[#f5f5f7] sm:text-[22px] md:text-[32px]"
         >
           БРЕНД{" "}
           <span
             style={{
-              color: "#1080CA",
+              color: "var(--accent-ink, #2E29FF)",
               fontWeight: 900,
               letterSpacing: "0.04em",
-              textShadow: "0 0 24px rgba(16,128,202,0.55), 0 0 48px rgba(16,128,202,0.35)",
+              textShadow: "0 0 24px rgba(46,41,255,0.55), 0 0 48px rgba(46,41,255,0.35)",
               WebkitTextStroke: "1px rgba(15,23,38,0.12)",
             }}
           >
             ШОТ
           </span>
-          <span style={{ color: "#1080CA", textShadow: "0 0 20px #1080CA" }}>.</span>
+          <span style={{ color: "var(--accent-ink, #2E29FF)", textShadow: "0 0 20px #2E29FF" }}>.</span>
         </h1>
-        <p className="mt-2 max-w-[520px] text-[13px] leading-relaxed text-[#6b7280]">
+        <p className="mt-2 max-w-[520px] text-[13px] leading-relaxed text-[#E2E4E8]">
           Зургаа дараад 3D-стилтэй, бренд-пинк дэвсгэртэй продукт шот үүсгэнэ.
         </p>
         <div className="mt-3">
-          <div className="h-[2px] w-full bg-[#1080CA] shadow-[0_0_8px_rgba(16,128,202,0.5)]" />
+          <div className="h-[2px] w-full bg-[#2E29FF] shadow-[0_0_8px_rgba(46,41,255,0.5)]" />
           <div
             className="mt-1 h-px w-full"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(16,128,202,0.5) 0 3px, transparent 3px 6px)",
+                "repeating-linear-gradient(90deg, rgba(46,41,255,0.5) 0 3px, transparent 3px 6px)",
             }}
           />
         </div>
@@ -448,14 +448,14 @@ export default function BrandShotPage() {
       {/* ─── Result state ─────────────────────────────────────────── */}
       {resultUrl ? (
         <div className="space-y-4">
-          <div className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.25)] bg-[#0a0a0c] shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
+          <div className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[#0A0A0A] shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={resultUrl} alt="Brand shot result" className="block w-full" />
           </div>
           {/* Style remix row — click any to re-render in a new style */}
-          <div className="space-y-2 rounded-none border border-[rgba(16,128,202,0.18)] bg-gradient-to-b from-[rgba(16,128,202,0.04)] to-[#0a0a0c] p-3">
+          <div className="space-y-2 rounded-[4px] border border-[rgba(46,41,255,0.18)] bg-gradient-to-b from-[rgba(46,41,255,0.04)] to-[#0A0A0A] p-3">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#1080CA]">▶ ӨӨРЧЛӨХ · СТИЛЬ</span>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.26em] text-[#2E29FF]">▶ ӨӨРЧЛӨХ · СТИЛЬ</span>
               {history.length > 0 && (
                 <button
                   type="button"
@@ -464,7 +464,7 @@ export default function BrandShotPage() {
                     setHistory((h) => h.slice(1));
                     setResultUrl(prev);
                   }}
-                  className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+                  className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
                 >
                   ← БУЦАХ
                 </button>
@@ -479,17 +479,17 @@ export default function BrandShotPage() {
                     type="button"
                     onClick={() => stylize(s)}
                     disabled={!!stylizing}
-                    className={`group flex flex-col items-center justify-center gap-1.5 rounded-none border bg-[#f2f5f8] py-2.5 transition disabled:cursor-wait disabled:opacity-50 ${
+                    className={`group flex flex-col items-center justify-center gap-1.5 rounded-[4px] border bg-[#f2f5f8] py-2.5 transition disabled:cursor-wait disabled:opacity-50 ${
                       active
-                        ? "border-[#1080CA] bg-[rgba(16,128,202,0.08)] shadow-[0_0_14px_rgba(16,128,202,0.35)]"
-                        : "border-[rgba(15,23,38,0.06)] hover:border-[rgba(16,128,202,0.45)]"
+                        ? "border-[#2E29FF] bg-[rgba(46,41,255,0.08)] shadow-[0_0_14px_rgba(46,41,255,0.35)]"
+                        : "border-[rgba(15,23,38,0.06)] hover:border-[rgba(46,41,255,0.45)]"
                     }`}
                   >
                     {active ? (
-                      <span className="h-4 w-4 animate-pulse rounded-full bg-[#1080CA]" />
+                      <span className="h-4 w-4 animate-pulse rounded-[4px] bg-[#2E29FF]" />
                     ) : (
                       <svg
-                        className={`h-5 w-5 transition ${active ? "text-[#1080CA]" : "text-[#6b7280] group-hover:text-[#1080CA]"}`}
+                        className={`h-5 w-5 transition ${active ? "text-[#2E29FF]" : "text-[#E2E4E8] group-hover:text-[#2E29FF]"}`}
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={1.6}
@@ -500,7 +500,7 @@ export default function BrandShotPage() {
                         <path d={s.iconPath} />
                       </svg>
                     )}
-                    <span className={`font-mono text-[9px] font-bold uppercase tracking-[0.22em] ${active ? "text-[#1080CA]" : "text-[#6b7280] group-hover:text-[#0e1726]"}`}>
+                    <span className={`font-mono text-[11px] font-bold uppercase tracking-[0.22em] ${active ? "text-[#2E29FF]" : "text-[#E2E4E8] group-hover:text-[#0e1726]"}`}>
                       {s.label}
                     </span>
                   </button>
@@ -517,7 +517,7 @@ export default function BrandShotPage() {
                       setHistory((arr) => arr.filter((_, j) => j !== i));
                       setResultUrl(h);
                     }}
-                    className="relative h-12 w-12 shrink-0 overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] transition hover:border-[#1080CA]"
+                    className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] transition hover:border-[#2E29FF]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={h} alt={`prev ${i}`} className="h-full w-full object-cover" />
@@ -531,31 +531,31 @@ export default function BrandShotPage() {
             <a
               href={resultUrl}
               download
-              className="inline-flex items-center gap-2 rounded-none bg-[#1080CA] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.4)]"
+              className="inline-flex items-center gap-2 rounded-[4px] bg-[#2E29FF] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.4)]"
             >
               ↓ ТАТАХ
             </a>
             <button
               type="button"
               onClick={() => navigator.clipboard.writeText(window.location.origin + resultUrl)}
-              className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#0e1726]"
+              className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#0e1726]"
             >
               ЛИНК ХУУЛАХ
             </button>
             <button
               type="button"
               onClick={reset}
-              className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+              className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
             >
               + ШИНЭ
             </button>
           </div>
           {/* Show original next to result for comparison */}
           {preview && (
-            <div className="rounded-none border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
-              <p className="mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#6b7280]">ОРИГИНАЛ</p>
+            <div className="rounded-[4px] border border-[rgba(15,23,38,0.06)] bg-[#f2f5f8] p-3">
+              <p className="mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8]">ОРИГИНАЛ</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview} alt="" className="max-h-[160px] rounded-none border border-[rgba(15,23,38,0.05)] object-contain" />
+              <img src={preview} alt="" className="max-h-[160px] rounded-[4px] border border-[rgba(15,23,38,0.05)] object-contain" />
             </div>
           )}
         </div>
@@ -575,32 +575,32 @@ export default function BrandShotPage() {
               onDragEnter={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onDrop={onDrop}
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-none border-2 border-dashed py-16 text-center transition ${
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-[4px] border-2 border-dashed py-16 text-center transition ${
                 dragOver
-                  ? "border-[#1080CA] bg-[rgba(16,128,202,0.04)]"
-                  : "border-[rgba(15,23,38,0.1)] bg-[#f2f5f8] hover:border-[rgba(16,128,202,0.4)]"
+                  ? "border-[#2E29FF] bg-[rgba(46,41,255,0.04)]"
+                  : "border-[rgba(15,23,38,0.1)] bg-[#f2f5f8] hover:border-[rgba(46,41,255,0.4)]"
               }`}
             >
               <div onClick={() => fileRef.current?.click()} className="flex flex-col items-center">
-                <svg className="mb-3 h-9 w-9 text-[#6b7280]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <svg className="mb-3 h-9 w-9 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <p className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#0e1726]">
                   ПРОДУКТЫНХАА ЗУРГИЙГ ХАЯ
                 </p>
-                <p className="mt-1.5 text-[11px] text-[#6b7280]">
+                <p className="mt-1.5 text-[11px] text-[#E2E4E8]">
                   JPG · PNG · WebP · 10MB хүртэл
                 </p>
               </div>
             </label>
           ) : (
-            <div className="relative overflow-hidden rounded-none border border-[rgba(15,23,38,0.08)] bg-[#0a0a0c]">
+            <div className="relative overflow-hidden rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#0A0A0A]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={preview} alt="preview" className="max-h-[420px] w-full object-contain" />
               <button
                 type="button"
                 onClick={reset}
-                className="absolute right-3 top-3 rounded-none bg-black/70 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-white backdrop-blur transition hover:bg-black"
+                className="absolute right-3 top-3 rounded-[4px] bg-black/70 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-white backdrop-blur transition hover:bg-black"
               >
                 ✕ СОЛИХ
               </button>
@@ -608,7 +608,7 @@ export default function BrandShotPage() {
           )}
 
           {err && (
-            <p className="rounded-none border border-[#1080CA]/30 bg-[#1080CA]/5 px-3 py-2 text-[12px] text-[#8FC1EA]">{err}</p>
+            <p className="rounded-[4px] border border-[#2E29FF]/30 bg-[#2E29FF]/5 px-3 py-2 text-[12px] text-[#8FC1EA]">{err}</p>
           )}
 
           {/* Style preview chip — sells the output shape before user generates */}
@@ -623,7 +623,7 @@ export default function BrandShotPage() {
               ].map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.05)] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#1080CA]"
+                  className="rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.05)] px-2 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#2E29FF]"
                 >
                   {tag}
                 </span>
@@ -635,7 +635,7 @@ export default function BrandShotPage() {
             type="button"
             onClick={generate}
             disabled={!file || busy}
-            className="flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] py-3 font-mono text-[12px] font-bold uppercase tracking-[0.24em] text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#94a3b8] disabled:shadow-none"
+            className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] py-3 font-mono text-[12px] font-bold uppercase tracking-[0.24em] text-white transition hover:shadow-[0_0_24px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#E2E4E8] disabled:shadow-none"
           >
             {busy ? (
               <>
@@ -651,7 +651,7 @@ export default function BrandShotPage() {
               </>
             )}
           </button>
-          <p className="text-center font-mono text-[9px] uppercase tracking-[0.22em] text-[#94a3b8]">
+          <p className="text-center font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8]">
             Powered by Nano Banana · ~10-25 сек
           </p>
         </div>
@@ -662,15 +662,15 @@ export default function BrandShotPage() {
           (нүүр / хувцас / бие) → AAA-grade reference sheet. */}
       <div className="mt-12">
         <div className="mb-3 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#1080CA] shadow-[0_0_10px_rgba(16,128,202,0.8)]" />
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#1080CA]">
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#2E29FF] shadow-[0_0_10px_rgba(46,41,255,0.8)]" />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.30em] text-[#2E29FF]">
             CHARACTER SHEET · 9 ӨНЦӨГ
           </span>
         </div>
         <h2 className="text-[20px] font-black text-[#0e1726] sm:text-[24px]">
-          Дүрийн жагсаалт<span className="text-[#1080CA]">.</span>
+          Дүрийн жагсаалт<span className="text-[#2E29FF]">.</span>
         </h2>
-        <p className="mt-1 max-w-[560px] text-[12px] leading-relaxed text-[#6b7280]">
+        <p className="mt-1 max-w-[560px] text-[12px] leading-relaxed text-[#E2E4E8]">
           Гурван зураг оруулж AAA-түвшний дүрийн reference sheet үүсгэе. Нүүр, хувцас, бие тус бүрд 1 зураг — гарах үр дүн: нэг зурганд нүүрний клоуз-ап + 4 өнцгийн толгой + 4 өнцгийн бие.
         </p>
 
@@ -686,10 +686,10 @@ export default function BrandShotPage() {
                 type="button"
                 onClick={() => slot.ref.current?.click()}
                 disabled={csBusy}
-                className={`relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-none border bg-[#f2f5f8] transition disabled:cursor-wait disabled:opacity-60 ${
+                className={`relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[4px] border bg-[#f2f5f8] transition disabled:cursor-wait disabled:opacity-60 ${
                   slot.value
-                    ? "border-[rgba(16,128,202,0.45)] shadow-[0_0_14px_rgba(16,128,202,0.18)]"
-                    : "border-2 border-dashed border-[rgba(15,23,38,0.1)] hover:border-[rgba(16,128,202,0.4)]"
+                    ? "border-[rgba(46,41,255,0.45)] shadow-[0_0_14px_rgba(46,41,255,0.18)]"
+                    : "border-2 border-dashed border-[rgba(15,23,38,0.1)] hover:border-[rgba(46,41,255,0.4)]"
                 }`}
               >
                 {slot.value ? (
@@ -702,23 +702,23 @@ export default function BrandShotPage() {
                       aria-label="Устгах"
                       onClick={(e) => { e.stopPropagation(); slot.setter(""); }}
                       onKeyDown={(e) => { if (e.key === "Enter") slot.setter(""); }}
-                      className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-none bg-black/70 text-white backdrop-blur transition hover:bg-[rgba(16,128,202,0.85)]"
+                      className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-[4px] bg-black/70 text-white backdrop-blur transition hover:bg-[rgba(46,41,255,0.85)]"
                     >
                       <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </span>
                   </>
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 px-2 text-center">
-                    <svg className="h-5 w-5 text-[#6b7280]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[#E2E4E8]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-7.5-12L12 1.5m0 0L8.25 5.25M12 1.5v15" />
                     </svg>
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#6b7280]">+ ЗУРАГ</span>
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#E2E4E8]">+ ЗУРАГ</span>
                   </div>
                 )}
               </button>
               <div className="px-0.5">
-                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#1080CA]">{slot.label}</p>
-                <p className="text-[10px] leading-tight text-[#6b7280]">{slot.sub}</p>
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#2E29FF]">{slot.label}</p>
+                <p className="text-[10px] leading-tight text-[#E2E4E8]">{slot.sub}</p>
               </div>
               <input
                 ref={slot.ref}
@@ -732,7 +732,7 @@ export default function BrandShotPage() {
         </div>
 
         {csErr && (
-          <p className="mt-3 rounded-none border border-[rgba(16,128,202,0.25)] bg-[rgba(16,128,202,0.08)] px-3 py-2 text-[11px] text-[#1080CA]">
+          <p className="mt-3 rounded-[4px] border border-[rgba(46,41,255,0.25)] bg-[rgba(46,41,255,0.08)] px-3 py-2 text-[11px] text-[#2E29FF]">
             {csErr}
           </p>
         )}
@@ -742,7 +742,7 @@ export default function BrandShotPage() {
           type="button"
           onClick={generateCharacterSheet}
           disabled={!csFace || !csWardrobe || !csPhysique || csBusy}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-none bg-[#1080CA] py-3 font-mono text-[12px] font-bold uppercase tracking-[0.24em] text-[#0E0E10] transition hover:shadow-[0_0_24px_rgba(16,128,202,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#94a3b8] disabled:shadow-none"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#2E29FF] py-3 font-mono text-[12px] font-bold uppercase tracking-[0.24em] text-white transition hover:shadow-[0_0_24px_rgba(46,41,255,0.4)] disabled:cursor-not-allowed disabled:bg-[#F2F2F4] disabled:text-[#E2E4E8] disabled:shadow-none"
         >
           {csBusy ? (
             <>
@@ -758,13 +758,13 @@ export default function BrandShotPage() {
             </>
           )}
         </button>
-        <p className="mt-1 text-center font-mono text-[9px] uppercase tracking-[0.22em] text-[#94a3b8]">
+        <p className="mt-1 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-[#E2E4E8]">
           Powered by Nano Banana · 3 reference → 1 sheet · ~30-60 сек
         </p>
 
         {csResult && (
           <div className="mt-5 space-y-3">
-            <div className="overflow-hidden rounded-none border border-[rgba(16,128,202,0.3)] bg-black">
+            <div className="overflow-hidden rounded-[4px] border border-[rgba(46,41,255,0.3)] bg-black">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={csResult} alt="Character sheet" className="block w-full" />
             </div>
@@ -772,21 +772,21 @@ export default function BrandShotPage() {
               <a
                 href={csResult}
                 download
-                className="inline-flex items-center gap-2 rounded-none bg-[#1080CA] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#0E0E10] transition hover:shadow-[0_0_18px_rgba(16,128,202,0.4)]"
+                className="inline-flex items-center gap-2 rounded-[4px] bg-[#2E29FF] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-white transition hover:shadow-[0_0_18px_rgba(46,41,255,0.4)]"
               >
                 ↓ ТАТАХ
               </a>
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(window.location.origin + csResult)}
-                className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#0e1726]"
+                className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#0e1726]"
               >
                 ЛИНК ХУУЛАХ
               </button>
               <button
                 type="button"
                 onClick={() => { setCsFace(""); setCsWardrobe(""); setCsPhysique(""); setCsResult(""); setCsErr(""); }}
-                className="rounded-none border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#6b7280] transition hover:text-[#1080CA]"
+                className="rounded-[4px] border border-[rgba(15,23,38,0.08)] bg-[#f2f5f8] px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#E2E4E8] transition hover:text-[#2E29FF]"
               >
                 + ШИНЭ
               </button>

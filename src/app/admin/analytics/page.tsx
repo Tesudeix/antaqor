@@ -24,7 +24,7 @@ function Bars({ data, color }: { data: DayBucket[]; color: string }) {
     <div className="flex h-28 items-end gap-[3px]">
       {data.map((d, i) => (
         <div key={i} className="group relative flex-1" title={`${d.day}: ${d.count}`}>
-          <div className="w-full rounded-none transition-all" style={{ height: `${Math.max((d.count / max) * 100, 2)}%`, background: color, opacity: 0.55 }} />
+          <div className="w-full rounded-[4px] transition-all" style={{ height: `${Math.max((d.count / max) * 100, 2)}%`, background: color, opacity: 0.55 }} />
         </div>
       ))}
     </div>
@@ -70,7 +70,7 @@ export default function AnalyticsPage() {
     <div className="mx-auto max-w-6xl">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primary }}>Аналитик</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: T.primaryInk }}>Аналитик</div>
           <h1 className="mt-1 text-[26px] font-semibold tracking-tight" style={{ color: T.text }}>Analytics</h1>
           <p className="mt-0.5 text-[12px]" style={{ color: T.faint }}>Сүүлийн 30 хоног</p>
         </div>

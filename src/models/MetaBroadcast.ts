@@ -31,6 +31,9 @@ export interface IMetaBroadcast extends Document {
   sentTo: string[];               // `${platform}:${partnerId}` dedup keys already delivered
   lastError: string;
   createdByEmail: string;
+  /** Heartbeat from the worker. Stale or missing while status is
+   *  "sending" means nobody is actually running it — resume it. */
+  runningAt?: Date;
   startedAt?: Date;
   finishedAt?: Date;
   createdAt: Date;
@@ -59,6 +62,7 @@ const MetaBroadcastSchema = new Schema<IMetaBroadcast>(
     sentTo: { type: [String], default: [] },
     lastError: { type: String, default: "" },
     createdByEmail: { type: String, default: "" },
+    runningAt: { type: Date },
     startedAt: { type: Date },
     finishedAt: { type: Date },
   },

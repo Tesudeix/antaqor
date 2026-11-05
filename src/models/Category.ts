@@ -28,7 +28,7 @@ const CategorySchema = new Schema<ICategory>(
     },
     color: {
       type: String,
-      default: "#1080CA",
+      default: "#2E29FF",
       trim: true,
     },
     iconPath: {

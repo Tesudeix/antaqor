@@ -31,6 +31,8 @@ export interface IMetaConversation extends Document {
   internalNote: string;
   safetyFlag: "distress" | "violence" | null;
   escalatedToHuman: boolean;
+  escalatedAt: Date | null;
+  humanAt?: Date | null;
   disclosureSent: boolean;
   welcomeMenuSent: boolean;
   // Pointer to the Flow Builder card this contact is currently parked on, or
@@ -98,6 +100,10 @@ const MetaConversationSchema = new Schema<IMetaConversation>(
       index: true,
     },
     escalatedToHuman: { type: Boolean, default: false, index: true },
+    // When the handoff happened, so a forgotten escalation can expire
+    // instead of silencing the bot for that customer forever.
+    escalatedAt: { type: Date, default: null },
+    humanAt: { type: Date, default: null },
     disclosureSent: { type: Boolean, default: false },
     welcomeMenuSent: { type: Boolean, default: false },
     activeFlow: { type: Schema.Types.Mixed, default: null },
