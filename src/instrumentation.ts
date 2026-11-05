@@ -3,4 +3,6 @@ export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   const { startRecorder } = await import("@/lib/gold/five");
   startRecorder();
+  const { startDeskRecorder } = await import("@/lib/desk/learn");
+  startDeskRecorder();
 }

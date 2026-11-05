@@ -4,17 +4,18 @@ import { authOptions } from "@/lib/auth";
 import { SYMBOLS, TFS, quote, type Sym, type TF } from "@/lib/desk/market";
 import { INDICATORS, STRATS, type Strat } from "@/lib/desk/engine";
 import { chart, report, newsFor, type IndReq } from "@/lib/desk/report";
+import { weigh } from "@/lib/desk/news";
 
 /* ─── Tesla Trader · Шинжилгээний ширээ API (2026-11-06) ───
    GET ?q=price&sym · GET ?q=news&sym · GET ?sym&tf&ind=ema:9,rsi:14 → чарт
-   POST {sym, strat, tfs[≤3], inds[≤3]} → олон хугацааны тайлан. AI дуудахгүй. */
+   POST {sym, strat, tfs[≤3], inds[≤18]} → олон хугацааны тайлан. AI дуудахгүй. */
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const auth = async () => !!(await getServerSession(authOptions))?.user;
 const okSym = (s: unknown): s is Sym => typeof s === "string" && s in SYMBOLS;
 const okTf = (s: unknown): s is TF => TFS.includes(s as TF);
-const cleanInds = (a: { id?: unknown; p?: unknown }[]): IndReq[] => a.filter((x) => INDICATORS.some((q) => q.id === x.id)).slice(0, 3).map((x) => ({ id: String(x.id), p: Number(x.p) || undefined }));
+const cleanInds = (a: { id?: unknown; p?: unknown }[]): IndReq[] => a.filter((x) => INDICATORS.some((q) => q.id === x.id)).slice(0, 18).map((x) => ({ id: String(x.id), p: Number(x.p) || undefined }));
 const noStore = { headers: { "Cache-Control": "no-store" } };
 
 export async function GET(req: NextRequest) {
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     if (q.get("q") === "price") return NextResponse.json(await quote(sym), noStore);
     if (q.get("q") === "news") return NextResponse.json({ news: await newsFor(sym) }, noStore);
+    if (q.get("q") === "weigh") return NextResponse.json(await weigh(sym), noStore);
     const inds = cleanInds((q.get("ind") || "").split(",").filter(Boolean).map((s) => { const [id, p] = s.split(":"); return { id, p }; }));
     return NextResponse.json(await chart(sym, tf, inds), noStore);
   } catch (e) { console.error("[desk]", (e as Error).message); return NextResponse.json({ error: "Ханшийн дата түр ирэхгүй байна" }, { status: 502 }); }

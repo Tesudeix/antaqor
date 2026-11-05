@@ -204,7 +204,52 @@ export async function measure(x: Ctx, strat: Strat): Promise<Stat> {
   return { plans, fired: rs.length, tp: rs.filter((q) => q.tp).length, sl: rs.filter((q) => q.sl).length, exp: rs.length ? +m.toFixed(3) : null, se: rs.length > 1 ? +(sd / Math.sqrt(rs.length)).toFixed(3) : null, h1: avg(rs.slice(0, half)), h2: avg(rs.slice(half)), from: x.bars[0]?.t ?? 0, to: x.bars[n - 1]?.t ?? 0 };
 }
 
-/* ── индикатор: нэр, тохиргоо, чартын шугам, текст уншилт ── */
+/* ── чарт дээр зурах зүйлс: шошго, BOS/CHoCH, шүүрдэлт, rejection, трендийн шугам, таамгийн зам ── */
+export type Mark = { t: number; above: boolean; text: string; kind: "up" | "dn" | "warn" | "mute" };
+export type Trend = { name: string; a: { t: number; p: number }; b: { t: number; p: number }; end: { t: number; p: number } };
+export type Draw = { marks: Mark[]; trends: Trend[]; path: { t: number; p: number }[]; alt: { t: number; p: number }[]; step: number; future: number; neck: { p: number; name: string } | null };
+export function drawAt(x: Ctx, i: number, st: Structure, plan: Plan | null, pat: Pattern): Draw {
+  const b = x.bars, z = st.z, a = st.a, marks: Mark[] = [];
+  /* амралтын завсар алхмыг томруулахгүй — сүүлийн зайнуудаас хамгийн богино */
+  const step = Math.min(...[0, 1, 2, 3, 4].map((k) => b[i - k].t - b[i - k - 1].t));
+  for (const s of z.slice(-6)) marks.push({ t: b[s.i].t, above: s.hi, text: s.label, kind: /^(HH|HL)$/.test(s.label) ? "up" : /^(LH|LL)$/.test(s.label) ? "dn" : "mute" });
+  /* BOS: swing-ийг хаалтаар анх давсан лаа; өмнөх эвдрэлийн эсрэг бол CHoCH */
+  const brk: { t: number; dir: number }[] = [];
+  for (const s of z) for (let t = s.i + K; t <= i; t++) { if (s.hi ? b[t].c > s.p : b[t].c < s.p) { brk.push({ t, dir: s.hi ? 1 : -1 }); break; } }
+  brk.sort((p, q) => p.t - q.t);
+  brk.forEach((k, n) => { if (n >= brk.length - 2) marks.push({ t: b[k.t].t, above: k.dir < 0, text: n > 0 && brk[n - 1].dir !== k.dir ? "CHoCH" : "BOS", kind: k.dir > 0 ? "up" : "dn" }); });
+  let sw = 0;
+  for (let t = i; t >= Math.max(i - 40, 1) && sw < 2; t--) for (const s of [...z].reverse()) {
+    if (s.i >= t) continue;
+    if (s.hi ? b[t].h > s.p && b[t].c < s.p : b[t].l < s.p && b[t].c > s.p) { marks.push({ t: b[t].t, above: s.hi, text: `${s.label} · Sweep`, kind: "warn" }); sw++; break; }
+  }
+  for (let t = i; t >= Math.max(i - 8, 1); t--) {
+    const k = b[t], r = k.h - k.l, body = Math.abs(k.c - k.o), up = k.h - Math.max(k.o, k.c), lo = Math.min(k.o, k.c) - k.l;
+    if (r < 0.6 * a) continue;
+    if (up >= 2 * body && up >= 0.55 * r) { marks.push({ t: k.t, above: true, text: "Rejection", kind: "dn" }); break; }
+    if (lo >= 2 * body && lo >= 0.55 * r) { marks.push({ t: k.t, above: false, text: "Rejection", kind: "up" }); break; }
+  }
+  const trends: Trend[] = [], line = (s: Swing[], name: string) => {
+    if (s.length < 2) return;
+    const [p, q] = s.slice(-2), m = (q.p - p.p) / (q.i - p.i || 1);
+    trends.push({ name, a: { t: b[p.i].t, p: p.p }, b: { t: b[q.i].t, p: q.p }, end: { t: b[i].t, p: q.p + m * (i - q.i) } });
+  };
+  const hs = z.filter((s) => s.hi), ls = z.filter((s) => !s.hi);
+  line(hs, hs.length > 1 && hs[hs.length - 1].p < hs[hs.length - 2].p ? "Уруудах эсэргүүцэл" : "Өгсөх эсэргүүцэл");
+  line(ls, ls.length > 1 && ls[ls.length - 1].p < ls[ls.length - 2].p ? "Доод ёроолын дэмжлэг" : "Өгсөх дэмжлэг");
+  const path: Draw["path"] = [], alt: Draw["alt"] = [];
+  let future = 12;
+  if (plan) {
+    const pace = 0.5 * a, n1 = Math.max(2, Math.min(14, Math.ceil(Math.abs(st.c - plan.entry) / pace))), n2 = Math.max(3, Math.min(26, Math.ceil(Math.abs(plan.tp1 - plan.entry) / pace))), n3 = Math.max(2, Math.min(10, Math.ceil(Math.abs(plan.sl - plan.entry) / pace)));
+    const t0 = b[i].t + step;
+    path.push({ t: t0, p: st.c }, { t: t0 + n1 * step, p: plan.entry }, { t: t0 + (n1 + n2) * step, p: plan.tp1 });
+    alt.push({ t: t0 + n1 * step, p: plan.entry }, { t: t0 + (n1 + n3) * step, p: plan.sl });
+    future = n1 + Math.max(n2, n3) + 8;
+  }
+  return { marks: marks.sort((p, q) => p.t - q.t), trends, path, alt, step, future, neck: pat ? { p: pat.neck, name: pat.name } : null };
+}
+
+/* ── индикатор: нэр, тохиргоо, чартын шугам, текст уншилт, санал ── */
 function psar(b: Bar[], step = 0.02, max = 0.2) {
   const line: number[] = new Array(b.length).fill(NaN);
   if (b.length < 3) return line;
@@ -226,29 +271,29 @@ export const INDICATORS = [
   { id: "kst", mn: "KST", p: 0 }, { id: "pctb", mn: "Percent B", p: 20 }, { id: "mfi", mn: "MFI", p: 14 }, { id: "dpo", mn: "DPO", p: 20 }, { id: "rvol", mn: "Relative Volume", p: 20 }, { id: "ad", mn: "Accumulation/Distribution", p: 0 },
 ];
 export type IndLine = { name: string; v: number[]; dots?: boolean };
-export type IndOut = { id: string; label: string; pane: "price" | "sub"; lines: IndLine[]; read: (i: number) => string; ref?: number[] };
+export type IndOut = { id: string; label: string; pane: "price" | "sub"; lines: IndLine[]; read: (i: number) => string; ref?: number[]; vote: (i: number) => number };
 export function indicator(id: string, p0: number | undefined, b: Bar[], digits: number): IndOut | null {
   const def = INDICATORS.find((x) => x.id === id);
   if (!def) return null;
   const p = Math.max(2, Math.min(400, Math.round(p0 || def.p || 14))), c = b.map((x) => x.c), f = (x: number, d = digits) => (Number.isFinite(x) ? x.toFixed(d) : "—");
   switch (id) {
-    case "ema": case "sma": { const v = id === "ema" ? ema(c, p) : sma(c, p); return { id, label: `${def.mn}(${p})`, pane: "price", lines: [{ name: def.mn, v }], read: (i) => `${f(v[i])} · үнэ ${c[i] > v[i] ? "дээгүүр" : "доогуур"}` }; }
-    case "rsi": { const v = rsi(c, p); return { id, label: `RSI(${p})`, pane: "sub", lines: [{ name: "RSI", v }], ref: [30, 70], read: (i) => `${f(v[i], 1)}${v[i] < 30 ? " · хэт зарагдсан" : v[i] > 70 ? " · хэт авагдсан" : ""}` }; }
-    case "macd": { const m = macd(c); return { id, label: "MACD(12,26,9)", pane: "sub", lines: [{ name: "MACD", v: m.line }, { name: "Дохио", v: m.signal }], ref: [0], read: (i) => `хистограм ${f(m.hist[i])} · ${m.hist[i] > 0 ? "эерэг" : "сөрөг"}` }; }
-    case "bb": { const g = boll(c, p, 2); return { id, label: `Bollinger(${p},2)`, pane: "price", lines: [{ name: "Дээд", v: g.up }, { name: "Дунд", v: g.mid }, { name: "Доод", v: g.lo }], read: (i) => `${f(g.lo[i])} – ${f(g.up[i])}` }; }
-    case "pctb": { const g = boll(c, p, 2), v = c.map((x, i) => (x - g.lo[i]) / (g.up[i] - g.lo[i] || 1)); return { id, label: `%B(${p})`, pane: "sub", lines: [{ name: "%B", v }], ref: [0, 1], read: (i) => f(v[i], 2) }; }
-    case "atr": { const v = atr(b, p); return { id, label: `ATR(${p})`, pane: "sub", lines: [{ name: "ATR", v }], read: (i) => f(v[i]) }; }
-    case "adx": { const g = adx(b, p); return { id, label: `ADX(${p})`, pane: "sub", lines: [{ name: "ADX", v: g.adx }], ref: [20], read: (i) => `${f(g.adx[i], 1)} · ${g.pdi[i] > g.mdi[i] ? "+DI" : "−DI"} тэргүүлж` }; }
-    case "stoch": { const v = stoch(b, p, 3); return { id, label: `Stochastic(${p},3)`, pane: "sub", lines: [{ name: "%K", v }], ref: [20, 80], read: (i) => f(v[i], 1) }; }
-    case "ichi": { const t = b.map((_, i) => mid(b, i, 9)), k = b.map((_, i) => mid(b, i, 26)); return { id, label: "Ichimoku(9,26)", pane: "price", lines: [{ name: "Tenkan", v: t }, { name: "Kijun", v: k }], read: (i) => `Tenkan ${f(t[i])} · Kijun ${f(k[i])} · ${t[i] > k[i] ? "өсөх" : "унах"}` }; }
-    case "vwap": { let d = -1, w = 0, s = 0; const v = b.map((x) => { const q = Math.floor(x.t / 864e5); if (q !== d) { d = q; w = 0; s = 0; } const u = Math.max(x.v, 1e-9); w += u; s += ((x.h + x.l + x.c) / 3) * u; return s / w; }); return { id, label: "VWAP (өдөр)", pane: "price", lines: [{ name: "VWAP", v }], read: (i) => `${f(v[i])} · үнэ ${c[i] > v[i] ? "дээгүүр" : "доогуур"}` }; }
-    case "sar": { const v = psar(b); return { id, label: "SAR(0.02,0.2)", pane: "price", lines: [{ name: "SAR", v, dots: true }], read: (i) => `${f(v[i])} · ${c[i] > v[i] ? "өсөх" : "унах"}` }; }
-    case "st": { const g = supertrend(b, p, 3); return { id, label: `Supertrend(${p},3)`, pane: "price", lines: [{ name: "Supertrend", v: g.line }], read: (i) => `${f(g.line[i])} · ${g.dir[i] > 0 ? "өсөх" : "унах"}` }; }
-    case "kst": { const a = sma(rocP(c, 10), 10), e = sma(rocP(c, 15), 10), g = sma(rocP(c, 20), 10), h = sma(rocP(c, 30), 15), v = a.map((x, i) => (Number.isFinite(h[i]) ? x + 2 * e[i] + 3 * g[i] + 4 * h[i] : 0)), s = sma(v, 9); return { id, label: "KST", pane: "sub", lines: [{ name: "KST", v }, { name: "Дохио", v: s }], ref: [0], read: (i) => `${f(v[i], 2)} · дохионоос ${v[i] > s[i] ? "дээш" : "доош"}` }; }
-    case "mfi": { const v = mfi(b, p); return { id, label: `MFI(${p})`, pane: "sub", lines: [{ name: "MFI", v }], ref: [20, 80], read: (i) => f(v[i], 1) }; }
-    case "dpo": { const s = sma(c, p), h = Math.floor(p / 2) + 1, v = c.map((_, i) => (i >= h ? c[i - h] - s[i] : NaN)); return { id, label: `DPO(${p})`, pane: "sub", lines: [{ name: "DPO", v }], ref: [0], read: (i) => f(v[i]) }; }
-    case "rvol": { const s = sma(b.map((x) => x.v), p), v = b.map((x, i) => (s[i] ? x.v / s[i] : NaN)); return { id, label: `RelVol(${p})`, pane: "sub", lines: [{ name: "RelVol", v }], ref: [1], read: (i) => `${f(v[i], 2)}×` }; }
-    case "ad": { let s = 0; const v = b.map((x) => (s += x.h > x.l ? ((x.c - x.l - (x.h - x.c)) / (x.h - x.l)) * x.v : 0)); return { id, label: "A/D", pane: "sub", lines: [{ name: "A/D", v }], read: (i) => (i >= 12 && v[i] > v[i - 12] ? "хуримтлал" : "тархалт") }; }
+    case "ema": case "sma": { const v = id === "ema" ? ema(c, p) : sma(c, p); return { id, label: `${def.mn}(${p})`, pane: "price", lines: [{ name: def.mn, v }], read: (i) => `${f(v[i])} · үнэ ${c[i] > v[i] ? "дээгүүр" : "доогуур"}`, vote: (i) => Math.sign(c[i] - v[i]) || 0 }; }
+    case "rsi": { const v = rsi(c, p); return { id, label: `RSI(${p})`, pane: "sub", lines: [{ name: "RSI", v }], ref: [30, 70], read: (i) => `${f(v[i], 1)}${v[i] < 30 ? " · хэт зарагдсан" : v[i] > 70 ? " · хэт авагдсан" : ""}`, vote: (i) => (v[i] > 55 ? 1 : v[i] < 45 ? -1 : 0) }; }
+    case "macd": { const m = macd(c); return { id, label: "MACD(12,26,9)", pane: "sub", lines: [{ name: "MACD", v: m.line }, { name: "Дохио", v: m.signal }], ref: [0], read: (i) => `хистограм ${f(m.hist[i])} · ${m.hist[i] > 0 ? "эерэг" : "сөрөг"}`, vote: (i) => Math.sign(m.hist[i]) || 0 }; }
+    case "bb": { const g = boll(c, p, 2); return { id, label: `Bollinger(${p},2)`, pane: "price", lines: [{ name: "Дээд", v: g.up }, { name: "Дунд", v: g.mid }, { name: "Доод", v: g.lo }], read: (i) => `${f(g.lo[i])} – ${f(g.up[i])}`, vote: (i) => Math.sign(c[i] - g.mid[i]) || 0 }; }
+    case "pctb": { const g = boll(c, p, 2), v = c.map((x, i) => (x - g.lo[i]) / (g.up[i] - g.lo[i] || 1)); return { id, label: `%B(${p})`, pane: "sub", lines: [{ name: "%B", v }], ref: [0, 1], read: (i) => f(v[i], 2), vote: (i) => (v[i] > 0.6 ? 1 : v[i] < 0.4 ? -1 : 0) }; }
+    case "atr": { const v = atr(b, p); return { id, label: `ATR(${p})`, pane: "sub", lines: [{ name: "ATR", v }], read: (i) => f(v[i]), vote: () => 0 }; }
+    case "adx": { const g = adx(b, p); return { id, label: `ADX(${p})`, pane: "sub", lines: [{ name: "ADX", v: g.adx }], ref: [20], read: (i) => `${f(g.adx[i], 1)} · ${g.pdi[i] > g.mdi[i] ? "+DI" : "−DI"} тэргүүлж`, vote: (i) => (g.adx[i] >= 20 ? Math.sign(g.pdi[i] - g.mdi[i]) || 0 : 0) }; }
+    case "stoch": { const v = stoch(b, p, 3); return { id, label: `Stochastic(${p},3)`, pane: "sub", lines: [{ name: "%K", v }], ref: [20, 80], read: (i) => f(v[i], 1), vote: (i) => (v[i] > 60 ? 1 : v[i] < 40 ? -1 : 0) }; }
+    case "ichi": { const t = b.map((_, i) => mid(b, i, 9)), k = b.map((_, i) => mid(b, i, 26)); return { id, label: "Ichimoku(9,26)", pane: "price", lines: [{ name: "Tenkan", v: t }, { name: "Kijun", v: k }], read: (i) => `Tenkan ${f(t[i])} · Kijun ${f(k[i])} · ${t[i] > k[i] ? "өсөх" : "унах"}`, vote: (i) => Math.sign(t[i] - k[i]) || 0 }; }
+    case "vwap": { let d = -1, w = 0, s = 0; const v = b.map((x) => { const q = Math.floor(x.t / 864e5); if (q !== d) { d = q; w = 0; s = 0; } const u = Math.max(x.v, 1e-9); w += u; s += ((x.h + x.l + x.c) / 3) * u; return s / w; }); return { id, label: "VWAP (өдөр)", pane: "price", lines: [{ name: "VWAP", v }], read: (i) => `${f(v[i])} · үнэ ${c[i] > v[i] ? "дээгүүр" : "доогуур"}`, vote: (i) => Math.sign(c[i] - v[i]) || 0 }; }
+    case "sar": { const v = psar(b); return { id, label: "SAR(0.02,0.2)", pane: "price", lines: [{ name: "SAR", v, dots: true }], read: (i) => `${f(v[i])} · ${c[i] > v[i] ? "өсөх" : "унах"}`, vote: (i) => Math.sign(c[i] - v[i]) || 0 }; }
+    case "st": { const g = supertrend(b, p, 3); return { id, label: `Supertrend(${p},3)`, pane: "price", lines: [{ name: "Supertrend", v: g.line }], read: (i) => `${f(g.line[i])} · ${g.dir[i] > 0 ? "өсөх" : "унах"}`, vote: (i) => g.dir[i] || 0 }; }
+    case "kst": { const a = sma(rocP(c, 10), 10), e = sma(rocP(c, 15), 10), g = sma(rocP(c, 20), 10), h = sma(rocP(c, 30), 15), v = a.map((x, i) => (Number.isFinite(h[i]) ? x + 2 * e[i] + 3 * g[i] + 4 * h[i] : 0)), s = sma(v, 9); return { id, label: "KST", pane: "sub", lines: [{ name: "KST", v }, { name: "Дохио", v: s }], ref: [0], read: (i) => `${f(v[i], 2)} · дохионоос ${v[i] > s[i] ? "дээш" : "доош"}`, vote: (i) => Math.sign(v[i] - s[i]) || 0 }; }
+    case "mfi": { const v = mfi(b, p); return { id, label: `MFI(${p})`, pane: "sub", lines: [{ name: "MFI", v }], ref: [20, 80], read: (i) => f(v[i], 1), vote: (i) => (v[i] > 55 ? 1 : v[i] < 45 ? -1 : 0) }; }
+    case "dpo": { const s = sma(c, p), h = Math.floor(p / 2) + 1, v = c.map((_, i) => (i >= h ? c[i - h] - s[i] : NaN)); return { id, label: `DPO(${p})`, pane: "sub", lines: [{ name: "DPO", v }], ref: [0], read: (i) => f(v[i]), vote: (i) => Math.sign(v[i]) || 0 }; }
+    case "rvol": { const s = sma(b.map((x) => x.v), p), v = b.map((x, i) => (s[i] ? x.v / s[i] : NaN)); return { id, label: `RelVol(${p})`, pane: "sub", lines: [{ name: "RelVol", v }], ref: [1], read: (i) => `${f(v[i], 2)}×`, vote: (i) => (v[i] > 1.3 ? Math.sign(b[i].c - b[i].o) || 0 : 0) }; }
+    case "ad": { let s = 0; const v = b.map((x) => (s += x.h > x.l ? ((x.c - x.l - (x.h - x.c)) / (x.h - x.l)) * x.v : 0)); return { id, label: "A/D", pane: "sub", lines: [{ name: "A/D", v }], read: (i) => (i >= 12 && v[i] > v[i - 12] ? "хуримтлал" : "тархалт"), vote: (i) => (i >= 12 ? Math.sign(v[i] - v[i - 12]) || 0 : 0) }; }
   }
   return null;
 }

@@ -37,10 +37,45 @@ async function cached<T>(key: string, ttl: number, f: () => Promise<T>): Promise
   return p;
 }
 
-export const bars = (sym: Sym, tf: TF) => cached(`b:${sym}:${tf}`, TTL[tf], () => {
+const MON = Date.UTC(2024, 0, 1);
+/** Лааны эхлэх мөч (UTC). 1W нь даваа гарагаас — Dukascopy, Binance хоёулаа ижил. */
+export function bucket(t: number, tf: TF) {
+  const w = TF_MIN[tf] * 60000;
+  return tf === "1W" ? MON + Math.floor((t - MON) / w) * w : Math.floor(t / w) * w;
+}
+/* Dukascopy үүсч буй лааг өгдөггүй, том хугацааны сүүлийн лаа хоцордог (2026-11-06 хэмжсэн: 1H 95 мин, 4H 7.5 цаг,
+   1D 2 өдөр, 1W 11 хоног). Иймд base-ийн дараах лаануудыг жижиг лаанаас өөрсдөө нэгтгэнэ. */
+function rollup(base: Bar[], fine: Bar[], tf: TF): Bar[] {
+  const out = base.map((b) => ({ ...b })), last = out[out.length - 1]?.t ?? 0;
+  for (const b of fine) {
+    const k = bucket(b.t, tf);
+    if (k <= last) continue;
+    const c = out[out.length - 1];
+    if (c && c.t === k) { c.h = Math.max(c.h, b.h); c.l = Math.min(c.l, b.l); c.c = b.c; c.v += b.v; }
+    else out.push({ ...b, t: k });
+  }
+  return out;
+}
+const m1Tail = (ticker: string) => cached(`m1:${ticker}`, 5000, () => duka(ticker, 1600, Date.now(), "1MIN"));
+const h1Tail = (ticker: string) => cached(`h1:${ticker}`, 120e3, () => duka(ticker, 900, Date.now(), "1HOUR"));
+export const bars = (sym: Sym, tf: TF) => cached(`b:${sym}:${tf}`, TTL[tf], async () => {
   const s = SYMBOLS[sym];
-  return s.src === "duka" ? duka(s.ticker, Math.min(700, DUKA_PAGE[tf]), Date.now(), DUKA[tf]) : binance(s.ticker, BIN[tf], 700);
+  if (s.src === "binance") return binance(s.ticker, BIN[tf], 700);
+  const m1 = await m1Tail(s.ticker);
+  if (tf === "1m") return m1.slice(-700);
+  const base = await duka(s.ticker, Math.min(700, DUKA_PAGE[tf]), Date.now(), DUKA[tf]);
+  if (TF_MIN[tf] < 240) return rollup(base, m1, tf);
+  const h1 = await h1Tail(s.ticker), from = m1[0]?.t ?? Infinity;
+  return rollup(base, [...h1.filter((b) => b.t + 3600e3 <= from), ...m1], tf);
 });
+/** Сүүлийн лааг бодит үнээр шинэчилнэ, цаг нь шилжсэн бол шинэ лаа нээнэ */
+export function withLive(b: Bar[], tf: TF, px: number, now = Date.now()): Bar[] {
+  if (!b.length || !(px > 0)) return b;
+  const out = b.slice(), k = bucket(now, tf), l = out[out.length - 1];
+  if (l.t === k) out[out.length - 1] = { ...l, h: Math.max(l.h, px), l: Math.min(l.l, px), c: px };
+  else if (k > l.t) out.push({ t: k, o: l.c, h: Math.max(l.c, px), l: Math.min(l.c, px), c: px, v: 0 });
+  return out;
+}
 /** Хэмжилтэд: хамгийн ихдээ ≈5000 лаа */
 export async function deep(sym: Sym, tf: TF): Promise<Bar[]> {
   const s = SYMBOLS[sym];
@@ -57,15 +92,28 @@ export async function deep(sym: Sym, tf: TF): Promise<Bar[]> {
 }
 export const closedOf = (b: Bar[], tf: TF, now = Date.now()) => (b.length && b[b.length - 1].t + TF_MIN[tf] * 60000 > now ? b.slice(0, -1) : b);
 
-export const quote = (sym: Sym) => cached(`q:${sym}`, 4000, async () => {
-  const h = await bars(sym, "1H"), last = h[h.length - 1]?.c ?? 0, ref = h[Math.max(0, h.length - 25)]?.c ?? last;
-  let bid = last, ask = last;
-  if (sym === "XAUUSD") { const q = await bbo({ sq: "XAU/USD" }, 4000); if (q) { bid = q.bid; ask = q.ask; } }
+/* 24 цагийн өмнөх ханшийг дэвсгэрт шинэчилнэ — секунд тутмын үнийг лааны татлага хэзээ ч саатуулахгүй */
+const refs = new Map<Sym, { at: number; ref: number }>();
+async function ref24(sym: Sym) {
+  const c = refs.get(sym);
+  if (c && Date.now() - c.at < 60e3) return c.ref;
+  refs.set(sym, { at: Date.now(), ref: c?.ref ?? 0 });
+  const load = bars(sym, "1H").then((h) => {
+    let ref = h[0]?.c ?? 0;
+    for (let k = h.length - 1; k >= 0; k--) if (h[k].t <= Date.now() - 864e5) { ref = h[k].c; break; }
+    refs.set(sym, { at: Date.now(), ref });
+    return ref;
+  }).catch(() => c?.ref ?? 0);
+  return c ? c.ref : load;
+}
+export const quote = (sym: Sym) => cached(`q:${sym}`, 900, async () => {
+  let bid = 0, ask = 0, px = 0, t = Date.now();
+  if (sym === "XAUUSD") { const q = await bbo({ sq: "XAU/USD" }, 900); if (q) { bid = q.bid; ask = q.ask; px = (bid + ask) / 2; t = q.ts; } }
   else {
-    const r = await fetch("https://api.binance.com/api/v3/ticker/bookTicker?symbol=BTCUSDT", { signal: AbortSignal.timeout(6000), cache: "no-store" });
-    const d = (await r.json()) as { bidPrice: string; askPrice: string };
-    bid = +d.bidPrice; ask = +d.askPrice;
+    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { signal: AbortSignal.timeout(3000), cache: "no-store" });
+    px = +((await r.json()) as { price: string }).price; bid = ask = px;
   }
-  const px = (bid + ask) / 2;
-  return { px, bid, ask, chg: ref ? +(((px - ref) / ref) * 100).toFixed(2) : 0 };
+  if (!px) { const m = await bars(sym, "1m"), l = m[m.length - 1]; px = l?.c ?? 0; t = l?.t ?? t; }
+  const ref = await ref24(sym);
+  return { px: +px.toFixed(SYMBOLS[sym].digits + 1), bid, ask, t, chg: ref ? +(((px - ref) / ref) * 100).toFixed(2) : 0 };
 });

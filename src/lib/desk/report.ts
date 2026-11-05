@@ -2,8 +2,9 @@ import mongoose, { Schema, type Model as MModel } from "mongoose";
 import dbConnect from "@/lib/mongodb";
 import { news } from "../scalp/feeds";
 import type { Bar } from "../scalp/ind";
-import { bars, deep, closedOf, quote, SYMBOLS, TFS, TF_MIN, type Sym, type TF } from "./market";
-import { ctxOf, ctxReady, structureAt, planAt, patternAt, measure, indicator, STRATS, type Ctx, type Plan, type Stat, type Strat, type Structure, type Pattern } from "./engine";
+import { bars, deep, closedOf, quote, withLive, SYMBOLS, TFS, TF_MIN, type Sym, type TF } from "./market";
+import { ctxOf, ctxReady, structureAt, planAt, patternAt, drawAt, measure, indicator, STRATS, type Stat, type Strat } from "./engine";
+import { liveStats } from "./learn";
 
 /* ─── Tesla Trader · Шинжилгээний ширээ — тайлан (2026-11-06) ───
    Хугацаа бүрийн бүтэц → нөхцөлт төлөвлөгөө → хүчингүй болох нөхцөл → таамгийн замтай чарт.
@@ -36,18 +37,13 @@ async function stats() {
 
 const rnd = (x: number, d: number) => (Number.isFinite(x) ? +x.toFixed(d) : null);
 export type IndReq = { id: string; p?: number };
-function pane(raw: Bar[], x: Ctx | null, sym: Sym, inds: IndReq[], st?: Structure | null, plan?: Plan | null, pat?: Pattern) {
-  const d = SYMBOLS[sym].digits, from = Math.max(0, raw.length - 150), out = inds.map((q) => indicator(q.id, q.p, raw, d)).filter((v): v is NonNullable<typeof v> => !!v);
-  const slice = (v: number[]) => v.slice(from).map((y) => rnd(y, Math.abs(y) < 10 ? 4 : d));
-  return {
-    bars: raw.slice(from).map((b) => [b.t, b.o, b.h, b.l, b.c]), inds: out.map((o) => ({ label: o.label, pane: o.pane, ref: o.ref, lines: o.lines.map((l) => ({ name: l.name, dots: l.dots, v: slice(l.v) })) })),
-    swings: (st?.z || []).filter((s) => x && s.i < x.bars.length && x.bars[s.i].t >= raw[from].t).map((s) => ({ t: x!.bars[s.i].t, p: s.p, label: s.label })),
-    plan: plan ?? null, pattern: pat ? { neck: pat.neck, name: pat.name } : null,
-  };
-}
+/** Чартын дата: сүүлийн 400 лаа (үүсч буй лаа бодит үнээр), индикаторын шугамууд */
 export async function chart(sym: Sym, tf: TF, inds: IndReq[]) {
-  const raw = await bars(sym, tf), cl = closedOf(raw, tf), x = ctxOf(cl, tf, SYMBOLS[sym].cost), st = ctxReady(x, cl.length - 1) ? structureAt(x, cl.length - 1) : null;
-  return pane(raw, x, sym, inds, st);
+  const [raw0, q] = await Promise.all([bars(sym, tf), quote(sym).catch(() => null)]), raw = withLive(raw0, tf, q?.px ?? 0, q?.t), d = SYMBOLS[sym].digits, from = Math.max(0, raw.length - 400);
+  const out = inds.map((w) => indicator(w.id, w.p, raw, d)).filter((v): v is NonNullable<typeof v> => !!v);
+  const slice = (v: number[]) => v.slice(from).map((y) => rnd(y, Math.abs(y) < 10 ? 4 : d));
+  const i = raw.length - 1;
+  return { bars: raw.slice(from).map((b) => [b.t, rnd(b.o, d + 1), rnd(b.h, d + 1), rnd(b.l, d + 1), rnd(b.c, d + 1)]), inds: out.map((o) => ({ id: o.id, label: o.label, pane: o.pane, ref: o.ref, read: o.read(i), vote: o.vote(i), lines: o.lines.map((l) => ({ name: l.name, dots: l.dots, v: slice(l.v) })) })), serverNow: Date.now() };
 }
 
 const verdict = (s: Stat | undefined) => {
@@ -62,12 +58,15 @@ export async function report(o: { sym: Sym; strat: Strat; tfs: TF[]; inds: IndRe
   const n2 = (x: number) => x.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const when = (t: number) => new Date(t).toLocaleString("en-GB", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Ulaanbaatar" }).replace(",", "");
   const emaReq = o.inds.find((q) => q.id === "ema"), rsiReq = o.inds.find((q) => q.id === "rsi"), emaN = emaReq?.p || 9, rsiN = rsiReq?.p || 14;
-  const [st0, ev, q] = await Promise.all([stats(), news(), quote(sym)]);
+  const [st0, ev, q, lv] = await Promise.all([stats(), news(), quote(sym), liveStats(sym).catch(() => null)]);
   const sections = await Promise.all(tfs.map(async (tf) => {
-    const raw = await bars(sym, tf), cl = closedOf(raw, tf), x = ctxOf(cl, tf, S.cost, emaN, rsiN), i = cl.length - 1;
+    const cl = closedOf(await bars(sym, tf), tf), x = ctxOf(cl, tf, S.cost, emaN, rsiN), i = cl.length - 1;
     if (!ctxReady(x, i)) return { tf, score: 0, empty: true as const };
     const st = structureAt(x, i), r = planAt(x, i, st, strat), plan = "none" in r ? null : r, pat = patternAt(x, i, st.z), stat = st0?.data[`${sym}:${tf}:${strat}`];
     const out = o.inds.map((w) => indicator(w.id, w.p, cl, d)).filter((v): v is NonNullable<typeof v> => !!v);
+    const vs = out.map((v) => v.vote(i)), votes = { up: vs.filter((v) => v > 0).length, dn: vs.filter((v) => v < 0).length, flat: vs.filter((v) => !v).length };
+    /* сургамж: түүхэн + амьд дүн (амьд ×3), дор хаяж 30 идэвхжсэн арилжаатай стратеги */
+    const rank = (Object.keys(STRATS) as Strat[]).map((k) => { const h = st0?.data[`${sym}:${tf}:${k}`], l = lv?.by[`${tf}:${k}`], nh = h?.fired ?? 0, nl = l?.n ?? 0, n = nh + 3 * nl; return { k, mn: STRATS[k].mn, n: nh + nl, score: n ? +(((h?.exp ?? 0) * nh + 3 * (l?.exp ?? 0) * nl) / n).toFixed(3) : 0 }; }).filter((x) => x.n >= 30).sort((p, q) => q.score - p.score);
     const state = st.dir > 0 ? "Өсөх бүтэц (HH/HL)" : st.dir < 0 ? "Унах бүтэц (LH/LL)" : st.bos < 0 ? "Унах тал руу шилжиж байна" : st.bos > 0 ? "Өсөх тал руу шилжиж байна" : "Холимог бүтэц";
     const notes: string[] = [];
     if (st.bos) notes.push(`Хаалт сүүлийн ${st.bos < 0 ? `ёроол ${n2(st.L.p)}-аас доош` : `оргил ${n2(st.H.p)}-аас дээш`} гарсан — бүтэц эвдэрсэн.`);
@@ -81,8 +80,8 @@ export async function report(o: { sym: Sym; strat: Strat; tfs: TF[]; inds: IndRe
     const invalid = plan ? `${n2(plan.sl)} давбал төлөвлөгөө хүчингүй.${pat?.status === "failed" && pat.dir !== plan.dir ? ` ${n2(pat.neck)}-ийг тогтвортой авбал ${pat.name.toLowerCase()} хувилбарыг дахин үнэлнэ.` : ""}${plan.rsiConfirm ? ` Татгалзалгүйгээр RSI ${plan.dir > 0 ? "буурвал" : "өсвөл"} эхний буцалтад орохгүй.` : ""}` : "";
     return {
       tf, score: st.score, state, price: st.c, swings: st.z.slice(-6).map((s) => ({ label: s.label, p: s.p, t: x.bars[s.i].t })), notes, pattern: patText,
-      inds: out.map((v) => ({ label: v.label, read: v.read(i) })), plan, none: "none" in r ? r.none : null, confirm, invalid, atr: rnd(st.a, d),
-      stat: stat ?? null, verdict: verdict(stat), pane: pane(raw, x, sym, o.inds, st, plan, pat),
+      inds: out.map((v, k) => ({ id: v.id, label: v.label, read: v.read(i), vote: vs[k] })), votes, plan, none: "none" in r ? r.none : null, confirm, invalid, atr: rnd(st.a, d),
+      stat: stat ?? null, verdict: verdict(stat), live: lv?.by[`${tf}:${strat}`] ?? null, best: rank[0] ?? null, draw: drawAt(x, i, st, plan, pat),
     };
   }));
   const ready = sections.filter((s) => !("empty" in s));
@@ -93,7 +92,7 @@ export async function report(o: { sym: Sym; strat: Strat; tfs: TF[]; inds: IndRe
   return {
     sym, pair: S.pair, strat, stratMn: STRATS[strat].mn, now, price: q, bias, biasScore: +sum.toFixed(2),
     summary: `${ready.map((s) => `${s.tf}: ${(s as { state: string }).state}`).join(" · ")}. ${agree ? "Хугацаанууд нэг чиглэлтэй." : "Хугацаанууд зөрчилтэй — чиглэлийг том хугацаагаар хэмжиж, жижиг хугацаанд хөөцөлдөхгүй."}`,
-    sections, statsAt: st0?.at ?? null, measuring: !!G.__deskRun,
+    sections, statsAt: st0?.at ?? null, measuring: !!G.__deskRun, learn: lv && { total: lv.total, open: lv.open, fired: lv.fired, tp: lv.tp, sl: lv.sl, recent: lv.recent },
     news: ev.filter((e) => S.ccy.includes(e.ccy) && e.impact !== "Low" && e.t > now - 3600e3 && e.t - now < 36 * 3600e3).sort((a, b) => a.t - b.t).slice(0, 6),
   };
 }
