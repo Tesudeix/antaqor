@@ -23,7 +23,7 @@ const SYMS = [{ id: "XAUUSD", pair: "XAU/USD", mn: "Алт", ic: "Au", d: 2 }, {
 const TFS = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
 const STRATS = [{ id: "pullback", mn: "Трендийн буцалт", sub: "Импульсийн дараах буцалт, EMA чиглэл, RSI батлалт" }, { id: "sweep", mn: "Liquidity Sweep", sub: "Swing шүүрдээд эргэж хаагдахад" }, { id: "smc", mn: "SMC · Order block", sub: "BOS-ийн дараах order block руу буцалт" }];
 const INDS = [{ id: "ema", mn: "EMA", p: 9 }, { id: "sma", mn: "SMA", p: 20 }, { id: "rsi", mn: "RSI", p: 14 }, { id: "macd", mn: "MACD" }, { id: "bb", mn: "Bollinger Bands", p: 20 }, { id: "atr", mn: "ATR", p: 14 }, { id: "adx", mn: "ADX", p: 14 }, { id: "stoch", mn: "Stochastic", p: 14 }, { id: "ichi", mn: "Ichimoku" }, { id: "vwap", mn: "VWAP" }, { id: "sar", mn: "SAR" }, { id: "st", mn: "Supertrend", p: 10 }, { id: "kst", mn: "KST" }, { id: "pctb", mn: "Percent B", p: 20 }, { id: "mfi", mn: "MFI", p: 14 }, { id: "dpo", mn: "DPO", p: 20 }, { id: "rvol", mn: "Relative Volume", p: 20 }, { id: "ad", mn: "Accumulation/Distribution" }] as { id: string; mn: string; p?: number }[];
-const VERS = [{ h: "/", t: "v4" }, { h: "/2", t: "v5" }, { h: "/3", t: "v6" }, { h: "/4", t: "v7" }];
+const VERS = [{ h: "/1", t: "v4" }, { h: "/2", t: "v5" }, { h: "/3", t: "v6" }, { h: "/", t: "v7" }];
 const COL = ["#E8C15A", "#7FB2FF", "#B07CFF", "#FF9F6B"];
 const fx = (n: number | null | undefined, d = 2) => (typeof n === "number" && Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
 const ub = (t: number) => new Date(t).toLocaleString("en-GB", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Ulaanbaatar" }).replace(",", "");
@@ -139,7 +139,7 @@ export default function DeskApp() {
       <header className={s.top}>
         <span className={s.mark}>T</span>
         <select className={s.search} value={sym} aria-label="Хэрэгсэл" onChange={(e) => { setSym(e.target.value); setRep(null); }}>{SYMS.map((x) => <option key={x.id} value={x.id}>{x.pair}</option>)}</select>
-        <nav className={s.ver} aria-label="Хувилбар">{VERS.map((v) => (v.h === "/4" ? <b key={v.h}>{v.t}</b> : <Link key={v.h} href={v.h} prefetch={false}>{v.t}</Link>))}</nav>
+        <nav className={s.ver} aria-label="Хувилбар">{VERS.map((v) => (v.h === "/" ? <b key={v.h}>{v.t}</b> : <Link key={v.h} href={v.h} prefetch={false}>{v.t}</Link>))}</nav>
         <button type="button" className={s.out} onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}>Гарах</button>
       </header>
       <div className={s.shell}>

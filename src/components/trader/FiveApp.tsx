@@ -33,7 +33,7 @@ const SOURCES = [
   { name: "OneRoyal (Autochartist · Acuity)", named: "Гол түвшин, тэгш өнцөгт, Фибоначчи, ABCD, Gartley, Butterfly, хэлбэлзлийн таамаг, пивот, үнийн тренд, эдийн засгийн календарь", to: "3 · 5" },
   { name: "TraderSignal.ai", named: "Индикатор нэрлээгүй — MT4/MT5 автомат арилжаа, «10×» гэсэн баталгаагүй мэдэгдэл", to: "—" },
 ];
-const VERS = [{ h: "/", t: "v4" }, { h: "/2", t: "v5" }, { h: "/3", t: "v6" }, { h: "/4", t: "v7" }];
+const VERS = [{ h: "/1", t: "v4" }, { h: "/2", t: "v5" }, { h: "/3", t: "v6" }, { h: "/", t: "v7" }];
 const DEC = { BUY: "BUY · АВАХ", SELL: "SELL · ЗАРАХ", WAIT: "ХҮЛЭЭХ" };
 const f2 = (n: number | null | undefined) => (typeof n === "number" && Number.isFinite(n) ? n.toFixed(2) : "—");
 const sg = (n: number) => (n > 0 ? "+" : "");

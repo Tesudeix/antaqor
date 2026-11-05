@@ -77,7 +77,7 @@ function isPollingRead(req: NextRequest, pathname: string): boolean {
    таарсан хуудас (нэвтрэх, кредит) тэр хост дээрээ, бусад нь antaqor.com руу.
    antaqor.com/<home> → тэр домэйн гэсэн 301 нь nginx-д (snippets/antaqor-app.conf). */
 const SUB_APPS: Record<string, { home: string; keep: RegExp }> = {
-  "trader.antaqor.com": { home: "/trader-agent", keep: /^\/(auth|2|3|4)(\/|$)/ },
+  "trader.antaqor.com": { home: "/trader-agent", keep: /^\/(auth|1|2|3)(\/|$)/ },
   "studio.antaqor.com": { home: "/content-agent", keep: /^\/(auth|credits)(\/|$)/ },
 };
 
@@ -110,6 +110,10 @@ export function middleware(req: NextRequest) {
     if (pathname === sub.home) {
       return NextResponse.redirect(`https://${host}/${req.nextUrl.search}`, 308);
     }
+    if (pathname === "/4" && sub.home === "/trader-agent") {
+      /* v7 2026-11-06-наас үндсэн хуудас */
+      return NextResponse.redirect(`https://${host}/${req.nextUrl.search}`, 308);
+    }
     if (pathname === "/") {
       const url = req.nextUrl.clone();
       url.pathname = sub.home;
@@ -118,8 +122,8 @@ export function middleware(req: NextRequest) {
     if (!pathname.startsWith("/api/") && !/\.[a-z0-9]+$/i.test(pathname) && !sub.keep.test(pathname)) {
       return NextResponse.redirect(`https://antaqor.com${pathname}${req.nextUrl.search}`, 307);
     }
-  } else if (pathname === "/2" || pathname === "/3" || pathname === "/4") {
-    /* v5–v7 хувилбар зөвхөн trader хост дээр (харьцуулалт) */
+  } else if (pathname === "/1" || pathname === "/2" || pathname === "/3") {
+    /* v4–v6 хувилбар зөвхөн trader хост дээр (харьцуулалт) */
     return NextResponse.redirect(`https://trader.antaqor.com${pathname}`, 307);
   }
 

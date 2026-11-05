@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import TraderApp from "@/components/trader/TraderApp";
+import DeskApp from "@/components/trader/DeskApp";
 import LoginCard from "@/components/LoginCard";
 import { headers } from "next/headers";
 
-/* Tesla Trader (2026-10-25) — нэвтэрсэн гишүүдэд. v4 (2026-11-04): скальп терминал (TraderApp), чатгүй, үнэгүй. */
+/* Tesla Trader (2026-10-25) — нэвтэрсэн гишүүдэд. v7 (2026-11-06): шинжилгээний ширээ үндсэн хуудас, v4 нь /1 дээр. */
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Tesla Trader · Scalp", description: "Валют, алт, криптогийн бодит цагийн скальп терминал — шүүлтүүр, горим, хэмжсэн давуу тал, журнал." };
+export const metadata = { title: "Tesla Trader · Шинжилгээний ширээ", description: "Олон хугацааны бүтэц, стратеги, нөхцөлт төлөвлөгөө — түүхэн хэмжилттэй." };
 
 export default async function TraderAgentPage() {
   const session = await getServerSession(authOptions);
@@ -22,5 +22,5 @@ export default async function TraderAgentPage() {
       </main>
     );
   }
-  return <TraderApp />;
+  return <DeskApp />;
 }
