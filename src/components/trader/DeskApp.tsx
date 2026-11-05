@@ -121,10 +121,10 @@ const Report = memo(function Report({ rep, secs, sec, tf, d, news, pick, useStra
 export default function DeskApp() {
   const [sym, setSym] = useState("XAUUSD"), [tf, setTf] = useState("1H"), [strat, setStrat] = useState("pullback"), [tfs, setTfs] = useState<string[]>(["4H", "1H", "15m"]), [inds, setInds] = useState<Sel[]>(DEF);
   const [data, setData] = useState<ChartData | null>(null), [tick, setTick] = useState<Live2 | null>(null), [rep, setRep] = useState<Rep | null>(null), [news, setNews] = useState<Weigh | null>(null);
-  const [step, setStep] = useState(0), [err, setErr] = useState(""), [menu, setMenu] = useState(false), [gear, setGear] = useState<string | null>(null), [now, setNow] = useState(0), [small, setSmall] = useState(false);
+  const [step, setStep] = useState(0), [err, setErr] = useState(""), [loadErr, setLoadErr] = useState(""), [menu, setMenu] = useState(false), [gear, setGear] = useState<string | null>(null), [now, setNow] = useState(0), [small, setSmall] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]), [q, setQ] = useState(""), [asking, setAsking] = useState(false);
   const frame = useRef<HTMLDivElement>(null), S = SYMS.find((x) => x.id === sym)!, d = S.d, busy = step >= 1 && step <= 6, stages = useRef<ReturnType<typeof setTimeout>[]>([]), lastPx = useRef({ px: 0, at: 0 });
-  const indQ = useMemo(() => inds.map((x) => `${x.id}:${x.p ?? ""}`).join(","), [inds]), dataKey = `${sym}:${tf}:${indQ}`;
+  const indQ = useMemo(() => inds.map((x) => `${x.id}:${x.p ?? ""}`).join(","), [inds]), viewKey = `${sym}:${tf}`, dataKey = `${viewKey}:${indQ}`;
 
   useEffect(() => { const c = load<{ sym?: string; strat?: string; tfs?: string[]; inds?: Sel[]; tf?: string }>("td.cfg8", {}); if (c.sym && SYMS.some((x) => x.id === c.sym)) setSym(c.sym); if (c.strat) setStrat(c.strat); if (c.tfs?.length) setTfs(c.tfs); if (c.inds) setInds(c.inds); if (c.tf) setTf(c.tf); const m = matchMedia("(max-width: 560px)"), f = () => setSmall(m.matches); f(); m.addEventListener("change", f); setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => { clearInterval(t); m.removeEventListener("change", f); }; }, []);
   useEffect(() => { save("td.cfg8", { sym, strat, tfs, inds, tf }); }, [sym, strat, tfs, inds, tf]);
@@ -144,8 +144,8 @@ export default function DeskApp() {
   /* лаа, индикатор 15 сек тутам; секунд хооронд tick хөдөлгөнө */
   useEffect(() => {
     let alive = true;
-    const b = async () => { if (document.hidden) return; try { const r = await fetch(`/api/trader-agent/desk?sym=${sym}&tf=${tf}&ind=${indQ}`, { cache: "no-store" }), j = await r.json(); if (alive && r.ok) setData({ ...j, key: dataKey }); } catch { /* дараагийн удаа */ } };
-    b();
+    const b = async () => { if (document.hidden) return; try { const r = await fetch(`/api/trader-agent/desk?sym=${sym}&tf=${tf}&ind=${indQ}`, { cache: "no-store" }), j = await r.json(); if (!alive) return; if (r.ok) { setData({ ...j, key: dataKey }); setLoadErr(""); } else setLoadErr(j.error || "Лаа ачаалж чадсангүй — дахин оролдож байна"); } catch { if (alive) setLoadErr("Сүлжээний алдаа — дахин оролдож байна"); } };
+    setLoadErr(""); b();
     const t = setInterval(b, 15000), vis = () => { if (!document.hidden) b(); };
     document.addEventListener("visibilitychange", vis);
     return () => { alive = false; clearInterval(t); document.removeEventListener("visibilitychange", vis); };
@@ -160,20 +160,22 @@ export default function DeskApp() {
   const run = useCallback(async () => {
     if (step >= 1 && step <= 6) return;
     stages.current.forEach(clearTimeout); stages.current = [];
+    /* чартын хугацаа хэрэглэгчийнх: түүнийг хэзээ ч өөрөө солихгүй, харин шинжилгээнд заавал оруулна */
+    const use = tfs.includes(tf) ? tfs : [...tfs.slice(-2), tf];
+    if (use !== tfs) setTfs(use);
     setStep(1); setErr(""); setMsgs([]);
     if (small) frame.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     try {
-      const [r, w] = await Promise.all([fetch("/api/trader-agent/desk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sym, strat, tfs, inds }) }), fetch(`/api/trader-agent/desk?q=weigh&sym=${sym}`, { cache: "no-store" }).catch(() => null), wait(1000)]);
+      const [r, w] = await Promise.all([fetch("/api/trader-agent/desk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sym, strat, tfs: use, inds }) }), fetch(`/api/trader-agent/desk?q=weigh&sym=${sym}`, { cache: "no-store" }).catch(() => null), wait(1000)]);
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || `Алдаа (${r.status})`);
       if (w?.ok) setNews(await w.json());
-      const list = (j.sections as Sec[]).filter((x) => !x.empty), main = list.find((x) => x.plan) ?? list[0];
-      setRep(j); if (main) setTf(main.tf);
+      setRep(j);
       const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
       setStep(2);
       ([[1400, 3], [3000, 4], [3700, 5], [4300, 6], [4900, 7]] as const).forEach(([ms, n]) => stages.current.push(setTimeout(() => setStep(n), calm ? 0 : ms)));
     } catch (e) { setErr((e as Error).message); setStep(0); }
-  }, [step, small, sym, strat, tfs, inds]);
+  }, [step, small, sym, tf, strat, tfs, inds]);
   const ask = async (text: string) => {
     const t = text.trim();
     if (!t || asking || !rep) return;
@@ -193,7 +195,9 @@ export default function DeskApp() {
   const liveTxt = { wait: "Холбогдож байна", lost: "Дахин холбогдож байна", closed: "Зах зээл хаалттай", live: "Live" }[liveState];
   const closeIn = now ? bucket(now, tf) + TF_MIN[tf] * 60000 - now : 0, spread = tick && tick.ask > tick.bid ? tick.ask - tick.bid : 0;
   const status = (n: number) => (step > n ? "done" : step === n ? "run" : "idle");
-  const planSec = secs.find((x) => x.plan) ?? null, marks = sec?.draw?.marks.length ?? 0, indOf = (id: string) => data?.inds.find((x) => x.id === id);
+  const other = secs.find((x) => x.plan && x.tf !== tf) ?? null, marks = sec?.draw?.marks.length ?? 0;
+  const planTxt = (x: Sec) => `${x.tf} ${x.plan!.dir > 0 ? "Авах" : "Зарах"} · орох ${fx(x.plan!.entry, d)} · SL ${fx(x.plan!.sl, d)} · TP ${fx(x.plan!.tp1, d)} · ≈${x.plan!.rr}R${x.plan!.rr < 1 ? " (сул)" : ""}`;
+  const firstPlan = secs.find((x) => x.plan), stepPlan = sec?.plan ? planTxt(sec) : firstPlan ? `${tf} ${sec ? "дээр төлөвлөгөө алга" : "хугацааг шинжлээгүй"}. ${planTxt(firstPlan)}` : "Энэ стратегид тохирох нөхцөл алга — албаар үүсгэхгүй.", indOf = (id: string) => data?.inds.find((x) => x.id === id);
 
   return (
     <div className={s.app}>
@@ -240,8 +244,8 @@ export default function DeskApp() {
                   <button type="button" aria-label={`${def?.mn} хасах`} onClick={() => toggleInd(x.id)}>×</button>
                 </span>); })}
             </div>
-            <div ref={frame}><DeskChart tf={tf} digits={d} dataKey={dataKey} data={shown} tick={tick} draw={sec?.draw ?? null} plan={sec?.plan ?? null} runKey={`${rep?.now ?? 0}:${tf}`} scanning={step === 1} scanText={`${tfs.join(" · ")} уншиж байна`} height={height} /></div>
-            <p className={s.foot}>{liveState === "closed" ? "Зах зээл хаалттай — сүүлийн ханш харагдаж байна. " : ""}Ханш ба сүүлийн лаа нэг tick-ээс шинэчлэгдэнэ · {S.src}{rep && !sec ? " · Энэ хугацааг шинжлээгүй" : ""}{sec ? " · Шинжилгээ хаагдсан лаанаас" : ""}</p>
+            <div ref={frame}><DeskChart tf={tf} digits={d} viewKey={viewKey} data={shown} tick={tick} draw={sec?.draw ?? null} plan={sec?.plan ?? null} runKey={`${rep?.now ?? 0}:${tf}`} scanning={step === 1} scanText={`${tfs.join(" · ")} уншиж байна`} height={height} loadErr={loadErr} /></div>
+            <p className={s.foot}>{liveState === "closed" ? "Зах зээл хаалттай — сүүлийн ханш харагдаж байна. " : ""}Ханш ба сүүлийн лаа нэг tick-ээс шинэчлэгдэнэ · {S.src}{rep && !sec ? " · Энэ хугацааг шинжлээгүй" : ""}{sec ? " · Шинжилгээ хаагдсан лаанаас" : ""}{sec && !sec.plan && other ? <> · <button type="button" className={s.toPlan} onClick={() => setTf(other.tf)}>{other.tf} төлөвлөгөө харах</button></> : null}</p>
           </section>
         </main>
 
@@ -250,7 +254,7 @@ export default function DeskApp() {
           <ol className={s.steps} data-p={Math.min(step, 7)}>
             <li data-s={status(1)}><i>01</i><div><b>{STEPS[0].t}</b><p>{secs.length ? secs.map((x) => `${x.tf} ${x.state}`).join(" · ") : STEPS[0].d}</p><div className={s.chips} role="group" aria-label="Шинжлэх хугацаа">{TFS.map((t) => <button key={t} type="button" aria-pressed={tfs.includes(t)} onClick={() => toggleTf(t)}>{t}</button>)}</div></div></li>
             <li data-s={status(2)}><i>02</i><div><b>{STEPS[1].t}</b><p>{step > 1 && sec ? `${sec.tf} дээр ${marks} тэмдэг, ${sec.draw.trends.length} трендийн шугам${sec.pattern ? " · загвар илэрсэн" : ""}` : STEPS[1].d}</p></div></li>
-            <li data-s={status(3)}><i>03</i><div><b>{STEPS[2].t}</b><p>{step > 2 ? (planSec?.plan ? `${planSec.tf} ${planSec.plan.dir > 0 ? "Авах" : "Зарах"} · орох ${fx(planSec.plan.entry, d)} · SL ${fx(planSec.plan.sl, d)} · TP ${fx(planSec.plan.tp1, d)} · ≈${planSec.plan.rr}R${planSec.plan.rr < 1 ? " (сул)" : ""}` : "Энэ стратегид тохирох нөхцөл алга — албаар үүсгэхгүй.") : STEPS[2].d}</p>
+            <li data-s={status(3)}><i>03</i><div><b>{STEPS[2].t}</b><p>{step > 2 ? stepPlan : STEPS[2].d}</p>
               <div className={s.seg} role="group" aria-label="Стратеги">{STRATS.map((x) => <button key={x.id} type="button" aria-pressed={strat === x.id} title={x.sub} onClick={() => setStrat(x.id)}>{x.mn}</button>)}</div><small className={s.segSub}>{STRATS.find((x) => x.id === strat)?.sub}</small></div></li>
             <li data-s={status(4)}><i>04</i><div><b>{STEPS[3].t}</b><p>{step > 3 && news ? news.text : STEPS[3].d}</p></div></li>
             <li data-s={status(5)}><i>05</i><div><b>{STEPS[4].t}</b><p>{STEPS[4].d}</p>

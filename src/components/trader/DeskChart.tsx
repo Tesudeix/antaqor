@@ -79,11 +79,19 @@ type Rt = {
   bars: { time: UTCTimestamp; open: number; high: number; low: number; close: number }[]; key: string; sig: string; ind: { series: ISeriesApi<"Line">[]; title: PaneTitle | null; id: string }[]; trends: ISeriesApi<"Line">[]; lines: IPriceLine[];
 };
 const smooth = (k: number) => 1 - (1 - k) ** 3;
+/* шинжилгээний зураглалыг бүгдийг цэвэрлэнэ — хугацаа солиход хуучин цэгүүд цагийн тэнхлэгт үлдэж харагдацыг хазайлгахгүй */
+function wipe(r: Rt) {
+  r.marks.setMarkers([]); r.path.setData([]); r.alt.setData([]);
+  r.trends.forEach((x) => r.chart.removeSeries(x)); r.trends = [];
+  r.lines.forEach((x) => r.candle.removePriceLine(x)); r.lines = [];
+  r.over.d = { zone: null, tags: [], target: null }; r.over.update();
+}
 
-export default function DeskChart({ tf, digits, dataKey, data, tick, draw, plan, runKey, scanning, scanText, height }: { tf: string; digits: number; dataKey: string; data: ChartData | null; tick: Tick | null; draw: Draw | null; plan: Plan | null; runKey: string; scanning: boolean; scanText: string; height: number }) {
+export default function DeskChart({ tf, digits, viewKey, data, tick, draw, plan, runKey, scanning, scanText, height, loadErr }: { tf: string; digits: number; viewKey: string; data: ChartData | null; tick: Tick | null; draw: Draw | null; plan: Plan | null; runKey: string; scanning: boolean; scanText: string; height: number; loadErr: string }) {
   const box = useRef<HTMLDivElement>(null), rt = useRef<Rt | null>(null), [L, setL] = useState<typeof import("lightweight-charts") | null>(null);
   const [leg, setLeg] = useState<{ o: number; h: number; l: number; c: number; t: number; hover: boolean } | null>(null), hoverRef = useRef(false);
-  const ready = data?.key === dataKey;
+  /* viewKey = хэрэгсэл + хугацаа. Индикатор нэмэхэд ижил хэвээр тул zoom, зураглал дахин эхлэхгүй */
+  const ready = !!data && data.key.startsWith(`${viewKey}:`);
 
   useEffect(() => { let on = true; import("lightweight-charts").then((m) => { if (on) setL(m); }); return () => { on = false; }; }, []);
 
@@ -118,20 +126,22 @@ export default function DeskChart({ tf, digits, dataKey, data, tick, draw, plan,
   /* лаа ба индикаторууд */
   useEffect(() => {
     const r = rt.current;
-    if (!r || !L || !data || data.key !== dataKey) return;
-    const fresh = r.key !== dataKey, prev = r.bars[r.bars.length - 1];
+    if (!r || !L || !data || !data.key.startsWith(`${viewKey}:`)) return;
+    const fresh = r.key !== viewKey, prev = r.bars[r.bars.length - 1], sig = data.inds.map((q) => q.label).join("|"), rebuild = fresh || sig !== r.sig;
+    if (fresh) { wipe(r); r.ghost.setData([]); r.pulse.setData([]); r.bars = []; }
+    if (rebuild) {
+      r.ind.forEach((q) => q.series.forEach((x) => r.chart.removeSeries(x)));
+      r.ind = []; r.sig = sig;
+      for (let k = r.chart.panes().length - 1; k > 0; k--) r.chart.removePane(k);
+    }
     const bars = data.bars.map(([t, o, h, l, c]) => ({ time: sec(t), open: o, high: h, low: l, close: c })), last = bars[bars.length - 1];
     if (!fresh && prev && last && prev.time === last.time) { last.high = Math.max(last.high, prev.high); last.low = Math.min(last.low, prev.low); }
-    r.candle.setData(bars); r.bars = bars; r.key = dataKey;
+    r.candle.setData(bars); r.bars = bars; r.key = viewKey;
     if (last) r.pulse.setData([{ time: last.time, value: last.close }]);
     const step = bars.length > 6 ? Math.min(...[1, 2, 3, 4, 5].map((k) => bars[bars.length - k].time - bars[bars.length - k - 1].time)) : TF_MIN[tf] * 60;
     if (last) r.ghost.setData(Array.from({ length: 70 }, (_, k) => ({ time: (last.time + (k + 1) * step) as UTCTimestamp })));
 
-    const sig = data.inds.map((q) => q.label).join("|");
-    if (sig !== r.sig || fresh) {
-      r.ind.forEach((q) => q.series.forEach((x) => r.chart.removeSeries(x)));
-      r.ind = []; r.sig = sig;
-      for (let k = r.chart.panes().length - 1; k > 0; k--) r.chart.removePane(k);
+    if (rebuild) {
       let pane = 0, col = 0;
       for (const q of data.inds) {
         const sub = q.pane === "sub", c = PALETTE[col++ % PALETTE.length]; if (sub) pane++;
@@ -153,31 +163,25 @@ export default function DeskChart({ tf, digits, dataKey, data, tick, draw, plan,
       x.title?.set(`${q.label}${q.read ? ` · ${q.read}` : ""}`);
     });
     if (fresh) { const n = bars.length, w = box.current?.clientWidth ?? 800; r.chart.timeScale().setVisibleLogicalRange({ from: n - (w < 560 ? 58 : 120), to: n + 7 }); r.chart.priceScale("right").applyOptions({ autoScale: true }); }
-  }, [L, data, dataKey, tf, digits, height]);
+  }, [L, data, viewKey, tf, digits, height]);
 
   /* tick: сүүлийн лааг шууд хөдөлгөнө, цаг шилжвэл шинэ лаа нээнэ */
   useEffect(() => {
     const r = rt.current;
-    if (!r || !tick || !(tick.px > 0) || !r.bars.length || r.key !== dataKey) return;
+    if (!r || !tick || !(tick.px > 0) || !r.bars.length || r.key !== viewKey) return;
     const k = sec(bucket(tick.t, tf)), l = r.bars[r.bars.length - 1], px = tick.px;
     if (k < l.time) return;
     if (k === l.time) { l.high = Math.max(l.high, px); l.low = Math.min(l.low, px); l.close = px; r.candle.update({ ...l }); }
     else { const b = { time: k, open: l.close, high: Math.max(l.close, px), low: Math.min(l.close, px), close: px }; r.bars.push(b); r.candle.update(b); }
     r.pulse.update({ time: r.bars[r.bars.length - 1].time, value: px });
     if (!hoverRef.current) { const b = r.bars[r.bars.length - 1]; setLeg({ o: b.open, h: b.high, l: b.low, c: b.close, t: b.time * 1000, hover: false }); }
-  }, [tick, dataKey, tf]);
+  }, [tick, viewKey, tf]);
 
   /* шинжилгээг дарааллаар зурах */
   useEffect(() => {
     const r = rt.current;
     if (!r || !L || !ready) return;
-    const clear = () => {
-      r.marks.setMarkers([]); r.path.setData([]); r.alt.setData([]);
-      r.trends.forEach((x) => r.chart.removeSeries(x)); r.trends = [];
-      r.lines.forEach((x) => r.candle.removePriceLine(x)); r.lines = [];
-      r.over.d = { zone: null, tags: [], target: null }; r.over.update();
-    };
-    clear();
+    wipe(r);
     if (!draw) return;
     const calm = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, timers: ReturnType<typeof setTimeout>[] = [], raf: number[] = [];
     let at = 0;
@@ -227,12 +231,12 @@ export default function DeskChart({ tf, digits, dataKey, data, tick, draw, plan,
     return () => { timers.forEach(clearTimeout); raf.forEach(cancelAnimationFrame); };
   }, [L, ready, runKey, draw, plan, tf]);
 
-  const shown = leg ?? (() => { const b = data?.key === dataKey ? data.bars[data.bars.length - 1] : null; return b ? { o: b[1], h: b[2], l: b[3], c: b[4], t: b[0], hover: false } : null; })();
+  const shown = leg ?? (() => { const b = ready ? data!.bars[data!.bars.length - 1] : null; return b ? { o: b[1], h: b[2], l: b[3], c: b[4], t: b[0], hover: false } : null; })();
   const pct = shown ? ((shown.c - shown.o) / shown.o) * 100 : 0;
   return (
-    <div className={s.frame} data-scan={scanning || undefined} style={{ height }}>
+    <div className={s.frame} data-scan={scanning || undefined} data-wait={!ready || undefined} style={{ height }}>
       <div ref={box} className={s.canvas} />
-      {!ready && <div className={s.loading}>Лаа ачаалж байна…</div>}
+      {!ready && <div className={s.loading} role="status">{loadErr || `${tf} лаа ачаалж байна…`}</div>}
       {shown && <div className={s.legend} data-d={shown.c >= shown.o ? "up" : "dn"} data-hover={shown.hover || undefined}><span>{shown.hover ? F_FULL.format(new Date(shown.t)) : "Одоогийн лаа"}</span><span>O <b>{money(shown.o, digits)}</b></span><span>H <b>{money(shown.h, digits)}</b></span><span>L <b>{money(shown.l, digits)}</b></span><span>C <b>{money(shown.c, digits)}</b></span><strong>{pct >= 0 ? "+" : ""}{pct.toFixed(2)}%</strong></div>}
       {scanning && <div className={s.scanTxt} role="status">{scanText}</div>}
       <i className={s.c1} /><i className={s.c2} /><i className={s.c3} /><i className={s.c4} />
