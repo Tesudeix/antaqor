@@ -77,7 +77,7 @@ function isPollingRead(req: NextRequest, pathname: string): boolean {
    таарсан хуудас (нэвтрэх, кредит) тэр хост дээрээ, бусад нь antaqor.com руу.
    antaqor.com/<home> → тэр домэйн гэсэн 301 нь nginx-д (snippets/antaqor-app.conf). */
 const SUB_APPS: Record<string, { home: string; keep: RegExp }> = {
-  "trader.antaqor.com": { home: "/trader-agent", keep: /^\/(auth|2)(\/|$)/ },
+  "trader.antaqor.com": { home: "/trader-agent", keep: /^\/(auth|2|3)(\/|$)/ },
   "studio.antaqor.com": { home: "/content-agent", keep: /^\/(auth|credits)(\/|$)/ },
 };
 
@@ -118,9 +118,9 @@ export function middleware(req: NextRequest) {
     if (!pathname.startsWith("/api/") && !/\.[a-z0-9]+$/i.test(pathname) && !sub.keep.test(pathname)) {
       return NextResponse.redirect(`https://antaqor.com${pathname}${req.nextUrl.search}`, 307);
     }
-  } else if (pathname === "/2") {
-    /* алтны хувилбар зөвхөн trader хост дээр (2026-11-05, харьцуулалт) */
-    return NextResponse.redirect("https://trader.antaqor.com/2", 307);
+  } else if (pathname === "/2" || pathname === "/3") {
+    /* v5, v6 хувилбар зөвхөн trader хост дээр (2026-11-05, харьцуулалт) */
+    return NextResponse.redirect(`https://trader.antaqor.com${pathname}`, 307);
   }
 
   /* AI зураг / видеоны хуучин хэрэгслүүд (2026-10-26, эзний хүсэлт) antaqor.com-оос

@@ -126,7 +126,7 @@ function ols(X: number[][], y: number[]): number[] {
   }
   return A.map((row, i) => row[k] / row[i]);
 }
-function volFit(S: Sample[], idx: number[]) {
+export function volFit(S: Sample[], idx: number[]) {
   const sum = new Array(48).fill(0), cnt = new Array(48).fill(0);
   for (const i of idx) { const b = slot(S[i].t); sum[b] += Math.log(S[i].rng / S[i].a5); cnt[b]++; }
   const season = sum.map((x, b) => (cnt[b] > 20 ? +(x / cnt[b]).toFixed(4) : 0));

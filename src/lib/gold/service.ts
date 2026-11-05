@@ -5,6 +5,8 @@ import { local } from "../scalp/engine";
 import { duka, dukaSince, liveM1, closed, bbo, news, type NewsEv } from "../scalp/feeds";
 import { computeFeatures, sessionOf, SESSION_MN, FAM_MN, type GoldData, type Fam } from "./features";
 import { buildModel, scoreAt, levelsFor, volPred, TAIL_K, SPREAD, type Model } from "./model";
+import { buildScanCtx } from "./scans";
+import { measure, rangeModel, type FiveReport, type RangeModel } from "./ensemble";
 
 /* ─── Tesla Trader · XAU/USD сервис (2026-11-05) ───
    analyze()  — «Шинжлэх» товч: бодит 1 мин алтны дата → 86 онцлог → walk-forward-оор шалгасан модель → шийдвэр.
@@ -16,7 +18,7 @@ const XAU = { src: "duka" as const, ticker: "XAU/USD", sq: "XAU/USD" };
 const LEGS: [string, number][] = [["EUR/USD", -0.576], ["USD/JPY", 0.136], ["GBP/USD", -0.119], ["USD/CAD", 0.091], ["USD/SEK", 0.042], ["USD/CHF", 0.036]];
 const SQ_BASE = 0.64;                       /* Swissquote prime-ийн ердийн алтны spread ($), 2026-11-04 хэмжсэн */
 
-const GoldModelDoc: MModel<{ key: string; data: Model }> = (mongoose.models.GoldModel as MModel<{ key: string; data: Model }>) ||
+const GoldModelDoc: MModel<{ key: string; data: unknown }> = (mongoose.models.GoldModel as MModel<{ key: string; data: unknown }>) ||
   mongoose.model("GoldModel", new Schema({ key: { type: String, unique: true }, data: Schema.Types.Mixed }, { timestamps: true }));
 
 function dxyMap(legs: Bar[][]): Map<number, number> {
@@ -30,27 +32,41 @@ function dxyMap(legs: Bar[][]): Map<number, number> {
 }
 
 /* ── модель: санах ой → Mongo → дэвсгэрт дахин сургалт ── */
-let model: Model | null = null, training: Promise<void> | null = null, trainErr = "";
+export type FiveModel = { report: FiveReport; range: RangeModel };
+let model: Model | null = null, five: FiveModel | null = null, trainErr = "";
+const STALE = 12 * 3600e3;
+/* instrumentation ба маршрут тусдаа bundle тул сургалт бүх процесст нэг л удаа явна */
+const G = globalThis as { __goldTrain?: Promise<void> | null };
 export async function train() {
-  if (training) return training;
-  training = (async () => {
+  if (G.__goldTrain) return G.__goldTrain;
+  G.__goldTrain = (async () => {
     const from = Date.now() - 120 * 864e5;
     const m1 = await dukaSince(XAU.ticker, "1MIN", from, 30000);
     const h1 = await duka(XAU.ticker, 5000, Date.now(), "1HOUR"), d1 = await duka(XAU.ticker, 1500, Date.now(), "1DAY");
     const legs: Bar[][] = [];
     for (const [s] of LEGS) legs.push(await dukaSince(s, "5MIN", from - 5 * 864e5, 5000));
-    const m = buildModel(computeFeatures({ m1, h1, d1, dxy: dxyMap(legs) }));
+    const data = { m1, h1, d1, dxy: dxyMap(legs) }, fs = computeFeatures(data), m = buildModel(fs), c = buildScanCtx(data);
+    const f: FiveModel = { report: await measure(fs, c), range: rangeModel(fs, c) };
     await dbConnect();
     await GoldModelDoc.updateOne({ key: "xau" }, { $set: { data: m } }, { upsert: true });
-    model = m; trainErr = "";
-  })().catch((e) => { trainErr = (e as Error).message; console.error("[gold train]", trainErr); }).finally(() => { training = null; });
-  return training;
+    await GoldModelDoc.updateOne({ key: "five" }, { $set: { data: f } }, { upsert: true });
+    model = m; five = f; trainErr = "";
+  })().catch((e) => { trainErr = (e as Error).message; console.error("[gold train]", trainErr); }).finally(() => { G.__goldTrain = null; });
+  return G.__goldTrain;
 }
 async function getModel(): Promise<Model | null> {
-  if (!model) { await dbConnect(); model = (await GoldModelDoc.findOne({ key: "xau" }).lean<{ data: Model }>())?.data || null; }
-  if (!training && (!model || Date.now() - model.fittedAt > 12 * 3600e3)) train();
+  if (!model || Date.now() - model.fittedAt > STALE) { await dbConnect(); model = (await GoldModelDoc.findOne({ key: "xau" }).lean<{ data: Model }>())?.data || null; }
+  if (!G.__goldTrain && (!model || Date.now() - model.fittedAt > STALE)) train();
   return model;
 }
+/** 5 SCAN-ийн хэмжилт — үгүй бол дэвсгэрт сургалт эхэлнэ */
+export async function fiveModel(): Promise<FiveModel | null> {
+  if (!five || Date.now() - five.report.fittedAt > STALE) { await dbConnect(); five = (await GoldModelDoc.findOne({ key: "five" }).lean<{ data: FiveModel }>())?.data || null; }
+  if (!G.__goldTrain && (!five || Date.now() - five.report.fittedAt > STALE)) train();
+  return five;
+}
+/** Одоогийн зардал ($): ердийн spread × Swissquote дээрх өргөсөлт (≥1) */
+export async function spreadNow() { const q = await bbo(XAU, 4000); return SPREAD * Math.max(1, q ? q.spread / SQ_BASE : 1); }
 
 /* ── бодит цагийн өгөгдөл ── */
 const memo = new Map<string, { at: number; v: unknown; p?: Promise<unknown> }>();
@@ -62,7 +78,7 @@ async function cached<T>(key: string, ttl: number, f: () => Promise<T>): Promise
   memo.set(key, { at: c?.at ?? 0, v: c?.v, p });
   return p;
 }
-async function liveData(): Promise<GoldData> {
+export async function liveData(): Promise<GoldData> {
   const [m1, h1, d1, legs] = await Promise.all([
     liveM1(XAU, 8000).then((b) => closed(b)),
     cached("h1", 5 * 60e3, () => duka(XAU.ticker, 1200, Date.now(), "1HOUR")),
@@ -166,7 +182,7 @@ export async function analyze() {
       sel: m.reg.map((r) => r.sel.map((x) => ({ key: x.key, mn: x.mn, fam: x.fam, ic: x.ic }))), thr: m.reg.map((r) => r.thr), calib: m.calib, recent: m.recent.slice(0, 24),
       noise: m.screen.filter((x) => !x.picked[0] && !x.picked[1]).length,
     },
-    training: !!training,
+    training: !!G.__goldTrain,
     news: usd.filter((e) => e.t > now - 15 * 60e3 && e.t - now < 10 * 3600e3).sort((a, b) => a.t - b.t).slice(0, 6) as NewsEv[],
     chart: { bars: bars.map((b) => [b.t, r2(b.o), r2(b.h), r2(b.l), r2(b.c)]), e20: bars.map((_, k) => r2(fs.ctx.e20[from + k])), e50: bars.map((_, k) => r2(fs.ctx.e50[from + k])), vwap: bars.map((_, k) => r2(fs.ctx.vwap[from + k])) },
   };

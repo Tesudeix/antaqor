@@ -30,6 +30,7 @@ import { useMembership } from "@/lib/useMembership";
 const OPEN_PREFIXES = [
   /* trader.antaqor.com/2 — «/»-тэй адил нээлттэй: хуудас өөрөө нэвтрэлтээ шалгана (2026-11-05). */
   "/2",
+  "/3",
   /* Antaqor Agent — өөрийн админ эрхийн шалгууртай (API 401 → нэвтрэх дэлгэц). */
   "/content-agent",
   "/live/broadcast",

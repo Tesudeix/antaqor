@@ -133,6 +133,7 @@
 .pl[data-k="tp"] line { stroke: var(--buy); } .pl[data-k="tp"] text { fill: var(--buy); }
 .pl[data-k="sl"] line { stroke: var(--sell); } .pl[data-k="sl"] text { fill: var(--sell); }
 .pl[data-k="en"] line { stroke: #fff; } .pl[data-k="en"] text { fill: #fff; }
+.cone { fill: rgba(232,193,90,.16); stroke: var(--gold); stroke-width: 1; stroke-dasharray: 3 3; }
 .now rect { fill: #fff; }
 .now text { fill: #000; font: 800 10.5px var(--mono); }
 .shot { position: relative; overflow: hidden; padding: 0; }

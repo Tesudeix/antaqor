@@ -12,7 +12,7 @@ import s from "./gold.module.css";
 type Gate = { key: string; label: string; ok: boolean; warn?: boolean; text: string };
 type Ev = { n: number; ic: number | null; signals: number; hit: number | null; trades: number; tp1: number; win: number; exp: number | null; se: number | null; totalR: number; maxDD: number };
 type Plan = { entry: number; sl: number; tp1: number; tp2: number; risk: number; rr2: number; costR: number };
-type A = {
+export type A = {
   now: number; price: { bid: number; ask: number; spread: number }; barT: number; age: number; session: string; sessionMn: string;
   regime: { kind: string; adx: number; er: number; atrPct: number; chop: number; hurst: number }; gates: Gate[];
   decision: "BUY" | "SELL" | "WAIT"; reason: string; score: number; thr: number; pUp: number; dirNote: string; horizon: number; plan: Plan | null;
@@ -23,6 +23,8 @@ type A = {
     sel: { key: string; mn: string; fam: string; ic: number }[][]; thr: number[]; calib: { lo: number; hi: number; n: number; pUp: number }[]; recent: { t: number; dir: number; r: number; regime: number }[]; noise: number };
   training: boolean; news: { t: number; ccy: string; title: string; impact: string; forecast: string; previous: string }[];
   chart: { bars: [number, number, number, number, number][]; e20: number[]; e50: number[]; vwap: number[] };
+  /** 5 SCAN (v6): дараагийн 30 минутын 80%-ийн таамгийн бүс — чартын баруун захад зурна */
+  band?: { lo: number; hi: number };
   image?: string; overlay?: { a: number; b: number } | null; warnings?: string[];
   read?: { symbol: string; timeframe: string; lastPrice: number | null; structure: string; patterns: string[]; notes: string; quality: number };
 };
@@ -64,7 +66,7 @@ function Meter({ score, thr, pUp, horizon, note }: { score: number; thr: number;
 }
 
 /* ── M5 чарт: 8 цаг, EMA20/50, VWAP, түлхүүр түвшин, дохионы түвшин ── */
-function Chart({ a }: { a: A }) {
+export function Chart({ a }: { a: A }) {
   /* SVG-г савны жинхэнэ өргөнөөр зурна — сунгахгүй тул утсан дээр текст шахагдахгүй */
   const box = useRef<HTMLDivElement>(null), [W, setW] = useState(760);
   useEffect(() => {
@@ -76,7 +78,8 @@ function Chart({ a }: { a: A }) {
   const H = W < 520 ? 260 : 320, R = 62, take = W < 520 ? 54 : a.chart.bars.length, cut = Math.max(0, a.chart.bars.length - take);
   const bars = a.chart.bars.slice(cut), e20 = a.chart.e20.slice(cut), e50 = a.chart.e50.slice(cut), vwap = a.chart.vwap.slice(cut), n = bars.length;
   const plan = a.plan, lv = plan ? [plan.sl, plan.tp1, plan.tp2, plan.entry] : [];
-  let lo = Math.min(...bars.map((b) => b[3]), ...lv), hi = Math.max(...bars.map((b) => b[2]), ...lv);
+  const bandV = a.band ? [a.band.lo, a.band.hi] : [];
+  let lo = Math.min(...bars.map((b) => b[3]), ...lv, ...bandV), hi = Math.max(...bars.map((b) => b[2]), ...lv, ...bandV);
   const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
   const key = a.levels.filter((l) => l.p > lo && l.p < hi);
   const x = (k: number) => ((k + 0.5) * (W - R)) / n, y = (p: number) => ((hi - p) / (hi - lo)) * H, cw = Math.max(1.5, ((W - R) / n) * 0.62);
@@ -93,13 +96,14 @@ function Chart({ a }: { a: A }) {
         <path d={path(vwap)} className={s.lV} /><path d={path(e50)} className={s.l50} /><path d={path(e20)} className={s.l20} />
         {bars.map((b, k) => <g key={b[0]} className={b[4] >= b[1] ? s.up : s.dn}><line x1={x(k)} x2={x(k)} y1={y(b[2])} y2={y(b[3])} /><rect x={x(k) - cw / 2} width={cw} y={y(Math.max(b[1], b[4]))} height={Math.max(1, Math.abs(y(b[1]) - y(b[4])))} /></g>)}
         {plan && [["TP2", plan.tp2, "tp"], ["TP1", plan.tp1, "tp"], ["ENTRY", plan.entry, "en"], ["SL", plan.sl, "sl"]].map(([t, p, k]) => <g key={t as string} className={s.pl} data-k={k}><line x1={0} x2={W - R} y1={y(p as number)} y2={y(p as number)} /><text x={6} y={y(p as number) - 4}>{t} {f2(p as number)}</text></g>)}
+        {a.band && last !== undefined && <polygon className={s.cone} points={`${x(n - 1)},${y(last)} ${W - R},${y(a.band.hi)} ${W - R},${y(a.band.lo)}`} />}
         {last !== undefined && <g className={s.now}><rect x={W - R + 1} y={y(last) - 9} width={R - 2} height={18} rx={3} /><text x={W - R + 6} y={y(last) + 4}>{f2(last)}</text></g>}
       </svg></div>
     </figure>
   );
 }
 
-function Shot({ a }: { a: A }) {
+export function Shot({ a }: { a: A }) {
   const o = a.overlay, pts = a.plan ? [{ k: "tp", t: "TP2", p: a.plan.tp2 }, { k: "tp", t: "TP1", p: a.plan.tp1 }, { k: "en", t: "ENTRY", p: a.plan.entry }, { k: "sl", t: "SL", p: a.plan.sl }]
     : a.levels.filter((l) => !l.k.startsWith("r")).map((l) => ({ k: "key", t: l.label, p: l.p }));
   const lines = o ? pts.map((q) => ({ ...q, y: (o.a * q.p + o.b) * 100 })).filter((q) => q.y > 1 && q.y < 99) : [];

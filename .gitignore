@@ -49,6 +49,8 @@ next-env.d.ts
 # 2026-11-05: нууц, гишүүдийн дата, лог, том файл repo-д орохгүй
 *.bak
 *.bak.*
+*.bak[0-9]*
+*.bak-*
 *.tmp.ts
 ._*
 /.next*/
@@ -58,6 +60,7 @@ next-env.d.ts
 /.ytfiles/
 /.idea/
 /.claude/
+/assets/
 /*.webm
 /*.mp4
 /*.mp3
