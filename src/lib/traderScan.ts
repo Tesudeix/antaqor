@@ -29,15 +29,33 @@ export type Levels = { entry: number; sl: number; tp1: number; tp2: number; risk
   /** Үнэ эсрэг түвшинд наалдсан / хэт сунасан үед — буцалт хүлээж орох (limit) илүү сайн цэг */
   limit: number | null };
 
+/* 2026-11-04: OpenAI-ийн хоёр түлхүүр кредитгүй болсон тул төлбөр/квотын алдаа гарвал 10 мин
+   Gemini (OpenAI-нийцтэй endpoint, зураг data URL дэмждэг) руу шилжинэ. */
+let openaiDownUntil = 0;
 async function openai(body: Record<string, unknown>): Promise<string> {
   const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error("AI тохируулаагүй");
-  const r = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify(body), signal: AbortSignal.timeout(120_000),
+  let last = "";
+  if (key && Date.now() > openaiDownUntil) {
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body), signal: AbortSignal.timeout(120_000),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) return String(d?.choices?.[0]?.message?.content || "");
+    last = `AI алдаа: ${String(d?.error?.message || r.status).slice(0, 160)}`;
+    if (!/ 40[123]| 429|credit|quota|billing/i.test(` ${r.status} ${last}`)) throw new Error(last);
+    openaiDownUntil = Date.now() + 10 * 60e3;
+  }
+  const g = process.env.GEMINI_API_KEY;
+  if (!g) throw new Error(last || "AI тохируулаагүй");
+  const { model: _m, max_completion_tokens, reasoning_effort: _e, ...rest } = body;
+  const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+    method: "POST", headers: { Authorization: `Bearer ${g}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ ...rest, model: process.env.TRADER_GEMINI_MODEL || "gemini-3-flash-preview", max_tokens: max_completion_tokens, reasoning_effort: "low" }),
+    signal: AbortSignal.timeout(120_000),
   });
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`AI алдаа: ${String(d?.error?.message || r.status).slice(0, 160)}`);
+  if (!r.ok) throw new Error(`AI алдаа: ${String((Array.isArray(d) ? d[0] : d)?.error?.message || r.status).slice(0, 160)}`);
   return String(d?.choices?.[0]?.message?.content || "");
 }
 function json<T>(raw: string, fb: T): T {

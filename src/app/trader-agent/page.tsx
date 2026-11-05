@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import TraderScanner from "@/components/trader/TraderScanner";
+import TraderApp from "@/components/trader/TraderApp";
 import LoginCard from "@/components/LoginCard";
 import { headers } from "next/headers";
 
-/* Tesla Trader (2026-10-25) — нэвтэрсэн гишүүдэд. Скан бүр кредит (админ үнэгүй). */
+/* Tesla Trader (2026-10-25) — нэвтэрсэн гишүүдэд. v4 (2026-11-04): скальп терминал (TraderApp), чатгүй, үнэгүй. */
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Tesla Trader", description: "Форекс графикаа оруулаад SCAN дар — чиглэл, итгэлцэл, SL, TP. Бодит ханштай тулгасан AI шинжилгээ." };
+export const metadata = { title: "Tesla Trader · Scalp", description: "Валют, алт, криптогийн бодит цагийн скальп терминал — шүүлтүүр, горим, хэмжсэн давуу тал, журнал." };
 
 export default async function TraderAgentPage() {
   const session = await getServerSession(authOptions);
@@ -22,5 +22,5 @@ export default async function TraderAgentPage() {
       </main>
     );
   }
-  return <TraderScanner />;
+  return <TraderApp />;
 }

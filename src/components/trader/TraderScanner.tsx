@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { signOut } from "next-auth/react";
 import s from "./trader.module.css";
 
 /* ─── TESLA TRADER · AI CHART SCANNER (v2 2026-10-25, v3 2026-11-01) ────────
@@ -9,7 +8,8 @@ import s from "./trader.module.css";
    өөрийн дээд мөр (desktop) ба доод цэс (утас): Скан · Түүх · AI чат · Гарах.
    Зүүн: сканнер → үр дүн (зурган дээр Entry/SL/TP шугам, түүхэн тохиолдол) → түүх.
    Баруун (утсан дээр доороос): Tesla Trader AI туслах — скан дээр эсвэл ерөнхий асуулт, санах ойгоос
-   хариулж, чатаас суралцана (lib/traderLearn.ts). Итгэлцэл = тохирол × бодит түүхэн статистик. */
+   хариулж, чатаас суралцана (lib/traderLearn.ts). Итгэлцэл = тохирол × бодит түүхэн статистик.
+   v4 (2026-11-04): чат бүрэн хасагдсан (эзний шийдвэр); TraderApp-ийн «Зураг» таб дотор embedded байдлаар л харагдана. */
 
 type Factor = { key: string; label: string; value: number; text: string };
 type Levels = { entry: number; sl: number; tp1: number; tp2: number; risk: number; rr1: number; rr2: number; slPips: number; tp1Pips: number; tp2Pips: number; limit: number | null };
@@ -23,8 +23,6 @@ type Scan = {
   warnings: string[]; quoteUsd: number; contract: number; pip: number; digits: number;
   outcome: { status: string; r?: number }; hist?: Hist | null; overlay?: { a: number; b: number } | null; feedback?: { vote: string } | null;
 };
-type Brain = { samples: number; live: number; memories: number; lessons: number };
-type Msg = { _id?: string; role: "user" | "assistant"; text: string; learned?: string[] };
 
 const PAIRS = ["", "EURUSD", "GBPUSD", "USDJPY", "XAUUSD", "GBPJPY", "AUDUSD", "USDCAD", "USDCHF", "NZDUSD", "EURJPY", "EURGBP", "US30", "NAS100", "US500", "BTCUSD", "ETHUSD", "USOIL"];
 const TFS = ["", "M5", "M15", "M30", "H1", "H4", "D1"];
@@ -34,8 +32,6 @@ const OUT: Record<string, [string, string]> = {
   sl: ["SL ✗", "loss"], expired: ["Хугацаа дууссан", "muted"], nofill: ["Орох цэгт хүрээгүй", "muted"], na: ["Арилжаагүй", "muted"],
 };
 const DIR_MN = { BUY: "BUY · АВАХ", SELL: "SELL · ЗАРАХ", WAIT: "ХҮЛЭЭХ" };
-const ASK_SCAN = ["Яагаад ийм шийдвэр гарсан бэ?", "Хэзээ, хаанаас орох вэ?", "SL-ийг ойртуулж болох уу?", "Миний дансанд хэдэн лот вэ?"];
-const ASK_GEN = ["Анхлан суралцагч юунаас эхлэх вэ?", "Эрсдэлээ яаж удирдах вэ?", "London, New York session гэж юу вэ?", "Миний данс $500, 1% эрсдэлтэй"];
 
 const fx = (n: number | null | undefined, d = 5) => (typeof n === "number" && Number.isFinite(n) ? n.toFixed(d) : "—");
 const ago = (d: string) => { const m = Math.round((Date.now() - new Date(d).getTime()) / 60000); return m < 60 ? `${Math.max(1, m)} мин` : m < 1440 ? `${Math.round(m / 60)} цаг` : `${Math.round(m / 1440)} өдөр`; };
@@ -51,17 +47,6 @@ async function shrink(f: File): Promise<Blob> {
     c.getContext("2d")!.drawImage(bmp, 0, 0, c.width, c.height);
     return await new Promise<Blob>((res) => c.toBlob((b) => res(b || f), "image/jpeg", 0.9));
   } catch { return f; }
-}
-
-/** Чатын хариултын энгийн markdown: **тод**, «- » жагсаалт, мөр */
-function Rich({ text }: { text: string }) {
-  return (
-    <>{text.split("\n").filter((l) => l.trim()).map((line, i) => {
-      const li = /^\s*[-•*]\s+/.test(line), body = line.replace(/^\s*[-•*]\s+/, "");
-      const parts = body.split(/\*\*(.+?)\*\*/g).map((p, j) => (j % 2 ? <b key={j}>{p}</b> : p));
-      return <span key={i} className={li ? s.li : s.ln}>{parts}</span>;
-    })}</>
-  );
 }
 
 function Ring({ value, dir }: { value: number; dir: string }) {
@@ -108,74 +93,7 @@ function ChartOverlay({ x }: { x: Scan }) {
   );
 }
 
-function Chat({ scan, open, onClose, brain, onLearned }: { scan: Scan | null; open: boolean; onClose: () => void; brain: Brain | null; onLearned: () => void }) {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  const [general, setGeneral] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  const ctx = general ? null : scan;
-  useEffect(() => {
-    setErr("");
-    fetch(`/api/trader-agent/chat${ctx ? `?scan=${ctx._id}` : ""}`, { cache: "no-store" }).then((r) => r.json()).then((d) => setMsgs(d.messages || [])).catch(() => setMsgs([]));
-  }, [ctx?._id]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { box.current?.scrollTo({ top: box.current.scrollHeight, behavior: "smooth" }); }, [msgs, busy]);
-  useEffect(() => { if (scan) setGeneral(false); }, [scan?._id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function send(q = text) {
-    const m = q.trim();
-    if (!m || busy) return;
-    setText(""); setErr(""); setBusy(true);
-    setMsgs((x) => [...x, { role: "user", text: m }]);
-    try {
-      const r = await fetch("/api/trader-agent/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scanId: ctx?._id, message: m }) });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error || "Алдаа");
-      setMsgs((x) => [...x, { role: "assistant", text: d.answer, learned: d.learned }]);
-      if (d.learned?.length) onLearned();
-    } catch (e) { setErr((e as Error).message); setMsgs((x) => x.slice(0, -1)); setText(m); } finally { setBusy(false); }
-  }
-  const asks = ctx ? (ctx.decision.dir === "WAIT" ? ["Юуг хүлээх вэ?", "Яагаад арилжаа хийхгүй гэж?", ...ASK_SCAN.slice(3)] : ASK_SCAN) : ASK_GEN;
-
-  return (
-    <aside className={s.chat} data-open={open || undefined} aria-label="Tesla Trader AI туслах">
-      <div className={s.chHead}>
-        <span className={s.chAv}>T</span>
-        <div><b>Tesla Trader AI</b><em>{brain ? `${brain.samples.toLocaleString("en-US")} арилжаагаар сурсан · ${brain.memories} санах ой` : "Санах ойтой туслах"}</em></div>
-        <button type="button" className={s.chClose} onClick={onClose} aria-label="Хаах">×</button>
-      </div>
-      <div className={s.chCtx}>
-        {scan && <button type="button" aria-pressed={!general} onClick={() => setGeneral(false)}>{scan.symbol} {scan.tf} скан</button>}
-        <button type="button" aria-pressed={general || !scan} onClick={() => setGeneral(true)}>Ерөнхий асуулт</button>
-      </div>
-      <div className={s.chBody} ref={box}>
-        {msgs.length === 0 && !busy && (
-          <div className={s.chEmpty}>
-            <b>{ctx ? `${ctx.symbol} ${ctx.tf} сканы талаар асуу` : "Юу ч асууж болно"}</b>
-            <span>Таны данс, эрсдэл, арилжааны цагийг хэлбэл санаж аваад дараагийн хариултандаа ашиглана.</span>
-          </div>
-        )}
-        {msgs.map((m, i) => (
-          <div key={m._id || i} className={s.msg} data-role={m.role}>
-            <p>{m.role === "assistant" ? <Rich text={m.text} /> : m.text}</p>
-            {!!m.learned?.length && <div className={s.learned}>{m.learned.map((l) => <em key={l}>Санах ойд: {l}</em>)}</div>}
-          </div>
-        ))}
-        {busy && <div className={s.msg} data-role="assistant"><span className={s.typing}><i /><i /><i /></span></div>}
-      </div>
-      <div className={s.chAsks}>{asks.map((a) => <button key={a} type="button" onClick={() => send(a)} disabled={busy}>{a}</button>)}</div>
-      {err && <p className={s.chErr}>{err}</p>}
-      <form className={s.chForm} onSubmit={(e) => { e.preventDefault(); send(); }}>
-        <textarea rows={1} value={text} onChange={(e) => setText(e.target.value)} placeholder="Асуултаа бичээрэй…" maxLength={1500}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} />
-        <button type="submit" disabled={busy || !text.trim()} aria-label="Илгээх"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5L4 12z" fill="currentColor" /></svg></button>
-      </form>
-    </aside>
-  );
-}
-
-export default function TraderScanner() {
+export default function TraderScanner({ embedded = false }: { embedded?: boolean }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [pair, setPair] = useState("");
@@ -185,17 +103,11 @@ export default function TraderScanner() {
   const [err, setErr] = useState("");
   const [cur, setCur] = useState<Scan | null>(null);
   const [scans, setScans] = useState<Scan[] | null>(null);
-  const [brain, setBrain] = useState<Brain | null>(null);
   const [drag, setDrag] = useState(false);
   const [bal, setBal] = useState(1000); const [riskPct, setRiskPct] = useState(1);
   const [copied, setCopied] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
-  const scanRef = useRef<HTMLElement>(null);
-  const histRef = useRef<HTMLElement>(null);
-  const go = (r: { current: HTMLElement | null }) => { setChatOpen(false); r.current?.scrollIntoView({ behavior: "smooth", block: "start" }); };
-  const logout = () => signOut({ callbackUrl: `${window.location.origin}/` });
 
   useEffect(() => { setBal(load("tt.bal", 1000)); setRiskPct(load("tt.risk", 1)); setPair(load("tt.pair", "")); setTf(load("tt.tf", "")); }, []);
   useEffect(() => { save("tt.bal", bal); save("tt.risk", riskPct); }, [bal, riskPct]);
@@ -205,7 +117,7 @@ export default function TraderScanner() {
       const r = await fetch("/api/trader-agent", { cache: "no-store" });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Алдаа");
-      setScans(d.scans); setBrain(d.brain || null);
+      setScans(d.scans);
       setCur((c) => (c ? (d.scans as Scan[]).find((x) => x._id === c._id) || c : c));
     } catch (e) { setScans([]); setErr((e as Error).message); }
   }, []);
@@ -270,15 +182,10 @@ export default function TraderScanner() {
   const reset = () => { setCur(null); setFile(null); setPreview(""); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   return (
-    <div className={s.root}>
+    <div className={`${s.root} ${embedded ? s.embed : ""}`}>
       <div className={s.shell}>
         <div className={s.main}>
-          <header className={s.top}>
-            <div className={s.brand}><span className={s.mark}>T</span><div><b>TESLA TRADER</b><em>AI CHART SCANNER</em></div></div>
-            <button type="button" className={s.logout} onClick={logout}>Гарах</button>
-          </header>
-
-          <section className={s.scanner} ref={scanRef}>
+          <section className={s.scanner}>
             <div className={s.drop} data-drag={drag || undefined} data-has={!!preview || undefined}
               onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={onDrop} onClick={() => !busy && input.current?.click()}>
               {preview ? (
@@ -386,7 +293,6 @@ export default function TraderScanner() {
 
               {x.warnings.length > 0 && <ul className={s.warns}>{x.warnings.map((w) => <li key={w}>{w}</li>)}</ul>}
               <div className={s.actions}>
-                <button type="button" data-k="ask" onClick={() => setChatOpen(true)}>AI-аас асуух</button>
                 <button type="button" onClick={copy}>{copied ? "Хуулагдлаа ✓" : "Сигнал хуулах"}</button>
                 <button type="button" onClick={reset}>Шинэ скан</button>
                 <span className={s.vote}>Шинжилгээ хэрэгтэй байсан уу?
@@ -397,7 +303,7 @@ export default function TraderScanner() {
             </section>
           )}
 
-          <section className={s.history} ref={histRef}>
+          <section className={s.history}>
             <div className={s.hHead}><h2>Миний сканууд</h2><span>TP/SL-ийг бодит ханшаар 10 мин тутам шалгана</span></div>
             {scans === null ? <div className={s.sk} /> : scans.length === 0 ? (
               <p className={s.empty}>Одоогоор скан алга. Эхний графикаа оруулаад SCAN дар.</p>
@@ -424,21 +330,8 @@ export default function TraderScanner() {
             )}
           </section>
 
-          <p className={s.disclaimer}>
-            Tesla Trader нь техник шинжилгээ, сургалтын туслах бөгөөд <b>санхүүгийн зөвлөгөө биш</b>. Итгэлцэл нь хүчин зүйлсийн тохирол ба ижил төстэй түүхэн арилжааны бодит статистикаас гардаг — ирээдүйг баталгаажуулахгүй.
-            Нэг арилжаанд дансныхаа 1–2%-иас илүүг бүү эрсдэлд оруул. Алт, индексийн ханш фьючерс/индексээс тул брокерынхоос бага зөрж болно.
-          </p>
         </div>
-
-        <Chat scan={cur} open={chatOpen} onClose={() => setChatOpen(false)} brain={brain} onLearned={refresh} />
       </div>
-      <nav className={s.tabs} aria-label="Tesla Trader">
-        <button type="button" onClick={() => go(scanRef)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M4 12h16" /></svg>Скан</button>
-        <button type="button" onClick={() => go(histRef)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>Түүх</button>
-        <button type="button" aria-pressed={chatOpen} onClick={() => setChatOpen((v) => !v)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z" /></svg>AI чат</button>
-        <button type="button" onClick={logout}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" /></svg>Гарах</button>
-      </nav>
-      {chatOpen && <div className={s.scrim} onClick={() => setChatOpen(false)} />}
     </div>
   );
 }
