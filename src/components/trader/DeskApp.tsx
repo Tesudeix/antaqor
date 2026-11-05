@@ -13,13 +13,13 @@ import s from "./desk.module.css";
    Гол мессеж нь чиглэл биш, тэр чиглэл түүхэнд ажилласан эсэх. Ихэнх үед хариулт нь «зоос шидэхтэй адил» бөгөөд
    үүнийг нуухгүй. Төлөвлөгөө батлагдаагүй бол чартад зурахгүй. Арилжаа хэзээ ч автоматаар хийгдэхгүй. */
 
-type Cell = { id: string; label: string; g: number; v: number; read: string };
+type Cell = { id: string; label: string; g: number; v: number; read: string; n?: number; hit?: number; exp?: number; ok?: boolean };
 type Truth = { kind: string; p: number | null; base: number | null; lo: number | null; hi: number | null; n: number; wins: number; up: boolean };
 type Row = { k: string; mn: string; exp: number | null; se: number | null; n: number; ok: boolean; live: number; has: boolean };
 type News = { next: { t: number; name: string; also: number; soon: boolean } | null; line: { t: number; high: boolean }[] };
 type Read = {
   sym: string; tf: string; barAt: number; px: number; horizon: number; cells: Cell[]; up: number; dn: number; flat: number; dir: number; neff: number | null; voters: number; truth: Truth | null; sentence: string;
-  range: { half: number; pct: number; lo: number; hi: number; unit: number; cov: number; covN: number } | null; levels: { sup: number | null; res: number | null }; plans: Row[]; plan: Plan | null; levelsPlan: Plan | null; verified: boolean; draw: Draw;
+  range: { half: number; pct: number; lo: number; hi: number; unit: number; cov: number; covN: number; ratio: number; lift: number } | null; levels: { sup: number | null; res: number | null }; plans: Row[]; plan: Plan | null; levelsPlan: Plan | null; verified: boolean; draw: Draw;
   live: { fired: number; tp: number; sl: number; open: number } | null; news: News | null; matrix: { tf: string; dir: number }[];
 };
 type Msg = { role: "user" | "ai"; text: string };
@@ -29,6 +29,9 @@ const SYMS = [{ id: "XAUUSD", mn: "Алт", d: 2 }, { id: "BTCUSDT", mn: "Бит
 const TFS = [{ id: "1m", mn: "1 мин", after: "12 минутын дараа" }, { id: "5m", mn: "5 мин", after: "1 цагийн дараа" }, { id: "15m", mn: "15 мин", after: "3 цагийн дараа" }, { id: "1H", mn: "1 цаг", after: "12 цагийн дараа" }, { id: "4H", mn: "4 цаг", after: "2 өдрийн дараа" }, { id: "1D", mn: "1 өдөр", after: "12 өдрийн дараа" }];
 const GROUPS = ["Тренд", "Импульс", "Хэмжээ"];
 const HINT: Record<string, string> = { ema: "Сүүлийн үнэд жинтэй дундаж", sma: "Энгийн дундаж үнэ", st: "Тренд дагагч шугам", ichi: "Богино ба дунд трендийн харьцаа", sar: "Тренд эргэх цэгүүд", vwap: "Өнөөдрийн дундаж арилжааны үнэ", bb: "Үнийн ердийн хязгаар", rsi: "Хөдөлгөөний хүч, 0-100", macd: "Хоёр дунджийн зөрүү", stoch: "Үнэ хүрээнийхээ аль хэсэгт байна", kst: "Олон хугацааны хурд", pctb: "Bollinger доторх байрлал", mfi: "Мөнгөний урсгалын хүч", dpo: "Трендийг хассан мөчлөг", atr: "Хэлбэлзлийн хэмжээ, чиглэл заахгүй", adx: "Трендийн хүч", rvol: "Хэмжээ ердийнхөөс хэд дахин их", ad: "Хуримтлал эсвэл тархалт" };
+/* индикаторын өөрийн түүхэн нарийвчлал: санамсаргүй хүлээлттэй шууд жишнэ */
+const cellNote = (c: Cell) => `${c.label}: ${c.read}. ${HINT[c.id] ?? ""}.${c.hit === undefined ? "" : ` Санал өгөхдөө ${Math.round(c.hit)}% зөв, санамсаргүй бол ${Math.round(c.exp ?? 0)}%.${c.ok ? " Батлагдсан." : ""}`}`;
+const volWord = (r: number) => (r >= 1.1 ? `Ердийнхөөс ${r.toFixed(1)} дахин их` : r && r <= 0.9 ? `Ердийнхөөс ${(1 / r).toFixed(1)} дахин бага` : "Ердийн хэмжээнд");
 const KIND: Record<string, string> = { coin: "Зоос шидэхтэй адил", edge: "Түүхэнд давуу талтай", weak: "Тогтвортой биш", few: "Жишээ хангалтгүй", opposite: "Түүхэнд эсрэгээрээ", mixed: "Чиглэл алга" };
 const fx = (n: number | null | undefined, d = 2) => (typeof n === "number" && Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
 const glyph = (v: number) => (v > 0 ? "▲" : v < 0 ? "▼" : "–");
@@ -129,8 +132,9 @@ export default function DeskApp() {
 
   const onRead = useCallback((r: Read | null, err: string) => { setView(r); setReadErr(err); if (r) setMatrix(r.matrix); }, []);
   /* идэвхтэй чарт хугацаагаа сольсон ч бусад чарт хэвээр үлдэнэ; нэг хугацаа давхардахгүй */
-  const pickTab = (t: string) => { setMsgs([]); if (shown.includes(t)) { setTf(t); return; } setPanes((c) => c.map((x) => (x === tf ? t : x))); setTf(t); };
-  const pickPane = useCallback((t: string) => { setTf((c) => { if (c !== t) setMsgs([]); return t; }); }, []);
+  const pickTab = (t: string) => { if (shown.includes(t)) { setTf(t); return; } setPanes((c) => c.map((x) => (x === tf ? t : x))); setTf(t); };
+  const pickPane = useCallback((t: string) => { setTf(t); }, []);
+  useEffect(() => { setMsgs([]); }, [sym, tf]);
   const changeCount = (n: number) => { setCount(n); const list = panes.slice(0, n); if (!list.includes(tf)) setTf(list[0]); };
   const onCell = (id: string) => { setFocus(id); setDrawn((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id])); };
   const ask = async (text: string) => {
@@ -149,7 +153,7 @@ export default function DeskApp() {
   return (
     <div className={s.app}>
       <header className={s.top}>
-        <div className={s.syms} role="tablist" aria-label="Хэрэгсэл">{SYMS.map((x) => <button key={x.id} type="button" role="tab" aria-selected={sym === x.id} onClick={() => { setSym(x.id); setMsgs([]); setMatrix([]); }}>{x.mn}</button>)}</div>
+        <div className={s.syms} role="tablist" aria-label="Хэрэгсэл">{SYMS.map((x) => <button key={x.id} type="button" role="tab" aria-selected={sym === x.id} onClick={() => { setSym(x.id); setMatrix([]); }}>{x.mn}</button>)}</div>
         <div className={s.quote}><span className={s.status} data-s={live} title={liveTxt}><i /><em>{liveTxt}</em></span><strong>{tick ? fx(tick.px, d) : "—"}</strong>{tick && <span className={s.chg}><i data-d={tick.chg >= 0 ? "up" : "dn"}>{glyph(tick.chg)}</i>{Math.abs(tick.chg).toFixed(2)}%</span>}</div>
         <button type="button" className={s.out} onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}>Гарах</button>
       </header>
@@ -173,7 +177,7 @@ export default function DeskApp() {
             <h2>Хаашаа?</h2>
             <p className={s.big}><i data-d={view ? (view.dir > 0 ? "up" : view.dir < 0 ? "dn" : "mid") : "mid"}>{glyph(view?.dir ?? 0)}</i>{view ? (view.dir > 0 ? "Өсөх" : view.dir < 0 ? "Унах" : "Тодорхойгүй") : "—"}<small>{view ? `${view.up} өсөх, ${view.dn} унах, ${view.flat} саармаг` : ""}</small></p>
             {view && <Strip rd={view} drawn={drawn} onCell={onCell} />}
-            <p className={s.note}>{cell ? `${cell.label}: ${cell.read}. ${HINT[cell.id] ?? ""}` : view?.neff ? `18 индикатор ихэнхдээ нэг зүйл давтдаг. Бодит бие даасан санал ойролцоогоор ${view.neff}.` : ""}</p>
+            <p className={s.note}>{cell ? cellNote(cell) : view?.neff ? `Бие даасан санал ойролцоогоор ${view.neff}. Дангаараа батлагдсан индикатор ${view.cells.filter((c) => c.ok).length}/${view.voters}.` : ""}</p>
           </section>
           <section>
             <h2>Итгэж болох уу?</h2>
@@ -183,10 +187,10 @@ export default function DeskApp() {
           </section>
           <section>
             <h2>Хэр хол хөдлөх вэ?</h2>
-            {view?.range ? <><p className={s.big}>±${fx(view.range.half, view.range.half < 100 ? 2 : 0)}<small>{view.range.pct}%</small></p>
+            {view?.range ? <><p className={s.big}>±${fx(view.range.half, view.range.half < 100 ? 2 : 0)}<small>{volWord(view.range.ratio)}</small></p>
               <div className={s.span} role="img" aria-label={`${fx(view.range.lo, d)} ба ${fx(view.range.hi, d)} хооронд`}><i /></div>
               <div className={s.ends}><span>{fx(view.range.lo, d)}</span><span>{fx(view.range.hi, d)}</span></div>
-              <p className={s.note}>{T.after} энэ хооронд байх магадлал 80%. Шинэ датад шалгахад {Math.round(view.range.cov)}% таарсан.</p></> : <p className={s.big}>Хэмжиж байна</p>}
+              <p className={s.note}>{T.after} энэ хооронд байх магадлал 80%, шалгахад {Math.round(view.range.cov)}% таарсан.{view.range.lift >= 1.3 ? ` Хэлбэлзэл өндөр үед дараагийн хөдөлгөөн ${view.range.lift} дахин их байсан.` : ""}</p></> : <p className={s.big}>Хэмжиж байна</p>}
           </section>
           <section>
             <h2>Дараагийн том мэдээ</h2>

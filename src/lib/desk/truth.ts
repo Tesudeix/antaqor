@@ -13,6 +13,9 @@ import { nextNews } from "./news";
      «Давуу тал» гэж нэрлэхэд хагас хоёр хугацаанд ижил чиглэлтэй, шимтгэл хассан дүн эерэг байх ёстой.
    · Хөдөлгөөний хүрээ: ATR·√хугацаа масштабтай 80% бүс. Эхний хагаст тааруулж, хоёр дахь хагаст шалгасан бодит таарц.
    · Бие даасан санал: 18 индикаторын корреляциас тооцсон үр дүнтэй тоо (n²/Σr²).
+   · Индикатор бүрийн нарийвчлал: саналаа өгсөн үед хэдэн хувь зөв байсан, санамсаргүй үеийн хүлээлттэй жишнэ.
+     204 шалгалт хийж байгаа тул «батлагдсан» босго нь z≥3.7 (Bonferroni), хагас хоёр хугацаа хоёулаа эерэг.
+   · Хэлбэлзлийн төлөв: одоогийн ATR% түүхэн медианаас хэд дахин их вэ, өндөр үед дараагийн хөдөлгөөн бодитоор хэд дахин их байсан.
    Индикаторын мэдээ, гарчгийн сэтгэл хөдлөл зэрэг хэмжээгүй зүйл энд орохгүй. Босгыг сулруулахгүй. */
 
 export const READ_TFS: TF[] = ["1m", "5m", "15m", "1H", "4H", "1D"];
@@ -29,7 +32,8 @@ const all = (b: Bar[], d: number) => ALL.map((q) => indicator(q.id, q.p, b, d)).
 const netOf = (v: number[]) => { const up = v.filter((x) => x > 0).length, dn = v.filter((x) => x < 0).length; return { up, dn, flat: v.length - up - dn, net: (up - dn) / VOTERS }; };
 
 type Bk = { n: number; up: number; a: [number, number]; b: [number, number]; sum: number };
-export type Truth = { at: number; bars: number; from: number; to: number; n: number; baseUp: number; bk: Bk[]; k: number; cov: number; covN: number; neff: number };
+type Each = { n: number; hit: number; exp: number; ok: boolean };
+export type Truth = { at: number; bars: number; from: number; to: number; n: number; baseUp: number; bk: Bk[]; k: number; cov: number; covN: number; neff: number; each: Record<string, Each>; medA: number; lift: number };
 
 async function compute(sym: Sym, tf: TF): Promise<Truth | null> {
   const b = closedOf(await deep(sym, tf), tf), n = b.length;
@@ -47,18 +51,37 @@ async function compute(sym: Sym, tf: TF): Promise<Truth | null> {
     r.n++; r.up += u; r.sum += (d * m - (d ? S.cost(c[i]) : 0)) / c[i]; tot++; ups += u;
     const side = i < mid ? r.a : r.b; side[0]++; side[1] += u;
   }
-  const half = zs.length >> 1, k1 = pct(zs.slice(0, half), 0.8), test = zs.slice(half);
+  const half = zs.length >> 1, k1 = pct(zs.slice(0, half), 0.8), test = zs.slice(half), baseUp = tot ? ups / tot : 0.5;
+  /* индикатор бүр: зөвхөн санал өгсөн үеүүдээр. Хүлээлт нь чиглэл тус бүрийн суурь хувь, drift-ийг шингээнэ. */
+  const each: Record<string, Each> = {};
+  o.forEach((q, k) => {
+    if (q.id === "atr") return;
+    let cnt = 0, win = 0, want = 0; const side = [[0, 0], [0, 0]];
+    for (let i = WARM; i + H < n; i += H) {
+      const v = V[k][i], m = c[i + H] - c[i];
+      if (!v || !m) continue;
+      const w = m > 0 === v > 0 ? 1 : 0, e = v > 0 ? baseUp : 1 - baseUp, p = side[i < mid ? 0 : 1];
+      cnt++; win += w; want += e; p[0]++; p[1] += w;
+    }
+    if (!cnt) return;
+    const hit = win / cnt, e = want / cnt, z = (hit - e) / Math.sqrt((e * (1 - e)) / cnt), up = (p: number[]) => p[0] > 0 && p[1] / p[0] > e;
+    each[q.id] = { n: cnt, hit: +(hit * 100).toFixed(1), exp: +(e * 100).toFixed(1), ok: z >= 3.7 && up(side[0]) && up(side[1]) };
+  });
+  /* хэлбэлзэл: дөрөвний нэг доод ба дээд хэсгийн дараах бодит хөдөлгөөний харьцаа */
+  const vol: number[] = []; for (let i = WARM; i < n; i++) if (x.a[i] > 0) vol.push(x.a[i] / c[i]);
+  const q1 = pct(vol, 0.25), q3 = pct(vol, 0.75); let sl = 0, nl = 0, sh = 0, nh = 0;
+  for (let i = WARM; i + H < n; i += H) { const v = x.a[i] / c[i], m = Math.abs(c[i + H] - c[i]) / c[i]; if (v <= q1) { sl += m; nl++; } else if (v >= q3) { sh += m; nh++; } }
   /* бие даасан саналын тоо: n²/Σr² (корреляцийн матрицын participation ratio) */
   const live = V.filter((v) => { let a = 0; for (let i = WARM; i < n; i++) a += v[i] * v[i]; return a > 0; }).map((v) => { let m = 0; for (let i = WARM; i < n; i++) m += v[i]; m /= n - WARM; let s = 0; const d = new Float64Array(n); for (let i = WARM; i < n; i++) { d[i] = v[i] - m; s += d[i] * d[i]; } return { d, s: Math.sqrt(s) }; });
   let rr = 0;
   for (const p of live) for (const q of live) { let r = 0; for (let i = WARM; i < n; i++) r += p.d[i] * q.d[i]; rr += (r / (p.s * q.s)) ** 2; }
-  return { at: Date.now(), bars: n, from: b[WARM].t, to: b[n - 1].t, n: tot, baseUp: tot ? ups / tot : 0.5, bk, k: pct(zs, 0.8), cov: test.length ? test.filter((z) => z <= k1).length / test.length : 0, covN: test.length, neff: +((live.length * live.length) / rr).toFixed(1) };
+  return { at: Date.now(), bars: n, from: b[WARM].t, to: b[n - 1].t, n: tot, baseUp, bk, each, medA: pct(vol, 0.5), lift: nl && nh && sl ? +((sh / nh) / (sl / nl)).toFixed(1) : 0, k: pct(zs, 0.8), cov: test.length ? test.filter((z) => z <= k1).length / test.length : 0, covN: test.length, neff: +((live.length * live.length) / rr).toFixed(1) };
 }
 
 type Cell = { id: string; label: string; g: number; v: number; read: string };
 type Snap = { cells: Cell[]; up: number; dn: number; flat: number; net: number; dir: number };
 const G = globalThis as { __deskTruth?: Map<string, Truth | null>; __deskTruthRun?: boolean; __deskSnap?: Map<string, Snap> };
-const box = (G.__deskTruth ??= new Map()), snaps = (G.__deskSnap ??= new Map());
+const box: Map<string, Truth | null> = (G.__deskTruth ??= new Map()), snaps: Map<string, Snap> = (G.__deskSnap ??= new Map());
 const STALE = 30 * 60e3;
 async function truthOf(sym: Sym, tf: TF) {
   const key = `${sym}:${tf}`, c = box.get(key);
@@ -101,14 +124,18 @@ function judge(t: Truth | null, s: { net: number; dir: number }) {
   return { kind, p: +(p * 100).toFixed(1), base: +(base * 100).toFixed(1), lo: +(lo * 100).toFixed(1), hi: +(hi * 100).toFixed(1), n: r.n, wins, up };
 }
 const hLabel = (tf: TF) => { const m = TF_MIN[tf] * H; return m < 60 ? `${m} минут` : m < 1440 ? `${m / 60} цаг` : `${m / 1440} өдөр`; };
-function sentence(dir: number, kind: string | undefined, p: number | null | undefined) {
+function sentence(dir: number, kind: string | undefined, p: number | null | undefined, ratio: number) {
+  const calm = ratio >= 1.25 ? " Хөдөлгөөн ердийнхөөс их." : ratio && ratio <= 0.75 ? " Зах зээл ердийнхөөс тайван." : "";
+  return said(dir, kind, p) + calm;
+}
+function said(dir: number, kind: string | undefined, p: number | null | undefined) {
   if (!dir) return "Индикаторууд хоорондоо зөрж байна, тодорхой чиглэл алга.";
   const w = dir > 0 ? "өсөх" : "унах", done = dir > 0 ? "өссөн" : "унасан", head = `Индикаторууд ${w} гэж байна`;
   if (kind === "edge") return `${head}, ийм үед түүхэнд 100-аас ${Math.round(p ?? 0)} нь ${done}.`;
   if (kind === "opposite") return `${head}, гэхдээ түүхэнд ийм үед ихэвчлэн эсрэгээрээ болсон.`;
   if (kind === "weak") return `${head}, гэхдээ түүхэн давуу тал тогтвортой биш.`;
   if (kind === "few") return `${head}, гэхдээ шалгах жишээ хангалтгүй.`;
-  return `${head}, гэхдээ түүхэнд энэ нь зоос шидэхтэй адил байсан.`;
+  return `${head}, гэхдээ энэ нь зоос шидэхтэй адил.`;
 }
 const SHORT: Record<Strat, string> = { pullback: "Буцалт", sweep: "Шүүрдэлт", smc: "Order block" };
 
@@ -126,7 +153,7 @@ export async function read(sym: Sym, tf: TF) {
   const [{ b, s }, q, t, st0, lv, news, others] = await Promise.all([snapOf(sym, tf), quote(sym).catch(() => null), truthOf(sym, tf), stats().catch(() => null), liveOf(sym), nextNews(sym).catch(() => null), Promise.all(READ_TFS.map(async (x) => ({ tf: x, dir: (await snapOf(sym, x)).s.dir })))]);
   const S = SYMBOLS[sym], x = ctxOf(b, tf, S.cost), i = b.length - 1, px = q?.px || b[i].c, v = judge(t, s);
   if (!ctxReady(x, i)) throw new Error("Дата хангалтгүй байна");
-  const st = structureAt(x, i), pat = patternAt(x, i, st.z), unit = t ? t.k * x.a[i] : 0, half = unit * Math.sqrt(H);
+  const st = structureAt(x, i), pat = patternAt(x, i, st.z), unit = t ? t.k * x.a[i] : 0, half = unit * Math.sqrt(H), ratio = t?.medA ? x.a[i] / b[i].c / t.medA : 0;
   const plans = (Object.keys(STRATS) as Strat[]).map((k) => {
     const r = planAt(x, i, st, k), m = st0?.data[`${sym}:${tf}:${k}`], w = verdict(m), l = lv?.by[`${tf}:${k}`];
     /* «Батлагдсан» нь ±2σ, хагас хоёр хугацаа хоёулаа эерэг. */
@@ -136,9 +163,9 @@ export async function read(sym: Sym, tf: TF) {
   const verified = plans.find((p) => p.ok && p.plan) ?? null, shown = verified ?? [...plans].filter((p) => p.plan).sort((p, r) => (r.exp ?? -9) - (p.exp ?? -9))[0] ?? null;
   const above = st.z.filter((w) => w.p > px).sort((p, r) => p.p - r.p)[0], below = st.z.filter((w) => w.p < px).sort((p, r) => r.p - p.p)[0];
   return {
-    sym, tf, at: Date.now(), barAt: b[i].t, px, h: hLabel(tf), horizon: H, cells: s.cells, up: s.up, dn: s.dn, flat: s.flat, net: +s.net.toFixed(2), dir: s.dir, neff: t?.neff ?? null, voters: VOTERS,
-    truth: v, sample: t && { n: t.n, from: t.from, to: t.to }, sentence: sentence(s.dir, v?.kind, v?.p),
-    range: t && { half: +half.toFixed(S.digits), pct: +((half / px) * 100).toFixed(2), lo: +(px - half).toFixed(S.digits), hi: +(px + half).toFixed(S.digits), unit: +unit.toFixed(S.digits + 1), cov: +(t.cov * 100).toFixed(1), covN: t.covN },
+    sym, tf, at: Date.now(), barAt: b[i].t, px, h: hLabel(tf), horizon: H, cells: s.cells.map((c) => ({ ...c, ...(t?.each[c.id] ?? {}) })), up: s.up, dn: s.dn, flat: s.flat, net: +s.net.toFixed(2), dir: s.dir, neff: t?.neff ?? null, voters: VOTERS,
+    truth: v, sample: t && { n: t.n, from: t.from, to: t.to }, sentence: sentence(s.dir, v?.kind, v?.p, ratio),
+    range: t && { half: +half.toFixed(S.digits), pct: +((half / px) * 100).toFixed(2), lo: +(px - half).toFixed(S.digits), hi: +(px + half).toFixed(S.digits), unit: +unit.toFixed(S.digits + 1), cov: +(t.cov * 100).toFixed(1), covN: t.covN, ratio: +ratio.toFixed(2), lift: t.lift },
     levels: { sup: below?.p ?? null, res: above?.p ?? null }, plans: plans.map((p) => ({ ...p, plan: undefined, has: !!p.plan })), plan: verified?.plan ?? null, planK: shown?.mn ?? null, levelsPlan: shown?.plan ?? null, verified: !!verified,
     draw: drawAt(x, i, st, shown?.plan ?? null, pat), live: lv && { fired: lv.fired, tp: lv.tp, sl: lv.sl, open: lv.open }, news, matrix: others,
   };

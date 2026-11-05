@@ -11,7 +11,7 @@ export async function ask(user: string, o: { sym: Sym; tf: TF; q: string; histor
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("AI тохируулаагүй байна");
   const r = await read(o.sym, o.tf);
-  const facts = { instrument: o.sym, timeframe: o.tf, price: r.px, indicators_up: r.up, indicators_down: r.dn, indicators_neutral: r.flat, independent_votes: r.neff, readings: r.cells.map((c: { label: string; v: number; read: string }) => ({ name: c.label, vote: c.v, value: c.read })), history_check: r.truth, horizon: r.h, expected_range: r.range, support: r.levels.sup, resistance: r.levels.res, strategies: r.plans, verified_plan: r.plan, next_news: r.news?.next ?? null };
+  const facts = { instrument: o.sym, timeframe: o.tf, price: r.px, indicators_up: r.up, indicators_down: r.dn, indicators_neutral: r.flat, independent_votes: r.neff, readings: r.cells, history_check: r.truth, horizon: r.h, expected_range: r.range, support: r.levels.sup, resistance: r.levels.res, strategies: r.plans, verified_plan: r.plan, next_news: r.news?.next ?? null };
   const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, signal: AbortSignal.timeout(45000),
     body: JSON.stringify({
