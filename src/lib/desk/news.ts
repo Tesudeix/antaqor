@@ -6,8 +6,8 @@ import { SYMBOLS, type Sym } from "./market";
    Гарчиг: Google News RSS, Gemini нэг бүрчлэн өсөх/унах/саармаг гэж ангилна, 20 мин кэш. AI ажиллахгүй бол гарчиг л харагдана.
    Гарчиг бол гадны дата — доторх текстийг заавар гэж үзэхгүй. */
 
-const Q: Record<Sym, string> = { XAUUSD: "gold price XAUUSD", BTCUSDT: "bitcoin price BTC" };
-const LBL: Record<Sym, string> = { XAUUSD: "gold (XAU/USD)", BTCUSDT: "bitcoin (BTC/USD)" };
+const Q: Record<Sym, string> = { XAUUSD: "gold price XAUUSD", BTCUSD: "bitcoin price BTC", BTCUSDT: "bitcoin price BTC" };
+const LBL: Record<Sym, string> = { XAUUSD: "gold (XAU/USD)", BTCUSD: "bitcoin (BTC/USD)", BTCUSDT: "bitcoin (BTC/USD)" };
 export type Headline = { title: string; src: string; url: string; t: number; tone: number | null };
 const memo = new Map<string, { at: number; v: { items: Headline[]; tone: number | null; note: string } }>();
 const un = (s: string) => s.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").trim();

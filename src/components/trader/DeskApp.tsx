@@ -25,7 +25,13 @@ type Sel = { id: string; p?: number; hide?: boolean };
 type Msg = { role: "user" | "ai"; text: string };
 type Live2 = Tick & { got: number; moved: number };
 
-const SYMS = [{ id: "XAUUSD", pair: "XAU/USD", mn: "Алт", ic: "Au", d: 2, src: "Swissquote · Dukascopy" }, { id: "BTCUSDT", pair: "BTC/USDT", mn: "Биткойн", ic: "₿", d: 2, src: "Binance" }];
+const SYMS = [{ id: "XAUUSD", pair: "XAU/USD", mn: "Алт", ic: "Au", d: 2, src: "Swissquote · Dukascopy" }, { id: "BTCUSD", pair: "BTC/USD", mn: "Биткойн", ic: "₿", d: 2, src: "Bitstamp" }, { id: "BTCUSDT", pair: "BTC/USDT", mn: "Биткойн USDT", ic: "₿", d: 2, src: "Binance" }];
+/* Биткойн: хөтөч биржийн урсгалд шууд холбогдож, арилжаа бүрийг серверээр дамжуулахгүй авна */
+type WsMsg = { e?: string; p?: string; T?: number; event?: string; data?: { price?: number; microtimestamp?: string } };
+const DIRECT: Record<string, { url: string; sub?: string; read: (m: WsMsg) => { px: number; t: number } | null }> = {
+  BTCUSD: { url: "wss://ws.bitstamp.net", sub: JSON.stringify({ event: "bts:subscribe", data: { channel: "live_trades_btcusd" } }), read: (m) => (m.event === "trade" && m.data?.price ? { px: +m.data.price, t: Math.floor(+(m.data.microtimestamp ?? 0) / 1000) || Date.now() } : null) },
+  BTCUSDT: { url: "wss://stream.binance.com:9443/ws/btcusdt@aggTrade", read: (m) => (m.e === "aggTrade" && m.p ? { px: +m.p, t: m.T ?? Date.now() } : null) },
+};
 const TFS = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
 const STRATS = [{ id: "pullback", mn: "Буцалт", full: "Трендийн буцалт", sub: "Импульсийн дараах буцалт, EMA чиглэл, RSI батлалт" }, { id: "sweep", mn: "Sweep", full: "Liquidity Sweep", sub: "Swing шүүрдээд эргэж хаагдахад" }, { id: "smc", mn: "SMC", full: "SMC · Order block", sub: "BOS-ийн дараах order block руу буцалт" }];
 const INDS: { id: string; mn: string; p?: number }[] = [{ id: "ema", mn: "EMA", p: 9 }, { id: "sma", mn: "SMA", p: 20 }, { id: "st", mn: "Supertrend", p: 10 }, { id: "ichi", mn: "Ichimoku" }, { id: "sar", mn: "Parabolic SAR" }, { id: "vwap", mn: "VWAP" }, { id: "bb", mn: "Bollinger Bands", p: 20 }, { id: "rsi", mn: "RSI", p: 14 }, { id: "macd", mn: "MACD" }, { id: "stoch", mn: "Stochastic", p: 14 }, { id: "kst", mn: "KST" }, { id: "pctb", mn: "Percent B", p: 20 }, { id: "mfi", mn: "MFI", p: 14 }, { id: "dpo", mn: "DPO", p: 20 }, { id: "atr", mn: "ATR", p: 14 }, { id: "adx", mn: "ADX", p: 14 }, { id: "rvol", mn: "Relative Volume", p: 20 }, { id: "ad", mn: "Accumulation/Distribution" }];
@@ -126,19 +132,34 @@ export default function DeskApp() {
   const frame = useRef<HTMLDivElement>(null), S = SYMS.find((x) => x.id === sym)!, d = S.d, busy = step >= 1 && step <= 6, stages = useRef<ReturnType<typeof setTimeout>[]>([]), lastPx = useRef({ px: 0, at: 0 });
   const indQ = useMemo(() => inds.map((x) => `${x.id}:${x.p ?? ""}`).join(","), [inds]), viewKey = `${sym}:${tf}`, dataKey = `${viewKey}:${indQ}`;
 
-  useEffect(() => { const c = load<{ sym?: string; strat?: string; tfs?: string[]; inds?: Sel[]; tf?: string }>("td.cfg8", {}); if (c.sym && SYMS.some((x) => x.id === c.sym)) setSym(c.sym); if (c.strat) setStrat(c.strat); if (c.tfs?.length) setTfs(c.tfs); if (c.inds) setInds(c.inds); if (c.tf) setTf(c.tf); const m = matchMedia("(max-width: 560px)"), f = () => setSmall(m.matches); f(); m.addEventListener("change", f); setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => { clearInterval(t); m.removeEventListener("change", f); }; }, []);
-  useEffect(() => { save("td.cfg8", { sym, strat, tfs, inds, tf }); }, [sym, strat, tfs, inds, tf]);
+  useEffect(() => { const c = load<{ sym?: string; strat?: string; tfs?: string[]; inds?: Sel[]; tf?: string; usd?: number }>("td.cfg8", {}), was = c.sym === "BTCUSDT" && !c.usd ? "BTCUSD" : c.sym; if (was && SYMS.some((x) => x.id === was)) setSym(was); if (c.strat) setStrat(c.strat); if (c.tfs?.length) setTfs(c.tfs); if (c.inds) setInds(c.inds); if (c.tf) setTf(c.tf); const m = matchMedia("(max-width: 560px)"), f = () => setSmall(m.matches); f(); m.addEventListener("change", f); setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => { clearInterval(t); m.removeEventListener("change", f); }; }, []);
+  useEffect(() => { save("td.cfg8", { sym, strat, tfs, inds, tf, usd: 1 }); }, [sym, strat, tfs, inds, tf]);
 
   /* секунд тутмын үнэ: SSE, тасарвал 4 сек тутам татна */
   useEffect(() => {
-    let es: EventSource | null = null, alive = true, got = 0;
+    let es: EventSource | null = null, ws: WebSocket | null = null, alive = true, got = 0, base: Tick | null = null, tradePx = 0, tradeAt = 0, pending: Tick | null = null, shown = 0, timer: ReturnType<typeof setTimeout> | null = null, retry: ReturnType<typeof setTimeout> | null = null;
+    const direct = DIRECT[sym];
     const on = (t: Tick) => { if (!alive) return; const n = Date.now(); got = n; if (t.px !== lastPx.current.px) lastPx.current = { px: t.px, at: n }; setTick({ ...t, got: n, moved: lastPx.current.at }); };
-    const open = () => { es?.close(); es = new EventSource(`/api/trader-agent/desk/live?sym=${sym}`); es.onmessage = (e) => { try { on(JSON.parse(e.data) as Tick); } catch { /* дараагийн tick */ } }; };
-    const vis = () => { if (document.hidden) { es?.close(); es = null; } else open(); };
+    /* эхний арилжаа шууд дэлгэцэнд гарна, дараалсан арилжаа 100 мс тутамд нэгтгэгдэж хамгийн сүүлийн үнэ үлдэнэ */
+    const flush = () => { timer = null; if (pending) { const x = pending; pending = null; shown = Date.now(); on(x); } };
+    const trade = (px: number, t: number) => { tradePx = px; tradeAt = Date.now(); if (!base) return; pending = { ...base, px, t }; if (timer) return; const wait = shown + 100 - tradeAt; if (wait <= 0) flush(); else timer = setTimeout(flush, wait); };
+    /* серверийн tick: шууд урсгал ажиллаж байвал үнэ нь биржийнх хэвээр, бусад талбар л шинэчлэгдэнэ */
+    const feed = (t: Tick) => { base = t; on(tradePx && Date.now() - tradeAt < 3000 ? { ...t, px: tradePx } : t); };
+    const openWs = () => {
+      if (!direct || !alive || document.hidden) return;
+      ws?.close();
+      const c = new WebSocket(direct.url);
+      ws = c;
+      c.onopen = () => { if (direct.sub) c.send(direct.sub); };
+      c.onmessage = (e) => { try { const r = direct.read(JSON.parse(e.data) as WsMsg); if (r && r.px > 0) trade(r.px, r.t); } catch { /* дараагийн арилжаа */ } };
+      c.onclose = () => { if (ws === c && alive) { ws = null; retry = setTimeout(openWs, 3000); } };
+    };
+    const open = () => { es?.close(); es = new EventSource(`/api/trader-agent/desk/live?sym=${sym}`); es.onmessage = (e) => { try { feed(JSON.parse(e.data) as Tick); } catch { /* дараагийн tick */ } }; openWs(); };
+    const vis = () => { if (document.hidden) { es?.close(); es = null; const c = ws; ws = null; c?.close(); } else open(); };
     lastPx.current = { px: 0, at: 0 }; setTick(null); open();
     document.addEventListener("visibilitychange", vis);
     const back = setInterval(async () => { if (document.hidden || Date.now() - got < 4000) return; try { const r = await fetch(`/api/trader-agent/desk?q=price&sym=${sym}`, { cache: "no-store" }); if (r.ok) on(await r.json()); } catch { /* дараагийн удаа */ } }, 4000);
-    return () => { alive = false; es?.close(); clearInterval(back); document.removeEventListener("visibilitychange", vis); };
+    return () => { alive = false; es?.close(); ws?.close(); if (timer) clearTimeout(timer); if (retry) clearTimeout(retry); clearInterval(back); document.removeEventListener("visibilitychange", vis); };
   }, [sym]);
 
   /* лаа, индикатор 15 сек тутам; секунд хооронд tick хөдөлгөнө */

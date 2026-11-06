@@ -3,14 +3,15 @@ import { liveQuote, SYMBOLS, type Sym } from "./market";
 /* ─── Tesla Trader · бодит цагийн урсгал (2026-11-06) ───
    Нэг хэрэгсэлд нэг л давталт, бүх үзэгчид SSE-ээр түгээнэ. Сонсогчгүй бол зогсоно.
    Давталт өөрөө хэмнэлээ барина: өмнөх хариу ирсний дараа л дараагийн хүсэлт явна, тиймээс удаан хариу давхцахгүй.
-   Хэмжсэн хурд: алт Swissquote ≈2 шинэ үнэ/сек (RTT 450 мс), биткойн Binance 4 хүсэлт/сек (RTT 85 мс).
+   Алт: Swissquote 2.6 шинэ үнэ/сек, TradingView-ээс хоцордоггүй (2026-11-06 хөтөч дээр хэмжсэн).
+   Биткойн: хөтөч биржийн WebSocket-т шууд холбогддог, энэ давталт нь 24 цагийн өөрчлөлт, bid/ask ба нөөц.
    Node 20 тул сервер талд WebSocket клиент алга. Үнэ хөдлөхгүй бол секундэд нэг удаа амьд гэдгээ мэдэгдэнэ. */
 
 export type Tick = { sym: Sym; px: number; bid: number; ask: number; chg: number; t: number; at: number };
 type Hub = { subs: Set<(t: Tick) => void>; last: Tick | null; run: boolean };
 const G = globalThis as { __deskHub2?: Map<Sym, Hub> };
 const hubs: Map<Sym, Hub> = (G.__deskHub2 ??= new Map());
-const PACE: Record<Sym, number> = { XAUUSD: 300, BTCUSDT: 250 }, IDLE = 2000, QUIET = 60e3;
+const PACE: Record<Sym, number> = { XAUUSD: 300, BTCUSD: 500, BTCUSDT: 500 }, IDLE = 2000, QUIET = 60e3;
 
 function hub(sym: Sym) {
   let h = hubs.get(sym);

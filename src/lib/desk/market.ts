@@ -2,7 +2,8 @@ import type { Bar } from "../scalp/ind";
 import { duka, dukaSince } from "../scalp/feeds";
 
 /* ─── Tesla Trader · Шинжилгээний ширээ — зах зээлийн дата (2026-11-06) ───
-   XAU/USD: Dukascopy, BTC/USDT: Binance. 8 хугацаа, түлхүүргүй. Сүүлийн лаа үүсч буй байж болно —
+   XAU/USD: Dukascopy, BTC/USD: Bitstamp (TradingView-ийн BTCUSD яг энэ зах зээл), BTC/USDT: Binance.
+   USDT нь доллар биш: Binance-ийн үнэ USD зах зээлээс ≈$124 дээгүүр (2026-11-06). 8 хугацаа, түлхүүргүй. Сүүлийн лаа үүсч буй байж болно —
    шинжилгээ зөвхөн хаагдсан лаа дээр (closedOf), чарт бүгдийг зурна. */
 
 export const TFS = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"] as const;
@@ -15,7 +16,8 @@ const TTL: Record<TF, number> = { "1m": 8e3, "5m": 15e3, "15m": 20e3, "30m": 30e
 
 export const SYMBOLS = {
   XAUUSD: { pair: "XAU/USD", mn: "Алт", src: "duka" as const, ticker: "XAU/USD", digits: 2, ccy: ["USD", "CNY"], cost: () => 0.25 },
-  BTCUSDT: { pair: "BTC/USDT", mn: "Биткойн", src: "binance" as const, ticker: "BTCUSDT", digits: 2, ccy: ["USD"], cost: (p: number) => p * 0.0006 },
+  BTCUSD: { pair: "BTC/USD", mn: "Биткойн", src: "bitstamp" as const, ticker: "btcusd", digits: 2, ccy: ["USD"], cost: (p: number) => p * 0.0006 },
+  BTCUSDT: { pair: "BTC/USDT", mn: "Биткойн USDT", src: "binance" as const, ticker: "BTCUSDT", digits: 2, ccy: ["USD"], cost: (p: number) => p * 0.0006 },
 };
 export type Sym = keyof typeof SYMBOLS;
 
@@ -25,6 +27,18 @@ async function binance(symbol: string, interval: string, limit: number, end?: nu
   const r = await fetch(`https://api.binance.com/api/v3/klines?${q}`, { signal: AbortSignal.timeout(12_000), cache: "no-store" });
   if (!r.ok) throw new Error(`Binance ${r.status}`);
   return ((await r.json()) as (string | number)[][]).map((k) => ({ t: Number(k[0]), o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[5] }));
+}
+
+const STAMP: Record<TF, number> = { "1m": 60, "5m": 300, "15m": 900, "30m": 1800, "1H": 3600, "4H": 14400, "1D": 86400, "1W": 86400 };
+/** Bitstamp-д долоо хоног алга: 7 хоног бүрийг өдрийн лаанаас нэгтгэнэ */
+async function bitstamp(pair: string, tf: TF, limit: number, end?: number): Promise<Bar[]> {
+  const q = new URLSearchParams({ step: String(STAMP[tf]), limit: String(limit) });
+  if (end) q.set("end", String(Math.floor(end / 1000)));
+  const r = await fetch(`https://www.bitstamp.net/api/v2/ohlc/${pair}/?${q}`, { signal: AbortSignal.timeout(12_000), cache: "no-store" });
+  if (!r.ok) throw new Error(`Bitstamp ${r.status}`);
+  const d = (await r.json()) as { data: { ohlc: { timestamp: string; open: string; high: string; low: string; close: string; volume: string }[] } };
+  const b = d.data.ohlc.map((k) => ({ t: +k.timestamp * 1000, o: +k.open, h: +k.high, l: +k.low, c: +k.close, v: +k.volume }));
+  return tf === "1W" ? rollup([], b, "1W") : b;
 }
 
 const memo = new Map<string, { at: number; v: unknown; p?: Promise<unknown> }>();
@@ -58,19 +72,21 @@ function rollup(base: Bar[], fine: Bar[], tf: TF): Bar[] {
 }
 const m1Tail = (ticker: string) => cached(`m1:${ticker}`, 5000, () => duka(ticker, 1600, Date.now(), "1MIN"));
 const h1Tail = (ticker: string) => cached(`h1:${ticker}`, 120e3, () => duka(ticker, 900, Date.now(), "1HOUR"));
-/* Dukascopy лаа нь bid үнэ (Swissquote-ийн bid-тэй 0.01–0.13-аар таарна), харин ханш нь bid/ask-ийн дундаж, spread ≈$0.64
-   (2026-11-06 хэмжсэн). Лаа, төлөвлөгөө, ханш нэг түвшинд байхын тулд лааг хагас spread-ээр өргөнө. */
-const XAU_MID = 0.3;
-const toMid = (b: Bar[]) => b.map((x) => ({ ...x, o: x.o + XAU_MID, h: x.h + XAU_MID, l: x.l + XAU_MID, c: x.c + XAU_MID }));
+/* Алтны түвшинг TradingView XAUUSD-тэй тааруулна (2026-11-06, хөтөч дээр 5 минут зэрэг хэмжсэн):
+   Swissquote-ийн bid/ask дундаж түүнээс байнга $0.18-аар дээгүүр (хэсэг бүрт −0.165…−0.189, таарах алдаа $0.04–0.09, хоцролт ≤0.4 с).
+   Dukascopy лаа нь bid үнэ тул тэр түвшинд хүрэхэд $0.12 нэмнэ. Лаа, төлөвлөгөө, ханш гурав нэг түвшинд байна. */
+const XAU_TV = -0.18, XAU_BID = 0.3 + XAU_TV;
+const toRef = (b: Bar[]) => b.map((x) => ({ ...x, o: x.o + XAU_BID, h: x.h + XAU_BID, l: x.l + XAU_BID, c: x.c + XAU_BID }));
 export const bars = (sym: Sym, tf: TF) => cached(`b:${sym}:${tf}`, TTL[tf], async () => {
   const s = SYMBOLS[sym];
   if (s.src === "binance") return binance(s.ticker, BIN[tf], 700);
+  if (s.src === "bitstamp") return bitstamp(s.ticker, tf, tf === "1W" ? 1000 : 700);
   const m1 = await m1Tail(s.ticker);
-  if (tf === "1m") return toMid(m1.slice(-700));
+  if (tf === "1m") return toRef(m1.slice(-700));
   const base = await duka(s.ticker, Math.min(700, DUKA_PAGE[tf]), Date.now(), DUKA[tf]);
-  if (TF_MIN[tf] < 240) return toMid(rollup(base, m1, tf));
+  if (TF_MIN[tf] < 240) return toRef(rollup(base, m1, tf));
   const h1 = await h1Tail(s.ticker), from = m1[0]?.t ?? Infinity;
-  return toMid(rollup(base, [...h1.filter((b) => b.t + 3600e3 <= from), ...m1], tf));
+  return toRef(rollup(base, [...h1.filter((b) => b.t + 3600e3 <= from), ...m1], tf));
 });
 /** Сүүлийн лааг бодит үнээр шинэчилнэ, цаг нь шилжсэн бол шинэ лаа нээнэ */
 export function withLive(b: Bar[], tf: TF, px: number, now = Date.now()): Bar[] {
@@ -86,7 +102,7 @@ export async function deep(sym: Sym, tf: TF): Promise<Bar[]> {
   if (s.src === "duka") return tf === "15m" || tf === "30m" ? dukaSince(s.ticker, DUKA[tf], Date.now() - 90 * 864e5, DUKA_PAGE[tf]) : duka(s.ticker, DUKA_PAGE[tf], Date.now(), DUKA[tf]);
   let out: Bar[] = [], end: number | undefined;
   for (let k = 0; k < 5; k++) {
-    const part = await binance(s.ticker, BIN[tf], 1000, end);
+    const part = s.src === "bitstamp" ? await bitstamp(s.ticker, tf, 1000, end) : await binance(s.ticker, BIN[tf], 1000, end);
     if (!part.length) break;
     out = [...part.filter((b) => !out.length || b.t < out[0].t), ...out];
     end = part[0].t - 1;
@@ -124,7 +140,12 @@ export async function liveQuote(sym: Sym): Promise<Quote | null> {
     const d = (await r.json()) as { spreadProfilePrices: { spreadProfile: string; bid: number; ask: number }[]; ts: number }[];
     const p = d?.[0]?.spreadProfilePrices?.find((x) => x.spreadProfile === "prime") || d?.[0]?.spreadProfilePrices?.[0];
     if (!p || !(p.ask > p.bid)) return null;
-    bid = p.bid; ask = p.ask; px = (bid + ask) / 2; t = d[0].ts;
+    bid = p.bid; ask = p.ask; px = (bid + ask) / 2 + XAU_TV; t = d[0].ts;
+  } else if (sym === "BTCUSD") {
+    const r = await fetch("https://www.bitstamp.net/api/v2/ticker/btcusd/", { signal: AbortSignal.timeout(1200), cache: "no-store" });
+    if (!r.ok) return null;
+    const d = (await r.json()) as { last: string; bid: string; ask: string };
+    px = +d.last; bid = +d.bid; ask = +d.ask;
   } else {
     const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { signal: AbortSignal.timeout(1200), cache: "no-store" });
     if (!r.ok) return null;
