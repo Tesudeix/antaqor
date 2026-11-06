@@ -87,6 +87,21 @@ function wipe(r: Rt) {
   r.over.d = { zone: null, tags: [], target: null }; r.over.update();
 }
 
+/* Сервер хаагдсан минутын лааг ≈8 секунд хожуу өгдөг, энэ завсарт tick-ээс барьсан лааг устгаж болохгүй.
+   Ижил цагтай сүүлийн лаанд хамгийн шинэ tick-ийн үнэ, өндөр, намыг үлдээнэ. */
+type CBar = { time: UTCTimestamp; open: number; high: number; low: number; close: number };
+export function keepTail(bars: CBar[], prev: CBar[]) {
+  if (!bars.length || !prev.length) return;
+  const edge = bars[Math.max(0, bars.length - 6)].time, at = new Map(bars.slice(-6).map((b) => [b.time, b])), end = bars[bars.length - 1];
+  let added = false;
+  for (const p of prev.slice(-4)) {
+    const b = at.get(p.time);
+    if (!b && p.time > edge) { bars.push({ ...p }); added = true; }
+    else if (b === end) { b.high = Math.max(b.high, p.high); b.low = Math.min(b.low, p.low); b.close = p.close; }
+  }
+  if (added) bars.sort((a, b) => a.time - b.time);
+}
+
 export default function DeskChart({ tf, digits, viewKey, data, tick, draw, plan, runKey, scanning, scanText, height, loadErr }: { tf: string; digits: number; viewKey: string; data: ChartData | null; tick: Tick | null; draw: Draw | null; plan: Plan | null; runKey: string; scanning: boolean; scanText: string; height: number; loadErr: string }) {
   const box = useRef<HTMLDivElement>(null), rt = useRef<Rt | null>(null), [L, setL] = useState<typeof import("lightweight-charts") | null>(null);
   const [leg, setLeg] = useState<{ o: number; h: number; l: number; c: number; t: number; hover: boolean } | null>(null), hoverRef = useRef(false);
@@ -127,15 +142,16 @@ export default function DeskChart({ tf, digits, viewKey, data, tick, draw, plan,
   useEffect(() => {
     const r = rt.current;
     if (!r || !L || !data || !data.key.startsWith(`${viewKey}:`)) return;
-    const fresh = r.key !== viewKey, prev = r.bars[r.bars.length - 1], sig = data.inds.map((q) => q.label).join("|"), rebuild = fresh || sig !== r.sig;
+    const fresh = r.key !== viewKey, sig = data.inds.map((q) => q.label).join("|"), rebuild = fresh || sig !== r.sig;
     if (fresh) { wipe(r); r.ghost.setData([]); r.pulse.setData([]); r.bars = []; }
     if (rebuild) {
       r.ind.forEach((q) => q.series.forEach((x) => r.chart.removeSeries(x)));
       r.ind = []; r.sig = sig;
       for (let k = r.chart.panes().length - 1; k > 0; k--) r.chart.removePane(k);
     }
-    const bars = data.bars.map(([t, o, h, l, c]) => ({ time: sec(t), open: o, high: h, low: l, close: c })), last = bars[bars.length - 1];
-    if (!fresh && prev && last && prev.time === last.time) { last.high = Math.max(last.high, prev.high); last.low = Math.min(last.low, prev.low); }
+    const bars = data.bars.map(([t, o, h, l, c]) => ({ time: sec(t), open: o, high: h, low: l, close: c }));
+    if (!fresh) keepTail(bars, r.bars);
+    const last = bars[bars.length - 1];
     r.candle.setData(bars); r.bars = bars; r.key = viewKey;
     if (last) r.pulse.setData([{ time: last.time, value: last.close }]);
     const step = bars.length > 6 ? Math.min(...[1, 2, 3, 4, 5].map((k) => bars[bars.length - k].time - bars[bars.length - k - 1].time)) : TF_MIN[tf] * 60;
@@ -159,7 +175,7 @@ export default function DeskChart({ tf, digits, viewKey, data, tick, draw, plan,
     }
     data.inds.forEach((q, k) => {
       const x = r.ind[k]; if (!x) return;
-      q.lines.forEach((l, m) => x.series[m]?.setData(bars.flatMap((b, i) => { const v = l.v[i]; return typeof v === "number" && Number.isFinite(v) ? [{ time: b.time, value: v }] : []; })));
+      q.lines.forEach((l, m) => x.series[m]?.setData(data.bars.flatMap(([t], i) => { const v = l.v[i]; return typeof v === "number" && Number.isFinite(v) ? [{ time: sec(t), value: v }] : []; })));
       x.title?.set(`${q.label}${q.read ? ` · ${q.read}` : ""}`);
     });
     if (fresh) { const n = bars.length, w = box.current?.clientWidth ?? 800; r.chart.timeScale().setVisibleLogicalRange({ from: n - (w < 560 ? 58 : 120), to: n + 7 }); r.chart.priceScale("right").applyOptions({ autoScale: true }); }

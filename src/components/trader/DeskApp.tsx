@@ -214,7 +214,7 @@ export default function DeskApp() {
           <section className={s.head}>
             <span className={s.coin}>{S.ic}</span>
             <div className={s.name}><h1>{S.mn}</h1><em>{S.pair}</em></div>
-            <div className={s.px}><Price v={tick?.px ?? null} d={d} />{tick && <span data-d={tick.chg >= 0 ? "up" : "dn"}>{sg(tick.chg)}{tick.chg.toFixed(2)}% · 24ц</span>}</div>
+            <div className={s.px}><Price v={tick?.px ?? null} d={d} />{tick && <span data-d={tick.chg >= 0 ? "up" : "dn"}>{sg(tick.chg)}{tick.chg.toFixed(2)}% · 24ц</span>}{tick && tick.ask > tick.bid && <small className={s.ba}>Bid {fx(tick.bid, d)} · Ask {fx(tick.ask, d)}</small>}</div>
             <dl className={s.facts}>
               {spread > 0 && <div><dt>Spread</dt><dd>{fx(spread, d)}</dd></div>}
               <div><dt>Лаа хаагдах</dt><dd>{now ? left(closeIn) : "—"}</dd></div>

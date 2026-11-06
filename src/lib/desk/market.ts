@@ -1,5 +1,5 @@
 import type { Bar } from "../scalp/ind";
-import { duka, dukaSince, bbo } from "../scalp/feeds";
+import { duka, dukaSince } from "../scalp/feeds";
 
 /* ─── Tesla Trader · Шинжилгээний ширээ — зах зээлийн дата (2026-11-06) ───
    XAU/USD: Dukascopy, BTC/USDT: Binance. 8 хугацаа, түлхүүргүй. Сүүлийн лаа үүсч буй байж болно —
@@ -58,15 +58,19 @@ function rollup(base: Bar[], fine: Bar[], tf: TF): Bar[] {
 }
 const m1Tail = (ticker: string) => cached(`m1:${ticker}`, 5000, () => duka(ticker, 1600, Date.now(), "1MIN"));
 const h1Tail = (ticker: string) => cached(`h1:${ticker}`, 120e3, () => duka(ticker, 900, Date.now(), "1HOUR"));
+/* Dukascopy лаа нь bid үнэ (Swissquote-ийн bid-тэй 0.01–0.13-аар таарна), харин ханш нь bid/ask-ийн дундаж, spread ≈$0.64
+   (2026-11-06 хэмжсэн). Лаа, төлөвлөгөө, ханш нэг түвшинд байхын тулд лааг хагас spread-ээр өргөнө. */
+const XAU_MID = 0.3;
+const toMid = (b: Bar[]) => b.map((x) => ({ ...x, o: x.o + XAU_MID, h: x.h + XAU_MID, l: x.l + XAU_MID, c: x.c + XAU_MID }));
 export const bars = (sym: Sym, tf: TF) => cached(`b:${sym}:${tf}`, TTL[tf], async () => {
   const s = SYMBOLS[sym];
   if (s.src === "binance") return binance(s.ticker, BIN[tf], 700);
   const m1 = await m1Tail(s.ticker);
-  if (tf === "1m") return m1.slice(-700);
+  if (tf === "1m") return toMid(m1.slice(-700));
   const base = await duka(s.ticker, Math.min(700, DUKA_PAGE[tf]), Date.now(), DUKA[tf]);
-  if (TF_MIN[tf] < 240) return rollup(base, m1, tf);
+  if (TF_MIN[tf] < 240) return toMid(rollup(base, m1, tf));
   const h1 = await h1Tail(s.ticker), from = m1[0]?.t ?? Infinity;
-  return rollup(base, [...h1.filter((b) => b.t + 3600e3 <= from), ...m1], tf);
+  return toMid(rollup(base, [...h1.filter((b) => b.t + 3600e3 <= from), ...m1], tf));
 });
 /** Сүүлийн лааг бодит үнээр шинэчилнэ, цаг нь шилжсэн бол шинэ лаа нээнэ */
 export function withLive(b: Bar[], tf: TF, px: number, now = Date.now()): Bar[] {
@@ -106,14 +110,39 @@ async function ref24(sym: Sym) {
   }).catch(() => c?.ref ?? 0);
   return c ? c.ref : load;
 }
-export const quote = (sym: Sym) => cached(`q:${sym}`, 900, async () => {
+export type Quote = { px: number; bid: number; ask: number; t: number; chg: number };
+const G = globalThis as { __deskQuote?: Map<Sym, { at: number; q: Quote }> };
+const latest: Map<Sym, { at: number; q: Quote }> = (G.__deskQuote ??= new Map());
+const round = (sym: Sym, x: number) => +x.toFixed(SYMBOLS[sym].digits + 1);
+
+/** Кэшгүй шууд ханш. Hub секундэд хэд хэдэн удаа дуудах тул завсрын кэш энд байж болохгүй: хоёр 900 мс кэш ханшийг 2 секунд болгож байсан. */
+export async function liveQuote(sym: Sym): Promise<Quote | null> {
   let bid = 0, ask = 0, px = 0, t = Date.now();
-  if (sym === "XAUUSD") { const q = await bbo({ sq: "XAU/USD" }, 900); if (q) { bid = q.bid; ask = q.ask; px = (bid + ask) / 2; t = q.ts; } }
-  else {
-    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { signal: AbortSignal.timeout(3000), cache: "no-store" });
+  if (sym === "XAUUSD") {
+    const r = await fetch("https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD", { headers: { "User-Agent": "Mozilla/5.0" }, signal: AbortSignal.timeout(1500), cache: "no-store" });
+    if (!r.ok) return null;
+    const d = (await r.json()) as { spreadProfilePrices: { spreadProfile: string; bid: number; ask: number }[]; ts: number }[];
+    const p = d?.[0]?.spreadProfilePrices?.find((x) => x.spreadProfile === "prime") || d?.[0]?.spreadProfilePrices?.[0];
+    if (!p || !(p.ask > p.bid)) return null;
+    bid = p.bid; ask = p.ask; px = (bid + ask) / 2; t = d[0].ts;
+  } else {
+    const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { signal: AbortSignal.timeout(1200), cache: "no-store" });
+    if (!r.ok) return null;
     px = +((await r.json()) as { price: string }).price; bid = ask = px;
   }
-  if (!px) { const m = await bars(sym, "1m"), l = m[m.length - 1]; px = l?.c ?? 0; t = l?.t ?? t; }
-  const ref = await ref24(sym);
-  return { px: +px.toFixed(SYMBOLS[sym].digits + 1), bid, ask, t, chg: ref ? +(((px - ref) / ref) * 100).toFixed(2) : 0 };
-});
+  if (!(px > 0)) return null;
+  const ref = await ref24(sym), q = { px: round(sym, px), bid, ask, t, chg: ref ? +(((px - ref) / ref) * 100).toFixed(2) : 0 };
+  latest.set(sym, { at: Date.now(), q });
+  return q;
+}
+/** Hub ажиллаж байвал яг тэр tick-ийг өгнө: чартын сүүлийн лаа, толгойн ханш нэг тоо байна */
+export const quote = (sym: Sym): Promise<Quote> => {
+  const h = latest.get(sym);
+  if (h && Date.now() - h.at < 1500) return Promise.resolve(h.q);
+  return cached(`q:${sym}`, 900, async () => {
+    const q = await liveQuote(sym).catch(() => null);
+    if (q) return q;
+    const m = await bars(sym, "1m"), l = m[m.length - 1], px = l?.c ?? 0, ref = await ref24(sym);
+    return { px: round(sym, px), bid: 0, ask: 0, t: l?.t ?? Date.now(), chg: ref ? +(((px - ref) / ref) * 100).toFixed(2) : 0 };
+  });
+};
