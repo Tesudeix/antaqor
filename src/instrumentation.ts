@@ -5,6 +5,4 @@ export async function register() {
   startRecorder();
   const { startDeskRecorder } = await import("@/lib/desk/learn");
   startDeskRecorder();
-  const { startTruthWarm } = await import("@/lib/desk/truth");
-  startTruthWarm();
 }

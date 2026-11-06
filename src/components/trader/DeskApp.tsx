@@ -1,144 +1,135 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import DeskChart, { type ChartData, type Draw, type Layer, type Plan, type Tick } from "./DeskChart";
+import DeskChart, { bucket, PALETTE, TF_MIN, type ChartData, type Draw, type Plan, type Tick } from "./DeskChart";
 import s from "./desk.module.css";
 
-/* ─── TESLA TRADER v9 · НЭГ ДЭЛГЭЦ (2026-11-06) ──────────────────────────────
-   Сонголт, алхам, товч алга: хугацаа дармагц 18 индикатор бүгд уншигдаж, зургаан асуултад хариулна.
-   Хаашаа? Итгэж болох уу? Хэр хол? Алдагдлын хязгаар хэр хол? Хэзээ? Төлөвлөгөө?
-   Чарт 1-3 хугацаагаар зэрэгцэж, бүгд нэг tick авна. Сонгосон чарт баруун талын уншилтыг удирдана.
-   Гол мессеж нь чиглэл биш, тэр чиглэл түүхэнд ажилласан эсэх. Ихэнх үед хариулт нь «зоос шидэхтэй адил» бөгөөд
-   үүнийг нуухгүй. Төлөвлөгөө батлагдаагүй бол чартад зурахгүй. Арилжаа хэзээ ч автоматаар хийгдэхгүй. */
+/* ─── TESLA TRADER v8 · АМЬД ШИНЖИЛГЭЭНИЙ ШИРЭЭ (2026-11-06) ─────────────────
+   Үнэ секунд тутам SSE-ээр ирж ханшийн самбар, сүүлийн лааг зэрэг хөдөлгөнө. Индикатор 18 хүртэл, санал нь бодит
+   цагаар тоологдоно. Агент 6 алхмаар ажиллана: хугацаа унших → бүтэц → төлөвлөгөө → мэдээ → асуулт → үр дүн.
+   Төлөвлөгөө бол хэмжилттэй нөхцөлт хувилбар, дохио биш. Арилжаа автоматаар хийхгүй. */
 
-type Cell = { id: string; label: string; g: number; v: number; read: string; n?: number; hit?: number; exp?: number; ok?: boolean };
-type Truth = { kind: string; p: number | null; base: number | null; lo: number | null; hi: number | null; n: number; wins: number; up: boolean };
-type Row = { k: string; mn: string; exp: number | null; se: number | null; n: number; ok: boolean; live: number; has: boolean };
-type Stop = { p: number; d: number; oos: number };
-type Hours = { rel: number[]; w: number; len: number; lift: number };
-type News = { next: { t: number; name: string; also: number; soon: boolean } | null; line: { t: number; high: boolean }[] };
-type Read = {
-  sym: string; tf: string; barAt: number; px: number; horizon: number; cells: Cell[]; up: number; dn: number; flat: number; dir: number; neff: number | null; voters: number; truth: Truth | null; sentence: string;
-  range: { half: number; pct: number; lo: number; hi: number; unit: number; cov: number; covN: number; ratio: number; lift: number } | null; stops: Stop[] | null; hours: Hours | null; levels: { sup: number | null; res: number | null }; plans: Row[]; plan: Plan | null; levelsPlan: Plan | null; verified: boolean; draw: Draw;
-  live: { fired: number; tp: number; sl: number; open: number } | null; news: News | null; matrix: { tf: string; dir: number }[];
-};
+type Stat = { plans: number; fired: number; tp: number; sl: number; exp: number | null; se: number | null; h1: number | null; h2: number | null };
+type Live = { n: number; open: number; tp: number; sl: number; exp: number | null };
+type Best = { k: string; mn: string; n: number; score: number };
+type IndRead = { id: string; label: string; read: string; vote: number };
+type Sec = { tf: string; empty?: boolean; score: number; state: string; price: number; swings: { label: string; p: number; t: number }[]; notes: string[]; pattern: string | null; inds: IndRead[]; votes: { up: number; dn: number; flat: number }; plan: Plan | null; none: string | null; confirm: string | null; invalid: string; atr: number; stat: Stat | null; verdict: { k: string; mn: string }; live: Live | null; best: Best | null; draw: Draw };
+type Ev = { t: number; ccy: string; title: string; impact: string; forecast?: string; previous?: string };
+type Learn = { total: number; open: number; fired: number; tp: number; sl: number; recent: { tf: string; strat: string; dir: number; status: string; r: number | null; t: number }[] };
+type Rep = { sym: string; pair: string; stratMn: string; now: number; bias: { k: number; mn: string }; summary: string; sections: Sec[]; statsAt: number | null; measuring: boolean; news: Ev[]; learn: Learn | null };
+type Head = { title: string; src: string; url: string; t: number; tone: number | null };
+type Weigh = { risk: "low" | "medium" | "high"; text: string; calendar: Ev[]; items: Head[]; tone: number | null; note: string };
+type Sel = { id: string; p?: number; hide?: boolean };
 type Msg = { role: "user" | "ai"; text: string };
-type Live = Tick & { got: number; moved: number };
+type Live2 = Tick & { got: number; moved: number };
 
-const SYMS = [{ id: "XAUUSD", mn: "Алт", d: 2 }, { id: "BTCUSDT", mn: "Биткойн", d: 2 }];
-const TFS = [{ id: "1m", mn: "1 мин", after: "12 минутын дараа", within: "12 минутад" }, { id: "5m", mn: "5 мин", after: "1 цагийн дараа", within: "1 цагт" }, { id: "15m", mn: "15 мин", after: "3 цагийн дараа", within: "3 цагт" }, { id: "1H", mn: "1 цаг", after: "12 цагийн дараа", within: "12 цагт" }, { id: "4H", mn: "4 цаг", after: "2 өдрийн дараа", within: "2 өдөрт" }, { id: "1D", mn: "1 өдөр", after: "12 өдрийн дараа", within: "12 өдөрт" }];
-const GROUPS = ["Тренд", "Импульс", "Хэмжээ"];
-const HINT: Record<string, string> = { ema: "Сүүлийн үнэд жинтэй дундаж", sma: "Энгийн дундаж үнэ", st: "Тренд дагагч шугам", ichi: "Богино ба дунд трендийн харьцаа", sar: "Тренд эргэх цэгүүд", vwap: "Өнөөдрийн дундаж арилжааны үнэ", bb: "Үнийн ердийн хязгаар", rsi: "Хөдөлгөөний хүч, 0-100", macd: "Хоёр дунджийн зөрүү", stoch: "Үнэ хүрээнийхээ аль хэсэгт байна", kst: "Олон хугацааны хурд", pctb: "Bollinger доторх байрлал", mfi: "Мөнгөний урсгалын хүч", dpo: "Трендийг хассан мөчлөг", atr: "Хэлбэлзлийн хэмжээ, чиглэл заахгүй", adx: "Трендийн хүч", rvol: "Хэмжээ ердийнхөөс хэд дахин их", ad: "Хуримтлал эсвэл тархалт" };
-/* индикаторын өөрийн түүхэн нарийвчлал: санамсаргүй хүлээлттэй шууд жишнэ */
-const cellNote = (c: Cell) => `${c.label}: ${c.read}. ${HINT[c.id] ?? ""}.${c.hit === undefined ? "" : ` Санал өгөхдөө ${Math.round(c.hit)}% зөв, санамсаргүй бол ${Math.round(c.exp ?? 0)}%.${c.ok ? " Батлагдсан." : ""}`}`;
-const volWord = (r: number) => (r >= 1.1 ? `Ердийнхөөс ${r.toFixed(1)} дахин их` : r && r <= 0.9 ? `Ердийнхөөс ${(1 / r).toFixed(1)} дахин бага` : "Ердийн хэмжээнд");
-const KIND: Record<string, string> = { coin: "Зоос шидэхтэй адил", edge: "Түүхэнд давуу талтай", weak: "Тогтвортой биш", few: "Жишээ хангалтгүй", opposite: "Түүхэнд эсрэгээрээ", mixed: "Чиглэл алга" };
+const SYMS = [{ id: "XAUUSD", pair: "XAU/USD", mn: "Алт", ic: "Au", d: 2, src: "Swissquote · Dukascopy" }, { id: "BTCUSDT", pair: "BTC/USDT", mn: "Биткойн", ic: "₿", d: 2, src: "Binance" }];
+const TFS = ["1m", "5m", "15m", "30m", "1H", "4H", "1D", "1W"];
+const STRATS = [{ id: "pullback", mn: "Буцалт", full: "Трендийн буцалт", sub: "Импульсийн дараах буцалт, EMA чиглэл, RSI батлалт" }, { id: "sweep", mn: "Sweep", full: "Liquidity Sweep", sub: "Swing шүүрдээд эргэж хаагдахад" }, { id: "smc", mn: "SMC", full: "SMC · Order block", sub: "BOS-ийн дараах order block руу буцалт" }];
+const INDS: { id: string; mn: string; p?: number }[] = [{ id: "ema", mn: "EMA", p: 9 }, { id: "sma", mn: "SMA", p: 20 }, { id: "st", mn: "Supertrend", p: 10 }, { id: "ichi", mn: "Ichimoku" }, { id: "sar", mn: "Parabolic SAR" }, { id: "vwap", mn: "VWAP" }, { id: "bb", mn: "Bollinger Bands", p: 20 }, { id: "rsi", mn: "RSI", p: 14 }, { id: "macd", mn: "MACD" }, { id: "stoch", mn: "Stochastic", p: 14 }, { id: "kst", mn: "KST" }, { id: "pctb", mn: "Percent B", p: 20 }, { id: "mfi", mn: "MFI", p: 14 }, { id: "dpo", mn: "DPO", p: 20 }, { id: "atr", mn: "ATR", p: 14 }, { id: "adx", mn: "ADX", p: 14 }, { id: "rvol", mn: "Relative Volume", p: 20 }, { id: "ad", mn: "Accumulation/Distribution" }];
+const GROUPS: [string, string[]][] = [["Тренд", ["ema", "sma", "st", "ichi", "sar", "vwap", "bb"]], ["Импульс", ["rsi", "macd", "stoch", "kst", "pctb", "mfi", "dpo"]], ["Хэлбэлзэл, хэмжээ", ["atr", "adx", "rvol", "ad"]]];
+const DEF: Sel[] = [{ id: "st", p: 10 }, { id: "ema", p: 9 }, { id: "rsi", p: 14 }];
+const VERS = [{ h: "/1", t: "v4" }, { h: "/2", t: "v5" }, { h: "/3", t: "v6" }, { h: "/", t: "v8" }];
+const STEPS = [
+  { n: "01", t: "Хугацаа унших", d: "Сонгосон хугацааны лаа, индикаторыг зэрэг уншина" },
+  { n: "02", t: "Бүтэц тэмдэглэх", d: "HH, HL, LH, LL, BOS, шүүрдэлт, rejection-ийг чарт дээр тэмдэглэнэ" },
+  { n: "03", t: "Төлөвлөгөө зурах", d: "Бүс, орох цэг, SL, TP, таамгийн замыг зурна" },
+  { n: "04", t: "Мэдээ жигнэх", d: "Эдийн засгийн календарь, гарчгийг эрсдэлд тооцно" },
+  { n: "05", t: "Асуултад хариулах", d: "Шинжилгээний бодит тоон дээр тулгуурлан хариулна" },
+  { n: "06", t: "Үр дүнгээс суралцах", d: "Төлөвлөгөө бүрийг бодит лаагаар дагаж, дүнг хэмжинэ" },
+];
+const QUICK = ["Яагаад энэ чиглэл гэж үзэв?", "SL яагаад тэнд байна?", "Мэдээ нөлөөлөх үү?"];
+const RISK = { low: "Бага", medium: "Дунд", high: "Өндөр" };
+const END: Record<string, string> = { tp: "TP хүрсэн", sl: "SL цохисон", time: "Хугацаа дууссан", cancel: "Цуцлагдсан", missed: "Алдсан", expired: "Идэвхжээгүй" };
 const fx = (n: number | null | undefined, d = 2) => (typeof n === "number" && Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
-const glyph = (v: number) => (v > 0 ? "▲" : v < 0 ? "▼" : "–");
-const sgn = (n: number) => (n > 0 ? "+" : n < 0 ? "−" : "");
+const ub = (t: number) => new Date(t).toLocaleString("en-GB", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Ulaanbaatar" }).replace(",", "");
+const sg = (n: number) => (n > 0 ? "+" : "");
+const dirOf = (n: number) => (n > 0 ? "up" : n < 0 ? "dn" : "mid");
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function load<T>(k: string, d: T): T { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }
 function save(k: string, v: unknown) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* хувийн горим */ } }
-const HOUR = 3600e3, clock = (t: number) => `${String(new Date(t).getHours()).padStart(2, "0")}:00`;
-function until(ms: number) { const m = Math.max(0, Math.floor(ms / 60000)); if (m < 60) return `${m} минут`; const h = Math.floor(m / 60); return h < 48 ? `${h} цаг ${m % 60} мин` : `${Math.floor(h / 24)} өдөр`; }
+function left(ms: number) { const m = Math.floor(ms / 60000), c = Math.floor((ms % 60000) / 1000); if (m >= 1440) return `${Math.floor(m / 1440)}ө ${Math.floor((m % 1440) / 60)}ц`; if (m >= 60) return `${Math.floor(m / 60)}ц ${m % 60}м`; return `${String(m).padStart(2, "0")}:${String(c).padStart(2, "0")}`; }
 
-/* 18 нүд: өнгө, тэмдэг хоёулаа чиглэлийг заана. Дарвал чартад зурна. */
-function Strip({ rd, drawn, onCell }: { rd: Read; drawn: string[]; onCell: (id: string) => void }) {
+/* өөрчлөгдсөн орнуудыг л тодруулдаг ханш */
+function Price({ v, d }: { v: number | null; d: number }) {
+  const str = v === null ? "—" : fx(v, d), [m, set] = useState({ now: str, was: str, dir: 0 });
+  useEffect(() => { set((c) => (c.now === str ? c : { now: str, was: c.now, dir: Number(str.replace(/,/g, "")) >= Number(c.now.replace(/,/g, "")) ? 1 : -1 })); }, [str]);
+  let k = 0; while (k < m.now.length && m.now[k] === m.was[k]) k++;
+  return <b className={s.price} aria-live="off">{m.now.slice(0, k)}<span key={m.now} data-d={m.dir > 0 ? "up" : "dn"}>{m.now.slice(k)}</span></b>;
+}
+const Vote = ({ v }: { v: { up: number; dn: number; flat: number } }) => { const n = v.up + v.dn + v.flat || 1; return <div className={s.vote} role="img" aria-label={`${v.up} өсөх, ${v.dn} унах, ${v.flat} саармаг`}><u data-d="up" style={{ width: `${(v.up / n) * 100}%` }} /><u data-d="mid" style={{ width: `${(v.flat / n) * 100}%` }} /><u data-d="dn" style={{ width: `${(v.dn / n) * 100}%` }} /></div>; };
+
+function Setup({ secs, d }: { secs: Sec[]; d: number }) {
+  const rows: [string, (x: Sec) => React.ReactNode][] = [
+    ["Чиглэл", (x) => (x.plan ? <b data-d={x.plan.dir > 0 ? "up" : "dn"}>{x.plan.dir > 0 ? "Авах" : "Зарах"}</b> : "—")],
+    ["Хүлээх бүс", (x) => (x.plan ? `${fx(x.plan.lo, d)} – ${fx(x.plan.hi, d)}` : "—")],
+    ["Үндэс", (x) => x.plan?.basis ?? "—"],
+    ["Батлалт", (x) => x.confirm ?? "—"],
+    ["Орох", (x) => (x.plan ? fx(x.plan.entry, d) : "—")],
+    ["SL", (x) => (x.plan ? <b data-d="dn">{fx(x.plan.sl, d)}</b> : "—")],
+    ["TP1", (x) => (x.plan ? <b data-d="up">{fx(x.plan.tp1, d)}</b> : "—")],
+    ["TP2", (x) => (x.plan ? <b data-d="up">{fx(x.plan.tp2, d)}</b> : "—")],
+    ["R/R", (x) => (x.plan ? <span data-weak={x.plan.rr < 1 || undefined}>≈{x.plan.rr}R{x.plan.rr < 1 ? " · сул" : ""}</span> : "—")],
+    ["Түүхэн хэмжилт", (x) => (x.stat?.fired ? <span className={s.st} data-k={x.verdict.k}><b>{x.verdict.mn}</b><small>{x.stat.fired} удаа идэвхжсэн · TP {Math.round((x.stat.tp / x.stat.fired) * 100)}% · {sg(x.stat.exp ?? 0)}{x.stat.exp}R ±{x.stat.se}</small></span> : <span className={s.st} data-k="none"><b>{x.verdict.mn}</b></span>)],
+  ];
+  return <div className={s.scroll}><table className={s.setup}><thead><tr><th />{secs.map((x) => <th key={x.tf}>{x.tf}</th>)}</tr></thead><tbody>{rows.map(([t, f]) => <tr key={t}><th>{t}</th>{secs.map((x) => <td key={x.tf}>{f(x)}</td>)}</tr>)}</tbody></table></div>;
+}
+
+const Report = memo(function Report({ rep, secs, sec, tf, d, news, pick, useStrat }: { rep: Rep; secs: Sec[]; sec: Sec | null; tf: string; d: number; news: Weigh | null; pick: (t: string) => void; useStrat: (k: string) => void }) {
+  const x = sec ?? secs[0];
   return (
-    <div className={s.strip} key={`${rd.sym}${rd.tf}`}>
-      {GROUPS.map((g, k) => (
-        <div key={g} className={s.row}>
-          <span>{g}</span>
-          <div>{rd.cells.filter((c) => c.g === k).map((c, i) => <button key={c.id} type="button" data-v={c.v > 0 ? "up" : c.v < 0 ? "dn" : "mid"} aria-pressed={drawn.includes(c.id)} aria-label={`${c.label}: ${c.v > 0 ? "өсөх" : c.v < 0 ? "унах" : "саармаг"}`} title={`${c.label}: ${c.read}`} style={{ "--i": k * 7 + i } as React.CSSProperties} onClick={() => onCell(c.id)}>{glyph(c.v)}</button>)}</div>
-        </div>
-      ))}
+    <div className={s.report}>
+      <section className={s.card} data-b={dirOf(rep.bias.k)}>
+        <span className={s.meta}>{rep.pair} · {rep.stratMn} · {ub(rep.now)}</span>
+        <h2>Чиглэл: {rep.bias.mn}</h2>
+        <p className={s.lead}>{rep.summary}</p>
+        <p className={s.warn}>Энэ бол нөхцөлт төлөвлөгөө, дохио биш. Түүхэн хэмжилт нь ижил дүрэм өнгөрсөн датад хэрхэн ажилласныг spread, шимтгэл хассан R-ээр харуулна.{rep.measuring ? " Хэмжилт яг одоо шинэчлэгдэж байна." : ""}</p>
+      </section>
+      {x && <section className={s.card}>
+        <div className={s.secTabs} role="tablist" aria-label="Шинжилсэн хугацаа">{secs.map((q) => <button key={q.tf} type="button" role="tab" aria-selected={q.tf === x.tf} data-d={q.plan ? dirOf(q.plan.dir) : "mid"} onClick={() => pick(q.tf)}>{q.tf}</button>)}</div>
+        <h3>{x.state}</h3>
+        <div className={s.chain}>{x.swings.map((w) => <span key={w.t + w.label} data-d={/^(HH|HL)$/.test(w.label) ? "up" : /^(LH|LL)$/.test(w.label) ? "dn" : undefined}><b>{w.label}</b>{fx(w.p, d)}<small>{ub(w.t)}</small></span>)}</div>
+        <ul className={s.notes}>{x.notes.map((n) => <li key={n}>{n}</li>)}{x.pattern && <li>{x.pattern}</li>}</ul>
+        {!!x.inds.length && <>
+          <div className={s.lbr}><b>Индикаторын санал</b><span><em data-d="up">{x.votes.up} өсөх</em> · <em data-d="dn">{x.votes.dn} унах</em> · {x.votes.flat} саармаг</span></div>
+          <Vote v={x.votes} />
+          <div className={s.reads}>{x.inds.map((q) => <span key={q.id} data-d={dirOf(q.vote)}><b>{q.label}</b>{q.read}</span>)}</div>
+          <p className={s.dim}>Индикаторууд нэг лаанаас тооцогддог тул хамтдаа хөдөлдөг. 22,878 жишээн дээрх туршилтаар таван scan бүгд санал нийлэхэд чиглэл 50.3% таасан — санал бол зураглал, нэмэлт батлалт биш.</p>
+        </>}
+      </section>}
+      <section className={s.card}><h3>Төлөвлөгөө <small>{rep.stratMn}</small></h3><Setup secs={secs} d={d} />{secs.filter((q) => q.none).map((q) => <p key={q.tf} className={s.dim}>{q.tf}: {q.none}</p>)}{secs.some((q) => q.plan) && <><h3>Хүчингүй болох нөхцөл</h3><ul className={s.notes}>{secs.filter((q) => q.plan).map((q) => <li key={q.tf}><b>{q.tf}</b> {q.invalid}</li>)}</ul></>}</section>
+      <section className={s.card}>
+        <h3>Мэдээ {news && <small className={s.risk} data-r={news.risk}>Эрсдэл: {RISK[news.risk]}</small>}</h3>
+        {news ? <><p className={s.lead}>{news.text}{news.note ? ` ${news.note}` : ""}</p>
+          {!!news.calendar.length && <ul className={s.news}>{news.calendar.map((e) => <li key={e.t + e.title} data-i={e.impact}><span>{ub(e.t)}</span><b>{e.ccy}</b><p>{e.title}{e.forecast ? <small> · таамаг {e.forecast} · өмнөх {e.previous}</small> : null}</p></li>)}</ul>}
+          {!!news.items.length && <ul className={s.heads}>{news.items.slice(0, 6).map((h) => <li key={h.url} data-d={h.tone === null ? "mid" : dirOf(h.tone)}><i aria-hidden="true" /><a href={h.url} target="_blank" rel="noopener noreferrer">{h.title}</a><small>{h.src}</small></li>)}</ul>}
+        </> : <p className={s.dim}>Мэдээ ачаалж байна…</p>}
+      </section>
+      <section className={s.card}>
+        <h3>Үр дүнгээс суралцах</h3>
+        <div className={s.kpis}><span><b>{rep.learn?.total ?? 0}</b>бүртгэсэн</span><span><b>{rep.learn?.open ?? 0}</b>нээлттэй</span><span><b>{rep.learn?.fired ?? 0}</b>идэвхжсэн</span><span><b data-d="up">{rep.learn?.tp ?? 0}</b>TP</span><span><b data-d="dn">{rep.learn?.sl ?? 0}</b>SL</span></div>
+        <div className={s.scroll}><table className={s.learn}><thead><tr><th>Хугацаа</th><th>Түүхэн</th><th>Амьд бүртгэл</th><th>Хамгийн сайн стратеги</th></tr></thead><tbody>{secs.map((q) => <tr key={q.tf}><th>{q.tf}</th><td>{q.stat?.fired ? `${sg(q.stat.exp ?? 0)}${q.stat.exp}R · ${q.stat.fired}` : "—"}</td><td>{q.live?.n ? `${sg(q.live.exp ?? 0)}${q.live.exp}R · ${q.live.n}` : q.live?.open ? `${q.live.open} нээлттэй` : "Хүлээж байна"}</td><td>{q.best ? <button type="button" onClick={() => useStrat(q.best!.k)} disabled={q.best.score <= 0}>{q.best.score > 0 ? `${q.best.mn} ${sg(q.best.score)}${q.best.score}R` : "Эерэг стратеги алга"}</button> : "Дата хангалтгүй"}</td></tr>)}</tbody></table></div>
+        {!!rep.learn?.recent.length && <ul className={s.recent}>{rep.learn.recent.slice(0, 6).map((r) => <li key={`${r.t}${r.tf}${r.strat}`}><span>{ub(r.t)}</span><b>{r.tf}</b><em data-d={r.dir > 0 ? "up" : "dn"}>{r.dir > 0 ? "Авах" : "Зарах"}</em><span>{END[r.status] ?? r.status}</span><strong data-d={dirOf(r.r ?? 0)}>{sg(r.r ?? 0)}{r.r ?? 0}R</strong></li>)}</ul>}
+        <p className={s.dim}>Систем 15м, 1ц, 4ц дээрх төлөвлөгөө бүрийг 5 минут тутам бүртгэж, дараа нь бодит лаагаар шалгана. Эрэмбэ нь түүхэн ба амьд дүнг нэгтгэх ба амьд дүн 3 дахин жинтэй. Гурван стратегиас хамгийн сайныг нь сонгож байгаа тул тоо бага зэрэг өөдрөг гардаг. Босгыг автоматаар сулруулдаггүй.</p>
+      </section>
     </div>
   );
-}
-/* Магадлалыг 0-100 бүтэн тэнхлэгт тавина: зөрүү бага бол бага харагдах ёстой */
-function Odds({ t }: { t: Truth }) {
-  if (t.p === null || t.base === null) return null;
-  return (
-    <div className={s.odds}>
-      <div className={s.scale} role="img" aria-label={`Ийм үед ${t.p}%, ердийн үед ${t.base}%`}><i className={s.ci} style={{ left: `${t.lo}%`, width: `${(t.hi ?? 0) - (t.lo ?? 0)}%` }} /><i className={s.tickMark} style={{ left: `${t.base}%` }} /><i className={s.dot} style={{ left: `${t.p}%` }} /></div>
-      <div className={s.ends} data-flip={t.p > t.base || undefined}><span><i className={s.keyDot} /><b>{Math.round(t.p)}%</b> ийм үед</span><span><i className={s.keyTick} /><b>{Math.round(t.base)}%</b> ердийн үед</span></div>
-    </div>
-  );
-}
-function Rows({ rows }: { rows: Row[] }) {
-  return <ul className={s.plans}>{rows.map((r) => { const e = r.exp ?? 0, w = Math.min(50, (Math.abs(e) / 0.5) * 50); return <li key={r.k}><span>{r.mn}</span><div className={s.bar} role="img" aria-label={`${r.mn}: ${e}R`}><i data-d={e >= 0 ? "up" : "dn"} style={{ width: `${w}%`, [e >= 0 ? "left" : "right"]: "50%" }} /></div><b>{r.n ? `${sgn(e)}${Math.abs(e).toFixed(2)}R` : "—"}</b></li>; })}</ul>;
-}
-
-/* Багана нь бодит зайтай пропорциональ: ойр хязгаарыг ердийн савлагаа илүү олон удаа дайрна */
-function Stops({ rows }: { rows: Stop[] }) {
-  const far = rows[rows.length - 1].d;
-  return <ul className={s.stops}>{rows.map((r) => <li key={r.p}><b>${fx(r.d, r.d < 100 ? 2 : 0)}</b><div className={s.meter} role="img" aria-label={`${r.p}% магадлал`}><i style={{ width: `${(r.d / far) * 100}%` }} /></div><span>{Math.round(100 / r.p)} удаад 1</span></li>)}</ul>;
-}
-/* Ойрын 24 цаг нэг тэнхлэгт: багана нь тухайн цагийн түүхэн хөдөлгөөн, цэг нь том мэдээ. Цаг нь үзэгчийн орон нутгийн цаг. */
-function Day({ hours, dots, start }: { hours: Hours | null; dots: News["line"]; start: number }) {
-  const top = hours ? Math.max(...hours.rel) : 1;
-  return (
-    <div className={s.day} role="img" aria-label="Ойрын 24 цагийн идэвх ба том мэдээ">
-      {!!dots.length && <div className={s.timeline}>{dots.map((e) => <i key={e.t} data-h={e.high || undefined} style={{ left: `${((e.t - start) / (24 * HOUR)) * 100}%` }} />)}</div>}
-      {hours && <div className={s.hours}>{Array.from({ length: 24 }, (_, k) => { const t = start + k * HOUR, u = new Date(t).getUTCHours(), r = hours.rel[u]; return <i key={t} data-p={(u - hours.w + 24) % 24 < hours.len || undefined} style={{ height: `${Math.max(6, (r / top) * 100)}%` }} title={`${clock(t)}: ердийн цагаас ${r.toFixed(1)} дахин`} />; })}</div>}
-      <div className={s.ends}><span>Одоо</span><span>{clock(start + 12 * HOUR)}</span><span>{clock(start + 24 * HOUR)}</span></div>
-    </div>
-  );
-}
-
-/* Нэг хугацааны чарт: өөрийн лаа, уншилттай. Идэвхтэй бол уншилтаа дээш өгнө. */
-function Pane({ sym, tf, d, active, onPick, onRead, tick, indQ, pro }: { sym: string; tf: string; d: number; active: boolean; onPick: (t: string) => void; onRead: (r: Read | null, err: string) => void; tick: Tick | null; indQ: string; pro: boolean }) {
-  const [data, setData] = useState<ChartData | null>(null), [rd, setRd] = useState<Read | null>(null), [loadErr, setLoadErr] = useState(""), [readErr, setReadErr] = useState("");
-  const viewKey = `${sym}:${tf}`, dataKey = `${viewKey}:${indQ}`, T = TFS.find((x) => x.id === tf) ?? TFS[3];
-
-  useEffect(() => {
-    let alive = true;
-    const b = async () => { if (document.hidden) return; try { const r = await fetch(`/api/trader-agent/desk?sym=${sym}&tf=${tf}&ind=${indQ}`, { cache: "no-store" }), j = await r.json(); if (!alive) return; if (r.ok) { setData({ ...j, key: dataKey }); setLoadErr(""); } else setLoadErr(j.error || "Лаа ачаалж чадсангүй. Дахин оролдож байна"); } catch { if (alive) setLoadErr("Сүлжээ тасарсан. Дахин оролдож байна"); } };
-    setLoadErr(""); b();
-    const t = setInterval(b, 15000), vis = () => { if (!document.hidden) b(); };
-    document.addEventListener("visibilitychange", vis);
-    return () => { alive = false; clearInterval(t); document.removeEventListener("visibilitychange", vis); };
-  }, [sym, tf, indQ, dataKey]);
-  useEffect(() => {
-    let alive = true;
-    const b = async () => { if (document.hidden) return; try { const r = await fetch(`/api/trader-agent/desk?q=read&sym=${sym}&tf=${tf}`, { cache: "no-store" }), j = await r.json(); if (!alive) return; if (r.ok) { setRd(j); setReadErr(""); } else setReadErr(j.error || "Уншилт ирсэнгүй. Дахин оролдож байна"); } catch { if (alive) setReadErr("Сүлжээ тасарсан. Дахин оролдож байна"); } };
-    setReadErr(""); b();
-    const t = setInterval(b, 20000), vis = () => { if (!document.hidden) b(); };
-    document.addEventListener("visibilitychange", vis);
-    return () => { alive = false; clearInterval(t); document.removeEventListener("visibilitychange", vis); };
-  }, [sym, tf]);
-
-  const view = rd?.sym === sym && rd?.tf === tf ? rd : null, shownPlan = view ? (view.verified ? view.plan : pro ? view.levelsPlan : null) : null;
-  useEffect(() => { if (active) onRead(view, readErr); }, [active, view, readErr, onRead]);
-  const layer: Layer | null = useMemo(() => (view ? { unit: view.range?.unit ?? null, horizon: view.horizon, sup: view.levels.sup, res: view.levels.res, plan: shownPlan, marks: pro ? view.draw : null } : null), [view, shownPlan, pro]);
-  const layerSig = view ? `${viewKey}:${view.barAt}:${pro}:${view.levels.sup}:${view.levels.res}:${view.range?.unit}:${shownPlan?.entry}` : "";
-  const subs = data?.key.startsWith(`${viewKey}:`) ? data.inds.filter((x) => x.pane === "sub").length : 0;
-  return (
-    <section className={s.pane} data-active={active || undefined} onPointerDownCapture={() => onPick(tf)}>
-      <button type="button" className={s.paneTop} aria-pressed={active} onClick={() => onPick(tf)}>{T.mn}{view && <i data-d={view.dir > 0 ? "up" : view.dir < 0 ? "dn" : "mid"}>{glyph(view.dir)}</i>}</button>
-      <DeskChart tf={tf} digits={d} viewKey={viewKey} data={data} tick={tick} layer={layer} layerSig={layerSig} subs={subs} loadErr={loadErr} />
-    </section>
-  );
-}
+});
 
 export default function DeskApp() {
-  const [sym, setSym] = useState("XAUUSD"), [panes, setPanes] = useState(["1H", "1m", "15m"]), [count, setCount] = useState(3), [tf, setTf] = useState("1H"), [drawn, setDrawn] = useState<string[]>([]), [focus, setFocus] = useState<string | null>(null), [pro, setPro] = useState(false);
-  const [view, setView] = useState<Read | null>(null), [readErr, setReadErr] = useState(""), [tick, setTick] = useState<Live | null>(null), [now, setNow] = useState(0);
-  const [msgs, setMsgs] = useState<Msg[]>([]), [q, setQ] = useState(""), [asking, setAsking] = useState(false), [matrix, setMatrix] = useState<Read["matrix"]>([]);
-  const lastPx = useRef({ px: 0, at: 0 }), S = SYMS.find((x) => x.id === sym)!, d = S.d, T = TFS.find((x) => x.id === tf) ?? TFS[3], shown = panes.slice(0, count);
-  const indQ = useMemo(() => drawn.map((x) => `${x}:`).join(","), [drawn]);
+  const [sym, setSym] = useState("XAUUSD"), [tf, setTf] = useState("1H"), [strat, setStrat] = useState("pullback"), [tfs, setTfs] = useState<string[]>(["4H", "1H", "15m"]), [inds, setInds] = useState<Sel[]>(DEF);
+  const [data, setData] = useState<ChartData | null>(null), [tick, setTick] = useState<Live2 | null>(null), [rep, setRep] = useState<Rep | null>(null), [news, setNews] = useState<Weigh | null>(null);
+  const [step, setStep] = useState(0), [err, setErr] = useState(""), [loadErr, setLoadErr] = useState(""), [menu, setMenu] = useState(false), [gear, setGear] = useState<string | null>(null), [now, setNow] = useState(0), [small, setSmall] = useState(false);
+  const [msgs, setMsgs] = useState<Msg[]>([]), [q, setQ] = useState(""), [asking, setAsking] = useState(false);
+  const frame = useRef<HTMLDivElement>(null), S = SYMS.find((x) => x.id === sym)!, d = S.d, busy = step >= 1 && step <= 6, stages = useRef<ReturnType<typeof setTimeout>[]>([]), lastPx = useRef({ px: 0, at: 0 });
+  const indQ = useMemo(() => inds.map((x) => `${x.id}:${x.p ?? ""}`).join(","), [inds]), viewKey = `${sym}:${tf}`, dataKey = `${viewKey}:${indQ}`;
 
-  useEffect(() => {
-    const c = load<{ sym?: string; tf?: string; panes?: string[]; count?: number; drawn?: string[]; pro?: boolean }>("td.cfg9", {}), ok = (x?: string) => TFS.some((t) => t.id === x);
-    if (c.sym && SYMS.some((x) => x.id === c.sym)) setSym(c.sym);
-    const list = c.panes?.length === 3 && c.panes.every(ok) ? c.panes : ["1H", "1m", "15m"], n = c.count === 1 || c.count === 2 || c.count === 3 ? c.count : matchMedia("(max-width: 560px)").matches ? 1 : 3;
-    setPanes(list); setCount(n); setTf(ok(c.tf) && list.slice(0, n).includes(c.tf!) ? c.tf! : list[0]);
-    if (c.drawn) setDrawn(c.drawn); if (c.pro) setPro(true);
-    setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t);
-  }, []);
-  useEffect(() => { save("td.cfg9", { sym, tf, panes, count, drawn, pro }); }, [sym, tf, panes, count, drawn, pro]);
+  useEffect(() => { const c = load<{ sym?: string; strat?: string; tfs?: string[]; inds?: Sel[]; tf?: string }>("td.cfg8", {}); if (c.sym && SYMS.some((x) => x.id === c.sym)) setSym(c.sym); if (c.strat) setStrat(c.strat); if (c.tfs?.length) setTfs(c.tfs); if (c.inds) setInds(c.inds); if (c.tf) setTf(c.tf); const m = matchMedia("(max-width: 560px)"), f = () => setSmall(m.matches); f(); m.addEventListener("change", f); setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => { clearInterval(t); m.removeEventListener("change", f); }; }, []);
+  useEffect(() => { save("td.cfg8", { sym, strat, tfs, inds, tf }); }, [sym, strat, tfs, inds, tf]);
 
+  /* секунд тутмын үнэ: SSE, тасарвал 4 сек тутам татна */
   useEffect(() => {
     let es: EventSource | null = null, alive = true, got = 0;
     const on = (t: Tick) => { if (!alive) return; const n = Date.now(); got = n; if (t.px !== lastPx.current.px) lastPx.current = { px: t.px, at: n }; setTick({ ...t, got: n, moved: lastPx.current.at }); };
@@ -150,102 +141,141 @@ export default function DeskApp() {
     return () => { alive = false; es?.close(); clearInterval(back); document.removeEventListener("visibilitychange", vis); };
   }, [sym]);
 
-  const onRead = useCallback((r: Read | null, err: string) => { setView(r); setReadErr(err); if (r) setMatrix(r.matrix); }, []);
-  /* идэвхтэй чарт хугацаагаа сольсон ч бусад чарт хэвээр үлдэнэ; нэг хугацаа давхардахгүй */
-  const pickTab = (t: string) => { if (shown.includes(t)) { setTf(t); return; } setPanes((c) => c.map((x) => (x === tf ? t : x))); setTf(t); };
-  const pickPane = useCallback((t: string) => { setTf(t); }, []);
-  useEffect(() => { setMsgs([]); }, [sym, tf]);
-  const changeCount = (n: number) => { setCount(n); const list = panes.slice(0, n); if (!list.includes(tf)) setTf(list[0]); };
-  const onCell = (id: string) => { setFocus(id); setDrawn((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id])); };
+  /* лаа, индикатор 15 сек тутам; секунд хооронд tick хөдөлгөнө */
+  useEffect(() => {
+    let alive = true;
+    const b = async () => { if (document.hidden) return; try { const r = await fetch(`/api/trader-agent/desk?sym=${sym}&tf=${tf}&ind=${indQ}`, { cache: "no-store" }), j = await r.json(); if (!alive) return; if (r.ok) { setData({ ...j, key: dataKey }); setLoadErr(""); } else setLoadErr(j.error || "Лаа ачаалж чадсангүй — дахин оролдож байна"); } catch { if (alive) setLoadErr("Сүлжээний алдаа — дахин оролдож байна"); } };
+    setLoadErr(""); b();
+    const t = setInterval(b, 15000), vis = () => { if (!document.hidden) b(); };
+    document.addEventListener("visibilitychange", vis);
+    return () => { alive = false; clearInterval(t); document.removeEventListener("visibilitychange", vis); };
+  }, [sym, tf, indQ, dataKey]);
+  useEffect(() => { let on = true; setNews(null); fetch(`/api/trader-agent/desk?q=weigh&sym=${sym}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((j) => { if (on) setNews(j); }).catch(() => {}); return () => { on = false; }; }, [sym]);
+  useEffect(() => { const g = stages.current; return () => g.forEach(clearTimeout); }, []);
+
+  const toggleTf = (t: string) => setTfs((c) => (c.includes(t) ? (c.length > 1 ? c.filter((x) => x !== t) : c) : c.length < 3 ? [...c, t] : [...c.slice(1), t]));
+  const toggleInd = (id: string) => setInds((c) => (c.some((x) => x.id === id) ? c.filter((x) => x.id !== id) : [...c, { id, p: INDS.find((q) => q.id === id)?.p }]));
+  const allInds = () => setInds((c) => INDS.map((q) => c.find((x) => x.id === q.id) ?? { id: q.id, p: q.p, hide: true }));
+  const changeSym = (v: string) => { setSym(v); setRep(null); setStep(0); setMsgs([]); };
+  const run = useCallback(async () => {
+    if (step >= 1 && step <= 6) return;
+    stages.current.forEach(clearTimeout); stages.current = [];
+    /* чартын хугацаа хэрэглэгчийнх: түүнийг хэзээ ч өөрөө солихгүй, харин шинжилгээнд заавал оруулна */
+    const use = tfs.includes(tf) ? tfs : [...tfs.slice(-2), tf];
+    if (use !== tfs) setTfs(use);
+    setStep(1); setErr(""); setMsgs([]);
+    if (small) frame.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    try {
+      const [r, w] = await Promise.all([fetch("/api/trader-agent/desk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sym, strat, tfs: use, inds }) }), fetch(`/api/trader-agent/desk?q=weigh&sym=${sym}`, { cache: "no-store" }).catch(() => null), wait(1000)]);
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || `Алдаа (${r.status})`);
+      if (w?.ok) setNews(await w.json());
+      setRep(j);
+      const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setStep(2);
+      ([[1400, 3], [3000, 4], [3700, 5], [4300, 6], [4900, 7]] as const).forEach(([ms, n]) => stages.current.push(setTimeout(() => setStep(n), calm ? 0 : ms)));
+    } catch (e) { setErr((e as Error).message); setStep(0); }
+  }, [step, small, sym, tf, strat, tfs, inds]);
   const ask = async (text: string) => {
     const t = text.trim();
-    if (!t || asking) return;
+    if (!t || asking || !rep) return;
     const history = msgs.slice(-6);
     setMsgs((c) => [...c, { role: "user", text: t }]); setQ(""); setAsking(true);
-    try { const r = await fetch("/api/trader-agent/desk/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sym, tf, q: t, history }) }), j = await r.json(); setMsgs((c) => [...c, { role: "ai", text: r.ok ? j.answer : j.error || "Хариулт ирсэнгүй. Дахин оролдоно уу" }]); }
-    catch { setMsgs((c) => [...c, { role: "ai", text: "Сүлжээ тасарсан. Дахин оролдоно уу" }]); } finally { setAsking(false); }
+    try {
+      const r = await fetch("/api/trader-agent/desk/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sym, strat, tfs, inds, q: t, history }) }), j = await r.json();
+      setMsgs((c) => [...c, { role: "ai", text: r.ok ? j.answer : j.error || "Хариулт ирсэнгүй" }]);
+    } catch { setMsgs((c) => [...c, { role: "ai", text: "Сүлжээний алдаа — дахин оролдоно уу" }]); } finally { setAsking(false); }
   };
 
-  const live = !tick || !now ? "wait" : now - tick.got > 6000 ? "lost" : now - tick.moved > 240000 ? "closed" : "live";
-  const liveTxt = { wait: "Холбогдож байна", lost: "Дахин холбогдож байна", closed: "Зах зээл хаалттай", live: "Шууд" }[live];
-  const cell = view?.cells.find((c) => c.id === focus), nx = view?.news?.next, t = view?.truth, heat = view?.hours ?? null;
-  const hourStart = now - (now % HOUR), dots = (view?.news?.line ?? []).filter((e) => e.t >= now && e.t < hourStart + 24 * HOUR);
-  const peakAt = heat ? (() => { const x = now - (now % (24 * HOUR)) + heat.w * HOUR; return x > now ? x : x + 24 * HOUR; })() : 0, inPeak = !!heat && !!now && (new Date(now).getUTCHours() - heat.w + 24) % 24 < heat.len, shut = live === "closed";
-  const peakFrom = inPeak && heat ? hourStart - ((new Date(now).getUTCHours() - heat.w + 24) % 24) * HOUR : peakAt;
-  const dayNote = [heat && `Ихэвчлэн ${clock(peakFrom)}–${clock(peakFrom + heat.len * HOUR)}, бусад цагаас ${heat.lift.toFixed(1)} дахин их хөдөлдөг.`, dots.length ? "Цэг бол том мэдээ." : "", nx?.soon ? "Мэдээ ойрхон байна, энэ үед хөдөлгөөн ихэсч болно." : ""].filter(Boolean).join(" ");
+  const secs = useMemo(() => (rep?.sections || []).filter((x) => !x.empty), [rep]), sec = secs.find((x) => x.tf === tf) ?? null;
+  const shown = useMemo(() => (data ? { ...data, inds: data.inds.filter((x) => !inds.find((q) => q.id === x.id)?.hide) } : null), [data, inds]);
+  const subs = shown?.inds.filter((x) => x.pane === "sub").length ?? 0, height = (small ? 400 : 540) + subs * 78;
+  const votes = useMemo(() => { const c = { up: 0, dn: 0, flat: 0 }; data?.inds.forEach((x) => { if ((x.vote ?? 0) > 0) c.up++; else if ((x.vote ?? 0) < 0) c.dn++; else c.flat++; }); return c; }, [data]);
+  const liveState = !tick || !now ? "wait" : now - tick.got > 6000 ? "lost" : now - tick.moved > 240000 ? "closed" : "live";
+  const liveTxt = { wait: "Холбогдож байна", lost: "Дахин холбогдож байна", closed: "Зах зээл хаалттай", live: "Live" }[liveState];
+  const closeIn = now ? bucket(now, tf) + TF_MIN[tf] * 60000 - now : 0, spread = tick && tick.ask > tick.bid ? tick.ask - tick.bid : 0;
+  const status = (n: number) => (step > n ? "done" : step === n ? "run" : "idle");
+  const other = secs.find((x) => x.plan && x.tf !== tf) ?? null, marks = sec?.draw?.marks.length ?? 0;
+  const planTxt = (x: Sec) => `${x.tf} ${x.plan!.dir > 0 ? "Авах" : "Зарах"} · орох ${fx(x.plan!.entry, d)} · SL ${fx(x.plan!.sl, d)} · TP ${fx(x.plan!.tp1, d)} · ≈${x.plan!.rr}R${x.plan!.rr < 1 ? " (сул)" : ""}`;
+  const firstPlan = secs.find((x) => x.plan), stepPlan = sec?.plan ? planTxt(sec) : firstPlan ? `${tf} ${sec ? "дээр төлөвлөгөө алга" : "хугацааг шинжлээгүй"}. ${planTxt(firstPlan)}` : "Энэ стратегид тохирох нөхцөл алга — албаар үүсгэхгүй.", indOf = (id: string) => data?.inds.find((x) => x.id === id);
 
   return (
     <div className={s.app}>
       <header className={s.top}>
-        <div className={s.syms} role="tablist" aria-label="Хэрэгсэл">{SYMS.map((x) => <button key={x.id} type="button" role="tab" aria-selected={sym === x.id} onClick={() => { setSym(x.id); setMatrix([]); }}>{x.mn}</button>)}</div>
-        <div className={s.quote}><span className={s.status} data-s={live} title={liveTxt}><i /><em>{liveTxt}</em></span><strong>{tick ? fx(tick.px, d) : "—"}</strong>{tick && <span className={s.chg}><i data-d={tick.chg >= 0 ? "up" : "dn"}>{glyph(tick.chg)}</i>{Math.abs(tick.chg).toFixed(2)}%</span>}</div>
+        <span className={s.mark} aria-hidden="true">T</span>
+        <select className={s.search} value={sym} aria-label="Хэрэгсэл" onChange={(e) => changeSym(e.target.value)}>{SYMS.map((x) => <option key={x.id} value={x.id}>{x.pair}</option>)}</select>
+        <span className={s.live} data-s={liveState} title={`Эх сурвалж: ${S.src}`}><i /><em>{liveTxt}</em></span>
+        <nav className={s.ver} aria-label="Хувилбар">{VERS.map((v) => (v.h === "/" ? <b key={v.h}>{v.t}</b> : <Link key={v.h} href={v.h} prefetch={false}>{v.t}</Link>))}</nav>
         <button type="button" className={s.out} onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}>Гарах</button>
       </header>
 
-      <div className={s.page}>
-        <main className={s.read}>
-          <h1 data-wait={!view || undefined}>{view?.sentence ?? (readErr || "Уншиж байна")}</h1>
-          <div className={s.tabBar}>
-            <div className={s.tabs} role="tablist" aria-label="Хугацаа">{TFS.map((x) => { const m = matrix.find((q) => q.tf === x.id); return <button key={x.id} type="button" role="tab" aria-selected={tf === x.id} data-on={shown.includes(x.id) || undefined} onClick={() => pickTab(x.id)}><span>{x.mn}</span>{m && <i data-d={m.dir > 0 ? "up" : m.dir < 0 ? "dn" : "mid"} aria-label={m.dir > 0 ? "өсөх" : m.dir < 0 ? "унах" : "тодорхойгүй"}>{glyph(m.dir)}</i>}</button>; })}</div>
-            <div className={s.split} role="group" aria-label="Чартын тоо">{[1, 2, 3].map((k) => <button key={k} type="button" aria-pressed={count === k} aria-label={`${k} чарт`} title={`${k} чарт`} onClick={() => changeCount(k)}>{Array.from({ length: k }, (_, i) => <i key={i} />)}</button>)}</div>
-          </div>
-          <div className={s.splits} data-n={count} style={{ "--n": count } as React.CSSProperties}>{shown.map((x, i) => <Pane key={i} sym={sym} tf={x} d={d} active={x === tf} onPick={pickPane} onRead={onRead} tick={tick} indQ={indQ} pro={pro} />)}</div>
-          <div className={s.under}>
-            <p>Цайвар бүс: дараагийн 12 лаанд үнэ байх магадлалтай 80% хүрээ.</p>
-            <button type="button" aria-pressed={pro} onClick={() => setPro((c) => !c)}>{pro ? "Тэмдэглэгээ нуух" : "Тэмдэглэгээ харуулах"}</button>
-          </div>
+      <div className={s.shell}>
+        <main className={s.main}>
+          <section className={s.head}>
+            <span className={s.coin}>{S.ic}</span>
+            <div className={s.name}><h1>{S.mn}</h1><em>{S.pair}</em></div>
+            <div className={s.px}><Price v={tick?.px ?? null} d={d} />{tick && <span data-d={tick.chg >= 0 ? "up" : "dn"}>{sg(tick.chg)}{tick.chg.toFixed(2)}% · 24ц</span>}</div>
+            <dl className={s.facts}>
+              {spread > 0 && <div><dt>Spread</dt><dd>{fx(spread, d)}</dd></div>}
+              <div><dt>Лаа хаагдах</dt><dd>{now ? left(closeIn) : "—"}</dd></div>
+              <div><dt>Мэдээний эрсдэл</dt><dd className={s.risk} data-r={news?.risk}>{news ? RISK[news.risk] : "—"}</dd></div>
+            </dl>
+          </section>
+
+          <section className={s.card} data-chart>
+            <div className={s.bar}>
+              <div className={s.tfRow} role="group" aria-label="Чартын хугацаа">{TFS.map((t) => { const q = secs.find((x) => x.tf === t); return <button key={t} type="button" aria-pressed={tf === t} data-a={q ? (q.plan ? dirOf(q.plan.dir) : "mid") : undefined} onClick={() => setTf(t)}>{t}</button>; })}</div>
+              <div className={s.indWrap}>
+                <button type="button" className={s.indBtn} aria-expanded={menu} onClick={() => setMenu((c) => !c)}>Индикатор <b>{inds.length}/18</b></button>
+                {menu && <><button type="button" className={s.scrim} aria-label="Хаах" onClick={() => setMenu(false)} />
+                  <div className={s.menu}>
+                    <div className={s.menuTop}><button type="button" onClick={allInds}>Бүгдийг нэмэх</button><button type="button" onClick={() => setInds([])}>Цэвэрлэх</button></div>
+                    {GROUPS.map(([g, ids]) => <div key={g}><h5>{g}</h5><div className={s.menuGrid}>{ids.map((id) => { const q = INDS.find((x) => x.id === id)!; return <button key={id} type="button" aria-pressed={inds.some((x) => x.id === id)} onClick={() => toggleInd(id)}>{q.mn}</button>; })}</div></div>)}
+                    <p className={s.dim}>«Бүгдийг нэмэх» нь шинэ индикаторуудыг чартад нуугаад санал тоололтод оруулна. Чипийн нэр дээр дарж харуулна.</p>
+                  </div></>}
+              </div>
+            </div>
+            <div className={s.chipRow}>
+              {!!inds.length && <div className={s.sum} title="Одоогийн лаан дээрх индикаторын санал"><Vote v={votes} /><span><em data-d="up">{votes.up}</em>/<em data-d="dn">{votes.dn}</em>/{votes.flat}</span></div>}
+              {inds.map((x) => { const q = indOf(x.id), def = INDS.find((i) => i.id === x.id), vis = (shown?.inds.findIndex((i) => i.id === x.id) ?? -1), col = q?.pane === "price" && vis >= 0 ? PALETTE[vis % PALETTE.length] : undefined; return (
+                <span key={x.id} className={s.chip} data-v={dirOf(q?.vote ?? 0)} data-off={x.hide || undefined}>
+                  <button type="button" aria-pressed={!x.hide} title={q?.read ?? ""} onClick={() => setInds((c) => c.map((i) => (i.id === x.id ? { ...i, hide: !i.hide } : i)))}><i style={col ? { background: col } : undefined} />{q?.label ?? def?.mn}</button>
+                  {def?.p && (gear === x.id ? <input type="number" min={2} max={400} value={x.p ?? def.p} aria-label={`${def.mn} үе`} autoFocus onBlur={() => setGear(null)} onChange={(e) => { const v = Math.max(2, Math.min(400, Number(e.target.value) || 2)); setInds((c) => c.map((i) => (i.id === x.id ? { ...i, p: v } : i))); }} /> : <button type="button" aria-label={`${def.mn} тохиргоо`} onClick={() => setGear(x.id)}><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path fill="currentColor" d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm6.3 3.7.9.7-1.2 2.1-1.1-.4c-.4.3-.8.6-1.3.8L11.4 14H9l-.2-1.2h-1.6L7 14H4.6l-.2-1.9c-.5-.2-.9-.5-1.3-.8l-1.1.4L.8 9.6l.9-.7V7.1l-.9-.7L2 4.3l1.1.4c.4-.3.8-.6 1.3-.8L4.6 2H7l.2 1.2h1.6L9 2h2.4l.2 1.9c.5.2.9.5 1.3.8l1.1-.4 1.2 2.1-.9.7v1.8Z" /></svg></button>)}
+                  <button type="button" aria-label={`${def?.mn} хасах`} onClick={() => toggleInd(x.id)}>×</button>
+                </span>); })}
+            </div>
+            <div ref={frame}><DeskChart tf={tf} digits={d} viewKey={viewKey} data={shown} tick={tick} draw={sec?.draw ?? null} plan={sec?.plan ?? null} runKey={`${rep?.now ?? 0}:${tf}`} scanning={step === 1} scanText={`${tfs.join(" · ")} уншиж байна`} height={height} loadErr={loadErr} /></div>
+            <p className={s.foot}>{liveState === "closed" ? "Зах зээл хаалттай — сүүлийн ханш харагдаж байна. " : ""}Ханш ба сүүлийн лаа нэг tick-ээс шинэчлэгдэнэ · {S.src}{rep && !sec ? " · Энэ хугацааг шинжлээгүй" : ""}{sec ? " · Шинжилгээ хаагдсан лаанаас" : ""}{sec && !sec.plan && other ? <> · <button type="button" className={s.toPlan} onClick={() => setTf(other.tf)}>{other.tf} төлөвлөгөө харах</button></> : null}</p>
+          </section>
         </main>
 
-        <aside className={s.side} data-wait={!view || undefined} aria-label="Уншилт">
-          <section>
-            <h2>Хаашаа?</h2>
-            <p className={s.big}><i data-d={view ? (view.dir > 0 ? "up" : view.dir < 0 ? "dn" : "mid") : "mid"}>{glyph(view?.dir ?? 0)}</i>{view ? (view.dir > 0 ? "Өсөх" : view.dir < 0 ? "Унах" : "Тодорхойгүй") : "—"}<small>{view ? `${view.up} өсөх, ${view.dn} унах, ${view.flat} саармаг` : ""}</small></p>
-            {view && <Strip rd={view} drawn={drawn} onCell={onCell} />}
-            <p className={s.note}>{cell ? cellNote(cell) : view?.neff ? `Бие даасан санал ойролцоогоор ${view.neff}. Дангаараа батлагдсан индикатор ${view.cells.filter((c) => c.ok).length}/${view.voters}.` : ""}</p>
-          </section>
-          <section>
-            <h2>Итгэж болох уу?</h2>
-            <p className={s.big}>{t ? KIND[t.kind] : "Хэмжиж байна"}</p>
-            {t && <Odds t={t} />}
-            {t && t.n > 0 && <p className={s.note}>{T.after} {t.wins}/{t.n} удаа {t.up ? "өссөн" : "унасан"}.</p>}
-          </section>
-          <section>
-            <h2>Хэр хол хөдлөх вэ?</h2>
-            {view?.range ? <><p className={s.big}>±${fx(view.range.half, view.range.half < 100 ? 2 : 0)}<small>{volWord(view.range.ratio)}</small></p>
-              <div className={s.span} role="img" aria-label={`${fx(view.range.lo, d)} ба ${fx(view.range.hi, d)} хооронд`}><i /></div>
-              <div className={s.ends}><span>{fx(view.range.lo, d)}</span><span>{fx(view.range.hi, d)}</span></div>
-              <p className={s.note}>{T.after} энэ хооронд байх магадлал 80%, шалгахад {Math.round(view.range.cov)}% таарсан.{view.range.lift >= 1.3 ? ` Хэлбэлзэл өндөр үед дараагийн хөдөлгөөн ${view.range.lift} дахин их байсан.` : ""}</p></> : <p className={s.big}>Хэмжиж байна</p>}
-          </section>
-          {view?.stops && <section>
-            <h2>Алдагдлын хязгаар хэр хол?</h2>
-            <Stops rows={view.stops} />
-            <p className={s.note}>Ердийн савлагаа {T.within} ийм зайд хүрэх давтамж. Шалгахад {view.stops.map((x) => `${Math.round(x.oos)}%`).join(", ")} гарсан.</p>
-          </section>}
-          <section>
-            <h2>Хэзээ хөдлөх вэ?</h2>
-            <div className={s.pair} data-one={!heat || undefined}>
-              {heat && <p className={s.big}>{shut ? "Хаалттай" : inPeak ? "Одоо" : until(peakAt - now)}<small>{shut ? "зах зээл" : inPeak ? "идэвхтэй цаг" : "идэвхтэй цаг хүртэл"}</small></p>}
-              <p className={s.big}>{nx ? until(nx.t - now) : view ? "48 цагт алга" : "—"}<small>{nx ? `${nx.name}${nx.also ? ` ба өөр ${nx.also}` : ""}` : "том мэдээ"}</small></p>
-            </div>
-            {view && !!now && <Day hours={heat} dots={dots} start={hourStart} />}
-            {dayNote && <p className={s.note}>{dayNote}</p>}
-          </section>
-          <section>
-            <h2>Төлөвлөгөө</h2>
-            {view?.verified && view.plan ? <><p className={s.big}><i data-d={view.plan.dir > 0 ? "up" : "dn"}>{glyph(view.plan.dir)}</i>{view.plan.dir > 0 ? "Авах" : "Зарах"} бүс {fx(view.plan.lo, d)}–{fx(view.plan.hi, d)}</p><dl className={s.levels}><div><dt>Орох</dt><dd>{fx(view.plan.entry, d)}</dd></div><div><dt>SL</dt><dd>{fx(view.plan.sl, d)}</dd></div><div><dt>TP</dt><dd>{fx(view.plan.tp1, d)}</dd></div></dl></> : <p className={s.big}>Батлагдсан нь алга</p>}
-            {view && <Rows rows={view.plans} />}
-            {view && <p className={s.note}>Шимтгэл хассан дундаж үр дүн, эрсдэлийн нэгжээр.{view.live?.fired ? ` Амьд шалгалт: ${view.live.fired} хаагдсан, TP ${view.live.tp}, SL ${view.live.sl}.` : ""}</p>}
-          </section>
-          <section className={s.ask}>
-            {!!msgs.length && <div className={s.msgs} aria-live="polite">{msgs.map((m, k) => <p key={k} data-r={m.role}>{m.text}</p>)}{asking && <p data-r="ai">Бодож байна</p>}</div>}
-            <form onSubmit={(e) => { e.preventDefault(); ask(q); }}><input value={q} onChange={(e) => setQ(e.target.value)} maxLength={600} placeholder="Ойлгомжгүй зүйлээ асуух" aria-label="Асуулт" /><button type="submit" disabled={asking || !q.trim()}>Асуух</button></form>
-          </section>
+        <aside className={s.agent} aria-label="Агент">
+          <div className={s.agHead}><h3>Агент</h3><span>{inds.length} индикатор · {tfs.length} хугацаа</span></div>
+          <ol className={s.steps} data-p={Math.min(step, 7)}>
+            <li data-s={status(1)}><i>01</i><div><b>{STEPS[0].t}</b><p>{secs.length ? secs.map((x) => `${x.tf} ${x.state}`).join(" · ") : STEPS[0].d}</p><div className={s.chips} role="group" aria-label="Шинжлэх хугацаа">{TFS.map((t) => <button key={t} type="button" aria-pressed={tfs.includes(t)} onClick={() => toggleTf(t)}>{t}</button>)}</div></div></li>
+            <li data-s={status(2)}><i>02</i><div><b>{STEPS[1].t}</b><p>{step > 1 && sec ? `${sec.tf} дээр ${marks} тэмдэг, ${sec.draw.trends.length} трендийн шугам${sec.pattern ? " · загвар илэрсэн" : ""}` : STEPS[1].d}</p></div></li>
+            <li data-s={status(3)}><i>03</i><div><b>{STEPS[2].t}</b><p>{step > 2 ? stepPlan : STEPS[2].d}</p>
+              <div className={s.seg} role="group" aria-label="Стратеги">{STRATS.map((x) => <button key={x.id} type="button" aria-pressed={strat === x.id} title={x.sub} onClick={() => setStrat(x.id)}>{x.mn}</button>)}</div><small className={s.segSub}>{STRATS.find((x) => x.id === strat)?.sub}</small></div></li>
+            <li data-s={status(4)}><i>04</i><div><b>{STEPS[3].t}</b><p>{step > 3 && news ? news.text : STEPS[3].d}</p></div></li>
+            <li data-s={status(5)}><i>05</i><div><b>{STEPS[4].t}</b><p>{STEPS[4].d}</p>
+              {step > 4 && <div className={s.qa}>
+                {!!msgs.length && <div className={s.msgs} aria-live="polite">{msgs.map((m, k) => <p key={k} data-r={m.role}>{m.text}</p>)}{asking && <p data-r="ai" className={s.typing}>Бодож байна…</p>}</div>}
+                {!msgs.length && <div className={s.quick}>{QUICK.map((t) => <button key={t} type="button" onClick={() => ask(t)}>{t}</button>)}</div>}
+                <form onSubmit={(e) => { e.preventDefault(); ask(q); }}><input value={q} onChange={(e) => setQ(e.target.value)} maxLength={600} placeholder="Асуултаа бичнэ үү" aria-label="Асуулт" /><button type="submit" disabled={asking || !q.trim()}>Асуух</button></form>
+              </div>}</div></li>
+            <li data-s={status(6)}><i>06</i><div><b>{STEPS[5].t}</b><p>{step > 5 && rep?.learn ? `${rep.learn.total} төлөвлөгөө бүртгэсэн · ${rep.learn.fired} идэвхжсэн · TP ${rep.learn.tp} · SL ${rep.learn.sl}` : STEPS[5].d}</p></div></li>
+          </ol>
+          <div className={s.goBox}>
+            <button type="button" className={s.go} onClick={run} disabled={busy} data-busy={busy || undefined}>{busy ? `${STEPS[Math.min(step, 6) - 1].t}…` : step === 7 ? "Дахин шинжлэх" : `${S.pair} шинжлэх`}</button>
+            {err && <p className={s.err} role="alert">{err}</p>}
+          </div>
         </aside>
+
+        <div className={s.rest}>
+          {rep && step >= 2 && <Report rep={rep} secs={secs} sec={sec} tf={tf} d={d} news={news} pick={setTf} useStrat={setStrat} />}
+          <p className={s.disc}>Tesla Trader нь техник шинжилгээ, сургалтын хэрэгсэл — <b>санхүүгийн зөвлөгөө биш</b>. Төлөвлөгөө нь бодит лаанаас тооцсон нөхцөлт хувилбар, хэмжилт нь өнгөрсөн дата. Арилжаа автоматаар хийгдэхгүй. Ханш: Dukascopy, Swissquote, Binance.</p>
+        </div>
       </div>
-      <footer className={s.foot}>
-        <p>Санхүүгийн зөвлөгөө биш. Түүхэн дүн ирээдүйг баталгаажуулахгүй. Арилжаа автоматаар хийгдэхгүй.</p>
-        <nav aria-label="Өмнөх хувилбар"><Link href="/1" prefetch={false}>v4</Link><Link href="/2" prefetch={false}>v5</Link><Link href="/3" prefetch={false}>v6</Link></nav>
-      </footer>
     </div>
   );
 }
