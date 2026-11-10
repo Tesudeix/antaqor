@@ -55,7 +55,9 @@ export default function Footer() {
   }, [pathname]);
 
   // Такеовер бүсүүд өөрсдийн chrome-той
-  if (pathname === "/" || pathname.startsWith("/yuki") || pathname.startsWith("/erchis") || pathname.startsWith("/rent") || pathname.startsWith("/shop") || pathname.startsWith("/khuushuur") || pathname.startsWith("/admin") || pathname.startsWith("/content-agent")) {
+  // `/agents/<slug>` — чатын дэлгэц: бичих талбар дэлгэцийн ёроолд наалддаг,
+  // доор нь том хөл байвал гүйлгэхэд талбар хөөрч хөлтэй давхцана.
+  if (pathname === "/" || pathname.startsWith("/yuki") || pathname.startsWith("/erchis") || pathname.startsWith("/rent") || pathname.startsWith("/shop") || pathname.startsWith("/khuushuur") || pathname.startsWith("/admin") || pathname.startsWith("/content-agent") || pathname.startsWith("/agents/")) {
     return null;
   }
 

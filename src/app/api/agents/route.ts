@@ -10,6 +10,12 @@ export async function GET() {
   try {
     const roster = await resolveRoster();
     const agents = roster.map((a) => ({
+      /* `_id`, `description`, `href` — /tools-ын агентын карт эдгээрийг уншдаг.
+         Байхгүй байхад карт бүр `#` рүү заадаг байсан; одоо агентын өөрийн
+         хуудас (`/agents/<slug>`) руу очно. */
+      _id: a.slug,
+      href: `/agents/${a.slug}`,
+      description: a.desc,
       slug: a.slug,
       name: a.name,
       handle: a.handle,
